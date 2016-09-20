@@ -1,4 +1,4 @@
-package ui;
+package com.energyxxer.ui;
 
 import java.awt.Color;
 import java.awt.Event;
@@ -27,8 +27,6 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -41,13 +39,13 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
-import cbe.Tab;
-import cbe.TabManager;
-import syntax.CBESyntax;
-import syntax.Syntax;
-import syntax.SyntaxConstants;
-import util.StringUtil;
-import util.TextLineNumber;
+import com.energyxxer.cbe.Tab;
+import com.energyxxer.cbe.TabManager;
+import com.energyxxer.syntax.CBESyntax;
+import com.energyxxer.syntax.Syntax;
+import com.energyxxer.syntax.SyntaxConstants;
+import com.energyxxer.util.StringUtil;
+import com.energyxxer.util.TextLineNumber;
 
 public class CBEEditor extends JScrollPane implements UndoableEditListener, ActionListener {
 	

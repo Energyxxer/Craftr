@@ -1,4 +1,4 @@
-package cbe;
+package com.energyxxer.cbe;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,8 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 
-import ui.CBEEditor;
-import ui.TabComponent;
+import com.energyxxer.ui.CBEEditor;
+import com.energyxxer.ui.TabComponent;
 
 public class Tab {
 	private TabComponent linkedTabComponent;

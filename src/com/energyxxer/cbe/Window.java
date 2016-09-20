@@ -1,4 +1,4 @@
-package cbe;
+package com.energyxxer.cbe;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,10 +31,10 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import ui.ExplorerItem;
-import ui.ToolbarButton;
-import ui.ToolbarSeparator;
-import util.ImageManager;
+import com.energyxxer.ui.ExplorerItem;
+import com.energyxxer.ui.ToolbarButton;
+import com.energyxxer.ui.ToolbarSeparator;
+import com.energyxxer.util.ImageManager;
 
 public class Window {
 

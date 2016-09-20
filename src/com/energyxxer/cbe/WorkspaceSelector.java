@@ -1,4 +1,4 @@
-package cbe;
+package com.energyxxer.cbe;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

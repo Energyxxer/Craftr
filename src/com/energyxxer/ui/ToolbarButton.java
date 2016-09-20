@@ -1,4 +1,4 @@
-package ui;
+package com.energyxxer.ui;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -11,8 +11,8 @@ import java.awt.RenderingHints;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 
-import cbe.Window;
-import util.ImageManager;
+import com.energyxxer.cbe.Window;
+import com.energyxxer.util.ImageManager;
 
 public class ToolbarButton extends JButton {
 

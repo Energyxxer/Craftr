@@ -1,4 +1,4 @@
-package util;
+package com.energyxxer.util;
 
 public class StringUtil {
 	public static String ellipsis(String str, int max) {

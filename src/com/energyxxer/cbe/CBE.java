@@ -1,4 +1,4 @@
-package cbe;
+package com.energyxxer.cbe;
 
 import java.io.File;
 import java.io.IOException;

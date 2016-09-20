@@ -1,9 +1,9 @@
-package cbe;
+package com.energyxxer.cbe;
 
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 
-import ui.TabComponent;
+import com.energyxxer.ui.TabComponent;
 
 public class TabManager {
 	

@@ -1,4 +1,4 @@
-package util;
+package com.energyxxer.util;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package ui;
+package com.energyxxer.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -19,11 +19,11 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import cbe.Tab;
-import cbe.TabManager;
-import cbe.Window;
-import util.ImageManager;
-import util.StringUtil;
+import com.energyxxer.cbe.Tab;
+import com.energyxxer.cbe.TabManager;
+import com.energyxxer.cbe.Window;
+import com.energyxxer.util.ImageManager;
+import com.energyxxer.util.StringUtil;
 
 public class TabComponent extends JLabel implements MouseListener {
 	/**

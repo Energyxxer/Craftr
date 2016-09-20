@@ -1,4 +1,4 @@
-package ui;
+package com.energyxxer.ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,7 +10,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-import util.ImageManager;
+import com.energyxxer.util.ImageManager;
 
 public class ExplorerExpand extends JButton {
 

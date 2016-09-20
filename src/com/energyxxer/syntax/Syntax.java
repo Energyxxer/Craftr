@@ -1,4 +1,4 @@
-package syntax;
+package com.energyxxer.syntax;
 
 import java.util.ArrayList;
 import java.util.HashMap;

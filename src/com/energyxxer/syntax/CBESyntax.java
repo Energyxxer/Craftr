@@ -1,10 +1,10 @@
-package syntax;
+package com.energyxxer.syntax;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import util.MinecraftConstants;
+import com.energyxxer.util.MinecraftConstants;
 
 public class CBESyntax extends Syntax {
 	public static HashMap<String, ArrayList<String>> patterns = new HashMap<String,ArrayList<String>>();

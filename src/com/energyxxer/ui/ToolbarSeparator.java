@@ -1,4 +1,4 @@
-package ui;
+package com.energyxxer.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -6,7 +6,7 @@ import java.awt.Dimension;
 
 import javax.swing.JPanel;
 
-import cbe.Window;
+import com.energyxxer.cbe.Window;
 
 public class ToolbarSeparator extends JPanel {
 
