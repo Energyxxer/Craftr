@@ -133,7 +133,6 @@ public class CBESyntax extends Syntax {
 
 		HashMap<String,Object> digit = new HashMap<String,Object>();
 		digit.put("color", Color.decode("#E89039"));
-		digit.put("whole", new Boolean(true));
 		styles.put("digit", digit);
 
 		HashMap<String,Object> keyword = new HashMap<String,Object>();
