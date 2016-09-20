@@ -1,44 +1,5 @@
 package com.energyxxer.ui;
 
-import java.awt.Color;
-import java.awt.Event;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.Timer;
-import javax.swing.event.DocumentEvent.EventType;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
-import javax.swing.text.TabSet;
-import javax.swing.text.TabStop;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
-
 import com.energyxxer.cbe.Tab;
 import com.energyxxer.cbe.TabManager;
 import com.energyxxer.syntax.CBESyntax;
@@ -46,6 +7,16 @@ import com.energyxxer.syntax.Syntax;
 import com.energyxxer.syntax.SyntaxConstants;
 import com.energyxxer.util.StringUtil;
 import com.energyxxer.util.TextLineNumber;
+
+import javax.swing.*;
+import javax.swing.Timer;
+import javax.swing.event.DocumentEvent.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+import javax.swing.undo.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
 
 public class CBEEditor extends JScrollPane implements UndoableEditListener, ActionListener {
 	
@@ -169,11 +140,11 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 			Iterator it2 = ((HashMap<String, HashMap<String, Object>>) pair.getValue()).entrySet().iterator();
 	        while(it2.hasNext()) {
 	        	Map.Entry pair2 = (Map.Entry)it2.next();
-	        	if((String) pair2.getKey() == "color") {
+	        	if(pair2.getKey() == "color") {
 	        		StyleConstants.setForeground(style, (Color) pair2.getValue());
-	        	} else if((String) pair2.getKey() == "bold") {
+	        	} else if(pair2.getKey() == "bold") {
 	        		StyleConstants.setBold(style, (boolean) pair2.getValue());
-	        	} else if((String) pair2.getKey() == "italic") {
+	        	} else if(pair2.getKey() == "italic") {
 	        		StyleConstants.setItalic(style, (boolean) pair2.getValue());
 	        	}
 	        	//it2.remove(); // avoids a ConcurrentModificationException
@@ -212,85 +183,83 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		
 		mainIteration: for(int i = 0; i < text.length(); i++) {
 			if(inString) {
-				if(text.substring(i,i+1).intern() == "\\") {
+				if(text.charAt(i) == '\\') {
 	        		lastStyle = "escape";
 					sd.setCharacterAttributes(i, 2, editor.getStyle("escape"), true);
 					i++;
 					continue;
 				}
 				ArrayList<String> stringPatterns = syntax.getPatterns().get("string");
-				for(int j = 0; j < stringPatterns.size(); j++) {
-					if(text.substring(i).startsWith(stringPatterns.get(j))) {
-						inString = false;
-		        		lastStyle = "string";
-						sd.setCharacterAttributes(i, stringPatterns.get(j).length(), editor.getStyle("string"), true);
-						continue mainIteration;
-					}
-				}
+                for (String stringPattern : stringPatterns) {
+                    if (text.substring(i).startsWith(stringPattern)) {
+                        inString = false;
+                        lastStyle = "string";
+                        sd.setCharacterAttributes(i, stringPattern.length(), editor.getStyle("string"), true);
+                        continue mainIteration;
+                    }
+                }
 			}
-			if(text.substring(i,i+1).intern() == "\n") {
+			if(text.charAt(i) == '\n') {
 				if(inComment && !inMultiLineComment) {
 					inComment = false;
 				}
 			}
-			if(text.substring(i,i+1).intern() == ".") {
-				if(!inComment && !inString && lastStyle == "digit") {
+			if(text.charAt(i) == '.') {
+				if(!inComment && !inString && lastStyle.equals("digit")) {
 					sd.setCharacterAttributes(i, 1, editor.getStyle("digit"), true);
 					continue mainIteration;
 				}
 			}
-			if(inComment && inMultiLineComment) {
+			if(inMultiLineComment) {
 				if(text.substring(i).startsWith(syntax.getPatterns().get("multilinecomment").get(1))) {
-					inComment = inMultiLineComment = false;
+					inComment = (inMultiLineComment = false);
 					sd.setCharacterAttributes(i, syntax.getPatterns().get("multilinecomment").get(1).length(), editor.getStyle("multilinecomment"), true);
 					i += syntax.getPatterns().get("multilinecomment").get(1).length();
 				}
 			}
-			Iterator it = syntax.getPatterns().entrySet().iterator();
-		    while (it.hasNext()) {
-		        Map.Entry pair = (Map.Entry)it.next();
-		        
-		        @SuppressWarnings("unchecked")
-				ArrayList<String> patterns = (ArrayList<String>)pair.getValue();
-		        HashMap<String,Object> rules = syntax.getStyles().get((String)pair.getKey());
-		        
-		        
-		        for(int j = 0; j < patterns.size(); j++) {
-		        	if(!inComment && !inString) {
-			        	if(text.substring(i).startsWith(patterns.get(j))) {
-			        		if((String)pair.getKey() == "comment") {
-			        			inComment = true;
-			        		}
-			        		if((String)pair.getKey() == "multilinecomment" && j == 0) {
-			        			inComment = inMultiLineComment = true;
-			        		}
-			        		if((String)pair.getKey() == "string") {
-			        			inString = !inString;
-			        		}
-			        		if(rules.containsKey("whole") && (boolean) rules.get("whole") == true) {
-				        		if(!Arrays.asList(SyntaxConstants.alphanumeric.split("")).contains(StringUtil.substring(text,i-1,i)) && !Arrays.asList(SyntaxConstants.alphanumeric.split("")).contains(StringUtil.substring(text,i+patterns.get(j).length(),i+patterns.get(j).length()+1))) {
-				        			lastStyle = (String) pair.getKey();
-				        			sd.setCharacterAttributes(i, patterns.get(j).length(), editor.getStyle((String) pair.getKey()), true);
-				        			i += patterns.get(j).length()-1;
-				        		}
-				        	} else {
-				        		lastStyle = (String) pair.getKey();
-				        		sd.setCharacterAttributes(i, patterns.get(j).length(), editor.getStyle((String) pair.getKey()), true);
-			        			i += patterns.get(j).length()-1;
-				        	}
-			        	}
-		        	} else if(inString) {
-		        		lastStyle = "string";
-		        		sd.setCharacterAttributes(i, 1, editor.getStyle("string"), true);
-		        	} else if(inComment && !inMultiLineComment) {
-		        		lastStyle = "comment";
-		        		sd.setCharacterAttributes(i, 1, editor.getStyle("comment"), true);
-		        	} else if(inComment && inMultiLineComment) {
-		        		lastStyle = "multilinecomment";
-		        		sd.setCharacterAttributes(i, 1, editor.getStyle("multilinecomment"), true);
-		        	}
-		        }
-		    }
+            for (Map.Entry<String, ArrayList<String>> entry : syntax.getPatterns().entrySet()) {
+                Map.Entry<String, ArrayList<String>> pair = entry;
+
+                @SuppressWarnings("unchecked") ArrayList<String> patterns = pair.getValue();
+                HashMap<String, Object> rules = syntax.getStyles().get(pair.getKey());
+
+
+                for (int j = 0; j < patterns.size(); j++) {
+                    if (!inComment && !inString) {
+                        if (text.substring(i).startsWith(patterns.get(j))) {
+                            if (pair.getKey().equals("comment")) {
+                                inComment = true;
+                            }
+                            if (pair.getKey().equals("multilinecomment") && j == 0) {
+                                inComment = (inMultiLineComment = true);
+                            }
+                            if (pair.getKey().equals("string")) {
+                                inString = !inString;
+                            }
+                            if (rules.containsKey("whole") && (boolean) rules.get("whole")) {
+                                if (!Arrays.asList(SyntaxConstants.alphanumeric.split("")).contains(StringUtil.substring(text, i - 1, i)) && !Arrays.asList(SyntaxConstants.alphanumeric.split("")).contains(StringUtil.substring(text, i + patterns.get(j).length(), i + patterns.get(j).length() + 1))) {
+                                    lastStyle = pair.getKey();
+                                    sd.setCharacterAttributes(i, patterns.get(j).length(), editor.getStyle(pair.getKey()), true);
+                                    i += patterns.get(j).length() - 1;
+                                }
+                            } else {
+                                lastStyle = pair.getKey();
+                                sd.setCharacterAttributes(i, patterns.get(j).length(), editor.getStyle(pair.getKey()), true);
+                                i += patterns.get(j).length() - 1;
+                            }
+                        }
+                    } else if (inString) {
+                        lastStyle = "string";
+                        sd.setCharacterAttributes(i, 1, editor.getStyle("string"), true);
+                    } else if (inComment && !inMultiLineComment) {
+                        lastStyle = "comment";
+                        sd.setCharacterAttributes(i, 1, editor.getStyle("comment"), true);
+                    } else if (inComment && inMultiLineComment) {
+                        lastStyle = "multilinecomment";
+                        sd.setCharacterAttributes(i, 1, editor.getStyle("multilinecomment"), true);
+                    }
+                }
+            }
         }
 		editor.getDocument().addUndoableEditListener(this);
 	}
