@@ -55,7 +55,6 @@ public class CBESyntax extends Syntax {
 		ArrayList<String> keyword = new ArrayList<String>();
 		keyword.add("entity");
 		keyword.add("extends");
-		keyword.add("when");
 		keyword.add("this");
 		keyword.add("if");
 		keyword.add("else");
@@ -71,6 +70,8 @@ public class CBESyntax extends Syntax {
 		ArrayList<String> function = new ArrayList<String>();
 		function.add("onTick");
 		function.add("onInit");
+		function.add("onHurt");
+		function.add("onDeath");
 		patterns.put("function", function);
 		
 		ArrayList<String> booleans = new ArrayList<String>();

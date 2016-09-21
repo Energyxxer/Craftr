@@ -1,22 +1,53 @@
 package com.energyxxer.ui;
 
+import java.awt.Color;
+import java.awt.Event;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
+import javax.swing.Timer;
+import javax.swing.event.DocumentEvent.EventType;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
+import javax.swing.text.TabSet;
+import javax.swing.text.TabStop;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
+
 import com.energyxxer.cbe.Tab;
 import com.energyxxer.cbe.TabManager;
+import com.energyxxer.cbe.Window;
 import com.energyxxer.syntax.CBESyntax;
 import com.energyxxer.syntax.Syntax;
 import com.energyxxer.syntax.SyntaxConstants;
 import com.energyxxer.util.StringUtil;
 import com.energyxxer.util.TextLineNumber;
-
-import javax.swing.*;
-import javax.swing.Timer;
-import javax.swing.event.DocumentEvent.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import javax.swing.undo.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
 
 public class CBEEditor extends JScrollPane implements UndoableEditListener, ActionListener {
 	
@@ -159,13 +190,11 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		try {
 			highlightSyntax();
 		} catch (BadLocationException e) {
-			e.printStackTrace();
+			e.printStackTrace(new PrintWriter(Window.consoleout));
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	public void highlightSyntax() throws BadLocationException {
-		editor.getDocument().removeUndoableEditListener(this);
 		Style defaultStyle = StyleContext.
 				   getDefaultStyleContext().
 				   getStyle(StyleContext.DEFAULT_STYLE);
@@ -220,7 +249,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
             for (Map.Entry<String, ArrayList<String>> entry : syntax.getPatterns().entrySet()) {
                 Map.Entry<String, ArrayList<String>> pair = entry;
 
-                @SuppressWarnings("unchecked") ArrayList<String> patterns = pair.getValue();
+                ArrayList<String> patterns = pair.getValue();
                 HashMap<String, Object> rules = syntax.getStyles().get(pair.getKey());
 
 
@@ -261,7 +290,6 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
                 }
             }
         }
-		editor.getDocument().addUndoableEditListener(this);
 	}
 	
 	@Override
@@ -285,8 +313,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 			try {
 				highlightSyntax();
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				e.printStackTrace(new PrintWriter(Window.consoleout));
 			}
 			lastEdit = -1;
 		}

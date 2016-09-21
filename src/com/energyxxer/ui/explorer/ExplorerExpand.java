@@ -1,4 +1,4 @@
-package com.energyxxer.ui;
+package com.energyxxer.ui.explorer;
 
 import java.awt.Color;
 import java.awt.Dimension;

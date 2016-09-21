@@ -44,7 +44,7 @@ public class CBE {
 		
 		Preferences.read();
 		
-		Window.generateProjectList();
+		Window.explorer.generateProjectList();
 	}
 	
 }

@@ -1,125 +1,31 @@
-package com.energyxxer.ui;
+package com.energyxxer.ui.explorer;
+
+import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import com.energyxxer.cbe.Preferences;
 import com.energyxxer.cbe.TabManager;
+import com.energyxxer.cbe.Window;
+import com.energyxxer.ui.common.MenuItems;
+import com.energyxxer.ui.common.MenuItems.FileMenuItem;
 import com.energyxxer.util.ImageManager;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
-public class ExplorerItem extends JPanel {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 2182029271616352961L;
-	
-	JPanel header;
-	JPanel children;
-	String path;
-	ExplorerExpand expand;
-	ExplorerItem parent;
-	
-	public ExplorerItem(File file, ExplorerItem parent) {
-		super(new BorderLayout());
-		this.path = file.getAbsolutePath();
-		this.parent = parent;
-
-		header = new JPanel(new BorderLayout());
-		header.setBackground(Color.WHITE);
-		
-		this.add(header,BorderLayout.NORTH);
-
-		
-		expand = new ExplorerExpand(this);
-		
-		header.add(expand, BorderLayout.WEST);
-		
-		expand.setEnabled(file.isDirectory() && file.listFiles().length > 0);
-
-		ExplorerItemLabel label = new ExplorerItemLabel(file,this);
-		
-		header.add(label,BorderLayout.CENTER);
-		
-		JPanel indentation = new JPanel();
-		indentation.setPreferredSize(new Dimension(15,1));
-		indentation.setBackground(Color.WHITE);
-		this.add(indentation, BorderLayout.WEST);
-
-		
-		children = new JPanel();
-		children.setBackground(Color.WHITE);
-		children.setLayout(new BoxLayout(children,BoxLayout.Y_AXIS));
-		this.add(children, BorderLayout.CENTER);
-		
-		this.updateView();
-		
-		this.setAlignmentX(Component.LEFT_ALIGNMENT);
-	}
-	
-	public void expand() {
-		
-		children.removeAll();
-		
-		File[] childrenFiles = new File(this.path).listFiles();
-		
-		
-		if(childrenFiles != null && childrenFiles.length > 0) {
-			ArrayList<File> files = new ArrayList<File>();
-			for(int i = 0; i < childrenFiles.length; i++) {
-				
-				if(childrenFiles[i].isDirectory()) {
-					files.add(childrenFiles[i]);
-				}
-			}
-			for(int i = 0; i < childrenFiles.length; i++) {
-				
-				if(childrenFiles[i].isFile()) {
-					files.add(childrenFiles[i]);
-				}
-			}
-			
-			for(int i = 0; i < files.size(); i++) {
-				children.add(new ExplorerItem(files.get(i),this));
-			}
-		}
-
-		this.updateNest();
-	}
-	
-	public void collapse() {
-		children.removeAll();
-		
-		this.updateNest();
-	}
-	
-	public void updateNest() {
-
-		this.updateView();
-		if(this.parent != null) {
-			this.parent.updateNest();
-		}
-	}
-	
-	public void updateView() {
-
-		this.children.setMinimumSize(children.getPreferredSize());
-		this.children.setMaximumSize(children.getPreferredSize());
-		this.setMinimumSize(this.getPreferredSize());
-		this.setMaximumSize(this.getPreferredSize());
-		
-		this.revalidate();
-		this.children.revalidate();
-
-		this.repaint();
-	}
-}
-
-class ExplorerItemLabel extends JLabel implements MouseListener, ActionListener {
+public class ExplorerItemLabel extends JLabel implements MouseListener, ActionListener {
 
 	/**
 	 * 
@@ -135,8 +41,6 @@ class ExplorerItemLabel extends JLabel implements MouseListener, ActionListener 
 	public static Color selected_background = new Color(200,220,230);
 	public static Color selected_border = new Color(180,200,210);
 	
-	public static ExplorerItemLabel selectedLabel = null;
-	
 	private ExplorerItem parent;
 	
 	public ExplorerItemLabel(File file,ExplorerItem parent) {
@@ -150,7 +54,7 @@ class ExplorerItemLabel extends JLabel implements MouseListener, ActionListener 
 					this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/project.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				e.printStackTrace(new PrintWriter(Window.consoleout));
 			}
 		} else {
 			if(file.getName().endsWith(".mcbe")) {
@@ -215,13 +119,15 @@ class ExplorerItemLabel extends JLabel implements MouseListener, ActionListener 
 	}
 	
 	public static void setNewSelected(ExplorerItemLabel newSelected) {
-		if(selectedLabel != null) {
-			selectedLabel.selected = false;
-			selectedLabel.repaint();
+		if(Explorer.selectedLabel != null) {
+			Explorer.selectedLabel.selected = false;
+			Explorer.selectedLabel.repaint();
 		}
-		selectedLabel = newSelected;
-		newSelected.selected = true;
-		newSelected.repaint();
+		Explorer.selectedLabel = newSelected;
+		if(newSelected != null) {
+			newSelected.selected = true;
+			newSelected.repaint();
+		}
 	}
 
 	@Override
@@ -261,16 +167,44 @@ class ExplorerItemLabel extends JLabel implements MouseListener, ActionListener 
 				//CBEEditor.editor.setText(s);
 		     }
 		}
+		if(e.isPopupTrigger()) {
+			showContextMenu(e);
+		}
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	public void mouseReleased(MouseEvent e) {
+		setNewSelected(this);
+		if(e.isPopupTrigger()) {
+			showContextMenu(e);
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 	}
+	
+	private void showContextMenu(MouseEvent e) {
+		ExplorerItemPopup menu = new ExplorerItemPopup();
+        menu.show(e.getComponent(), e.getX(), e.getY());
+	}
+}
+
+class ExplorerItemPopup extends JPopupMenu {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7968631495164738852L;
+    public ExplorerItemPopup(){
+    	add(MenuItems.newMenu("New                    "));
+    	addSeparator();
+    	add(new JMenuItem("Open"));
+    	addSeparator();
+    	add(MenuItems.fileItem(FileMenuItem.COPY));
+    	add(MenuItems.fileItem(FileMenuItem.PASTE));
+    	add(MenuItems.fileItem(FileMenuItem.DELETE));
+    	addSeparator();
+    	add(MenuItems.refactorMenu("Refactor"));
+    }
 }

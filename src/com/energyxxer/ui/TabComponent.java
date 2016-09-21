@@ -17,6 +17,8 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 
 import com.energyxxer.cbe.Tab;
@@ -68,14 +70,11 @@ public class TabComponent extends JLabel implements MouseListener {
 		setBorder(BorderFactory.createEmptyBorder(gap+1,5,gap-1,5));
 		
 		addMouseListener(this);
-		
-		
-		//setMaximumSize(new Dimension(getPreferredSize().width+5, 30));
 	}
 	
 	public void setName(String name) {
 		this.name = name;
-		setToolTipText(name);
+		setToolTipText(getLinkedTab().path);
 		
 		if(name.endsWith(".mcbe")) {
 			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/entity.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
@@ -168,13 +167,121 @@ public class TabComponent extends JLabel implements MouseListener {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
+	public void mousePressed(MouseEvent e) {
+		if(e.isPopupTrigger()) {
+			showContextMenu(e);
+		}
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		TabManager.setSelectedTab(this.getLinkedTab());
+	public void mouseReleased(MouseEvent e) {
+		if(e.isPopupTrigger()) {
+			showContextMenu(e);
+		} else if(e.getButton() == MouseEvent.BUTTON1) {
+			TabManager.setSelectedTab(this.getLinkedTab());
+		}
 	}
+	
+	private void showContextMenu(MouseEvent e) {
+		TabPopup menu = new TabPopup(getLinkedTab());
+        menu.show(e.getComponent(), e.getX(), e.getY());
+	}
+}
+
+
+class TabPopup extends JPopupMenu {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7968631495164738852L;
+    public TabPopup(Tab tab){
+    	{
+    		JMenuItem item = new JMenuItem("Close");
+    		item.addActionListener(new ActionListener() {
+    			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					TabManager.closeTab(tab);
+				} 
+				
+			});
+    		add(item);
+    	}
+    	{
+    		JMenuItem item = new JMenuItem("Close Others");
+    		item.addActionListener(new ActionListener() {
+    			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					for(int i = 0; i < TabManager.openTabs.size();) {
+						if(TabManager.openTabs.get(i) != tab) {
+							TabManager.closeTab(TabManager.openTabs.get(i));							
+						} else {
+							i++;
+						}
+					}
+				} 
+				
+			});
+    		add(item);
+    	}
+    	{
+    		JMenuItem item = new JMenuItem("Close Tabs to the Left");
+    		item.addActionListener(new ActionListener() {
+    			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					for(int i = 0; i < TabManager.openTabs.size();) {
+						if(TabManager.openTabs.get(i) == tab) {
+							return;
+						} else {
+							TabManager.closeTab(TabManager.openTabs.get(i));
+						}
+					}
+				} 
+				
+			});
+    		add(item);
+    	}
+    	
+    	{
+    		JMenuItem item = new JMenuItem("Close Tabs to the Right");
+    		item.addActionListener(new ActionListener() {
+    			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					boolean close = false;
+					for(int i = 0; i < TabManager.openTabs.size(); i++) {
+						if(TabManager.openTabs.get(i) == tab) {
+							close = true;
+							continue;
+						} else if(close) {
+							TabManager.closeTab(TabManager.openTabs.get(i));
+							i--;
+						}
+					}
+				} 
+				
+			});
+    		add(item);
+    	}
+    	
+    	addSeparator();
+    	{
+    		JMenuItem item = new JMenuItem("Close All");
+    		item.addActionListener(new ActionListener() {
+    			
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					for(int i = 0; i < TabManager.openTabs.size();) {
+						TabManager.closeTab(TabManager.openTabs.get(i));
+					}
+				} 
+				
+			});
+    		add(item);
+    	}
+    }
 }
 
 class TabCloseButton extends JButton implements ActionListener {
@@ -210,7 +317,7 @@ class TabCloseButton extends JButton implements ActionListener {
     			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/ui/close_hover.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
     		} else this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/ui/close.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
 			
-			if(/*parent.getModel().isRollover() ||*/ getModel().isRollover()) {
+			if(getModel().isRollover()) {
 				setBackground(TabComponent.rollover_background);
 			} else {
 				setBackground(Window.tabList.getBackground());

@@ -20,6 +20,11 @@ public class Tab {
 	
 	public long openedTimeStamp;
 	
+	@Override
+	public String toString() {
+		return "Tab [title=" + linkedTabComponent.name + ", path=" + path + "]";
+	}
+
 	public Tab(String path) {
 		this.path = path;
 		editor = new CBEEditor(this);
@@ -31,7 +36,7 @@ public class Tab {
 			editor.startEditListeners();
 			savedString = s.intern();
 		} catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(new PrintWriter(Window.consoleout));
 		}
 		
 		associate(new TabComponent(this));		
@@ -75,7 +80,7 @@ public class Tab {
 			savedString = editor.editor.getText().intern();
 			linkedTabComponent.setSaved(true);
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			e.printStackTrace();
+			e.printStackTrace(new PrintWriter(Window.consoleout));
 		}
 	}
 }

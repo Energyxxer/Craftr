@@ -12,14 +12,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
-import java.io.File;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -31,18 +32,22 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.energyxxer.ui.ExplorerItem;
+import com.energyxxer.ui.TextAreaOutputStream;
 import com.energyxxer.ui.ToolbarButton;
 import com.energyxxer.ui.ToolbarSeparator;
+import com.energyxxer.ui.common.MenuItems;
+import com.energyxxer.ui.explorer.Explorer;
 import com.energyxxer.util.ImageManager;
 
 public class Window {
+	
+	public static final boolean useConsole = true;
 
 	public static JFrame jframe;
 	
 	public static JMenuBar menuBar;
 	
-	public static JPanel projectList;
+	public static Explorer explorer;
 	public static JPanel tabList;
 
 	public static JPanel edit_area;
@@ -51,6 +56,8 @@ public class Window {
 
 	public static Color defaultColor = new Color(215,215,215);
 	public static Color toolbarColor = new Color(235,235,235);
+	
+	public static OutputStream consoleout = System.out;
 	
 	public Window() {
 		jframe = new JFrame("Command Block Engine");
@@ -64,7 +71,7 @@ public class Window {
 			        UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
+			e.printStackTrace(new PrintStream(consoleout));
 		}
 		
 		menuBar = new JMenuBar();
@@ -80,32 +87,8 @@ public class Window {
 				
 				//--------------------------------------------------
 				
-				JMenu newMenu = new JMenu("New                    ");
-				newMenu.setIcon(new ImageIcon(ImageManager.load("/assets/icons/cbe.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
+				JMenu newMenu = MenuItems.newMenu("New                    ");
 				menu.add(newMenu);
-	
-					//--------------------------------------------------
-				
-					JMenuItem projectItem = new JMenuItem("Project        ",new ImageIcon(ImageManager.load("/assets/icons/project_new.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
-	
-					newMenu.add(projectItem);
-					
-	
-					//--------------------------------------------------
-					
-					newMenu.addSeparator();
-					
-					//--------------------------------------------------
-
-					JMenuItem entityItem = new JMenuItem("Entity",new ImageIcon(ImageManager.load("/assets/icons/entity_new.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
-					
-					newMenu.add(entityItem);
-					
-					//--------------------------------------------------
-					
-					JMenuItem itemItem = new JMenuItem("Item", new ImageIcon(ImageManager.load("/assets/icons/item_new.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
-					
-					newMenu.add(itemItem);
 				
 				//--------------------------------------------------
 				
@@ -171,7 +154,7 @@ public class Window {
 	
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						Window.generateProjectList();
+						Window.explorer.generateProjectList();
 					} 
 					
 				});
@@ -401,7 +384,7 @@ public class Window {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					Window.generateProjectList();
+					Window.explorer.generateProjectList();
 				} 
 				
 			});
@@ -412,17 +395,12 @@ public class Window {
 			JScrollPane sp = new JScrollPane();
 			sp.getViewport().setBackground(Color.BLACK);
 			
-			projectList = new JPanel();
-			projectList.setLayout(new BoxLayout(projectList,BoxLayout.Y_AXIS));
-			projectList.setBackground(Color.WHITE);
-			
-			sp.getViewport().add(projectList);
+			sp.getViewport().add(explorer = new Explorer());
 			sp.setBackground(Color.WHITE);
 			sp.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.WHITE));
 
 			sidebar.add(sp,BorderLayout.CENTER);
 		}
-		
 		
 		edit_area = new JPanel(new BorderLayout());
 		edit_area.setPreferredSize(new Dimension(500,500));
@@ -434,28 +412,68 @@ public class Window {
 		tabList.setBackground(new Color(200,202,205));
 		tabList.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(150,150,150)));
 		edit_area.add(tabList, BorderLayout.NORTH);
-		/*//---
-		JEditorPane editor = new JEditorPane();
 		
-		Document doc = editor.getDocument();
-		doc.putProperty(PlainDocument.tabSizeAttribute, 4);
-		
-		JScrollPane editorScrollPane = new JScrollPane(editor);
-		editor.setFont(new Font("monospaced",0,12));
-		
-		TextLineNumber tln = new TextLineNumber(editor);
-		tln.setForeground(new Color(150,150,150));
-		tln.setCurrentLineForeground(tln.getForeground());
-		
-		editorScrollPane.setRowHeaderView( tln );
-		//---*/
-		//edit_area.add(editor, BorderLayout.CENTER);
-		
+		if(useConsole) {
+			JPanel consoleArea = new JPanel(new BorderLayout());
+			consoleArea.setPreferredSize(new Dimension(0,200));
+			consoleArea.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(150,150,150)));
+			
+			JPanel consoleHeader = new JPanel(new BorderLayout());
+			consoleHeader.setPreferredSize(new Dimension(0,25));
+			consoleHeader.setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
+			
+			JLabel consoleLabel = new JLabel("Java Console");
+			consoleLabel.setFont(new Font("Tahoma",0,12));
+			//consoleLabel.setPreferredSize(new Dimension(0,20));
+			consoleHeader.add(consoleLabel,BorderLayout.WEST);
+			
+			ToolbarButton toggle = new ToolbarButton();
+			toggle.setIcon(new ImageIcon(ImageManager.load("/assets/icons/ui/toggle.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
+			toggle.setToolTipText("Toggle Java Console");
+			
+			toggle.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						if(consoleArea.getPreferredSize().height == 25) {
+							consoleArea.setPreferredSize(new Dimension(0,200));
+						} else {
+							consoleArea.setPreferredSize(new Dimension(0,25));
+						}
+						consoleArea.revalidate();
+						consoleArea.repaint();
+					} catch(Exception err) {
+						err.printStackTrace(new PrintStream(consoleout));
+					}
+				} 
+				
+			});
+			
+			consoleHeader.add(toggle,BorderLayout.EAST);
+			
+			consoleArea.add(consoleHeader, BorderLayout.NORTH);
+			
+			JEditorPane console = new JEditorPane();
+			console.setEditable(false);
+			console.setFont(new Font("monospaced",0,12));
+			console.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+			
+			consoleout = new TextAreaOutputStream(console);
+			System.setOut(new PrintStream(consoleout));
+			
+			JScrollPane consoleScrollPane = new JScrollPane(console);
+			consoleScrollPane.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(150,150,150)));
+			
+			consoleArea.add(consoleScrollPane,BorderLayout.CENTER);
+			
+			edit_area.add(consoleArea, BorderLayout.SOUTH);
+		}
+
 		jframe.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		jframe.setSize(defaultSize);
 		jframe.setPreferredSize(defaultSize);
 		jframe.setVisible(true);
-		//jframe.setIconImage(ImageManager.load("/assets/logo/logo.png").getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
 		
 		List<Image> icons = new ArrayList<Image>();
 		icons.add(ImageManager.load("/assets/logo/logo_icon.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH));
@@ -468,52 +486,6 @@ public class Window {
 		center.y -= jframe.getHeight()/2;
 		jframe.setLocation(center);
 		
-		
-	}
-
-	public static void generateProjectList() {
-		
-		projectList.removeAll();
-		
-		projectList.setLayout(new BoxLayout(projectList,BoxLayout.Y_AXIS));
-		
-		
-		File workspace = new File(Preferences.data.get("workspace_dir"));
-		
-		File[] fileList = workspace.listFiles();
-
-		ArrayList<File> files = new ArrayList<File>();
-		
-		//SORT
-		for(int i = 0; i < fileList.length; i++) {
-			File file = fileList[i];
-			if(file.isDirectory()) {
-				files.add(file);
-				System.out.println("[FOLDER] " + file.getName());
-			}
-		}
-		for(int i = 0; i < fileList.length; i++) {
-			File file = fileList[i];
-			if(file.isFile()) {
-				files.add(file);
-				System.out.println("[FILE] " + file.getName());
-			}
-		}
-		Collections.reverse(files);
-		
-		for(int i = 0; i < files.size(); i++) {
-			
-			projectList.add(new ExplorerItem(files.get(i),null), FlowLayout.LEFT);
-			
-		}
-		
-		
-		projectList.revalidate();
-		projectList.repaint();
-	}
-	
-	@SuppressWarnings("unused")
-	private static void generateProjectTree(JPanel panel, File dir) {
 		
 	}
 }
