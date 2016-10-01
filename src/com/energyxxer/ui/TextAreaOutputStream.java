@@ -6,6 +6,9 @@ import java.io.OutputStream;
 import javax.swing.JEditorPane;
 import javax.swing.SwingUtilities;
 
+/**
+ * An output stream. Used in the java console visible in the window.
+ * */
 public class TextAreaOutputStream extends OutputStream {
 
    private final JEditorPane textArea;

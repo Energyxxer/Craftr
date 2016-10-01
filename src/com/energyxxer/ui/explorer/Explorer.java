@@ -13,6 +13,9 @@ import javax.swing.JPanel;
 
 import com.energyxxer.cbe.Preferences;
 
+/**
+ * The component that shows a list of files in the workspace.
+ * */
 public class Explorer extends JPanel implements MouseListener {
 
 	/**
@@ -34,21 +37,26 @@ public class Explorer extends JPanel implements MouseListener {
 		
 		removeAll();
 		
-		File workspace = new File(Preferences.data.get("workspace_dir"));
+		File workspace = new File(Preferences.get("workspace_dir"));
 		
 		File[] fileList = workspace.listFiles();
+		if(fileList == null) {
+			revalidate();
+			repaint();
+			return;
+		}
 
 		ArrayList<File> files = new ArrayList<File>();
 		
 		for(int i = 0; i < fileList.length; i++) {
 			File file = fileList[i];
-			if(file.isDirectory()) {
+			if(file.isDirectory() && new File(file.getAbsolutePath() + File.separator + ".project").exists()) {
 				files.add(file);
 			}
 		}
 		for(int i = 0; i < fileList.length; i++) {
 			File file = fileList[i];
-			if(file.isFile()) {
+			if(file.isFile() && !file.getName().equals(".project")) {
 				files.add(file);
 			}
 		}
@@ -66,31 +74,22 @@ public class Explorer extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		ExplorerItemLabel.setNewSelected(null);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 }

@@ -1,13 +1,12 @@
-package com.energyxxer.cbe;
+package com.energyxxer.util;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -19,48 +18,38 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import com.energyxxer.util.FileUtil;
+import com.energyxxer.cbe.Window;
 
 /**
- * Allows the user to choose a workspace location for their projects.
+ * Asks the player to input a string. Has support for validation.
  * */
-public class WorkspaceSelector {
-	static String workspace_dir = FileUtil.normalize("C:/Program Files/Command Block Engine/workspace");
-	static boolean initialized = false;
-	
+public class StringPrompt {
 	static JPanel dialog = new JPanel(new BorderLayout());
 	static JPanel instructions = new JPanel();
 	static JPanel input = new JPanel(new BorderLayout());
-	static JTextField textfield = new JTextField(workspace_dir);
-	static JButton browse = new JButton("Browse...");
+	static JTextField textfield = new JTextField("");
+	
+	static StringValidator validator = new StringValidator();
+	
+	static JLabel label = new JLabel("<html>Specify the desired workspace directory.<br>This is where all your projects are going to be saved.</html>");
 
 	static JButton okay = new JButton("OK");
 	static JButton cancel = new JButton("Cancel");
 	
-	public static void initialize() {
-		instructions.setPreferredSize(new Dimension(400,50));
-		
-		instructions.add(new JLabel("<html>Specify the desired workspace directory.<br>This is where all your projects are going to be saved.</html>"),FlowLayout.LEFT);
+	static {		
+		instructions.add(label,FlowLayout.LEFT);
 		dialog.add(instructions,BorderLayout.NORTH);
 		
-		input.setPreferredSize(new Dimension(400,30));
+		input.setPreferredSize(new Dimension(400,25));
 		
-		
-		textfield.setPreferredSize(new Dimension(325,30));
+		textfield.setPreferredSize(new Dimension(400,25));
 		
 		textfield.getDocument().addDocumentListener(new DocumentListener() {
             protected void update() {
-            	File selected = new File(textfield.getText());
             	
-            	boolean valid = true;
-            	
-            	try {
-					selected.getCanonicalPath();
-				} catch (IOException e) {
-					valid = false;
-				}
-            	
-                okay.setEnabled(selected != null && selected.isAbsolute() && valid);
+            	boolean valid = validator.validate(textfield.getText());
+
+                okay.setEnabled(valid);
             }
 
 			@Override
@@ -79,28 +68,16 @@ public class WorkspaceSelector {
 			}
 		});
 		
-		input.add(textfield,BorderLayout.WEST);
-
-		browse.setMargin(new Insets(5,5,5,5));
-		browse.setPreferredSize(new Dimension(75,30));
-		browse.setFocusPainted(false);
-		
-		browse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser jfc = new JFileChooser();
-			    jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		        jfc.setSelectedFile(new File(workspace_dir));
-		        jfc.setDialogTitle("Set workspace location...");
-		        int result = jfc.showSaveDialog(null);
-		        if(result == JFileChooser.APPROVE_OPTION) {
-		        	String filePath = jfc.getSelectedFile().getAbsolutePath();
-		        	workspace_dir = filePath;
-		        	textfield.setText(filePath);
-		        }
+		textfield.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					okay.getActionListeners()[0].actionPerformed(new ActionEvent(okay,0,null));
+				}
 			}
 		});
-
-		input.add(browse,BorderLayout.EAST);
+		
+		input.add(textfield,BorderLayout.WEST);
 
 		dialog.add(input);
 
@@ -125,19 +102,17 @@ public class WorkspaceSelector {
                 pane.setValue(cancel);
             }
         });
-		
-		initialized = true;
 	}
 	
-	public static String prompt() {
-		
-		if(!initialized) {
-			initialize();
-		}
-		
-		int result = JOptionPane.showOptionDialog(Window.jframe, dialog, "Setup workspace", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, new Object[] {okay, cancel}, null);
-		
-		System.out.println(dialog.getComponents());
+	public static String prompt(String title, String prompt, String defaultText) {
+		return prompt(title, prompt, defaultText, new StringValidator());
+	}
+	
+	public static String prompt(String title, String prompt, String defaultText, StringValidator v) {
+		validator = v;
+		label.setText(prompt);
+		textfield.setText(defaultText);
+		int result = JOptionPane.showOptionDialog(Window.jframe, dialog, title, JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, new Object[] {okay, cancel}, null);
 		
 		if(result == JFileChooser.APPROVE_OPTION) {
 			return textfield.getText();

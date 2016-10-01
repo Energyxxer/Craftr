@@ -1,4 +1,4 @@
-package com.energyxxer.ui;
+package com.energyxxer.ui.editor;
 
 import java.awt.Color;
 import java.awt.Event;
@@ -49,6 +49,9 @@ import com.energyxxer.syntax.SyntaxConstants;
 import com.energyxxer.util.StringUtil;
 import com.energyxxer.util.TextLineNumber;
 
+/**
+ * Main text editor of the program. Has support for syntax highlighting, undo, and is linked to abstract tabs.
+ * */
 public class CBEEditor extends JScrollPane implements UndoableEditListener, ActionListener {
 	
 	/**
@@ -63,7 +66,10 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 	public Syntax syntax;
     UndoManagerFix undoManager;
     
-    private long lastEdit;    
+    public EditorHints hints;
+    
+    private long lastEdit;
+    public long lastToolTip = new Date().getTime();
     private Timer timer;
 	
 	public CBEEditor(Tab tab) {
@@ -73,7 +79,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		associatedTab = tab;
 		this.setBorder(BorderFactory.createEmptyBorder());
 
-		setSyntax(CBESyntax.INSTANCE);
+		if(tab.path.endsWith(".mcbi") || tab.path.endsWith(".mcbe")) setSyntax(CBESyntax.INSTANCE);
 		
 		sd = editor.getStyledDocument();
 		
@@ -137,6 +143,8 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		    	TabManager.getSelectedTab().save();
 		    }
 		});
+		
+		//editor.addMouseMotionListener(hints = new EditorHints(this));
 
 		this.setRowHeaderView( tln );
 		
@@ -156,7 +164,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		        Map.Entry pair = (Map.Entry)it.next();
 		        System.out.println(pair.getKey() + " = " + pair.getValue());
 		        editor.removeStyle((String) pair.getKey());
-		        it.remove(); // avoids a ConcurrentModificationException
+		        it.remove();
 		    }
 		}
 		
@@ -178,9 +186,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 	        	} else if(pair2.getKey() == "italic") {
 	        		StyleConstants.setItalic(style, (boolean) pair2.getValue());
 	        	}
-	        	//it2.remove(); // avoids a ConcurrentModificationException
 	        }
-	        //it.remove(); // avoids a ConcurrentModificationException
 	    }
 	}
 	
@@ -193,8 +199,20 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 			e.printStackTrace(new PrintWriter(Window.consoleout));
 		}
 	}
+	
+	public String getText() {
+		try {
+			return editor.getStyledDocument().getText(0, editor.getStyledDocument().getLength());
+		} catch (BadLocationException e) {
+			e.printStackTrace(new PrintWriter(Window.consoleout));
+			return null;
+		}
+	}
 
 	public void highlightSyntax() throws BadLocationException {
+		
+		if(this.syntax == null) return;
+		
 		Style defaultStyle = StyleContext.
 				   getDefaultStyleContext().
 				   getStyle(StyleContext.DEFAULT_STYLE);

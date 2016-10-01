@@ -9,9 +9,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
 
-import com.energyxxer.ui.CBEEditor;
 import com.energyxxer.ui.TabComponent;
+import com.energyxxer.ui.editor.CBEEditor;
 
+/**
+ * Concept of an open tab in the interface. Contains
+ * a component that represents the clickable tab element.
+ * */
 public class Tab {
 	private TabComponent linkedTabComponent;
 	public String path;
@@ -68,6 +72,10 @@ public class Tab {
 			boolean newIsSaved = editor.editor.getText().intern() == savedString || savedString == null;
 			linkedTabComponent.setSaved(newIsSaved);
 		}
+	}
+	
+	public void updateName() {
+		linkedTabComponent.setName(new File(path).getName());
 	}
 	
 	public void save() {

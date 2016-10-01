@@ -27,6 +27,9 @@ import com.energyxxer.cbe.Window;
 import com.energyxxer.util.ImageManager;
 import com.energyxxer.util.StringUtil;
 
+/**
+ * Representation of a tab in the interface.
+ * */
 public class TabComponent extends JLabel implements MouseListener {
 	/**
 	 * 

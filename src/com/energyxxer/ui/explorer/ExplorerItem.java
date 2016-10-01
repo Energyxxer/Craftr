@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+/**
+ * An explorer item. Can contain multiple explorer items.
+ * */
 public class ExplorerItem extends JPanel {
 
 	/**
@@ -77,7 +80,7 @@ public class ExplorerItem extends JPanel {
 			}
 			for(int i = 0; i < childrenFiles.length; i++) {
 				
-				if(childrenFiles[i].isFile()) {
+				if(childrenFiles[i].isFile() && !childrenFiles[i].getName().equals(".project")) {
 					files.add(childrenFiles[i]);
 				}
 			}

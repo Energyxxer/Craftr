@@ -12,11 +12,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -32,6 +34,7 @@ import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.energyxxer.cbe.parsing.CBEParser;
 import com.energyxxer.ui.TextAreaOutputStream;
 import com.energyxxer.ui.ToolbarButton;
 import com.energyxxer.ui.ToolbarSeparator;
@@ -39,6 +42,9 @@ import com.energyxxer.ui.common.MenuItems;
 import com.energyxxer.ui.explorer.Explorer;
 import com.energyxxer.util.ImageManager;
 
+/**
+ * Literally what it sounds like.
+ * */
 public class Window {
 	
 	public static final boolean useConsole = true;
@@ -58,6 +64,7 @@ public class Window {
 	public static Color toolbarColor = new Color(235,235,235);
 	
 	public static OutputStream consoleout = System.out;
+	public static final int CONSOLE_HEIGHT = 200;
 	
 	public Window() {
 		jframe = new JFrame("Command Block Engine");
@@ -351,7 +358,17 @@ public class Window {
 				ToolbarButton button = new ToolbarButton();
 				button.setIcon(new ImageIcon(ImageManager.load("/assets/icons/export.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
 				button.setToolTipText("Generate Structure");
-				
+				button.addActionListener(new AbstractAction() {
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = -6494932842671220561L;
+
+					public void actionPerformed(ActionEvent arg0) {
+						if(Explorer.selectedLabel == null) return;
+						CBEParser.parse(new File(Explorer.selectedLabel.parent.path));
+					}
+				});
 				toolbar.add(button);
 				
 			}
@@ -415,7 +432,7 @@ public class Window {
 		
 		if(useConsole) {
 			JPanel consoleArea = new JPanel(new BorderLayout());
-			consoleArea.setPreferredSize(new Dimension(0,200));
+			consoleArea.setPreferredSize(new Dimension(0,CONSOLE_HEIGHT));
 			consoleArea.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(150,150,150)));
 			
 			JPanel consoleHeader = new JPanel(new BorderLayout());
@@ -437,7 +454,7 @@ public class Window {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						if(consoleArea.getPreferredSize().height == 25) {
-							consoleArea.setPreferredSize(new Dimension(0,200));
+							consoleArea.setPreferredSize(new Dimension(0,CONSOLE_HEIGHT));
 						} else {
 							consoleArea.setPreferredSize(new Dimension(0,25));
 						}

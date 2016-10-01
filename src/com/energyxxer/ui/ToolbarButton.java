@@ -14,6 +14,9 @@ import javax.swing.JButton;
 import com.energyxxer.cbe.Window;
 import com.energyxxer.util.ImageManager;
 
+/**
+ * Represents a single button in the toolbar.
+ * */
 public class ToolbarButton extends JButton {
 
 	public static Color hoverBackgroundColor = new Color(255,255,255,128);

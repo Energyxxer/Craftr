@@ -6,6 +6,9 @@ import java.util.HashMap;
 
 import com.energyxxer.util.MinecraftConstants;
 
+/**
+ * Defines what and how character sequences should be highlighted in a text editor.
+ * */
 public class CBESyntax extends Syntax {
 	public static HashMap<String, ArrayList<String>> patterns = new HashMap<String,ArrayList<String>>();
 	public static HashMap<String, HashMap<String,Object>> styles = new HashMap<String,HashMap<String,Object>>();
@@ -63,6 +66,7 @@ public class CBESyntax extends Syntax {
 		keyword.add("int");
 		keyword.add("float");
 		keyword.add("boolean");
+		keyword.add("public");
 		keyword.add("static");
 		keyword.add("synchronized");
 		patterns.put("keyword", keyword);

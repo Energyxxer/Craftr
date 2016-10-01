@@ -12,6 +12,9 @@ import javax.swing.JButton;
 
 import com.energyxxer.util.ImageManager;
 
+/**
+ * Little button next to explorer items that can be expanded.
+ * */
 public class ExplorerExpand extends JButton {
 
 	/**

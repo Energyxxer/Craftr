@@ -1,10 +1,15 @@
 package com.energyxxer.cbe;
 
 import java.awt.BorderLayout;
+import java.io.File;
 import java.util.ArrayList;
 
 import com.energyxxer.ui.TabComponent;
 
+/**
+ * Interface that allows communication between parts of
+ * the program and the tab list.
+ * */
 public class TabManager {
 	
 	public static ArrayList<Tab> openTabs = new ArrayList<Tab>();
@@ -84,5 +89,24 @@ public class TabManager {
 	public static Tab getSelectedTab() {
 		if(selectedTab == null) return null;
 		return selectedTab.getLinkedTab();
+	}
+	
+	public static void renameTab(String oldPath, String newPath) {
+		File newFile = new File(newPath);
+		if(newFile.isFile()) {
+			for(int i = 0; i < openTabs.size(); i++) {
+				if(openTabs.get(i).path.equals(oldPath)) {
+					openTabs.get(i).path = newPath;
+					openTabs.get(i).updateName();
+				}
+			}
+		} else if(newFile.isDirectory()) {
+			for(int i = 0; i < openTabs.size(); i++) {
+				if(openTabs.get(i).path.startsWith(oldPath)) {
+					openTabs.get(i).path = newPath + openTabs.get(i).path.substring(oldPath.length());
+					openTabs.get(i).updateName();
+				}
+			}
+		}
 	}
 }

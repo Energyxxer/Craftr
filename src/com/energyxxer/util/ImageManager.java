@@ -8,6 +8,9 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
+/**
+ * Loads images and remembers them.
+ * */
 public class ImageManager {
 	public static HashMap<String, BufferedImage> loadedImages = new HashMap<String, BufferedImage>();
 	private static boolean initialized = false;

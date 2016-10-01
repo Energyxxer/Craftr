@@ -8,6 +8,9 @@ import javax.swing.JPanel;
 
 import com.energyxxer.cbe.Window;
 
+/**
+ * It's literally just a line.
+ * */
 public class ToolbarSeparator extends JPanel {
 
 	/**
