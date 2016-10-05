@@ -1,4 +1,4 @@
-package com.energyxxer.cbe.parsing;
+package com.energyxxer.cbe.analysis;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,15 +6,18 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.regex.Matcher;
 
 import com.energyxxer.cbe.Window;
+import com.energyxxer.cbe.analysis.token.Token;
+import com.energyxxer.cbe.analysis.token.TokenType;
 
 /**
  * For tokenizing CBE files. At the moment, all tokens go
  * through the static method tokenStream, though it will later be
  * replaced with a variable argument to which to send tokens.
  * */
-public class CBEParser {
+public class Analyzer {
 	public static void parse(File project) {
 		if(!project.exists() || !project.isDirectory()) return;
 		File[] files = project.listFiles();
@@ -25,16 +28,15 @@ public class CBEParser {
 				try {
 					byte[] encoded = Files.readAllBytes(Paths.get(files[i].getPath()));
 					String s = new String(encoded);
-					tokenize(files[i].getName(),s);
+					tokenize(files[i],s);
 				} catch (IOException e) {
 					e.printStackTrace(new PrintWriter(Window.consoleout));
 				}
 			}
 		}
 	}
-	public static void tokenize(String filename, String str) {
-		str = str.replaceAll("\r\n", "\n");
-		//System.out.println(str.replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r").replaceAll("\t", "\\\\t"));
+	public static void tokenize(File file, String str) {
+		str = str.replaceAll("\r\n", "\n").replaceAll(Matcher.quoteReplacement("\t"), "    ");
 		
 		String token = null;
 		int line = 0;
@@ -60,7 +62,7 @@ public class CBEParser {
 			
 			//CHECK FOR SPECIAL CASES FIRST
 			if(!isString && Arrays.asList(LangConstants.stringLiteral).indexOf(c) >= 0) {
-				if(token != null) tokenStream(new Token(token,tokenType,filename,line,column));
+				if(token != null) tokenStream(new Token(token,tokenType,file,line,column));
 				
 				line = cLine;
 				column = cColumn;
@@ -77,7 +79,7 @@ public class CBEParser {
 					continue;
 				} else if(Arrays.asList(LangConstants.stringLiteral).indexOf(c) >= 0) {
 					token += c;
-					tokenStream(new Token(token,tokenType,filename,line,column));
+					tokenStream(new Token(token,tokenType,file,line,column));
 					token = tokenType = null;
 					isString = false;
 					continue;
@@ -87,7 +89,7 @@ public class CBEParser {
 				}
 			}
 			if(str.substring(i).startsWith(LangConstants.comment[0])) {
-				if(token != null) tokenStream(new Token(token,tokenType,filename,line,column));
+				if(token != null) tokenStream(new Token(token,tokenType,file,line,column));
 				token = null;
 				tokenType = TokenType.COMMENT;
 				if(str.substring(i).indexOf("\n") >= 0) {
@@ -96,7 +98,7 @@ public class CBEParser {
 					line = cLine;
 					column = cColumn;
 					
-					tokenStream(new Token(token,tokenType,filename,line,column));
+					tokenStream(new Token(token,tokenType,file,line,column));
 					token = tokenType = null;
 					
 					cLine++;
@@ -110,14 +112,14 @@ public class CBEParser {
 					line = cLine;
 					column = cColumn;
 					
-					tokenStream(new Token(token,tokenType,filename,line,column));
+					tokenStream(new Token(token,tokenType,file,line,column));
 					token = tokenType = null;
 					return;
 				}
 			}
 			if(!isComment && str.substring(i).startsWith(LangConstants.multilinecomment[0])) {
 				isComment = true;
-				if(token != null) tokenStream(new Token(token,tokenType,filename,line,column));
+				if(token != null) tokenStream(new Token(token,tokenType,file,line,column));
 				
 				line = cLine;
 				column = cColumn;
@@ -129,7 +131,7 @@ public class CBEParser {
 				if(str.substring(i).startsWith(LangConstants.multilinecomment[1])) {
 					isComment = false;
 					token += LangConstants.multilinecomment[1];
-					tokenStream(new Token(token,tokenType,filename,line,column));
+					tokenStream(new Token(token,tokenType,file,line,column));
 					i += LangConstants.multilinecomment[1].length()-1;
 					token = tokenType = null;
 				} else {
@@ -139,32 +141,32 @@ public class CBEParser {
 			}
 			for(int j = 0; j < LangConstants.operators.length; j++) {
 				if(str.substring(i).startsWith(LangConstants.operators[j])) {
-					if(token != null) tokenStream(new Token(token,tokenType,filename,line,column));
+					if(token != null) tokenStream(new Token(token,tokenType,file,line,column));
 					tokenType = TokenType.OPERATOR;
 					
 					line = cLine;
 					column = cColumn;
 					
-					tokenStream(new Token(LangConstants.operators[j],tokenType,filename,line,column));
+					tokenStream(new Token(LangConstants.operators[j],tokenType,file,line,column));
 					token = tokenType = null;
 					i += LangConstants.operators[j].length() - 1;
 					continue mainLoop;
 				}
 			}
 			if(Arrays.asList(LangConstants.end_of_statement).indexOf(c) >= 0) {
-				if(token != null) tokenStream(new Token(token,tokenType,filename,line,column));
+				if(token != null) tokenStream(new Token(token,tokenType,file,line,column));
 				tokenType = TokenType.END_OF_STATEMENT;
 				
 				line = cLine;
 				column = cColumn;
 				
-				tokenStream(new Token(c,tokenType,filename,line,column));
+				tokenStream(new Token(c,tokenType,file,line,column));
 				token = tokenType = null;
 				continue;
 			}
 			if(Arrays.asList(LangConstants.digits).indexOf(c) >= 0) {
 				if(!isNumber && token != null) {
-					tokenStream(new Token(token,tokenType,filename,line,column));
+					tokenStream(new Token(token,tokenType,file,line,column));
 					token = tokenType = null;
 				}
 				isNumber = true;
@@ -179,7 +181,7 @@ public class CBEParser {
 				token += c;
 				continue;
 			} else if(isNumber) {
-				if(token != null) tokenStream(new Token(token,tokenType,filename,line,column));
+				if(token != null) tokenStream(new Token(token,tokenType,file,line,column));
 				token = tokenType = null;
 				isNumber = false;
 			}
@@ -187,7 +189,7 @@ public class CBEParser {
 			
 			if(Arrays.asList(LangConstants.whitespace).indexOf(c) >= 0) {
 				if(token != null) {
-					tokenStream(new Token(token,filename,line,column));
+					tokenStream(new Token(token,file,line,column));
 				}
 				token = tokenType = null;
 			} else if(token == null) {
@@ -199,7 +201,7 @@ public class CBEParser {
 			} else if(alphanumeric == (Arrays.asList(LangConstants.alphanumeric).indexOf(c) >= 0)) {
 				token += c;
 			} else if(alphanumeric != (Arrays.asList(LangConstants.alphanumeric).indexOf(c) >= 0)) {
-				tokenStream(new Token(token,filename,line,column));
+				tokenStream(new Token(token,file,line,column));
 				token = c;
 				
 				line = cLine;
@@ -207,6 +209,11 @@ public class CBEParser {
 				
 			}
 			alphanumeric = Arrays.asList(LangConstants.alphanumeric).indexOf(c) >= 0;
+			if(i >= str.length()-1) {
+				if(token != null) tokenStream(new Token(token,file,line,column));
+				
+				tokenStream(new Token("",TokenType.END_OF_FILE,file,cLine,cColumn+1));
+			}
 		}
 	}
 	public static void tokenStream(Token token) {

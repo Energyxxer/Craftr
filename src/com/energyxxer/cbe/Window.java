@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +32,17 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
-import com.energyxxer.cbe.parsing.CBEParser;
-import com.energyxxer.ui.TextAreaOutputStream;
+import com.energyxxer.cbe.analysis.Analyzer;
 import com.energyxxer.ui.ToolbarButton;
 import com.energyxxer.ui.ToolbarSeparator;
 import com.energyxxer.ui.common.MenuItems;
 import com.energyxxer.ui.explorer.Explorer;
 import com.energyxxer.util.ImageManager;
+import com.energyxxer.util.out.MultiOutputStream;
+import com.energyxxer.util.out.TextAreaOutputStream;
 
 /**
  * Literally what it sounds like.
@@ -63,7 +65,8 @@ public class Window {
 	public static Color defaultColor = new Color(215,215,215);
 	public static Color toolbarColor = new Color(235,235,235);
 	
-	public static OutputStream consoleout = System.out;
+	public static PrintStream consoleout = new PrintStream(System.out);
+	public static JEditorPane console;
 	public static final int CONSOLE_HEIGHT = 200;
 	
 	public Window() {
@@ -78,7 +81,7 @@ public class Window {
 			        UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
-			e.printStackTrace(new PrintStream(consoleout));
+			e.printStackTrace(consoleout);
 		}
 		
 		menuBar = new JMenuBar();
@@ -366,7 +369,7 @@ public class Window {
 
 					public void actionPerformed(ActionEvent arg0) {
 						if(Explorer.selectedLabel == null) return;
-						CBEParser.parse(new File(Explorer.selectedLabel.parent.path));
+						Analyzer.parse(new File(Explorer.selectedLabel.parent.path));
 					}
 				});
 				toolbar.add(button);
@@ -461,7 +464,7 @@ public class Window {
 						consoleArea.revalidate();
 						consoleArea.repaint();
 					} catch(Exception err) {
-						err.printStackTrace(new PrintStream(consoleout));
+						err.printStackTrace();
 					}
 				} 
 				
@@ -471,13 +474,26 @@ public class Window {
 			
 			consoleArea.add(consoleHeader, BorderLayout.NORTH);
 			
-			JEditorPane console = new JEditorPane();
+			console = new JEditorPane();
 			console.setEditable(false);
 			console.setFont(new Font("monospaced",0,12));
 			console.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 			
-			consoleout = new TextAreaOutputStream(console);
-			System.setOut(new PrintStream(consoleout));
+			console.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
+			
+			console.addHyperlinkListener(new HyperlinkListener() {
+			    public void hyperlinkUpdate(HyperlinkEvent e) {
+			        if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			        	String path = e.getURL().toString().substring(7, e.getURL().toString().lastIndexOf('?'));
+			        	String location = e.getURL().toString().substring(e.getURL().toString().lastIndexOf('?')+1);
+			        	TabManager.openTab(path,Integer.parseInt(location.split(":")[0]),Integer.parseInt(location.split(":")[1]));
+			        }
+			    }
+			});
+
+			consoleout = new PrintStream(new TextAreaOutputStream(console));
+			System.setOut(new PrintStream(new MultiOutputStream(consoleout,System.out)));
+			System.setErr(new PrintStream(new MultiOutputStream(consoleout,System.err)));
 			
 			JScrollPane consoleScrollPane = new JScrollPane(console);
 			consoleScrollPane.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(150,150,150)));

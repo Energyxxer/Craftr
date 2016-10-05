@@ -212,13 +212,11 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 	public void highlightSyntax() throws BadLocationException {
 		
 		if(this.syntax == null) return;
-		
 		Style defaultStyle = StyleContext.
-				   getDefaultStyleContext().
-				   getStyle(StyleContext.DEFAULT_STYLE);
+				getDefaultStyleContext().
+				getStyle(StyleContext.DEFAULT_STYLE);
 		
 		sd.setCharacterAttributes(0, sd.getLength(), defaultStyle, true);
-		
 		
 		String text = sd.getText(0, sd.getLength());
 		
@@ -229,6 +227,9 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		String lastStyle = null;
 		
 		mainIteration: for(int i = 0; i < text.length(); i++) {
+			
+			String sub = text.substring(i);
+			
 			if(inString) {
 				if(text.charAt(i) == '\\') {
 	        		lastStyle = "escape";
@@ -238,7 +239,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 				}
 				ArrayList<String> stringPatterns = syntax.getPatterns().get("string");
                 for (String stringPattern : stringPatterns) {
-                    if (text.substring(i).startsWith(stringPattern)) {
+                    if (sub.startsWith(stringPattern)) {
                         inString = false;
                         lastStyle = "string";
                         sd.setCharacterAttributes(i, stringPattern.length(), editor.getStyle("string"), true);
@@ -252,16 +253,17 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 				}
 			}
 			if(text.charAt(i) == '.') {
-				if(!inComment && !inString && lastStyle.equals("digit")) {
+				if(!inComment && !inString && lastStyle != null && lastStyle.equals("digit")) {
 					sd.setCharacterAttributes(i, 1, editor.getStyle("digit"), true);
 					continue mainIteration;
 				}
 			}
 			if(inMultiLineComment) {
-				if(text.substring(i).startsWith(syntax.getPatterns().get("multilinecomment").get(1))) {
+				if(sub.startsWith(syntax.getPatterns().get("multilinecomment").get(1))) {
 					inComment = (inMultiLineComment = false);
 					sd.setCharacterAttributes(i, syntax.getPatterns().get("multilinecomment").get(1).length(), editor.getStyle("multilinecomment"), true);
 					i += syntax.getPatterns().get("multilinecomment").get(1).length();
+					continue mainIteration;
 				}
 			}
             for (Map.Entry<String, ArrayList<String>> entry : syntax.getPatterns().entrySet()) {
@@ -272,8 +274,9 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 
 
                 for (int j = 0; j < patterns.size(); j++) {
+                	String pattern = patterns.get(j);
                     if (!inComment && !inString) {
-                        if (text.substring(i).startsWith(patterns.get(j))) {
+                        if (sub.startsWith(pattern)) {
                             if (pair.getKey().equals("comment")) {
                                 inComment = true;
                             }
@@ -288,11 +291,13 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
                                     lastStyle = pair.getKey();
                                     sd.setCharacterAttributes(i, patterns.get(j).length(), editor.getStyle(pair.getKey()), true);
                                     i += patterns.get(j).length() - 1;
+                                    continue mainIteration;
                                 }
                             } else {
                                 lastStyle = pair.getKey();
                                 sd.setCharacterAttributes(i, patterns.get(j).length(), editor.getStyle(pair.getKey()), true);
                                 i += patterns.get(j).length() - 1;
+                                continue mainIteration;
                             }
                         }
                     } else if (inString) {

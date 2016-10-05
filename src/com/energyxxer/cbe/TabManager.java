@@ -16,15 +16,38 @@ public class TabManager {
 	
 	private static TabComponent selectedTab = null;
 	
+	public static void openTab(String path, int line, int column) {
+		openTab(path);
+		selectLocation(selectedTab.getLinkedTab(), line, column);
+	}
+	
 	public static void openTab(String path) {
 		for(int i = 0; i < openTabs.size(); i++) {
-			if(openTabs.get(i).path == path) {
+			if(openTabs.get(i).path.equals(path)) {
 				setSelectedTab(openTabs.get(i));
 				return;
 			}
 		}
 		openTabs.add(new Tab(path));
 		setSelectedTab(openTabs.get(openTabs.size()-1));
+	}
+	
+	public static void selectLocation(Tab tab, int line, int column) {
+		int l = 1;
+		int c = 1;
+		for(int i = 0; i < tab.editor.getText().length(); i++) {
+			if(l == line && c == column) {
+				tab.editor.editor.requestFocus();
+				tab.editor.editor.setCaretPosition(i);
+				return;
+			}
+			if(tab.editor.getText().charAt(i) == '\n') {
+				l++;
+				c = 1;
+			} else {
+				c++;
+			}
+		}
 	}
 	
 	public static void closeTab(Tab tab) {

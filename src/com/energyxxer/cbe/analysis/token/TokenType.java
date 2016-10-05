@@ -1,6 +1,8 @@
-package com.energyxxer.cbe.parsing;
+package com.energyxxer.cbe.analysis.token;
 
 import java.util.Arrays;
+
+import com.energyxxer.cbe.analysis.LangConstants;
 
 /**
  * Utility class containing all token types, and a
@@ -16,7 +18,6 @@ public class TokenType {
 	public static final String BRACE = "BRACE"; //(, ), {, }...
 	public static final String DATA_TYPE = "DATA_TYPE"; //int, float, string, Region...
 	public static final String OPERATOR = "OPERATOR"; //*,+,++,>,<...
-	public static final String END_OF_STATEMENT = "END_OF_STATEMENT"; //;
 	public static final String STATEMENT = "STATEMENT"; // if, else...
 	public static final String COMMENT = "COMMENT"; // //stuff
 	public static final String DOT = "DOT"; //this[.]field...
@@ -25,6 +26,8 @@ public class TokenType {
 	public static final String STRING_LITERAL = "STRING_LITERAL"; // "STRING LITERAL"
 	public static final String BOOLEAN = "BOOLEAN"; //true, false
 	public static final String IDENTIFIER = "IDENTIFIER"; //Anything else
+	public static final String END_OF_STATEMENT = "END_OF_STATEMENT"; //;
+	public static final String END_OF_FILE = "END_OF_FILE"; //End of file
 	
 	public static String getTypeOf(String token) {
 		String[][] patterns = {LangConstants.qualifiers,LangConstants.unit_types,LangConstants.unit_actions,LangConstants.braces,LangConstants.data_types,LangConstants.statements,LangConstants.dots,LangConstants.commas,LangConstants.booleans};

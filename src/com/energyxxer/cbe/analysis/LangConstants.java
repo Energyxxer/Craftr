@@ -1,4 +1,4 @@
-package com.energyxxer.cbe.parsing;
+package com.energyxxer.cbe.analysis;
 
 /**
  * Contains most of the language's token patterns.
