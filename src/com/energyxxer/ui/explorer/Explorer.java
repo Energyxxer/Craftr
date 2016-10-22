@@ -15,7 +15,7 @@ import com.energyxxer.cbe.Preferences;
 
 /**
  * The component that shows a list of files in the workspace.
- * */
+ */
 public class Explorer extends JPanel implements MouseListener {
 
 	/**
@@ -23,51 +23,51 @@ public class Explorer extends JPanel implements MouseListener {
 	 */
 	private static final long serialVersionUID = -9100022225860900968L;
 
-	public static ExplorerItemLabel selectedLabel = null;
-	
+	public static ArrayList<ExplorerItemLabel> selectedLabels = new ArrayList<ExplorerItemLabel>();
+
 	public Explorer() {
 		super();
-		setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBackground(Color.WHITE);
-		
+
 		this.addMouseListener(this);
 	}
-	
+
 	public void generateProjectList() {
-		
+
 		removeAll();
-		
+
 		File workspace = new File(Preferences.get("workspace_dir"));
-		
+
 		File[] fileList = workspace.listFiles();
-		if(fileList == null) {
+		if (fileList == null) {
 			revalidate();
 			repaint();
 			return;
 		}
 
 		ArrayList<File> files = new ArrayList<File>();
-		
-		for(int i = 0; i < fileList.length; i++) {
+
+		for (int i = 0; i < fileList.length; i++) {
 			File file = fileList[i];
-			if(file.isDirectory() && new File(file.getAbsolutePath() + File.separator + ".project").exists()) {
+			if (file.isDirectory() && new File(file.getAbsolutePath() + File.separator + ".project").exists()) {
 				files.add(file);
 			}
 		}
-		for(int i = 0; i < fileList.length; i++) {
+		for (int i = 0; i < fileList.length; i++) {
 			File file = fileList[i];
-			if(file.isFile() && !file.getName().equals(".project")) {
+			if (file.isFile() && !file.getName().equals(".project")) {
 				files.add(file);
 			}
 		}
 		Collections.reverse(files);
-		
-		for(int i = 0; i < files.size(); i++) {
-			
-			add(new ExplorerItem(files.get(i),null), FlowLayout.LEFT);
-			
+
+		for (int i = 0; i < files.size(); i++) {
+
+			add(new ExplorerItem(files.get(i), null), FlowLayout.LEFT);
+
 		}
-		
+
 		revalidate();
 		repaint();
 	}
@@ -85,8 +85,8 @@ public class Explorer extends JPanel implements MouseListener {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
-		ExplorerItemLabel.setNewSelected(null);
+	public void mousePressed(MouseEvent e) {
+		ExplorerItemLabel.setNewSelected(null, false);
 	}
 
 	@Override

@@ -3,185 +3,240 @@ package com.energyxxer.util;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.energyxxer.cbe.lang.Block;
+import com.energyxxer.cbe.lang.Dimension;
+import com.energyxxer.cbe.lang.Effect;
+import com.energyxxer.cbe.lang.Enchantment;
+import com.energyxxer.cbe.lang.Gamemode;
+import com.energyxxer.cbe.lang.Particle;
+
 /**
  * A long and painfully written list of all things Minecraft.
- * */
+ */
 public class MinecraftConstants {
+	public static ArrayList<String> entities_old = new ArrayList<String>();
 	public static ArrayList<String> entities = new ArrayList<String>();
-	public static ArrayList<String> entities_new = new ArrayList<String>();
-	
+	public static ArrayList<String> block_enums = new ArrayList<String>();
+	public static ArrayList<String> gamemode_enums = new ArrayList<String>();
+	public static ArrayList<String> effect_enums = new ArrayList<String>();
+	public static ArrayList<String> particle_enums = new ArrayList<String>();
+	public static ArrayList<String> enchantment_enums = new ArrayList<String>();
+	public static ArrayList<String> dimension_enums = new ArrayList<String>();
+
 	static {
-		entities.add("Player");
-		entities.add("Bat");
-		entities.add("Chicken");
-		entities.add("Cow");
-		entities.add("MushroomCow");
-		entities.add("Pig");
-		entities.add("Rabbit");
-		entities.add("Sheep");
-		entities.add("Squid");
-		entities.add("Villager");
-		entities.add("Enderman");
-		entities.add("PolarBear");
-		entities.add("Spider");
-		entities.add("CaveSpider");
-		entities.add("PigZombie");
-		entities.add("Blaze");
-		entities.add("Creeper");
-		entities.add("Endermite");
-		entities.add("Ghast");
-		entities.add("Guardian");
-		entities.add("LavaSlime");
-		entities.add("Shulker");
-		entities.add("Silverfish");
-		entities.add("Skeleton");
-		entities.add("Slime");
-		entities.add("Witch");
-		entities.add("Zombie");
-		entities.add("EntityHorse");
-		entities.add("Ozelot");
-		entities.add("Wolf");
-		entities.add("VillagerGolem");
-		entities.add("SnowMan");
-		entities.add("EnderDragon");
-		entities.add("WitherBoss");
-		entities.add("Giant");
-		entities.add("FallingSand");
-		entities.add("PrimedTnt");
-		entities.add("Boat");
-		entities.add("MinecartRideable");
-		entities.add("MinecartChest");
-		entities.add("MinecartCommandBlock");
-		entities.add("MinecartFurnace");
-		entities.add("MinecartHopper");
-		entities.add("MinecartTnt");
-		entities.add("MinecartSpawner");
-		entities.add("SmallFireball");
-		entities.add("DragonFireball");
-		entities.add("Fireball");
-		entities.add("SpectralArrow");
-		entities.add("Arrow");
-		entities.add("ThrownExpBottle");
-		entities.add("ThrownEgg");
-		entities.add("ThrownEnderpearl");
-		entities.add("EyeOfEnderSignal");
-		entities.add("Snowball");
-		entities.add("ThrownPotion");
-		entities.add("WitherSkull");
-		entities.add("ArmorStand");
-		entities.add("EnderCrystal");
-		entities.add("ItemFrame");
-		entities.add("LeashKnot");
-		entities.add("Painting");
-		entities.add("XPOrb");
-		entities.add("Item");
-		entities.add("LightningBolt");
-		entities.add("FireworksRocketEntity");
-		entities.add("AreaEffectCloud");
+		entities_old.add("Player");
+		entities_old.add("Bat");
+		entities_old.add("Chicken");
+		entities_old.add("Cow");
+		entities_old.add("MushroomCow");
+		entities_old.add("Pig");
+		entities_old.add("Rabbit");
+		entities_old.add("Sheep");
+		entities_old.add("Squid");
+		entities_old.add("Villager");
+		entities_old.add("Enderman");
+		entities_old.add("PolarBear");
+		entities_old.add("Spider");
+		entities_old.add("CaveSpider");
+		entities_old.add("PigZombie");
+		entities_old.add("Blaze");
+		entities_old.add("Creeper");
+		entities_old.add("Endermite");
+		entities_old.add("Ghast");
+		entities_old.add("Guardian");
+		entities_old.add("LavaSlime");
+		entities_old.add("Shulker");
+		entities_old.add("Silverfish");
+		entities_old.add("Skeleton");
+		entities_old.add("Slime");
+		entities_old.add("Witch");
+		entities_old.add("Zombie");
+		entities_old.add("EntityHorse");
+		entities_old.add("Ozelot");
+		entities_old.add("Wolf");
+		entities_old.add("VillagerGolem");
+		entities_old.add("SnowMan");
+		entities_old.add("EnderDragon");
+		entities_old.add("WitherBoss");
+		entities_old.add("Giant");
+		entities_old.add("FallingSand");
+		entities_old.add("PrimedTnt");
+		entities_old.add("Boat");
+		entities_old.add("MinecartRideable");
+		entities_old.add("MinecartChest");
+		entities_old.add("MinecartCommandBlock");
+		entities_old.add("MinecartFurnace");
+		entities_old.add("MinecartHopper");
+		entities_old.add("MinecartTnt");
+		entities_old.add("MinecartSpawner");
+		entities_old.add("SmallFireball");
+		entities_old.add("DragonFireball");
+		entities_old.add("Fireball");
+		entities_old.add("SpectralArrow");
+		entities_old.add("Arrow");
+		entities_old.add("ThrownExpBottle");
+		entities_old.add("ThrownEgg");
+		entities_old.add("ThrownEnderpearl");
+		entities_old.add("EyeOfEnderSignal");
+		entities_old.add("Snowball");
+		entities_old.add("ThrownPotion");
+		entities_old.add("WitherSkull");
+		entities_old.add("ArmorStand");
+		entities_old.add("EnderCrystal");
+		entities_old.add("ItemFrame");
+		entities_old.add("LeashKnot");
+		entities_old.add("Painting");
+		entities_old.add("XPOrb");
+		entities_old.add("Item");
+		entities_old.add("LightningBolt");
+		entities_old.add("FireworksRocketEntity");
+		entities_old.add("AreaEffectCloud");
+	}
+
+	static {
+		entities.add("player");
+		entities.add("bat");
+		entities.add("chicken");
+		entities.add("cow");
+		entities.add("mooshroom");
+		entities.add("pig");
+		entities.add("rabbit");
+		entities.add("sheep");
+		entities.add("squid");
+		entities.add("villager");
+		entities.add("enderman");
+		entities.add("polar_bear");
+		entities.add("spider");
+		entities.add("cave_spider");
+		entities.add("zombie_pigman");
+		entities.add("blaze");
+		entities.add("creeper");
+		entities.add("endermite");
+		entities.add("ghast");
+		entities.add("guardian");
+		entities.add("elder_guardian");
+		entities.add("magma_cube");
+		entities.add("shulker");
+		entities.add("silverfish");
+		entities.add("skeleton");
+		entities.add("stray");
+		entities.add("wither_skeleton");
+		entities.add("slime");
+		entities.add("witch");
+		entities.add("zombie");
+		entities.add("husk");
+		entities.add("zombie_villager");
+		entities.add("horse");
+		entities.add("donkey");
+		entities.add("mule");
+		entities.add("zombie_horse");
+		entities.add("skeleton_horse");
+		entities.add("ocelot");
+		entities.add("wolf");
+		entities.add("villager_golem");
+		entities.add("snowman");
+		entities.add("ender_dragon");
+		entities.add("wither");
+		entities.add("giant");
+		entities.add("falling_block");
+		entities.add("tnt");
+		entities.add("boat");
+		entities.add("minecart");
+		entities.add("chest_minecart");
+		entities.add("commandblock_minecart");
+		entities.add("furnace_minecart");
+		entities.add("hopper_minecart");
+		entities.add("tnt_minecart");
+		entities.add("spawner_minecart");
+		entities.add("small_fireball");
+		entities.add("dragon_fireball");
+		entities.add("fireball");
+		entities.add("spectral_arrow");
+		entities.add("arrow");
+		entities.add("xp_bottle");
+		entities.add("egg");
+		entities.add("ender_pearl");
+		entities.add("eye_of_ender_signal");
+		entities.add("snowball");
+		entities.add("shulker_bullet");
+		entities.add("potion");
+		entities.add("wither_skull");
+		entities.add("armor_stand");
+		entities.add("ender_crystal");
+		entities.add("item_frame");
+		entities.add("leash_knot");
+		entities.add("painting");
+		entities.add("xp_orb");
+		entities.add("item");
+		entities.add("lightning_bolt");
+		entities.add("fireworks_rocket");
+		entities.add("area_effect_cloud");
+	}
+
+	static {
+		Block[] blocks = Block.STONE.getDeclaringClass().getEnumConstants();
+		for(int i = 0; i < blocks.length; i++) {
+			block_enums.add(blocks[i].name());
+		}
 	}
 	
 	static {
-		entities_new.add("player");
-		entities_new.add("bat");
-		entities_new.add("chicken");
-		entities_new.add("cow");
-		entities_new.add("mooshroom");
-		entities_new.add("pig");
-		entities_new.add("rabbit");
-		entities_new.add("sheep");
-		entities_new.add("squid");
-		entities_new.add("villager");
-		entities_new.add("enderman");
-		entities_new.add("polar_bear");
-		entities_new.add("spider");
-		entities_new.add("cave_spider");
-		entities_new.add("zombie_pigman");
-		entities_new.add("blaze");
-		entities_new.add("creeper");
-		entities_new.add("endermite");
-		entities_new.add("ghast");
-		entities_new.add("guardian");
-		entities_new.add("elder_guardian");
-		entities_new.add("magma_cube");
-		entities_new.add("shulker");
-		entities_new.add("silverfish");
-		entities_new.add("skeleton");
-		entities_new.add("stray");
-		entities_new.add("wither_skeleton");
-		entities_new.add("slime");
-		entities_new.add("witch");
-		entities_new.add("zombie");
-		entities_new.add("husk");
-		entities_new.add("zombie_villager");
-		entities_new.add("horse");
-		entities_new.add("donkey");
-		entities_new.add("mule");
-		entities_new.add("zombie_horse");
-		entities_new.add("skeleton_horse");
-		entities_new.add("ocelot");
-		entities_new.add("wolf");
-		entities_new.add("villager_golem");
-		entities_new.add("snowman");
-		entities_new.add("ender_dragon");
-		entities_new.add("wither");
-		entities_new.add("giant");
-		entities_new.add("falling_block");
-		entities_new.add("tnt");
-		entities_new.add("boat");
-		entities_new.add("minecart");
-		entities_new.add("chest_minecart");
-		entities_new.add("commandblock_minecart");
-		entities_new.add("furnace_minecart");
-		entities_new.add("hopper_minecart");
-		entities_new.add("tnt_minecart");
-		entities_new.add("spawner_minecart");
-		entities_new.add("small_fireball");
-		entities_new.add("dragon_fireball");
-		entities_new.add("fireball");
-		entities_new.add("spectral_arrow");
-		entities_new.add("arrow");
-		entities_new.add("xp_bottle");
-		entities_new.add("egg");
-		entities_new.add("ender_pearl");
-		entities_new.add("eye_of_ender_signal");
-		entities_new.add("snowball");
-		entities_new.add("shulker_bullet");
-		entities_new.add("potion");
-		entities_new.add("wither_skull");
-		entities_new.add("armor_stand");
-		entities_new.add("ender_crystal");
-		entities_new.add("item_frame");
-		entities_new.add("leash_knot");
-		entities_new.add("painting");
-		entities_new.add("xp_orb");
-		entities_new.add("item");
-		entities_new.add("lightning_bolt");
-		entities_new.add("fireworks_rocket");
-		entities_new.add("area_effect_cloud");
+		Gamemode[] gamemodes = Gamemode.SURVIVAL.getDeclaringClass().getEnumConstants();
+		for(int i = 0; i < gamemodes.length; i++) {
+			gamemode_enums.add(gamemodes[i].name());
+		}
+	}
+	
+	static {
+		Effect[] effects = Effect.SPEED.getDeclaringClass().getEnumConstants();
+		for(int i = 0; i < effects.length; i++) {
+			effect_enums.add(effects[i].name());
+		}
+	}
+
+	static {
+		Particle[] particles = Particle.TAKE.getDeclaringClass().getEnumConstants();
+		for(int i = 0; i < particles.length; i++) {
+			particle_enums.add(particles[i].name());
+		}
+	}
+	
+	static {
+		Enchantment[] enchantments = Enchantment.PROTECTION.getDeclaringClass().getEnumConstants();
+		for(int i = 0; i < enchantments.length; i++) {
+			enchantment_enums.add(enchantments[i].name());
+		}
+	}
+	
+	static {
+		Dimension[] dimensions = Dimension.OVERWORLD.getDeclaringClass().getEnumConstants();
+		for(int i = 0; i < dimensions.length; i++) {
+			dimension_enums.add(dimensions[i].name());
+		}
 	}
 	
 	public static String getMinecraftDir() {
 		String workingDirectory;
-		//here, we assign the name of the OS, according to Java, to a variable...
+		// here, we assign the name of the OS, according to Java, to a
+		// variable...
 		String OS = (System.getProperty("os.name")).toUpperCase();
-		//to determine what the workingDirectory is.
-		//if it is some version of Windows
-		if (OS.contains("WIN"))
-		{
-		    //it is simply the location of the "AppData" folder
-		    workingDirectory = System.getenv("AppData");
+		// to determine what the workingDirectory is.
+		// if it is some version of Windows
+		if (OS.contains("WIN")) {
+			// it is simply the location of the "AppData" folder
+			workingDirectory = System.getenv("AppData");
 		}
-		//Otherwise, we assume Linux or Mac
-		else
-		{
-		    //in either case, we would start in the user's home directory
-		    workingDirectory = System.getProperty("user.home");
-		    //if we are on a Mac, we are not done, we look for "Application Support"
-		    workingDirectory += "/Library/Application Support";
+		// Otherwise, we assume Linux or Mac
+		else {
+			// in either case, we would start in the user's home directory
+			workingDirectory = System.getProperty("user.home");
+			// if we are on a Mac, we are not done, we look for "Application
+			// Support"
+			workingDirectory += "/Library/Application Support";
 		}
-		
+
 		workingDirectory += File.separator + ".minecraft";
-		
+
 		return workingDirectory;
 	}
 }

@@ -10,47 +10,48 @@ import com.energyxxer.html.HTMLFile;
 
 /**
  * An output stream. Used in the java console visible in the window.
- * */
+ */
 public class TextAreaOutputStream extends OutputStream {
 
-   private final JEditorPane textArea;
-   private final StringBuilder sb = new StringBuilder();
-   
-   private final HTMLFile html = new HTMLFile();
+	private final JEditorPane textArea;
+	private final StringBuilder sb = new StringBuilder();
 
-   public TextAreaOutputStream(final JEditorPane textArea) {
-      this.textArea = textArea;
-      sb.append("");
-   }
+	private final HTMLFile html = new HTMLFile();
 
-   @Override
-   public void flush() {
-   }
+	public TextAreaOutputStream(final JEditorPane textArea) {
+		this.textArea = textArea;
+		sb.append("");
+	}
 
-   @Override
-   public void close() {
-   }
+	@Override
+	public void flush() {
+	}
 
-   @Override
-   public void write(int b) throws IOException {
+	@Override
+	public void close() {
+	}
 
-      if (b == '\r')
-         return;
+	@Override
+	public void write(int b) throws IOException {
 
-      if (b == '\n') {
-         final String text = sb.toString() + "\n";
-         
-         html.append(text);
-         SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-               textArea.setText(html.getText());
-            }
-         });
-         sb.setLength(0);
-         sb.append("");
-         return;
-      }
+		if (b == '\r')
+			return;
 
-      sb.append((char) b);
-   }
+		if (b == '\n') {
+			final String text = sb.toString() + "\n";
+
+			html.append(text);
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					textArea.setText(html.getText());
+				}
+			});
+			sb.setLength(0);
+			sb.append("");
+			return;
+		}
+
+		sb.append((char) b);
+	}
 }

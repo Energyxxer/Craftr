@@ -13,17 +13,17 @@ import com.energyxxer.ui.TabComponent;
 import com.energyxxer.ui.editor.CBEEditor;
 
 /**
- * Concept of an open tab in the interface. Contains
- * a component that represents the clickable tab element.
- * */
+ * Concept of an open tab in the interface. Contains a component that represents
+ * the clickable tab element.
+ */
 public class Tab {
 	private TabComponent linkedTabComponent;
 	public String path;
 	CBEEditor editor;
 	public String savedString;
-	
+
 	public long openedTimeStamp;
-	
+
 	@Override
 	public String toString() {
 		return "Tab [title=" + linkedTabComponent.name + ", path=" + path + "]";
@@ -42,18 +42,18 @@ public class Tab {
 		} catch (IOException e) {
 			e.printStackTrace(new PrintWriter(Window.consoleout));
 		}
-		
-		associate(new TabComponent(this));		
-		
+
+		associate(new TabComponent(this));
+
 		TabManager.addTabComponent(getLinkedTabComponent());
-		
+
 		openedTimeStamp = new Date().getTime();
 	}
-	
+
 	public void associate(TabComponent tc) {
 		linkedTabComponent = tc;
 	}
-	
+
 	@SuppressWarnings("unused")
 	private File getFile() {
 		return new File(path);
@@ -62,27 +62,27 @@ public class Tab {
 	public TabComponent getLinkedTabComponent() {
 		return linkedTabComponent;
 	}
-	
+
 	public void onSelect() {
 		openedTimeStamp = new Date().getTime();
 	}
-	
+
 	public void onEdit() {
-		if(linkedTabComponent != null) {
+		if (linkedTabComponent != null) {
 			boolean newIsSaved = editor.editor.getText().intern() == savedString || savedString == null;
 			linkedTabComponent.setSaved(newIsSaved);
 		}
 	}
-	
+
 	public void updateName() {
 		linkedTabComponent.setName(new File(path).getName());
 	}
-	
+
 	public void save() {
 		PrintWriter writer;
 		try {
 			writer = new PrintWriter(path, "UTF-8");
-			
+
 			writer.print(editor.editor.getText());
 			writer.close();
 			savedString = editor.editor.getText().intern();
