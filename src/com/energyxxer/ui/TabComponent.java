@@ -39,7 +39,7 @@ public class TabComponent extends JLabel implements MouseListener {
 	public boolean selected = false;
 
 	public String name;
-	private boolean saved = true;
+	public boolean saved = true;
 
 	public static Color rollover_background = Color.WHITE;
 	public static Color rollover_border = new Color(150, 150, 150);
@@ -191,7 +191,7 @@ public class TabComponent extends JLabel implements MouseListener {
 
 	private void showContextMenu(MouseEvent e) {
 		TabPopup menu = new TabPopup(getLinkedTab());
-		menu.show(e.getComponent(), e.getX(), e.getY());
+		menu.show(this, e.getX(), e.getY());
 	}
 }
 

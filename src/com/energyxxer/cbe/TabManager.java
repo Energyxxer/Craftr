@@ -1,10 +1,18 @@
 package com.energyxxer.cbe;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+
 import com.energyxxer.ui.TabComponent;
+import com.energyxxer.util.ImageManager;
 
 /**
  * Interface that allows communication between parts of the program and the tab
@@ -15,6 +23,8 @@ public class TabManager {
 	public static ArrayList<Tab> openTabs = new ArrayList<Tab>();
 
 	private static TabComponent selectedTab = null;
+	
+	private static JPopupMenu menu = new JPopupMenu();
 
 	public static void openTab(String path, int line, int column) {
 		openTab(path);
@@ -30,6 +40,7 @@ public class TabManager {
 		}
 		openTabs.add(new Tab(path));
 		setSelectedTab(openTabs.get(openTabs.size() - 1));
+		
 	}
 
 	public static void selectLocation(Tab tab, int line, int column) {
@@ -83,19 +94,64 @@ public class TabManager {
 			}
 		}
 	}
+	
+	public static void updateMenu() {
+		menu.removeAll();
+		if(TabManager.openTabs.size() <= 0) {
+			JMenuItem item = new JMenuItem("No tabs open!");
+			item.setFont(item.getFont().deriveFont(Font.ITALIC));
+			item.setIcon(new ImageIcon(ImageManager.load("/assets/icons/ui/close.png").getScaledInstance(16, 16,
+					java.awt.Image.SCALE_SMOOTH)));
+			menu.add(item);
+			return;
+		}
+		for(int i = 0; i < TabManager.openTabs.size(); i++) {
+			Tab tab = TabManager.openTabs.get(i);
+			JMenuItem item = new JMenuItem(((!tab.getLinkedTabComponent().saved) ? "*" : "") + tab.getLinkedTabComponent().name);
+			item.setIcon(tab.getLinkedTabComponent().getIcon());
+			if(!tab.visible) {
+				item.setFont(item.getFont().deriveFont(Font.BOLD));
+			}
+			item.addMouseListener(new MouseAdapter() {
+				public void mousePressed(MouseEvent e) {
+					tab.getLinkedTabComponent().mousePressed(e);
+				}
+				public void mouseReleased(MouseEvent e) {
+					tab.getLinkedTabComponent().mouseReleased(e);
+				}
+			});
+			menu.add(item);
+		}
+	}
+	
+	public static JPopupMenu getMenu() {
+		updateTabVisibility();
+		updateMenu();
+		return menu;
+	}
 
 	public static void setSelectedTab(Tab tab) {
 		if (selectedTab != null) {
 			selectedTab.selected = false;
 			selectedTab.repaint();
-
 			Window.edit_area.remove(selectedTab.getLinkedTab().editor);
 		}
 		selectedTab = null;
 		if (tab != null) {
 			selectedTab = tab.getLinkedTabComponent();
+			
+			if(!tab.visible) {
+				openTabs.indexOf(tab);
+				if(openTabs.indexOf(tab) >= 0) {
+					openTabs.remove(openTabs.indexOf(tab));
+					openTabs.add(0,tab);
+					
+					Window.tabList.add(tab.getLinkedTabComponent(), 0);
+				}
+			}
 			tab.getLinkedTabComponent().selected = true;
 			tab.getLinkedTabComponent().repaint();
+			
 			tab.onSelect();
 			Window.edit_area.add(tab.editor, BorderLayout.CENTER);
 		}
@@ -108,6 +164,14 @@ public class TabManager {
 		Window.tabList.add(tab);
 		Window.tabList.revalidate();
 		Window.tabList.repaint();
+	}
+	
+	private static void updateTabVisibility() {
+		for(int i = 0; i < openTabs.size(); i++) {
+			Tab tab = openTabs.get(i);
+			TabComponent tabComponent = tab.getLinkedTabComponent();
+			tab.visible = tabComponent.getY() <= 0;
+		}
 	}
 
 	public static Tab getSelectedTab() {

@@ -21,12 +21,13 @@ public class Tab {
 	public String path;
 	CBEEditor editor;
 	public String savedString;
+	public boolean visible = true;
 
 	public long openedTimeStamp;
 
 	@Override
 	public String toString() {
-		return "Tab [title=" + linkedTabComponent.name + ", path=" + path + "]";
+		return "Tab [title=" + linkedTabComponent.name + ", path=" + path + ", visible=" + visible + "]";
 	}
 
 	public Tab(String path) {
@@ -76,6 +77,14 @@ public class Tab {
 
 	public void updateName() {
 		linkedTabComponent.setName(new File(path).getName());
+	}
+	
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 	public void save() {

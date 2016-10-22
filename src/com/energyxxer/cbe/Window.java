@@ -371,6 +371,7 @@ public class Window {
 
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
+						
 						if (Explorer.selectedLabels.size() != 1)
 							return;
 						
@@ -385,7 +386,6 @@ public class Window {
 					}
 				});
 				toolbar.add(button);
-
 			}
 
 		}
@@ -438,11 +438,47 @@ public class Window {
 		edit_area.setBackground(defaultColor);
 		jframe.getContentPane().add(edit_area, BorderLayout.CENTER);
 
+		JPanel tabListHolder = new JPanel(new BorderLayout());
+		tabListHolder.setPreferredSize(new Dimension(1,30));
+		tabListHolder.setBackground(new Color(200, 202, 205));
+		
+		JPanel tabActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
+		tabActionPanel.setOpaque(false);
+		tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(150, 150, 150)));
+		
+		{
+			ToolbarButton more = new ToolbarButton();
+			more.setIcon(new ImageIcon(ImageManager.load("/assets/icons/ui/more.png").getScaledInstance(16, 16,
+					java.awt.Image.SCALE_SMOOTH)));
+			more.setToolTipText("View all tabs");
+			more.setPreferredSize(new Dimension(25,25));
+			tabActionPanel.add(more);
+			
+			more.addActionListener(new AbstractAction() {
+
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = -6051046434889434022L;
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					TabManager.getMenu().show(more, more.getX(), more.getY() + more.getHeight());
+				}
+				
+			});
+			
+			
+		}
+		
+		tabListHolder.add(tabActionPanel, BorderLayout.EAST);
+		
+		edit_area.add(tabListHolder, BorderLayout.NORTH);
 		tabList = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		tabList.setPreferredSize(new Dimension(1, 30));
 		tabList.setBackground(new Color(200, 202, 205));
 		tabList.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(150, 150, 150)));
-		edit_area.add(tabList, BorderLayout.NORTH);
+		tabListHolder.add(tabList, BorderLayout.CENTER);
 
 		if (useConsole) {
 			JPanel consoleArea = new JPanel(new BorderLayout());
