@@ -1,40 +1,7 @@
 package com.energyxxer.cbe.main;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowEvent;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-
 import com.energyxxer.cbe.compile.Compiler;
+import com.energyxxer.cbe.global.Preferences;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.global.TabManager;
 import com.energyxxer.cbe.syntax.CBESyntax;
@@ -49,6 +16,18 @@ import com.energyxxer.cbe.ui.theme.Theme;
 import com.energyxxer.cbe.util.ImageManager;
 import com.energyxxer.cbe.util.out.MultiOutputStream;
 import com.energyxxer.cbe.util.out.TextAreaOutputStream;
+
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Literally what it sounds like.
@@ -268,7 +247,7 @@ public class Window {
 
 				JMenuItem propertiesItem = new JMenuItem("Properties");
 				menu.add(propertiesItem);
-				
+
 				propertiesItem.addActionListener(new ActionListener() {
 
 					@Override
@@ -277,7 +256,36 @@ public class Window {
 					}
 
 				});
-				
+
+				// --------------------------------------------------
+
+				menuBar.add(menu);
+			}
+
+			{
+				JMenu menu = new JMenu(" Debug ");
+				menu.setMnemonic(KeyEvent.VK_D);
+
+				// --------------------------------------------------
+
+				JMenuItem generateItem = new JMenuItem("Reset Preferences        ");
+				menu.add(generateItem);
+
+				generateItem.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						int confirmation = JOptionPane.showConfirmDialog(null,
+								"        Are you sure you want to reset all saved settings?        ",
+								"Reset Preferences? ", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+						if (confirmation == JOptionPane.YES_OPTION) {
+							Preferences.reset();
+						}
+						if(ProjectManager.getSelected() != null) ProjectManager.getSelected().showPropertiesDialog();
+					}
+
+				});
+
 				// --------------------------------------------------
 
 				menuBar.add(menu);

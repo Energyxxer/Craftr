@@ -285,8 +285,8 @@ class ExplorerItemPopup extends JPopupMenu {
 				String path = Explorer.selectedLabels.get(0).parent.path;
 				String name = new File(path).getName();
 				String rawName = StringUtil.stripExtension(name);
-				String extension = name.replaceAll(rawName, "");
-				String pathToParent = path.substring(0, path.lastIndexOf(name));
+				final String extension = name.replaceAll(rawName, "");
+				final String pathToParent = path.substring(0, path.lastIndexOf(name));
 
 				String newName = StringPrompt.prompt("Rename", "Enter a new name for the file:", rawName,
 						new StringValidator() {
@@ -313,7 +313,7 @@ class ExplorerItemPopup extends JPopupMenu {
 					} else {
 						JOptionPane.showMessageDialog(null,
 								"<html>The action can't be completed because the folder or file is open in another program.<br>Close the folder and try again.</html>",
-								"An error ocurred.", JOptionPane.ERROR_MESSAGE);
+								"An error occurred.", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 

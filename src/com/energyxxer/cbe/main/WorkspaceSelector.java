@@ -19,19 +19,20 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import com.energyxxer.cbe.global.Preferences;
 import com.energyxxer.cbe.util.FileUtil;
 
 /**
  * Allows the user to choose a workspace location for their projects.
  */
 public class WorkspaceSelector {
-	static String workspace_dir = FileUtil.normalize("C:/Program Files/Command Block Engine/workspace");
+	static String workspace_dir = null;
 	static boolean initialized = false;
 
 	static JPanel dialog = new JPanel(new BorderLayout());
 	static JPanel instructions = new JPanel();
 	static JPanel input = new JPanel(new BorderLayout());
-	static JTextField textfield = new JTextField(workspace_dir);
+	static JTextField textfield = new JTextField(Preferences.DEFAULT_WORKSPACE_PATH);
 	static JButton browse = new JButton("Browse...");
 
 	static JButton okay = new JButton("OK");
@@ -92,7 +93,7 @@ public class WorkspaceSelector {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser jfc = new JFileChooser();
 				jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				jfc.setSelectedFile(new File(workspace_dir));
+				jfc.setSelectedFile(new File(Preferences.DEFAULT_WORKSPACE_PATH));
 				jfc.setDialogTitle("Set workspace location...");
 				int result = jfc.showSaveDialog(null);
 				if (result == JFileChooser.APPROVE_OPTION) {

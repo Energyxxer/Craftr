@@ -57,6 +57,8 @@ public class Project {
 				if(line.contains("=")) {
 					String key = line.substring(0,line.indexOf("="));
 					String value = line.substring(line.indexOf("=")+1);
+
+					if(value.length() <= 0) continue;
 					
 					if(key.equals("name")) {
 						this.name = value;

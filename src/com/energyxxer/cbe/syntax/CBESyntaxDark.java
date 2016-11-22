@@ -1,22 +1,19 @@
 package com.energyxxer.cbe.syntax;
 
-import java.util.HashMap;
-
 import com.energyxxer.cbe.compile.analysis.token.TokenType;
 import com.energyxxer.cbe.syntax.style.Style;
+
+import java.util.HashMap;
 
 /**
  * Defines what and how character sequences should be highlighted in a text
  * editor.
  */
 public class CBESyntaxDark extends Syntax {
-	public static HashMap<String, HashMap<String, Object>> styles = new HashMap<String, HashMap<String, Object>>();
-
 	public static final CBESyntaxDark INSTANCE = new CBESyntaxDark();
-	
-	protected CBESyntaxDark() {super();}
+    public static HashMap<String, HashMap<String, Object>> styles = new HashMap<String, HashMap<String, Object>>();
 
-	static {
+    static {
 		styles.put("comment", new Style().setColor("#666666").setItalic().getMap());
 		styles.put("number", new Style().setColor("#FF7766").getMap());
 		styles.put("qualifier", new Style().setColor("#1290c3").setBold().getMap());
@@ -41,8 +38,10 @@ public class CBESyntaxDark extends Syntax {
 		styles.put("#is_annotation", new Style().setItalic().getMap());
 
 		System.out.println(TokenType.ACTION_KEYWORD);
-		
+
 	}
+
+	protected CBESyntaxDark() {super();}
 
 	@Override
 	public HashMap<String, HashMap<String, Object>> getStyles() {
