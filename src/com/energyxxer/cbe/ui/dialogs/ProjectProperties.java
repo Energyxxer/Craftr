@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -18,6 +19,7 @@ import com.energyxxer.cbe.logic.Project;
 import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.ui.components.ComponentResizer;
 import com.energyxxer.cbe.ui.components.XButton;
+import com.energyxxer.cbe.ui.components.XFileForm;
 import com.energyxxer.cbe.ui.components.XList;
 import com.energyxxer.cbe.ui.components.XTextForm;
 import com.energyxxer.cbe.util.ImageManager;
@@ -29,7 +31,7 @@ public class ProjectProperties {
 	public static void show(Project project) {
 		
 		XTextForm cPrefix; 
-		
+		XFileForm cWorld;
 		
 		JPanel pane = new JPanel(new BorderLayout());
 		//JButton okay = new JButton("OK");
@@ -124,7 +126,7 @@ public class ProjectProperties {
 				}
 				
 				{
-					cPrefix = new XTextForm("Prefix", project.getPrefix(), 50);
+					cPrefix = new XTextForm("Prefix", project.getPrefix(), 75);
 					cPrefix.setForeground(Window.theme.t1);
 					cPrefix.setMaximumSize(new Dimension(150,25));
 					cPrefix.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -137,16 +139,16 @@ public class ProjectProperties {
 				}
 				
 				{
-					cPrefix = new XTextForm("World Output", project.getPrefix(), 50);
-					cPrefix.setForeground(Window.theme.t1);
-					cPrefix.setMaximumSize(new Dimension(150,25));
-					cPrefix.setAlignmentX(Component.LEFT_ALIGNMENT);
+					cWorld = new XFileForm("World Output", new File(project.getWorld()), 75);
+					cWorld.setForeground(Window.theme.t1);
+					cWorld.setMaximumSize(new Dimension(cWorld.getMaximumSize().width,25));
+					cWorld.setAlignmentX(Component.LEFT_ALIGNMENT);
 	
-					cPrefix.field.setBackground(Window.theme.b3);
-					cPrefix.field.setBorderColor(Window.theme.l1);
-					cPrefix.field.setForeground(Window.theme.t1);
+					cWorld.field.setBackground(Window.theme.b3);
+					cWorld.field.setBorderColor(Window.theme.l1);
+					cWorld.field.setForeground(Window.theme.t1);
 					
-					content.add(cPrefix);
+					content.add(cWorld);
 				}
 				
 			}
