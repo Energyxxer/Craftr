@@ -93,7 +93,7 @@ public class WorkspaceSelector {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser jfc = new JFileChooser();
 				jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				jfc.setSelectedFile(new File(Preferences.DEFAULT_WORKSPACE_PATH));
+				jfc.setCurrentDirectory(new File(System.getProperty("user.home")));
 				jfc.setDialogTitle("Set workspace location...");
 				int result = jfc.showSaveDialog(null);
 				if (result == JFileChooser.APPROVE_OPTION) {
