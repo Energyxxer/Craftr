@@ -27,7 +27,7 @@ public class ExplorerItem extends JPanel {
 	public ExplorerExpand expand;
 	ExplorerItem parent;
 
-	public ExplorerItem(File file, ExplorerItem parent) {
+	public ExplorerItem(File file, ExplorerItem parent, ArrayList<String> toOpen) {
 		super(new BorderLayout());
 		this.path = file.getAbsolutePath();
 		this.parent = parent;
@@ -60,11 +60,20 @@ public class ExplorerItem extends JPanel {
 		this.updateView();
 
 		this.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		if(toOpen != null && toOpen.contains(this.path)) {
+			expand(toOpen);
+		}
 	}
 
 	public void expand() {
+		expand(null);
+	}
+
+	public void expand(ArrayList<String> toOpen) {
 
 		children.removeAll();
+		Explorer.openDirectories.add(path);
 
 		File[] childrenFiles = new File(this.path).listFiles();
 
@@ -84,7 +93,7 @@ public class ExplorerItem extends JPanel {
 			}
 
 			for (int i = 0; i < files.size(); i++) {
-				children.add(new ExplorerItem(files.get(i), this));
+				children.add(new ExplorerItem(files.get(i), this, toOpen));
 			}
 		}
 
@@ -93,6 +102,7 @@ public class ExplorerItem extends JPanel {
 
 	public void collapse() {
 		children.removeAll();
+		Explorer.openDirectories.remove(path);
 
 		this.updateNest();
 	}

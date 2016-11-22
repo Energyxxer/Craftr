@@ -27,6 +27,7 @@ public class Explorer extends JPanel implements MouseListener {
 	public static final boolean SHOW_PROJECT_FILES = true;
 
 	public static ArrayList<ExplorerItemLabel> selectedLabels = new ArrayList<ExplorerItemLabel>();
+	public static ArrayList<String> openDirectories = new ArrayList<String>();
 
 	public Explorer() {
 		super();
@@ -37,8 +38,17 @@ public class Explorer extends JPanel implements MouseListener {
 	}
 
 	public void generateProjectList() {
+		ArrayList<String> copy = new ArrayList<String>();
+		copy.addAll(openDirectories);
+		generateProjectList(copy);
+	}
+
+	public void generateProjectList(ArrayList<String> toOpen) {
+
 		ProjectManager.loadWorkspace();
 		removeAll();
+
+		openDirectories.clear();
 
 		File workspace = new File(Preferences.get("workspace_dir"));
 
@@ -67,7 +77,7 @@ public class Explorer extends JPanel implements MouseListener {
 
 		for (int i = 0; i < files.size(); i++) {
 
-			add(new ExplorerItem(files.get(i), null), FlowLayout.LEFT);
+			add(new ExplorerItem(files.get(i), null, toOpen), FlowLayout.LEFT);
 
 		}
 

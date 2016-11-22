@@ -281,7 +281,6 @@ public class Window {
 						if (confirmation == JOptionPane.YES_OPTION) {
 							Preferences.reset();
 						}
-						if(ProjectManager.getSelected() != null) ProjectManager.getSelected().showPropertiesDialog();
 					}
 
 				});
