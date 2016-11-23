@@ -211,7 +211,19 @@ public class Project {
 	public String toString() {
 		return String.format("Project [name=%s, prefix=%s, world=%s]", name, prefix, world);
 	}
-	
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public void setWorld(String world) {
+		this.world = world;
+	}
+
 	public void showPropertiesDialog() {
 		ProjectProperties.show(this);
 	}

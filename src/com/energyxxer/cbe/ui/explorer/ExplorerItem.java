@@ -63,6 +63,7 @@ public class ExplorerItem extends JPanel {
 
 		if(toOpen != null && toOpen.contains(this.path)) {
 			expand(toOpen);
+			expand.expanded = true;
 		}
 	}
 

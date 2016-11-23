@@ -2,12 +2,16 @@ package com.energyxxer.cbe.util;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Things for strings.
  */
 public class StringUtil {
+
+	private static final char[] randomCharacters = new char[] {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','_','-'};
 
 	public static final String TRUE = "true";
 	public static final String FALSE = "false";
@@ -50,7 +54,7 @@ public class StringUtil {
 	}
 	
 	public static String escape(String str) {
-		return str.replaceAll("\b", "\\\\b").replaceAll("\n", "\\\\n").replaceAll("\t", "\\\\t").replaceAll("\f", "\\\\f").replaceAll("\r", "\\\\r");
+		return str.replaceAll("\n", "\\\\n").replaceAll("\t", "\\\\t").replaceAll("\f", "\\\\f").replaceAll("\r", "\\\\r");
 	}
 	
 	public static String addSlashes(String str) {
@@ -85,5 +89,19 @@ public class StringUtil {
 			lastChar = s.charAt(i);
 		}
 		return initials.toUpperCase();
+	}
+
+	public static char getRandomChar() {
+		Random rand = new Random();
+
+		return randomCharacters[rand.nextInt(randomCharacters.length)];
+	}
+
+	public static String getRandomString(int len) {
+		String s = "";
+		for (int i = 0; i < len; i++) {
+			s += getRandomChar();
+		}
+		return s;
 	}
 }

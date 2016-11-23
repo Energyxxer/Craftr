@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.io.File;
+import java.util.Base64;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -17,21 +18,21 @@ import javax.swing.JPanel;
 
 import com.energyxxer.cbe.logic.Project;
 import com.energyxxer.cbe.main.Window;
-import com.energyxxer.cbe.ui.components.ComponentResizer;
-import com.energyxxer.cbe.ui.components.XButton;
-import com.energyxxer.cbe.ui.components.XFileForm;
-import com.energyxxer.cbe.ui.components.XList;
-import com.energyxxer.cbe.ui.components.XTextForm;
+import com.energyxxer.cbe.minecraft.MinecraftConstants;
+import com.energyxxer.cbe.ui.components.*;
 import com.energyxxer.cbe.util.ImageManager;
+import com.energyxxer.cbe.util.StringUtil;
 
 public class ProjectProperties {
 	
 	//private static final Font FIELD_FONT = new Font("Consolas", 0, 12);
 
 	public static void show(Project project) {
+
+		JDialog dialog = new JDialog(Window.jframe);
 		
-		XTextForm cPrefix; 
-		XFileForm cWorld;
+		XTextField cPrefix;
+		XFileField cWorld;
 		
 		JPanel pane = new JPanel(new BorderLayout());
 		//JButton okay = new JButton("OK");
@@ -91,7 +92,7 @@ public class ProjectProperties {
 					header.add(padding, BorderLayout.WEST);
 				}
 				
-				JLabel label = new JLabel("General");
+				JLabel label = new JLabel("Compiler");
 				label.setForeground(Window.theme.t1);
 				label.setFont(label.getFont().deriveFont(20f).deriveFont(Font.BOLD));
 				header.add(label, BorderLayout.CENTER);
@@ -124,29 +125,91 @@ public class ProjectProperties {
 					padding.setMaximumSize(new Dimension(1,20));
 					content.add(padding);
 				}
-				
+
 				{
-					cPrefix = new XTextForm("Prefix", project.getPrefix(), 75);
-					cPrefix.setForeground(Window.theme.t1);
-					cPrefix.setMaximumSize(new Dimension(150,25));
-					cPrefix.setAlignmentX(Component.LEFT_ALIGNMENT);
-	
-					cPrefix.field.setBackground(Window.theme.b3);
-					cPrefix.field.setBorderColor(Window.theme.l1);
-					cPrefix.field.setForeground(Window.theme.t1);
-					
-					content.add(cPrefix);
+					JLabel label = new JLabel("Prefix:");
+					label.setForeground(Window.theme.t1);
+					label.setFont(label.getFont().deriveFont(1));
+					content.add(label);
+				}
+				{
+					JPanel prefixFields = new JPanel();
+					prefixFields.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 2));
+					prefixFields.setOpaque(false);
+					prefixFields.setAlignmentX(Component.LEFT_ALIGNMENT);
+					{
+						cPrefix = new XTextField(project.getPrefix());
+						cPrefix.setForeground(Window.theme.t1);
+						cPrefix.setPreferredSize(new Dimension(150,25));
+						cPrefix.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+						cPrefix.setBackground(Window.theme.b3);
+						cPrefix.setBorderColor(Window.theme.l1);
+						cPrefix.setForeground(Window.theme.t1);
+
+						prefixFields.add(cPrefix);
+					}
+					{
+						XButton randomize = new XButton("Generate Random Prefix");
+						randomize.setPreferredSize(new Dimension(150, 25));
+						randomize.setBackground(Window.theme.p3);
+						randomize.setForeground(Window.theme.t1);
+						randomize.setBorderColor(Window.theme.l1);
+						randomize.setRolloverColor(Window.theme.p4);
+						randomize.setPressedColor(Window.theme.p1);
+
+						randomize.addActionListener(e -> cPrefix.setText(StringUtil.getRandomString(4)));
+
+						prefixFields.add(randomize);
+					}
+					{
+						XButton reset = new XButton("Reset Prefix");
+						reset.setPreferredSize(new Dimension(100, 25));
+						reset.setBackground(Window.theme.p3);
+						reset.setForeground(Window.theme.t1);
+						reset.setBorderColor(Window.theme.l1);
+						reset.setRolloverColor(Window.theme.p4);
+						reset.setPressedColor(Window.theme.p1);
+
+						reset.addActionListener(e -> cPrefix.setText(StringUtil.getInitials(project.getName()).toLowerCase()));
+
+						prefixFields.add(reset);
+					}
+
+					prefixFields.setMaximumSize(new Dimension(prefixFields.getMaximumSize().width, 30));
+
+					content.add(prefixFields);
+				}
+
+				{
+					JPanel margin = new JPanel();
+					margin.setMinimumSize(new Dimension(200,15));
+					margin.setMaximumSize(new Dimension(200,15));
+					margin.setOpaque(false);
+					margin.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+					content.add(margin);
 				}
 				
 				{
-					cWorld = new XFileForm("World Output", new File(project.getWorld()), 75);
+					{
+						JLabel label = new JLabel("World Output:");
+						label.setForeground(Window.theme.t1);
+						label.setFont(label.getFont().deriveFont(1));
+						content.add(label);
+					}
+					File file = new File(MinecraftConstants.getMinecraftDir() + File.separator + "saves");
+					if(project.getWorld() != null) file = new File(project.getWorld());
+					cWorld = new XFileField(file);
+					cWorld.setDialogTitle("Open world...");
+					cWorld.setOperation(XFileField.OPEN_DIRECTORY);
 					cWorld.setForeground(Window.theme.t1);
 					cWorld.setMaximumSize(new Dimension(cWorld.getMaximumSize().width,25));
 					cWorld.setAlignmentX(Component.LEFT_ALIGNMENT);
 	
-					cWorld.field.setBackground(Window.theme.b3);
-					cWorld.field.setBorderColor(Window.theme.l1);
-					cWorld.field.setForeground(Window.theme.t1);
+					cWorld.setBackground(Window.theme.b3);
+					cWorld.setBorderColor(Window.theme.l1);
+					cWorld.setForeground(Window.theme.t1);
 					
 					content.add(cWorld);
 				}
@@ -176,6 +239,15 @@ public class ProjectProperties {
 				okay.setRolloverColor(Window.theme.p4);
 				okay.setPressedColor(Window.theme.p1);
 				buttons.add(okay);
+
+				okay.addActionListener(e -> {
+					project.setPrefix(cPrefix.getText());
+					project.setWorld(cWorld.getFile().getAbsolutePath());
+					project.updateConfig();
+
+					dialog.setVisible(false);
+					dialog.dispose();
+				});
 			}
 			
 			{
@@ -187,6 +259,11 @@ public class ProjectProperties {
 				cancel.setRolloverColor(Window.theme.p4);
 				cancel.setPressedColor(Window.theme.p1);
 				buttons.add(cancel);
+
+				cancel.addActionListener(e -> {
+					dialog.setVisible(false);
+					dialog.dispose();
+				});
 			}
 			
 			contentPane.add(buttons, BorderLayout.SOUTH);
@@ -210,7 +287,7 @@ public class ProjectProperties {
 			}
 		});*/
 		
-		JDialog dialog = new JDialog(Window.jframe);
+
 		dialog.setVisible(true);
 		dialog.setContentPane(pane);
 		dialog.pack();

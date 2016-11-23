@@ -84,4 +84,12 @@ public class XFileForm extends XForm {
 		field.setFile(file);
 	}
 
+	public void setOperation(byte operation) {
+		field.setOperation(operation);
+	}
+
+	public void setDialogTitle(String title) {
+		field.setDialogTitle(title);
+	}
+
 }
