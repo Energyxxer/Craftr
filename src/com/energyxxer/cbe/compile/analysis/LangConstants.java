@@ -22,14 +22,14 @@ public class LangConstants {
 	public static final String[] end_of_statement = { ";" };
 
 	public static final String[] qualifiers = { "public", "static", "synchronized", "local" };
-	public static final String[] unit_types = { "entity", "item" };
-	public static final String[] unit_actions = { "extends", "implements" };
+	public static final String[] unit_types = { "entity", "item", "feature" };
+	public static final String[] unit_actions = { "extends", "implements", "requires" };
 	public static final String[] braces = { "(", ")", "[", "]", "{", "}" };
 	public static final String[] data_types = { "int", "string", "float", "boolean", "Point", "Dimensions", "Region" };
 	public static final String[] operators = { "+=", "+", "-=", "-", "*=", "*", "/=", "/", "%=", "%", "<=", ">=", "==", "=", "<", ">", "^=", "^" };
 	public static final String[] identifier_operators = { "++", "--" };
 	public static final String[] logical_negation_operators = { "!" };
-	public static final String[] keywords = { "if", "else", "while", "for", "switch", "case", "default", "new", "this" };
+	public static final String[] keywords = { "if", "else", "while", "for", "switch", "case", "default", "new", "this", "import" };
 	public static final String[] action_keywords = { "break", "continue" };
 	public static final String[] dots = { "." };
 	public static final String[] commas = { "," };
