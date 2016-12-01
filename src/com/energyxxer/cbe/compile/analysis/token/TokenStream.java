@@ -19,19 +19,27 @@ public class TokenStream implements Iterable<Token> {
 	public ArrayList<Token> tokens = new ArrayList<Token>();
 	public HashMap<String, String> bufferData = new HashMap<String, String>();
 	public ArrayList<Token> tokenBuffer = new ArrayList<Token>();
+
+	private boolean includeInsignificantTokens = false;
+
+	public TokenStream() {includeInsignificantTokens = false;}
+	public TokenStream(boolean includeInsignificantTokens) {
+		this.includeInsignificantTokens = includeInsignificantTokens;
+	}
 	
 	public final void write(Token token) {
 		write(token, false);
 	}
 	
 	public final void write(Token token, boolean skip) {
+		if(!token.isSignificant() && !includeInsignificantTokens) return;
 		if(skip || !addEnvironmentAttributes(token)) {
 			onWrite(token);
 			tokens.add(token);
 		}
 	}
 	
-	public TokenStream() {
+	{
 		bufferData.put("IS_ANNOTATION", FALSE);
 		bufferData.put("ANNOTATION_PHASE", "NONE");
 

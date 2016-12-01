@@ -37,8 +37,6 @@ public class CBESyntaxDark extends Syntax {
 		styles.put("#is_annotation_header", new Style().setColor("#999999").setItalic().getMap());
 		styles.put("#is_annotation", new Style().setItalic().getMap());
 
-		System.out.println(TokenType.ACTION_KEYWORD);
-
 	}
 
 	protected CBESyntaxDark() {super();}

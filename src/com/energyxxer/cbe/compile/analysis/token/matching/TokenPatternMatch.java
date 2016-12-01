@@ -1,10 +1,11 @@
 package com.energyxxer.cbe.compile.analysis.token.matching;
 
-import java.util.List;
-
 import com.energyxxer.cbe.compile.analysis.token.Token;
 import com.energyxxer.cbe.compile.analysis.token.TokenMatchResponse;
 import com.energyxxer.cbe.util.Stack;
+import com.energyxxer.cbe.util.StringUtil;
+
+import java.util.List;
 
 public abstract class TokenPatternMatch {
 	public String name = "";
@@ -24,5 +25,9 @@ public abstract class TokenPatternMatch {
 		this.name = name;
 		return this;
 	}
+
+	public abstract String deepToString(int levels);
+
+	public abstract String toTrimmedString();
 	
 }

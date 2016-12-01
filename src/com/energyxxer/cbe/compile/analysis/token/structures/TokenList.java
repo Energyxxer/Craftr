@@ -11,11 +11,11 @@ public class TokenList extends TokenPattern<TokenPattern<?>[]> {
 	public TokenList() {}
 	
 	public TokenList(ArrayList<TokenPattern<?>> patterns) {
-		this.patterns = patterns;
+		this.patterns.addAll(patterns);
 	}
 	
 	public void add(TokenPattern<?> pattern) {
-		patterns.add(pattern);
+		if(pattern != null)	patterns.add(pattern);
 	}
 	
 	@Override

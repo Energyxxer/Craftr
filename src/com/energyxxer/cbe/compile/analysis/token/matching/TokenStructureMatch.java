@@ -57,17 +57,18 @@ public class TokenStructureMatch extends TokenPatternMatch {
 			if(longestMatch == null) {
 				longestMatch = itemMatch;
 			} else if(itemMatch.length >= longestMatch.length) {
-				if(longestMatch.matched && !itemMatch.matched) {
-					
-				} else {
+				if(!longestMatch.matched || itemMatch.matched) {
 					longestMatch = itemMatch;
 				}
 			}
 			
 		}
-		if(longestMatch == null || longestMatch.matched) {			
+
+		if(longestMatch == null || longestMatch.matched) {
+			if(name.equals("METHOD")) System.out.println("DOESN'T MATCH OH NO");
 			return new TokenMatchResponse(true, null, (longestMatch == null) ? 0 : longestMatch.length, (longestMatch == null) ? null : new TokenStructure(this.name,longestMatch.pattern));
 		} else {
+			if(name.equals("UNIT_COMPONENT")) System.out.println(">> " + longestMatch);
 			return new TokenMatchResponse(false, longestMatch.faultyToken, longestMatch.length, longestMatch.expected, new TokenStructure(this.name,longestMatch.pattern));
 		}
 	}
@@ -82,18 +83,20 @@ public class TokenStructureMatch extends TokenPatternMatch {
 		return ((optional) ? "[" : "<") + "-" + name + "-" + ((optional) ? "]" : ">");
 	}
 	
-	public String deepToString() {
-		String s = "";
+	public String deepToString(int levels) {
+		if(levels <= 0) return toString();
+		String s = ((optional) ? "[" : "<") + "-";
 		for (int i = 0; i < entries.size(); i++) {
-			if(entries.get(i) instanceof TokenStructureMatch) {
-				s += "[-" + ((TokenStructureMatch) (entries.get(i))).name + "-]";
-			} else {
-				s += entries.get(i);
-			}
+			s += entries.get(i).deepToString(levels-1);
 			if (i < entries.size() - 1) {
-				s += "\n OR";
+				s += "\n OR ";
 			}
 		}
-		return s;
+		return s + "-" + ((optional) ? "]" : ">");
+	}
+
+	@Override
+	public String toTrimmedString() {
+		return name;
 	}
 }

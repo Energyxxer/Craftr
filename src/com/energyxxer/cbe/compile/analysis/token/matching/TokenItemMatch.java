@@ -53,7 +53,7 @@ public class TokenItemMatch extends TokenPatternMatch {
 		st.push(thisInvoc);
 		boolean matched;
 		Token faultyToken = null;
-		int length = length();
+		int length = 1;
 
 		if (tokens.size() == 0) {
 			matched = false;
@@ -68,16 +68,16 @@ public class TokenItemMatch extends TokenPatternMatch {
 			faultyToken = tokens.get(0);
 		}
 
-		if (!matched && optional) {
+		/*if (!matched && optional) {
 			matched = true;
 			faultyToken = null;
 			length = 0;
-		}
+		}*/
 		
 		TokenItem item = null;
 		if(tokens.size() > 0) item = new TokenItem(tokens.get(0)).setName(this.name);
 
-		return new TokenMatchResponse(matched, faultyToken, length, ((matched) ? null : type), item);
+		return new TokenMatchResponse(matched, faultyToken, length, this, item);
 	}
 	
 	public String getType() {
@@ -107,4 +107,16 @@ public class TokenItemMatch extends TokenPatternMatch {
 		}
 		return s;
 	}
+
+	@Override
+	public String deepToString(int levels) {
+		return toString();
+	}
+
+	@Override
+	public String toTrimmedString() {
+		return (stringMatch != null) ? stringMatch : type;
+	}
+
+
 }

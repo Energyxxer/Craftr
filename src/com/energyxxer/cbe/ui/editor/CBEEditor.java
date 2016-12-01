@@ -177,7 +177,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 			Iterator it = syntax.getStyles().entrySet().iterator();
 			while (it.hasNext()) {
 				Map.Entry pair = (Map.Entry) it.next();
-				System.out.println(pair.getKey() + " = " + pair.getValue());
+				//System.out.println(pair.getKey() + " = " + pair.getValue());
 				editor.removeStyle((String) pair.getKey());
 				it.remove();
 			}
@@ -234,7 +234,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 
 		String text = getText();
 		
-		new Analyzer(new File(associatedTab.path), text, new TokenStream() {
+		new Analyzer(new File(associatedTab.path), text, new TokenStream(true) {
 			@Override
 			public void onWrite(Token token) {
 				Style style = editor.getStyle(token.type.toLowerCase());

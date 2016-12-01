@@ -18,14 +18,6 @@ public class TokenMatchResponse {
 		this.length = length;
 		this.pattern = pattern;
 	}
-
-	public TokenMatchResponse(boolean matched, Token faultyToken, int length, String expected, TokenPattern<?> pattern) {
-		this.matched = matched;
-		this.faultyToken = faultyToken;
-		this.length = length;
-		this.expected = new TokenItemMatch(expected);
-		this.pattern = pattern;
-	}
 	
 	public TokenMatchResponse(boolean matched, Token faultyToken, int length, TokenPatternMatch expected, TokenPattern<?> pattern) {
 		this.matched = matched;
@@ -40,7 +32,7 @@ public class TokenMatchResponse {
 		String ft = null;
 		if(faultyToken != null) ft = StringUtil.escapeHTML(faultyToken.value);
 		String e = null;
-		if(expected != null) e = StringUtil.escapeHTML(expected.toString());
+		if(expected != null) e = StringUtil.escapeHTML(expected.toTrimmedString());
 		return "TokenMatchResponse [matched=" + matched + ", faultyToken=" + ft + ", length=" + length
 				+ ", expected=" + e + "]";
 	}
@@ -62,13 +54,22 @@ public class TokenMatchResponse {
 	public String getFormattedErrorMessage() {
 		if (!matched) {
 			if(faultyToken == null) {
-				return "<span style=\"color:red;\">Uncaught Syntax Error: Unexpected end of input. Expected " + expected + ".\n</span>";
+				return "<span style=\"color:red;\">Uncaught Syntax Error: Unexpected end of input. Expected "
+						+ expected + ".\n</span>";
+			}
+			if(expected == null) {
+				return "<span style=\"color:red;\">Uncaught Syntax Error: Unexpected token " + faultyToken.value
+						+ ".\n\tat </span>"
+						+ faultyToken.getFormattedPath() + "";
 			}
 			if(faultyToken != null && faultyToken.type == TokenType.END_OF_FILE) {
-				return "<span style=\"color:red;\">Uncaught Syntax Error: Unexpected end of input. Expected " + StringUtil.escapeHTML(expected.toString()) + ".\n\tat </span>" + faultyToken.getFormattedPath() + "";
+				return "<span style=\"color:red;\">Uncaught Syntax Error: Unexpected end of input. Expected "
+						+ StringUtil.escapeHTML(expected.toTrimmedString()) + ".\n\tat </span>"
+						+ faultyToken.getFormattedPath() + "";
 			}
 			return "<span style=\"color:red;\">Uncaught Syntax Error: Unexpected token " + faultyToken.value
-					+ ". Expected " + StringUtil.escapeHTML(expected.toString()) + ", instead got " + faultyToken.type + "\n\tat </span>"
+					+ ". Expected " + StringUtil.escapeHTML(expected.toTrimmedString())
+					+ ", instead got " + faultyToken.type + "\n\tat </span>"
 					+ faultyToken.getFormattedPath() + "";
 		}
 		return null;

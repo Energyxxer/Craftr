@@ -1,14 +1,14 @@
 package com.energyxxer.cbe.compile.analysis.token.matching;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.energyxxer.cbe.compile.analysis.token.Token;
 import com.energyxxer.cbe.compile.analysis.token.TokenMatchResponse;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenGroup;
 import com.energyxxer.cbe.util.MethodInvocation;
 import com.energyxxer.cbe.util.Stack;
 import com.energyxxer.cbe.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a group of token items. This represents a structure a sequence of
@@ -62,6 +62,7 @@ public class TokenGroupMatch extends TokenPatternMatch {
 		for (int i = 0; i < items.size(); i++) {
 			if (currentToken >= tokens.size() && !items.get(i).optional) {
 				hasMatched = false;
+				expected = items.get(i);
 				break;
 			}
 
@@ -101,6 +102,41 @@ public class TokenGroupMatch extends TokenPatternMatch {
 		} else {
 			s += ">";
 		}
-		return StringUtil.escapeHTML(s);
+		return s;
+	}
+
+	@Override
+	public String deepToString(int levels) {
+		if(levels <= 0) return toString();
+		String s = "";
+		if (this.optional) {
+			s += "[";
+		} else {
+			s += "<";
+		}
+		for (int i = 0; i < items.size(); i++) {
+			s += items.get(i).deepToString(levels-1);
+			if (i < items.size() - 1) {
+				s += " ";
+			}
+		}
+		if (this.optional) {
+			s += "]";
+		} else {
+			s += ">";
+		}
+		return s;
+	}
+
+	@Override
+	public String toTrimmedString() {
+		String s = "";
+		for (int i = 0; i < items.size(); i++) {
+			s += items.get(i).toTrimmedString();
+			if (i < items.size() - 1) {
+				s += " ";
+			}
+		}
+		return s;
 	}
 }

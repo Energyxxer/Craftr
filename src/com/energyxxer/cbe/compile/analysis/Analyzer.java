@@ -28,7 +28,7 @@ public class Analyzer {
 		this.stream = stream;
 		parse(project);
 	};
-	
+
 	public Analyzer(File file, String str, TokenStream stream) {
 		this.stream = stream;
 		tokenize(file, str);

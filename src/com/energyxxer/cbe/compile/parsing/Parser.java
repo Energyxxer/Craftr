@@ -14,6 +14,7 @@ import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
 import com.energyxxer.cbe.compile.parsing.classes.CBEEntity;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.logic.Project;
+import com.energyxxer.cbe.util.StringUtil;
 
 public class Parser {
 	
@@ -35,33 +36,45 @@ public class Parser {
 		}
 		
 		for(ArrayList<Token> f : tokens) {
-			TokenMatchResponse match = LangStructures.UNIT_DECLARATION.match(f);
-			
+
+			System.out.println();
+
+			TokenMatchResponse match = LangStructures.FILE.match(f);
+
+			System.out.println(f);
+			System.out.println(match);
+
+
 			if(!match.matched) {
-				System.out.println(match.getFormattedErrorMessage());
+				System.out.println(match.pattern);
+				System.err.println(match.getFormattedErrorMessage());
 				return;
 			}
 			
 			TokenPattern<?> pattern = match.pattern;
 
-			String type = pattern.search(TokenType.UNIT_TYPE).get(0).value;
-			Token nameToken = ((TokenItem) pattern.searchByName("UNIT_NAME").get(0)).getContents();
-			String name = nameToken.value;
-			String file = nameToken.file;
-			
-			//System.out.println(file);
-			
-			List<TokenPattern<?>> actions = pattern.searchByName("UNIT_ACTION");
-			
-			if(type.equals("entity")) {
-				CBEEntity e = new CBEEntity(name, project,new File(file)).setDeclaration(pattern);
-				for(TokenPattern<?> action : actions) {
-					if(action.search(TokenType.UNIT_ACTION).get(0).value.equals("extends")) {
-						e.entityExtends = action.search(TokenType.IDENTIFIER).get(0).value;
+			List<TokenPattern<?>> units = pattern.searchByName("UNIT");
+
+			for(TokenPattern<?> unit : units) {
+				String type = unit.search(TokenType.UNIT_TYPE).get(0).value;
+				Token nameToken = ((TokenItem) pattern.searchByName("UNIT_NAME").get(0)).getContents();
+				String name = nameToken.value;
+				String file = nameToken.file;
+
+				//System.out.println(file);
+
+				List<TokenPattern<?>> actions = pattern.searchByName("UNIT_ACTION");
+
+				if (type.equals("entity")) {
+					CBEEntity e = new CBEEntity(name, project, new File(file)).setDeclaration(pattern);
+					for (TokenPattern<?> action : actions) {
+						if (action.search(TokenType.UNIT_ACTION).get(0).value.equals("extends")) {
+							e.entityExtends = action.search(TokenType.IDENTIFIER).get(0).value;
+						}
 					}
+
+					reg.add(e);
 				}
-				
-				reg.add(e);
 			}
 		}
 		if(!reg.close()) return;
@@ -69,6 +82,6 @@ public class Parser {
 		for(CBEEntity e : reg) {
 			ProjectManager.setIconFor(e.file, "*entities" + File.separator + e.entityType);
 		}
-		//System.out.println(reg);
+		System.out.println(reg);
 	}
 }

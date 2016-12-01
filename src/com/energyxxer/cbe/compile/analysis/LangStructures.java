@@ -8,8 +8,22 @@ import com.energyxxer.cbe.compile.analysis.token.matching.TokenListMatch;
 import com.energyxxer.cbe.compile.analysis.token.matching.TokenStructureMatch;
 
 public class LangStructures {
-	public final static TokenStructureMatch UNIT_DECLARATION;
-	public final static TokenStructureMatch DATA_TYPE;
+
+    public final static TokenStructureMatch FILE;
+
+    public final static TokenStructureMatch UNIT;
+
+	public final static TokenStructureMatch IMPORT;
+    public final static TokenStructureMatch UNIT_DECLARATION;
+    public final static TokenStructureMatch UNIT_BODY;
+    public final static TokenStructureMatch UNIT_COMPONENT;
+
+    public final static TokenStructureMatch FIELD;
+    public final static TokenStructureMatch METHOD;
+
+    public final static TokenStructureMatch VARIABLE_DECLARATION;
+
+    public final static TokenStructureMatch DATA_TYPE;
 	public final static TokenStructureMatch METHOD_CALL;
 	public final static TokenStructureMatch VALUE;
 	public final static TokenStructureMatch EXPRESSION;
@@ -18,14 +32,131 @@ public class LangStructures {
 	public final static TokenStructureMatch ANNOTATION;
 
 	static {
+
+	    FILE = new TokenStructureMatch("FILE");
+
+        UNIT = new TokenStructureMatch("UNIT");
+
+		IMPORT = new TokenStructureMatch("IMPORT");
 		UNIT_DECLARATION = new TokenStructureMatch("UNIT_DECLARATION");
-		DATA_TYPE = new TokenStructureMatch("DATA_TYPE");
+        UNIT_BODY = new TokenStructureMatch("UNIT_BODY");
+        UNIT_COMPONENT = new TokenStructureMatch("UNIT_COMPONENT");
+
+        FIELD = new TokenStructureMatch("FIELD");
+        METHOD = new TokenStructureMatch("METHOD");
+
+        VARIABLE_DECLARATION = new TokenStructureMatch("VARIABLE_DECLARATION");
+
+        DATA_TYPE = new TokenStructureMatch("DATA_TYPE");
 		EXPRESSION = new TokenStructureMatch("EXPRESSION");
 		VALUE = new TokenStructureMatch("VALUE");
 		METHOD_CALL = new TokenStructureMatch("METHOD_CALL");
 		STATEMENT = new TokenStructureMatch("STATEMENT");
 		CODE_BLOCK = new TokenStructureMatch("CODE_BLOCK");
 		ANNOTATION = new TokenStructureMatch("ANNOTATION");
+
+        {
+            TokenGroupMatch g = new TokenGroupMatch();
+
+            g.append(new TokenListMatch(IMPORT,true));
+            g.append(new TokenListMatch(UNIT));
+
+            FILE.add(g);
+        }
+
+        {
+            TokenGroupMatch g = new TokenGroupMatch();
+
+            g.append(UNIT_DECLARATION);
+            g.append(UNIT_BODY);
+
+            UNIT.add(g);
+        }
+
+        {
+            //UNIT_COMPONENT.add(FIELD);
+            UNIT_COMPONENT.add(METHOD);
+        }
+
+        {
+            TokenGroupMatch g = new TokenGroupMatch();
+            g.append(new TokenListMatch(TokenType.QUALIFIER,true));
+            g.append(DATA_TYPE);
+            g.append(new TokenItemMatch(TokenType.IDENTIFIER));
+            {
+                TokenGroupMatch g2 = new TokenGroupMatch(true);
+                g2.append(new TokenItemMatch(TokenType.OPERATOR,"="));
+                g2.append(VALUE);
+                g.append(g2);
+            }
+            g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+
+            VARIABLE_DECLARATION.add(g);
+        }
+
+        {
+            TokenGroupMatch g = new TokenGroupMatch();
+            g.append(new TokenGroupMatch(true).append(ANNOTATION));
+            g.append(new TokenListMatch(TokenType.QUALIFIER,true));
+            g.append(DATA_TYPE);
+            {
+                TokenGroupMatch g2 = new TokenGroupMatch();
+
+                g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
+                g2.append(new TokenItemMatch(TokenType.OPERATOR,"="));
+                g2.append(VALUE);
+
+                g.append(new TokenListMatch(g2,new TokenItemMatch(TokenType.COMMA)));
+            }
+            g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+
+            FIELD.add(g);
+        }
+
+        {
+            TokenGroupMatch g = new TokenGroupMatch();
+            //g.append(new TokenGroupMatch(true).append(ANNOTATION));
+            g.append(new TokenListMatch(TokenType.QUALIFIER,true));
+            g.append(DATA_TYPE);
+            g.append(new TokenItemMatch(TokenType.IDENTIFIER));
+
+            /*g.append(new TokenItemMatch(TokenType.BRACE,"("));
+
+            {
+                TokenGroupMatch g2 = new TokenGroupMatch();
+
+                g2.append(DATA_TYPE);
+                g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
+                g.append(new TokenListMatch(g2,new TokenItemMatch(TokenType.COMMA),true));
+            }
+
+            g.append(new TokenItemMatch(TokenType.BRACE,")"));
+
+            g.append(CODE_BLOCK);*/
+
+            METHOD.add(g);
+        }
+
+        {
+            TokenGroupMatch g = new TokenGroupMatch();
+            g.append(new TokenItemMatch(TokenType.BRACE,"{"));
+
+            g.append(new TokenListMatch(UNIT_COMPONENT,true));
+
+            g.append(new TokenItemMatch(TokenType.BRACE,"}"));
+
+            UNIT_BODY.add(g);
+        }
+
+		{
+			TokenGroupMatch g = new TokenGroupMatch();
+
+			g.append(new TokenItemMatch(TokenType.KEYWORD,"import"));
+			g.append(new TokenListMatch(TokenType.IDENTIFIER, TokenType.DOT));
+			g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+
+			IMPORT.add(g);
+		}
 		
 		{
 			TokenGroupMatch g = new TokenGroupMatch();
@@ -74,8 +205,13 @@ public class LangStructures {
 			g.append(new TokenItemMatch(TokenType.BRACE,")"));
 			METHOD_CALL.add(g);
 		}
-		
-		
+
+        {
+            DATA_TYPE.add(new TokenItemMatch(TokenType.DATA_TYPE));
+            DATA_TYPE.add(new TokenItemMatch(TokenType.UNIT_TYPE));
+            DATA_TYPE.add(new TokenListMatch(TokenType.IDENTIFIER,TokenType.DOT));
+        }
+
 		{
 			
 			// [VALUE OPERATOR...]

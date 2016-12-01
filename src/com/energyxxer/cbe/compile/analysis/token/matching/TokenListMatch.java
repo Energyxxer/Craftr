@@ -83,7 +83,7 @@ public class TokenListMatch extends TokenPatternMatch {
 			if (this.separator != null && expectSeparator) {
 				TokenMatchResponse itemMatch = this.separator.match(tokens.subList(i, tokens.size()), st);
 				if(!itemMatch.matched) {
-					return new TokenMatchResponse(true, null, length, list);
+					return new TokenMatchResponse(true, null, itemMatch.length + length, list);
 				} else {
 					list.add(itemMatch.pattern);
 					i += itemMatch.length-1;
@@ -94,7 +94,7 @@ public class TokenListMatch extends TokenPatternMatch {
 				if (this.separator != null) {
 					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
 					if(!itemMatch.matched) {
-						return new TokenMatchResponse(false, tokens.get(i), length, this.pattern, list);
+						return new TokenMatchResponse(false, tokens.get(i), itemMatch.length + length, this.pattern, list);
 					} else {
 						list.add(itemMatch.pattern);
 						i += itemMatch.length-1;
@@ -103,7 +103,11 @@ public class TokenListMatch extends TokenPatternMatch {
 				} else {
 					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
 					if(!itemMatch.matched) {
-						return new TokenMatchResponse(true, null, length, list);
+						if(length > 0) {
+							return new TokenMatchResponse(true, null, itemMatch.length + length-1, list);
+						} else {
+							return new TokenMatchResponse(false, itemMatch.faultyToken, itemMatch.length + length, itemMatch.expected, list);
+						}
 					} else {
 						list.add(itemMatch.pattern);
 						i += itemMatch.length-1;
@@ -138,8 +142,41 @@ public class TokenListMatch extends TokenPatternMatch {
 		if (optional) {
 			s += "]";
 		} else {
+			s += ">";
+		}
+		return s;
+	}
+
+	@Override
+	public String deepToString(int levels) {
+		if(levels <= 0) return toString();
+		String s = "";
+		if (optional) {
+			s += "[";
+		} else {
 			s += "<";
 		}
+		s += pattern.deepToString(levels-1);
+		if (separator != null) {
+			s += "," + separator;
+		}
+		s += "...";
+		if (optional) {
+			s += "]";
+		} else {
+			s += ">";
+		}
+		return s;
+	}
+
+	@Override
+	public String toTrimmedString() {
+		String s = "";
+		s += pattern.toTrimmedString();
+		if (separator != null) {
+			s += "," + separator.toTrimmedString();
+		}
+		s += "...";
 		return s;
 	}
 }
