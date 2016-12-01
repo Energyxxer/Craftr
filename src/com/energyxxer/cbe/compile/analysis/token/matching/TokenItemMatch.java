@@ -49,15 +49,13 @@ public class TokenItemMatch extends TokenPatternMatch {
 	}
 
 	public TokenMatchResponse match(List<Token> tokens, Stack st) {
-		MethodInvocation thisInvoc = new MethodInvocation("TokenItemMatch", "match", new String[] {"List<Token>"}, new Object[] {tokens});
+		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
 		st.push(thisInvoc);
 		boolean matched;
 		Token faultyToken = null;
-		int length = 1;
 
 		if (tokens.size() == 0) {
 			matched = false;
-			length = 0;
 		} else if (stringMatch != null) {
 			matched = tokens.get(0).type.equals(this.type) && tokens.get(0).value.equals(stringMatch);
 		} else {
@@ -68,24 +66,17 @@ public class TokenItemMatch extends TokenPatternMatch {
 			faultyToken = tokens.get(0);
 		}
 
-		/*if (!matched && optional) {
-			matched = true;
-			faultyToken = null;
-			length = 0;
-		}*/
+		int length = (matched) ? 1 : 0;
 		
 		TokenItem item = null;
 		if(tokens.size() > 0) item = new TokenItem(tokens.get(0)).setName(this.name);
 
-		return new TokenMatchResponse(matched, faultyToken, length, this, item);
+		st.pop();
+		return new TokenMatchResponse(matched, faultyToken, length, (matched) ? null : this, item);
 	}
 	
 	public String getType() {
 		return type;
-	}
-
-	public int length() {
-		return 1;
 	}
 
 	@Override

@@ -27,11 +27,6 @@ public class TokenGroupMatch extends TokenPatternMatch {
 		items = new ArrayList<TokenPatternMatch>();
 	}
 
-	@Override
-	public int length() {
-		return items.size();
-	}
-
 	public TokenGroupMatch append(TokenPatternMatch i) {
 		items.add(i);
 		return this;
@@ -49,20 +44,19 @@ public class TokenGroupMatch extends TokenPatternMatch {
 
 	@Override
 	public TokenMatchResponse match(List<Token> tokens, Stack st) {
-		MethodInvocation thisInvoc = new MethodInvocation("TokenGroupMatch", "match", new String[] {"List<Token>"}, new Object[] {tokens});
+
+	    if(items.size() == 0) return new TokenMatchResponse(true, null, 0, null, new TokenGroup());
+
+		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
 		st.push(thisInvoc);
-		/*if (tokens.size() == 0 && !optional)
-			return new TokenMatchResponse(false, null, 0);*/
+
 		TokenGroup group = (tokens.size() == 0) ? null : new TokenGroup().setName(this.name);
 		int currentToken = 0;
 		boolean hasMatched = true;
 		Token faultyToken = null;
 		int length = 0;
 		TokenPatternMatch expected = null;
-		//System.out.println();
 		for (int i = 0; i < items.size(); i++) {
-
-			//System.out.println(currentToken + "c : " + i + "i");
 
 			if (currentToken >= tokens.size() && !items.get(i).optional) {
 				hasMatched = false;
@@ -72,6 +66,7 @@ public class TokenGroupMatch extends TokenPatternMatch {
 
 			TokenMatchResponse itemMatch = items.get(i).match(tokens.subList(currentToken, tokens.size()),st);
 			if (!itemMatch.matched) {
+				length += itemMatch.length;
 				if(!items.get(i).optional) {
 					hasMatched = false;
 					faultyToken = itemMatch.faultyToken;
@@ -84,6 +79,7 @@ public class TokenGroupMatch extends TokenPatternMatch {
 				length += itemMatch.length;
 			}
 		}
+		st.pop();
 		return new TokenMatchResponse(hasMatched, faultyToken, length, expected, group);
 	}
 

@@ -71,9 +71,10 @@ public class TokenListMatch extends TokenPatternMatch {
 
 	@Override
 	public TokenMatchResponse match(List<Token> tokens, Stack st) {
-		MethodInvocation thisInvoc = new MethodInvocation("TokenListMatch", "match", new String[] {"List<Token>"}, new Object[] {tokens});
+		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
 		st.push(thisInvoc);
 		if (tokens.size() == 0) {
+			st.pop();
 			return new TokenMatchResponse(false, null, 0, this.pattern, null);
 		}
 		boolean expectSeparator = false;
@@ -83,7 +84,8 @@ public class TokenListMatch extends TokenPatternMatch {
 			if (this.separator != null && expectSeparator) {
 				TokenMatchResponse itemMatch = this.separator.match(tokens.subList(i, tokens.size()), st);
 				if(!itemMatch.matched) {
-					return new TokenMatchResponse(true, null, length, list);
+					st.pop();
+					return new TokenMatchResponse(true, null, itemMatch.length + length, list);
 				} else {
 					list.add(itemMatch.pattern);
 					i += itemMatch.length-1;
@@ -94,7 +96,8 @@ public class TokenListMatch extends TokenPatternMatch {
 				if (this.separator != null) {
 					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
 					if(!itemMatch.matched) {
-						return new TokenMatchResponse(false, tokens.get(i), length, this.pattern, list);
+						st.pop();
+						return new TokenMatchResponse(false, itemMatch.faultyToken, itemMatch.length + length, itemMatch.expected, list);
 					} else {
 						list.add(itemMatch.pattern);
 						i += itemMatch.length-1;
@@ -104,9 +107,11 @@ public class TokenListMatch extends TokenPatternMatch {
 					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
 					if(!itemMatch.matched) {
 						if(length > 0) {
-							return new TokenMatchResponse(true, null, length, list);
+							st.pop();
+							return new TokenMatchResponse(true, null, itemMatch.length + length, list);
 						} else {
-							return new TokenMatchResponse(false, itemMatch.faultyToken, length, itemMatch.expected, list);
+							st.pop();
+							return new TokenMatchResponse(false, itemMatch.faultyToken, itemMatch.length + length, itemMatch.expected, list);
 						}
 					} else {
 						list.add(itemMatch.pattern);
@@ -118,12 +123,8 @@ public class TokenListMatch extends TokenPatternMatch {
 			}
 			length++;
 		}
+		st.pop();
 		return new TokenMatchResponse(true, null, length, list);
-	}
-
-	@Override
-	public int length() {
-		return -1;
 	}
 
 	@Override

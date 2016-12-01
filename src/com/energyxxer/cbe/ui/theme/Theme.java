@@ -34,4 +34,7 @@ public abstract class Theme {
 	public Color b4;
 	//Gradient Colors
 	public Color g1;
+
+	//Error Text Colors
+	public Color err0;
 }

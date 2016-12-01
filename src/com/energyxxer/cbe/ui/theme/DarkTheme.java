@@ -40,6 +40,9 @@ public class DarkTheme extends Theme {
 		b4 = new Color(55, 55, 55);
 		//Gradient Colors
 		g1 = new Color(255,255,255,20);
+
+		//Error Text Colors
+		err0 = new Color(255,100,100);
 	}
 	
 	public static Theme getInstance() {

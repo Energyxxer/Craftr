@@ -3,6 +3,8 @@ package com.energyxxer.cbe.compile.analysis.token;
 import com.energyxxer.cbe.compile.analysis.token.matching.TokenItemMatch;
 import com.energyxxer.cbe.compile.analysis.token.matching.TokenPatternMatch;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
+import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.util.ColorUtil;
 import com.energyxxer.cbe.util.StringUtil;
 
 public class TokenMatchResponse {
@@ -54,28 +56,24 @@ public class TokenMatchResponse {
 	public String getFormattedErrorMessage() {
 		if (!matched) {
 			if(faultyToken == null) {
-				return "<span style=\"color:red;\">Uncaught Syntax Error: Unexpected end of input. Expected "
+				return "<span style=\"color:" + ColorUtil.toCSS(Window.theme.err0) + ";\">Uncaught Syntax Error: Unexpected end of input. Expected "
 						+ expected + ".\n</span>";
 			}
 			if(expected == null) {
-				return "<span style=\"color:red;\">Uncaught Syntax Error: Unexpected token " + faultyToken.value
+				return "<span style=\"color:" + ColorUtil.toCSS(Window.theme.err0) + ";\">Uncaught Syntax Error: Unexpected token " + faultyToken.value
 						+ ".\n\tat </span>"
 						+ faultyToken.getFormattedPath() + "";
 			}
 			if(faultyToken != null && faultyToken.type == TokenType.END_OF_FILE) {
-				return "<span style=\"color:red;\">Uncaught Syntax Error: Unexpected end of input. Expected "
+				return "<span style=\"color:" + ColorUtil.toCSS(Window.theme.err0) + ";\">Uncaught Syntax Error: Unexpected end of input. Expected "
 						+ StringUtil.escapeHTML(expected.toTrimmedString()) + ".\n\tat </span>"
 						+ faultyToken.getFormattedPath() + "";
 			}
-			return "<span style=\"color:red;\">Uncaught Syntax Error: Unexpected token " + faultyToken.value
+			return "<span style=\"color:" + ColorUtil.toCSS(Window.theme.err0) + ";\">Uncaught Syntax Error: Unexpected token " + faultyToken.value
 					+ ". Expected " + StringUtil.escapeHTML(expected.toTrimmedString())
 					+ ", instead got " + faultyToken.type + "\n\tat </span>"
 					+ faultyToken.getFormattedPath() + "";
 		}
 		return null;
-	}
-
-	public void showStackTrace() {
-		throw new RuntimeException("Stack trace:");
 	}
 }

@@ -5,6 +5,8 @@ import static com.energyxxer.cbe.compile.analysis.token.TokenType.*;
 import com.energyxxer.cbe.compile.analysis.LangConstants;
 
 public class TokenAttributes {
+	public static final String IS_KEYWORD = "IS_KEYWORD";
+
 	public static final String IS_ENUM = "IS_ENUM";
 	public static final String IS_ENTITY = "IS_ENTITY";
 	public static final String IS_ITEM = "IS_ITEM";
@@ -17,6 +19,7 @@ public class TokenAttributes {
 	public static final String CLOSING_BRACE = "CLOSING_BRACE";
 	
 	public static void giveAttributes(Token t) {
+		t.attributes.put(IS_KEYWORD, LangConstants.pseudo_keywords.contains(t.value));
 		if(t.type == IDENTIFIER) {
 			t.attributes.put(IS_ENUM, LangConstants.enums.contains(t.value));
 			t.attributes.put(IS_ENTITY, LangConstants.entities.contains(t.value));

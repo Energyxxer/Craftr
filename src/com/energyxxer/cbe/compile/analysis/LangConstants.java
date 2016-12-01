@@ -29,7 +29,7 @@ public class LangConstants {
 	public static final String[] operators = { "+=", "+", "-=", "-", "*=", "*", "/=", "/", "%=", "%", "<=", ">=", "==", "=", "<", ">", "^=", "^" };
 	public static final String[] identifier_operators = { "++", "--" };
 	public static final String[] logical_negation_operators = { "!" };
-	public static final String[] keywords = { "if", "else", "while", "for", "switch", "case", "default", "new", "this", "import" };
+	public static final String[] keywords = { "if", "else", "while", "for", "switch", "case", "default", "new", "import" };
 	public static final String[] action_keywords = { "break", "continue", "return" };
 	public static final String[] dots = { "." };
 	public static final String[] commas = { "," };
@@ -38,6 +38,8 @@ public class LangConstants {
 	public static final String[] nulls = { "null" };
 
 	public static final List<String> enums = Arrays.asList("Block", "Item", "Gamemode", "Stat", "Achievement", "Effect", "Particle", "Enchantment", "Dimension");
+
+	public static final List<String> pseudo_keywords = Arrays.asList("this");
 
 	public static final String[] blockstate_marker = { "#" };
 	public static final List<String> blockstate_specials = Arrays.asList("default");

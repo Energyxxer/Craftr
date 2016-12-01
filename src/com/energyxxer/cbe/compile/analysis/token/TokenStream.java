@@ -32,9 +32,9 @@ public class TokenStream implements Iterable<Token> {
 	}
 	
 	public final void write(Token token, boolean skip) {
-		if(!token.isSignificant() && !includeInsignificantTokens) return;
 		if(skip || !addEnvironmentAttributes(token)) {
 			onWrite(token);
+			if(!token.isSignificant() && !includeInsignificantTokens) return;
 			tokens.add(token);
 		}
 	}

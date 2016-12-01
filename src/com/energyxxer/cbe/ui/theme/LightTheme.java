@@ -40,6 +40,9 @@ public class LightTheme extends Theme {
 		b4 = new Color(180, 200, 210);
 		//Gradient Colors
 		g1 = Color.WHITE;
+
+		//Error Text Colors
+		err0 = new Color(255,100,100);
 	}
 	
 	public static Theme getInstance() {

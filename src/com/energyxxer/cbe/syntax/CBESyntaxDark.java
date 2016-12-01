@@ -31,6 +31,8 @@ public class CBESyntaxDark extends Syntax {
 		styles.put("annotation_marker", new Style().setColor("#999999").setItalic().getMap());
 		styles.put("blockstate", new Style().setColor("#66FFAA").setBold().setItalic().getMap());
 
+		styles.put("#is_keyword", new Style().setColor("#1290c3").setBold().getMap());
+
 		styles.put("#is_entity", new Style().setColor("#99FF66").getMap());
 		styles.put("#is_enum", new Style().setColor("#AA66FF").getMap());
 		styles.put("#is_enum_value", new Style().setColor("#66BBFF").setBold().getMap());

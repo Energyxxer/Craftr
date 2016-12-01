@@ -1,13 +1,13 @@
 package com.energyxxer.cbe.compile.analysis.token.matching;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.energyxxer.cbe.compile.analysis.token.Token;
 import com.energyxxer.cbe.compile.analysis.token.TokenMatchResponse;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenStructure;
 import com.energyxxer.cbe.util.MethodInvocation;
 import com.energyxxer.cbe.util.Stack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents a token structure, containing multiple ways a series of tokens
@@ -43,39 +43,39 @@ public class TokenStructureMatch extends TokenPatternMatch {
 
 	@Override
 	public TokenMatchResponse match(List<Token> tokens, Stack st) {
-		MethodInvocation thisInvoc = new MethodInvocation(("TokenStructureMatch" + "#" + name).intern(), "match", new String[] {"List<Token>"}, new Object[] {tokens});
-		if(st.find(thisInvoc)) {
+		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[]{"List<Token>"}, new Object[]{tokens});
+		if (st.find(thisInvoc)) {
 			//System.out.println("Breaking infinite loop...");
-			return new TokenMatchResponse(false, tokens.get(0), 1, null);
+			return new TokenMatchResponse(false, tokens.get(0), 0, this, null);
 		}
 		st.push(thisInvoc);
-		
+
 		TokenMatchResponse longestMatch = null;
-		for (int i = 0; i < entries.size(); i++) {
-			TokenMatchResponse itemMatch = entries.get(i).match(tokens, st);
-			
-			if(longestMatch == null) {
+
+		for (TokenPatternMatch entry : entries) {
+			TokenMatchResponse itemMatch = entry.match(tokens.subList(0,tokens.size()),st);
+
+			if (longestMatch == null) {
 				longestMatch = itemMatch;
-			} else if(itemMatch.length >= longestMatch.length) {
-				if(!longestMatch.matched || itemMatch.matched) {
+			} else if (itemMatch.length >= longestMatch.length) {
+				if (!longestMatch.matched || itemMatch.matched) {
 					longestMatch = itemMatch;
 				}
 			}
-			
+
+		}
+		st.pop();
+
+		if (longestMatch == null || longestMatch.matched) {
+			return new TokenMatchResponse(true, null, (longestMatch == null) ? 0 : longestMatch.length, (longestMatch == null) ? null : new TokenStructure(this.name, longestMatch.pattern));
+		} else {
+			if (longestMatch.length <= 0 && entries.size() > 1) {
+				return new TokenMatchResponse(false, longestMatch.faultyToken, longestMatch.length, this, new TokenStructure(this.name, longestMatch.pattern));
+			} else {
+				return new TokenMatchResponse(false, longestMatch.faultyToken, longestMatch.length, longestMatch.expected, new TokenStructure(this.name, longestMatch.pattern));
+			}
 		}
 
-		if(longestMatch == null || longestMatch.matched) {
-			//if(name.equals("METHOD")) System.out.println("DOESN'T MATCH OH NO");
-			return new TokenMatchResponse(true, null, (longestMatch == null) ? 0 : longestMatch.length, (longestMatch == null) ? null : new TokenStructure(this.name,longestMatch.pattern));
-		} else {
-			//if(name.equals("UNIT_COMPONENT")) System.out.println(">> " + longestMatch);
-			return new TokenMatchResponse(false, longestMatch.faultyToken, longestMatch.length, longestMatch.expected, new TokenStructure(this.name,longestMatch.pattern));
-		}
-	}
-	
-	@Override
-	public int length() {
-		return -1;
 	}
 
 	@Override

@@ -23,6 +23,8 @@ public class LangStructures {
 
     public final static TokenStructureMatch VARIABLE_DECLARATION;
 
+	public final static TokenStructureMatch IDENTIFIER;
+
     public final static TokenStructureMatch DATA_TYPE;
 	public final static TokenStructureMatch METHOD_CALL;
 	public final static TokenStructureMatch VALUE;
@@ -31,9 +33,11 @@ public class LangStructures {
 	public final static TokenStructureMatch CODE_BLOCK;
 	public final static TokenStructureMatch ANNOTATION;
 
+	public final static TokenGroupMatch IF_STATEMENT;
+
 	static {
 
-	    FILE = new TokenStructureMatch("FILE");
+	    FILE = new TokenStructureMatch("Oh you couldn't even get the first token right!");
 
         UNIT = new TokenStructureMatch("UNIT");
 
@@ -45,7 +49,9 @@ public class LangStructures {
         FIELD = new TokenStructureMatch("FIELD");
         METHOD = new TokenStructureMatch("METHOD");
 
-        VARIABLE_DECLARATION = new TokenStructureMatch("VARIABLE_DECLARATION");
+		IDENTIFIER = new TokenStructureMatch("IDENTIFIER");
+
+		VARIABLE_DECLARATION = new TokenStructureMatch("VARIABLE_DECLARATION");
 
         DATA_TYPE = new TokenStructureMatch("DATA_TYPE");
 		EXPRESSION = new TokenStructureMatch("EXPRESSION");
@@ -55,13 +61,17 @@ public class LangStructures {
 		CODE_BLOCK = new TokenStructureMatch("CODE_BLOCK");
 		ANNOTATION = new TokenStructureMatch("ANNOTATION");
 
+		{
+			IDENTIFIER.add(new TokenListMatch(TokenType.IDENTIFIER,TokenType.DOT));
+		}
+
         {
-            TokenGroupMatch g = new TokenGroupMatch();
+			TokenGroupMatch g = new TokenGroupMatch();
 
-            g.append(new TokenListMatch(IMPORT,true));
-            g.append(new TokenListMatch(UNIT));
+			g.append(new TokenGroupMatch().append(IMPORT));
+			g.append(new TokenListMatch(UNIT));
 
-            FILE.add(g);
+			FILE.add(g);
         }
 
         {
@@ -74,7 +84,7 @@ public class LangStructures {
         }
 
         {
-            //UNIT_COMPONENT.add(FIELD);
+            UNIT_COMPONENT.add(FIELD);
             UNIT_COMPONENT.add(METHOD);
         }
 
@@ -141,7 +151,7 @@ public class LangStructures {
             TokenGroupMatch g = new TokenGroupMatch();
             g.append(new TokenItemMatch(TokenType.BRACE,"{"));
 
-            g.append(new TokenListMatch(UNIT_COMPONENT,true));
+            g.append(new TokenListMatch(UNIT_COMPONENT));
 
             g.append(new TokenItemMatch(TokenType.BRACE,"}"));
 
@@ -150,9 +160,18 @@ public class LangStructures {
 
 		{
 			TokenGroupMatch g = new TokenGroupMatch();
+			g.append(new TokenItemMatch(TokenType.BRACE,"{"));
+
+			g.append(new TokenItemMatch(TokenType.BRACE,"}"));
+
+			UNIT_BODY.add(g);
+		}
+
+		{
+			TokenGroupMatch g = new TokenGroupMatch(true);
 
 			g.append(new TokenItemMatch(TokenType.KEYWORD,"import"));
-			g.append(new TokenListMatch(TokenType.IDENTIFIER, TokenType.DOT));
+			g.append(IDENTIFIER);
 			g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 
 			IMPORT.add(g);
@@ -162,11 +181,12 @@ public class LangStructures {
 			TokenGroupMatch g = new TokenGroupMatch();
 			g.append(new TokenItemMatch(TokenType.DATA_TYPE));
 			{
-				TokenGroupMatch g2 = new TokenGroupMatch(true);
+				TokenGroupMatch g2 = new TokenGroupMatch();
 				g2.append(new TokenItemMatch(TokenType.BRACE,"["));
 				g2.append(new TokenItemMatch(TokenType.BRACE,"]"));
-				g.append(new TokenListMatch(g2));
+				g.append(new TokenListMatch(g2,true));
 			}
+			DATA_TYPE.add(g);
 		}
 		
 		{
@@ -186,10 +206,10 @@ public class LangStructures {
 			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("UNIT_NAME"));
 			
 			{
-				TokenGroupMatch g2 = new TokenGroupMatch(true).setName("UNIT_ACTION");
+				TokenGroupMatch g2 = new TokenGroupMatch().setName("UNIT_ACTION");
 				g2.append(new TokenItemMatch(TokenType.UNIT_ACTION));
 				g2.append(new TokenListMatch(new TokenItemMatch(TokenType.IDENTIFIER).setName("UNIT_ACTION_REFERENCE"),new TokenItemMatch(TokenType.COMMA)));
-				g.append(new TokenListMatch(g2));
+				g.append(new TokenGroupMatch(true).append(new TokenListMatch(g2)));
 			}
 
 			UNIT_DECLARATION.add(g);
@@ -197,15 +217,15 @@ public class LangStructures {
 		
 		{
 			TokenGroupMatch g = new TokenGroupMatch();
-			g.append(new TokenListMatch(TokenType.IDENTIFIER,TokenType.DOT));
+			g.append(IDENTIFIER);
 			g.append(new TokenItemMatch(TokenType.BRACE,"("));
-			g.append(new TokenListMatch(VALUE));
+			g.append(new TokenListMatch(VALUE, new TokenItemMatch(TokenType.COMMA)));
 			g.append(new TokenItemMatch(TokenType.BRACE,")"));
 			METHOD_CALL.add(g);
+
 		}
 
         {
-            DATA_TYPE.add(new TokenItemMatch(TokenType.DATA_TYPE));
             DATA_TYPE.add(new TokenItemMatch(TokenType.UNIT_TYPE));
             DATA_TYPE.add(new TokenListMatch(TokenType.IDENTIFIER,TokenType.DOT));
         }
@@ -213,6 +233,8 @@ public class LangStructures {
 		{
 			
 			// [VALUE OPERATOR...]
+
+			EXPRESSION.add(METHOD_CALL);
 			
 			{
 				TokenGroupMatch g = new TokenGroupMatch();
@@ -281,18 +303,27 @@ public class LangStructures {
 			VALUE.add(new TokenItemMatch(TokenType.STRING_LITERAL));
 			// [IDENTIFIER DOT...]
 			VALUE.add(new TokenListMatch(TokenType.IDENTIFIER,TokenType.DOT));
-			// [NEGATION_OPERATOR][-VALUE-]
-			TokenGroupMatch g = new TokenGroupMatch();
-			g.append(new TokenItemMatch(TokenType.LOGICAL_NEGATION_OPERATOR));
-			g.append(VALUE);
-			VALUE.add(g);
+			{
+				// [NEGATION_OPERATOR][-VALUE-]
+				TokenGroupMatch g = new TokenGroupMatch();
+				g.append(new TokenItemMatch(TokenType.LOGICAL_NEGATION_OPERATOR));
+				g.append(VALUE);
+				VALUE.add(g);
+			}
+			{
+				TokenGroupMatch g = new TokenGroupMatch();
+				g.append(IDENTIFIER);
+				g.append(new TokenItemMatch(TokenType.BLOCKSTATE));
+				VALUE.add(g);
+			}
+
 		}
 		
 		
 		{
 			{
 				TokenGroupMatch g = new TokenGroupMatch();
-					g.append(EXPRESSION);
+				g.append(EXPRESSION);
 				
 				g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 				STATEMENT.add(g);
@@ -311,9 +342,16 @@ public class LangStructures {
 			{
 				TokenGroupMatch g = new TokenGroupMatch();
 				g.append(new TokenItemMatch(TokenType.BRACE,"{"));
-				g.append(new TokenListMatch(STATEMENT,true));
+				g.append(new TokenListMatch(STATEMENT));
 				g.append(new TokenItemMatch(TokenType.BRACE,"}"));
 				
+				CODE_BLOCK.add(g);
+			}
+			{
+				TokenGroupMatch g = new TokenGroupMatch();
+				g.append(new TokenItemMatch(TokenType.BRACE,"{"));
+				g.append(new TokenItemMatch(TokenType.BRACE,"}"));
+
 				CODE_BLOCK.add(g);
 			}
 			{
@@ -324,19 +362,7 @@ public class LangStructures {
 			}
 		}
 		
-		TokenStructureMatch EXPRESSION_BLOCK = new TokenStructureMatch("EXPRESSION_BLOCK",true);
-
-		EXPRESSION_BLOCK.add(EXPRESSION);
-		{
-			TokenGroupMatch g = new TokenGroupMatch();
-			g.append(new TokenItemMatch(TokenType.BRACE,"{"));
-			g.append(new TokenListMatch(STATEMENT));
-			g.append(new TokenItemMatch(TokenType.BRACE,"}"));
-			
-			EXPRESSION_BLOCK.add(g);
-		}
-		
-		TokenGroupMatch IF_STATEMENT = new TokenGroupMatch();
+		IF_STATEMENT = new TokenGroupMatch();
 		TokenStructureMatch ELSE_STATEMENT = new TokenStructureMatch("ELSE_STATEMENT",true);
 		
 		{
@@ -379,15 +405,15 @@ public class LangStructures {
 			//(
 			FOR_STATEMENT.append(new TokenItemMatch(TokenType.BRACE,"("));
 			//int i = 0
-			FOR_STATEMENT.append(EXPRESSION_BLOCK);
+			FOR_STATEMENT.append(CODE_BLOCK);
 			//;
 			FOR_STATEMENT.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 			//i < str.length();
-			FOR_STATEMENT.append(EXPRESSION_BLOCK);
+			FOR_STATEMENT.append(CODE_BLOCK);
 			//;
 			FOR_STATEMENT.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 			//i++
-			FOR_STATEMENT.append(EXPRESSION_BLOCK);
+			FOR_STATEMENT.append(CODE_BLOCK);
 			//)
 			FOR_STATEMENT.append(new TokenItemMatch(TokenType.BRACE,")"));
 			//{...}

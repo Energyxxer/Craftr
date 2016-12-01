@@ -1,20 +1,23 @@
 package com.energyxxer.cbe.compile.parsing;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.energyxxer.cbe.compile.analysis.LangStructures;
 import com.energyxxer.cbe.compile.analysis.token.Token;
 import com.energyxxer.cbe.compile.analysis.token.TokenMatchResponse;
 import com.energyxxer.cbe.compile.analysis.token.TokenStream;
 import com.energyxxer.cbe.compile.analysis.token.TokenType;
+import com.energyxxer.cbe.compile.analysis.token.matching.TokenGroupMatch;
+import com.energyxxer.cbe.compile.analysis.token.matching.TokenItemMatch;
+import com.energyxxer.cbe.compile.analysis.token.matching.TokenListMatch;
+import com.energyxxer.cbe.compile.analysis.token.matching.TokenStructureMatch;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenItem;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
 import com.energyxxer.cbe.compile.parsing.classes.CBEEntity;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.logic.Project;
-import com.energyxxer.cbe.util.StringUtil;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Parser {
 	
@@ -37,16 +40,9 @@ public class Parser {
 		
 		for(ArrayList<Token> f : tokens) {
 
-			System.out.println();
+			TokenMatchResponse match = LangStructures.FILE.match(f);
 
-
-			TokenMatchResponse match = LangStructures.UNIT.match(f);
-
-			System.out.println(f);
-			System.out.println(match);
-
-			/*if(!match.matched) {
-				System.out.println(match.pattern);
+			if(!match.matched) {
 				System.err.println(match.getFormattedErrorMessage());
 				return;
 			}
@@ -61,8 +57,6 @@ public class Parser {
 				String name = nameToken.value;
 				String file = nameToken.file;
 
-				//System.out.println(file);
-
 				List<TokenPattern<?>> actions = pattern.searchByName("UNIT_ACTION");
 
 				if (type.equals("entity")) {
@@ -75,13 +69,13 @@ public class Parser {
 
 					reg.add(e);
 				}
-			}*/
+			}
 		}
-		/*if(!reg.close()) return;
+		if(!reg.close()) return;
 		
 		for(CBEEntity e : reg) {
 			ProjectManager.setIconFor(e.file, "*entities" + File.separator + e.entityType);
 		}
-		System.out.println(reg);*/
+		System.out.println(reg);
 	}
 }

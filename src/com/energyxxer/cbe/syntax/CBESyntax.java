@@ -32,6 +32,8 @@ public class CBESyntax extends Syntax {
 		styles.put("identifier_operator", new Style().setColor("#A72D2D").getMap());
 		styles.put("null", new Style().setColor("#880000").setBold().getMap());
 
+		styles.put("#is_keyword", new Style().setColor("#6655CC").setBold().getMap());
+
 		styles.put("#is_entity", new Style().setColor("#447722").getMap());
 		styles.put("#is_enum", new Style().setColor("#BB44AA").getMap());
 		styles.put("#is_enum_value", new Style().setColor("#000088").setBold().getMap());
