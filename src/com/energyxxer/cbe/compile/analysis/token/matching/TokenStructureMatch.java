@@ -65,10 +65,10 @@ public class TokenStructureMatch extends TokenPatternMatch {
 		}
 
 		if(longestMatch == null || longestMatch.matched) {
-			if(name.equals("METHOD")) System.out.println("DOESN'T MATCH OH NO");
+			//if(name.equals("METHOD")) System.out.println("DOESN'T MATCH OH NO");
 			return new TokenMatchResponse(true, null, (longestMatch == null) ? 0 : longestMatch.length, (longestMatch == null) ? null : new TokenStructure(this.name,longestMatch.pattern));
 		} else {
-			if(name.equals("UNIT_COMPONENT")) System.out.println(">> " + longestMatch);
+			//if(name.equals("UNIT_COMPONENT")) System.out.println(">> " + longestMatch);
 			return new TokenMatchResponse(false, longestMatch.faultyToken, longestMatch.length, longestMatch.expected, new TokenStructure(this.name,longestMatch.pattern));
 		}
 	}

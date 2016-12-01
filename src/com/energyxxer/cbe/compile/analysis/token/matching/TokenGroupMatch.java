@@ -59,7 +59,11 @@ public class TokenGroupMatch extends TokenPatternMatch {
 		Token faultyToken = null;
 		int length = 0;
 		TokenPatternMatch expected = null;
+		//System.out.println();
 		for (int i = 0; i < items.size(); i++) {
+
+			//System.out.println(currentToken + "c : " + i + "i");
+
 			if (currentToken >= tokens.size() && !items.get(i).optional) {
 				hasMatched = false;
 				expected = items.get(i);

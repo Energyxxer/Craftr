@@ -83,7 +83,7 @@ public class TokenListMatch extends TokenPatternMatch {
 			if (this.separator != null && expectSeparator) {
 				TokenMatchResponse itemMatch = this.separator.match(tokens.subList(i, tokens.size()), st);
 				if(!itemMatch.matched) {
-					return new TokenMatchResponse(true, null, itemMatch.length + length, list);
+					return new TokenMatchResponse(true, null, length, list);
 				} else {
 					list.add(itemMatch.pattern);
 					i += itemMatch.length-1;
@@ -94,7 +94,7 @@ public class TokenListMatch extends TokenPatternMatch {
 				if (this.separator != null) {
 					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
 					if(!itemMatch.matched) {
-						return new TokenMatchResponse(false, tokens.get(i), itemMatch.length + length, this.pattern, list);
+						return new TokenMatchResponse(false, tokens.get(i), length, this.pattern, list);
 					} else {
 						list.add(itemMatch.pattern);
 						i += itemMatch.length-1;
@@ -104,9 +104,9 @@ public class TokenListMatch extends TokenPatternMatch {
 					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
 					if(!itemMatch.matched) {
 						if(length > 0) {
-							return new TokenMatchResponse(true, null, itemMatch.length + length-1, list);
+							return new TokenMatchResponse(true, null, length, list);
 						} else {
-							return new TokenMatchResponse(false, itemMatch.faultyToken, itemMatch.length + length, itemMatch.expected, list);
+							return new TokenMatchResponse(false, itemMatch.faultyToken, length, itemMatch.expected, list);
 						}
 					} else {
 						list.add(itemMatch.pattern);

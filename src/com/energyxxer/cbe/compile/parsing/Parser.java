@@ -39,13 +39,13 @@ public class Parser {
 
 			System.out.println();
 
-			TokenMatchResponse match = LangStructures.FILE.match(f);
+
+			TokenMatchResponse match = LangStructures.UNIT.match(f);
 
 			System.out.println(f);
 			System.out.println(match);
 
-
-			if(!match.matched) {
+			/*if(!match.matched) {
 				System.out.println(match.pattern);
 				System.err.println(match.getFormattedErrorMessage());
 				return;
@@ -75,13 +75,13 @@ public class Parser {
 
 					reg.add(e);
 				}
-			}
+			}*/
 		}
-		if(!reg.close()) return;
+		/*if(!reg.close()) return;
 		
 		for(CBEEntity e : reg) {
 			ProjectManager.setIconFor(e.file, "*entities" + File.separator + e.entityType);
 		}
-		System.out.println(reg);
+		System.out.println(reg);*/
 	}
 }

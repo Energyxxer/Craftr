@@ -74,4 +74,8 @@ public class TokenMatchResponse {
 		}
 		return null;
 	}
+
+	public void showStackTrace() {
+		throw new RuntimeException("Stack trace:");
+	}
 }
