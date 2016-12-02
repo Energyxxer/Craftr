@@ -14,6 +14,7 @@ import com.energyxxer.cbe.util.Stack;
 public class TokenListMatch extends TokenPatternMatch {
 	protected TokenPatternMatch pattern;
 	protected TokenPatternMatch separator = null;
+	protected boolean omittable = false;
 
 	public TokenListMatch(String type) {
 		this.pattern = new TokenItemMatch(type);
@@ -73,58 +74,81 @@ public class TokenListMatch extends TokenPatternMatch {
 	public TokenMatchResponse match(List<Token> tokens, Stack st) {
 		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
 		st.push(thisInvoc);
-		if (tokens.size() == 0) {
+		if (tokens.size() == 0 && !omittable) {
 			st.pop();
 			return new TokenMatchResponse(false, null, 0, this.pattern, null);
 		}
 		boolean expectSeparator = false;
+
+		boolean hasMatched = true;
+		Token faultyToken = null;
 		int length = 0;
+		TokenPatternMatch expected = null;
 		TokenList list = new TokenList().setName(this.name);
-		for (int i = 0; i < tokens.size(); i++) {
+
+		for (int i = 0; i < tokens.size();) {
+
 			if (this.separator != null && expectSeparator) {
 				TokenMatchResponse itemMatch = this.separator.match(tokens.subList(i, tokens.size()), st);
-				if(!itemMatch.matched) {
-					st.pop();
-					return new TokenMatchResponse(true, null, itemMatch.length + length, list);
-				} else {
-					list.add(itemMatch.pattern);
-					i += itemMatch.length-1;
-					length += itemMatch.length-1;
-				}
 				expectSeparator = false;
+				if(!itemMatch.matched) {
+					if(itemMatch.length > 0) {
+						hasMatched = false;
+						faultyToken = itemMatch.faultyToken;
+						expected = itemMatch.expected;
+						length += itemMatch.length;
+						list.add(itemMatch.pattern);
+						break;
+					} else {
+						break;
+					}
+				} else {
+					i += itemMatch.length;
+					length += itemMatch.length;
+					list.add(itemMatch.pattern);
+				}
 			} else {
 				if (this.separator != null) {
 					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
-					if(!itemMatch.matched) {
-						st.pop();
-						return new TokenMatchResponse(false, itemMatch.faultyToken, itemMatch.length + length, itemMatch.expected, list);
-					} else {
+					if(!itemMatch.matched && (length > 0 || (length == 0 && !omittable))) {
+						hasMatched = false;
+						faultyToken = itemMatch.faultyToken;
+						expected = itemMatch.expected;
+						length += itemMatch.length;
 						list.add(itemMatch.pattern);
-						i += itemMatch.length-1;
-						length += itemMatch.length-1;
+						break;
+					} else {
+						i += itemMatch.length;
+						length += itemMatch.length;
+						list.add(itemMatch.pattern);
 					}
 				} else {
 					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
+					length += itemMatch.length;
 					if(!itemMatch.matched) {
-						if(length > 0) {
-							st.pop();
-							return new TokenMatchResponse(true, null, itemMatch.length + length, list);
+						if((length > 0 || (length <= 0 && !omittable)) && itemMatch.length > 0) {
+							hasMatched = false;
+							faultyToken = itemMatch.faultyToken;
+							expected = itemMatch.expected;
+							list.add(itemMatch.pattern);
+							break;
+
 						} else {
-							st.pop();
-							return new TokenMatchResponse(false, itemMatch.faultyToken, itemMatch.length + length, itemMatch.expected, list);
+							hasMatched = true;
+							faultyToken = null;
+							expected = null;
+							break;
 						}
 					} else {
+						i += itemMatch.length;
 						list.add(itemMatch.pattern);
-						i += itemMatch.length-1;
-						length += itemMatch.length-1;
 					}
 				}
 				expectSeparator = true;
 			}
-			length++;
 		}
 		st.pop();
-		return new TokenMatchResponse(true, null, length, list);
+		return new TokenMatchResponse(hasMatched, faultyToken, length, expected, list);
 	}
 
 	@Override
@@ -179,5 +203,20 @@ public class TokenListMatch extends TokenPatternMatch {
 		}
 		s += "...";
 		return s;
+	}
+
+	@Override
+	public boolean isSensitive() {
+		return true;
+	}
+
+	@Override
+	public boolean isOmittable() {
+		return omittable;
+	}
+
+	public TokenListMatch setOmittable(boolean value) {
+		this.omittable = value;
+		return this;
 	}
 }

@@ -99,4 +99,14 @@ public class TokenStructureMatch extends TokenPatternMatch {
 	public String toTrimmedString() {
 		return name;
 	}
+
+	@Override
+	public boolean isSensitive() {
+		return false;
+	}
+
+	@Override
+	public boolean isOmittable() {
+		return false;
+	}
 }

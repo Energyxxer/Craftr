@@ -67,7 +67,7 @@ public class TokenGroupMatch extends TokenPatternMatch {
 			TokenMatchResponse itemMatch = items.get(i).match(tokens.subList(currentToken, tokens.size()),st);
 			if (!itemMatch.matched) {
 				length += itemMatch.length;
-				if(!items.get(i).optional) {
+				if(!items.get(i).optional || items.get(i).isSensitive()) {
 					hasMatched = false;
 					faultyToken = itemMatch.faultyToken;
 					expected = itemMatch.expected;
@@ -138,5 +138,15 @@ public class TokenGroupMatch extends TokenPatternMatch {
 			}
 		}
 		return s;
+	}
+
+	@Override
+	public boolean isSensitive() {
+		return false;
+	}
+
+	@Override
+	public boolean isOmittable() {
+		return false;
 	}
 }

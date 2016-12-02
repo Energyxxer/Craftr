@@ -41,12 +41,15 @@ public class Parser {
 		for(ArrayList<Token> f : tokens) {
 
 			TokenMatchResponse match = LangStructures.FILE.match(f);
+			//TokenMatchResponse match = new TokenListMatch(LangStructures.IMPORT).setOmittable(true).match(f);
+
+			System.out.println(match);
 
 			if(!match.matched) {
 				System.err.println(match.getFormattedErrorMessage());
 				return;
 			}
-			
+			/*
 			TokenPattern<?> pattern = match.pattern;
 
 			List<TokenPattern<?>> units = pattern.searchByName("UNIT");
@@ -69,7 +72,7 @@ public class Parser {
 
 					reg.add(e);
 				}
-			}
+			}*/
 		}
 		if(!reg.close()) return;
 		
