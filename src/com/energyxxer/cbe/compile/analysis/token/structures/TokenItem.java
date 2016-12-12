@@ -1,9 +1,11 @@
 package com.energyxxer.cbe.compile.analysis.token.structures;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.energyxxer.cbe.compile.analysis.token.Token;
+import com.energyxxer.cbe.util.StringLocation;
 
 public class TokenItem extends TokenPattern<Token> {
 	private Token token;
@@ -42,4 +44,23 @@ public class TokenItem extends TokenPattern<Token> {
 		return list;
 	}
 
+	@Override
+	public String flatten(boolean separate) {
+		return token.value;
+	}
+
+	@Override
+	public File getFile() {
+		return new File(token.file);
+	}
+
+	@Override
+	protected StringLocation getStringLocation() {
+		return new StringLocation(token.loc.index, token.loc.line, token.loc.column);
+	}
+
+	@Override
+	protected int getCharLength() {
+		return token.value.length();
+	}
 }

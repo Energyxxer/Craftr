@@ -45,7 +45,7 @@ public class Token {
 	}
 
 	public String getFormattedPath() {
-		return "<a href=\"file:" + File.separator + File.separator + file + "?" + loc.line + ":" + loc.column + "\">"
+		return "<a href=\"file:" + File.separator + File.separator + file + "?" + loc.line + ":" + loc.column + "&" + value.length() + "\">"
 				+ getLocation() + "</a>";
 	}
 

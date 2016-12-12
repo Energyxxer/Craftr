@@ -10,8 +10,7 @@ import com.energyxxer.cbe.compile.analysis.LangConstants;
  */
 public class TokenType {
 	public static final String NULL = "NULL"; // Literal "null"
-	public static final String LINE_BREAK = "LINE_BREAK"; // \n
-	public static final String QUALIFIER = "QUALIFIER"; // public, static,
+	public static final String MODIFIER = "MODIFIER"; // public, static,
 														// synchronized...
 	public static final String UNIT_TYPE = "UNIT_TYPE"; // entity, item
 	public static final String UNIT_ACTION = "UNIT_ACTION"; // extends, base...
@@ -47,10 +46,10 @@ public class TokenType {
 			return NUMBER;
 		} catch(NumberFormatException e) {}
 		
-		String[][] patterns = { LangConstants.qualifiers, LangConstants.unit_types, LangConstants.unit_actions,
+		String[][] patterns = { LangConstants.modifiers, LangConstants.unit_types, LangConstants.unit_actions,
 				LangConstants.braces, LangConstants.data_types, LangConstants.keywords, LangConstants.action_keywords, LangConstants.dots,
 				LangConstants.commas, LangConstants.colons, LangConstants.booleans, LangConstants.nulls, LangConstants.blockstate_marker };
-		String[] types = { QUALIFIER, UNIT_TYPE, UNIT_ACTION, BRACE, DATA_TYPE, KEYWORD, ACTION_KEYWORD, DOT, COMMA, COLON, BOOLEAN, NULL, BLOCKSTATE_MARKER };
+		String[] types = {MODIFIER, UNIT_TYPE, UNIT_ACTION, BRACE, DATA_TYPE, KEYWORD, ACTION_KEYWORD, DOT, COMMA, COLON, BOOLEAN, NULL, BLOCKSTATE_MARKER };
 
 		for (int i = 0; i < patterns.length; i++) {
 			for (int j = 0; j < patterns[i].length; j++) {

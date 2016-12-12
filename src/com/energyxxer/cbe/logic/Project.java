@@ -21,6 +21,7 @@ import com.energyxxer.cbe.util.StringUtil;
 public class Project {
 
 	public File directory;
+	public File source;
 	private String name = null;
 
 	private String prefix = null;
@@ -30,12 +31,15 @@ public class Project {
 	
 	public Project(String name) {
 		this.directory = new File(Preferences.get("workspace_dir") + File.separator + name);
+		this.source = new File(Preferences.get("workspace_dir") + File.separator + name + File.separator + "src");
 		this.name = name;
 		this.prefix = StringUtil.getInitials(name).toLowerCase();
+		this.icons.put("src","src");
 	}
 	
 	public Project(File directory) {
 		this.directory = directory;
+		this.source = new File(directory.getAbsolutePath() + File.separator + "src");
 		File config = new File(directory.getAbsolutePath() + File.separator + ".project");
 		if(config != null && config.exists() && config.isFile() && config.getName().equals(".project")) {
 			byte[] encoded;
@@ -78,11 +82,13 @@ public class Project {
 			return;
 		}
 		this.directory = null;
+		this.source = null;
 		throw new RuntimeException("Invalid configuration file.");
 	}
 	
 	public Project rename(String name) throws IOException {
-		if(exists()) {
+		File newFile = new File(Preferences.get("workspace_dir") + File.separator + name);
+		if(newFile.exists()) {
 			throw new IOException("A project by that name already exists!");
 		}
 		this.name = name;
@@ -112,6 +118,7 @@ public class Project {
 	public Project createNew() {
 		if(!exists()) {
 			this.directory.mkdirs();
+			this.source.mkdirs();
 			File config = new File(directory.getAbsolutePath() + File.separator + ".project");
 			try {
 				config.createNewFile();

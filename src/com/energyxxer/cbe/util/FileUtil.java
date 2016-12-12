@@ -1,6 +1,7 @@
 package com.energyxxer.cbe.util;
 
 import java.io.File;
+import java.util.regex.Matcher;
 
 /**
  * Provides utility methods for dealing with files.
@@ -37,5 +38,9 @@ public class FileUtil {
 	 */
 	public static String normalize(String path) {
 		return path.replace("/", File.separator.replace("\\", "\\\\"));
+	}
+
+	public static String getRelativePath(File file, File root) {
+		return file.getAbsolutePath().replaceFirst(Matcher.quoteReplacement(root.getAbsolutePath() + File.separator),"");
 	}
 }

@@ -14,6 +14,10 @@ public class TokenMatchResponse {
 	public TokenPatternMatch expected = null;
 	public TokenPattern<?> pattern = null;
 
+	public static final int NO_MATCH = 0;
+	public static final int PARTIAL_MATCH = 1;
+	public static final int COMPLETE_MATCH = 2;
+
 	public TokenMatchResponse(boolean matched, Token faultyToken, int length, TokenPattern<?> pattern) {
 		this.matched = matched;
 		this.faultyToken = faultyToken;
@@ -27,6 +31,12 @@ public class TokenMatchResponse {
 		this.length = length;
 		this.expected = expected;
 		this.pattern = pattern;
+	}
+
+	public int getMatchType() {
+		if(matched) return COMPLETE_MATCH;
+		if(length > 0) return PARTIAL_MATCH;
+		return NO_MATCH;
 	}
 
 	@Override

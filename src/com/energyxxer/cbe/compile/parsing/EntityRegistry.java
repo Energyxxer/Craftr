@@ -8,7 +8,7 @@ import java.util.List;
 import com.energyxxer.cbe.compile.analysis.token.Token;
 import com.energyxxer.cbe.compile.analysis.token.TokenType;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
-import com.energyxxer.cbe.compile.parsing.classes.CBEEntity;
+import com.energyxxer.cbe.compile.parsing.classes.units.CBEEntity;
 import com.energyxxer.cbe.minecraft.MinecraftConstants;
 import com.energyxxer.cbe.util.vprimitives.VInteger;
 
@@ -16,7 +16,7 @@ public class EntityRegistry implements Iterable<CBEEntity> {
 	private HashMap<String, CBEEntity> entities = new HashMap<String, CBEEntity>();
 	
 	public void add(CBEEntity e) {
-		entities.put(e.name,e);
+		entities.put(e.getName(),e);
 	}
 	
 	public boolean close() {
@@ -33,7 +33,7 @@ public class EntityRegistry implements Iterable<CBEEntity> {
 				
 			} else {
 				Token token = null;
-				List<TokenPattern<?>> actions = e.declaration.searchByName("UNIT_ACTION");
+				List<TokenPattern<?>> actions = e.getDeclaration().searchByName("UNIT_ACTION");
 				for(TokenPattern<?> action : actions) {
 					if(action.search(TokenType.UNIT_ACTION).get(0).value.equals("extends")) {
 						token = action.search(TokenType.IDENTIFIER).get(0);
@@ -54,10 +54,10 @@ public class EntityRegistry implements Iterable<CBEEntity> {
 		it = entities.keySet().iterator();
 		while(it.hasNext()) {
 			CBEEntity e = entities.get(it.next());
-			if(MinecraftConstants.entities.contains(e.name)) {
-				e.entityExtends = e.entityType = e.name;
+			if(MinecraftConstants.entities.contains(e.getName())) {
+				e.entityExtends = e.entityType = e.getName();
 			} else if(e.entityExtends != null && !MinecraftConstants.entities.contains(e.entityExtends)) {
-				markedForRemoval.add(e.name);
+				markedForRemoval.add(e.getName());
 			} else if(e.entityExtends == null) {
 				e.entityExtends = e.entityType = "armor_stand";
 			}

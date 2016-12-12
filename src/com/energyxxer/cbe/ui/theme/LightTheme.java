@@ -10,7 +10,10 @@ public class LightTheme extends Theme {
 		
 		name = "Light Theme";
 		path = "light_theme/";
-		
+
+		//Fonts
+		font1 = "Tahoma";
+		font2 = "monospaced";
 		//Primary Colors
 		p1 = new Color(255, 255, 255);
 		p2 = new Color(235, 235, 235);
@@ -25,6 +28,15 @@ public class LightTheme extends Theme {
 		s2 = null;
 		s3 = null;
 		s4 = null;
+		//Editor Colors
+		e1 = new Color(255, 255, 255);
+		e2 = new Color(235, 235, 235);
+		e3 = new Color(255, 255, 255);
+		//Highlighting Colors
+		h1 = new Color(235, 235, 235);
+		h2 = new Color(190, 190, 190);
+		h3 = new Color(50, 100, 175);
+		h4 = new Color(187, 187, 187);
 		//Text Colors
 		t1 = new Color(0,0,0);
 		t2 = null;
@@ -32,7 +44,8 @@ public class LightTheme extends Theme {
 		t4 = null;
 		//Line Colors
 		l1 = new Color(200, 200, 200);
-		l2 = new Color(180, 200, 210);
+		l2 = new Color(150, 150, 150);
+		l3 = new Color(180, 200, 210);
 		//Button Colors
 		b1 = new Color(240, 245, 255);
 		b2 = new Color(200, 220, 230);

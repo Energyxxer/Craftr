@@ -10,6 +10,7 @@ import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.ui.explorer.Explorer;
 import com.energyxxer.cbe.util.FileUtil;
 import com.energyxxer.cbe.util.StringPrompt;
+import com.energyxxer.cbe.util.StringUtil;
 import com.energyxxer.cbe.util.StringValidator;
 
 /**
@@ -69,6 +70,8 @@ public class FileFactory {
 				newFile.createNewFile();
 				ProjectManager.setIconFor(newFile, "entity");
 				PrintWriter writer = new PrintWriter(path, "UTF-8");
+				writer.println("package " + (StringUtil.stripExtension(FileUtil.getRelativePath(newFile.getParentFile(),ProjectManager.getAssociatedProject(newFile).directory))).replace(File.separator,".") + ";");
+				writer.println();
 				writer.println("public entity " + entityName + " {");
 				writer.println("	");
 				writer.println("}");

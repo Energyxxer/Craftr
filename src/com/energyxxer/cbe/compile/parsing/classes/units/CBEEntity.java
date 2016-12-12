@@ -1,33 +1,26 @@
-package com.energyxxer.cbe.compile.parsing.classes;
+package com.energyxxer.cbe.compile.parsing.classes.units;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
+import com.energyxxer.cbe.compile.parsing.classes.files.CBEFile;
 import com.energyxxer.cbe.compile.parsing.classes.fields.Field;
-import com.energyxxer.cbe.logic.Project;
-import com.energyxxer.cbe.minecraft.Entity;
+import com.energyxxer.cbe.compile.parsing.exceptions.CBEParserException;
 import com.energyxxer.cbe.minecraft.util.Selector;
 import com.energyxxer.cbe.util.Range;
 import com.energyxxer.cbe.util.vprimitives.VInteger;
 
-public class CBEEntity extends Entity {
-	private final Project project;
+public class CBEEntity extends CBEUnit {
 	
 	public int id;
-	protected boolean isPublic;
 	protected ArrayList<String> promises = new ArrayList<String>();
 	protected ArrayList<Field> fields = new ArrayList<Field>();
 	public ArrayList<CBEEntity> subEntities = new ArrayList<CBEEntity>();
 	public String entityExtends = null;
 	public String entityType = "armor_stand";
-	public TokenPattern<?> declaration = null;
-	public File file = null;
 	
-	public CBEEntity(String name, Project project, File file) {
-		this.name = name;
-		this.project = project;
-		this.file = file;
+	public CBEEntity(CBEFile file, TokenPattern unit) throws CBEParserException {
+		super(file, unit);
 	}
 	public CBEEntity newField(Field f) {
 		this.fields.add(f);
@@ -43,10 +36,6 @@ public class CBEEntity extends Entity {
 		for(CBEEntity e : subEntities) {
 			e.setID(id);
 		}
-		return this;
-	}
-	public CBEEntity setDeclaration(TokenPattern<?> p) {
-		this.declaration = p;
 		return this;
 	}
 	public CBEEntity propagateType() {
@@ -70,8 +59,8 @@ public class CBEEntity extends Entity {
 		Selector s = new Selector("@e");
 		Range r = getIdRange();
 		s.args.put("type", entityType);
-		s.args.put("score_" + project.getPrefix() + "_eid_min", "" +((int) r.min));
-		s.args.put("score_" + project.getPrefix() + "_eid", "" + "" + ((int) r.max));
+		s.args.put("score_" + file.getProject().getPrefix() + "_eid_min", "" +((int) r.min));
+		s.args.put("score_" + file.getProject().getPrefix() + "_eid", "" + "" + ((int) r.max));
 		return s;
 	}
 	

@@ -1,16 +1,11 @@
 package com.energyxxer.cbe.ui;
 
-import java.awt.AlphaComposite;
-import java.awt.Composite;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
+import javax.swing.*;
 
 import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.cbe.util.ImageManager;
 
 /**
@@ -24,9 +19,23 @@ public class ToolbarButton extends JButton {
 	private static final long serialVersionUID = -3354785558861039404L;
 	
 	public boolean scale = false;
+	private String icon = null;
 
 	public ToolbarButton() {
+		this(null, false);
+	}
+
+	public ToolbarButton(String icon) {
+		this(icon, false);
+	}
+
+	public ToolbarButton(boolean scale) {
+		this(null, scale);
+	}
+	
+	public ToolbarButton(String icon, boolean scale) {
 		super();
+		this.icon = icon;
 		this.setContentAreaFilled(false);
 		this.setBackground(Window.theme.p3);
 		this.setMinimumSize(new Dimension(25, 25));
@@ -34,17 +43,9 @@ public class ToolbarButton extends JButton {
 		this.setPreferredSize(new Dimension(25, 25));
 		this.setBorder(BorderFactory.createEmptyBorder());
 
-		this.setFocusPainted(false);
-	}
-	
-	public ToolbarButton(boolean scale) {
-		super();
-		this.setContentAreaFilled(false);
-		this.setBackground(Window.theme.p3);
-		this.setMinimumSize(new Dimension(25, 25));
-		this.setMaximumSize(new Dimension(25, 25));
-		this.setPreferredSize(new Dimension(25, 25));
-		this.setBorder(BorderFactory.createEmptyBorder());
+		ThemeChangeListener.addThemeChangeListener(t -> {
+			if(icon != null) this.setIcon(new ImageIcon(ImageManager.load(String.format("/assets/icons/%s%s.png", t.path, icon)).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
+		});
 
 		this.setFocusPainted(false);
 		this.scale = scale;

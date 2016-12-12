@@ -10,19 +10,21 @@ import com.energyxxer.cbe.syntax.Syntax;
 import com.energyxxer.cbe.ui.ToolbarButton;
 import com.energyxxer.cbe.ui.ToolbarSeparator;
 import com.energyxxer.cbe.ui.common.MenuItems;
+import com.energyxxer.cbe.ui.components.themechange.TCMenu;
+import com.energyxxer.cbe.ui.components.themechange.TCMenuItem;
 import com.energyxxer.cbe.ui.explorer.Explorer;
 import com.energyxxer.cbe.ui.theme.DarkTheme;
+import com.energyxxer.cbe.ui.theme.LightTheme;
 import com.energyxxer.cbe.ui.theme.Theme;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.cbe.util.ImageManager;
 import com.energyxxer.cbe.util.out.MultiOutputStream;
 import com.energyxxer.cbe.util.out.TextAreaOutputStream;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
@@ -34,262 +36,295 @@ import java.util.List;
  */
 public class Window {
 
-	public static final boolean useConsole = true;
+	private static final boolean useConsole = true;
 
 	public static JFrame jframe;
 
-	public static JMenuBar menuBar;
+	private static JMenuBar menuBar;
 
 	public static Explorer explorer;
 	public static JPanel tabList;
 
 	public static JPanel edit_area;
 	
-	public static Theme theme = DarkTheme.getInstance();
+	public static Theme theme = LightTheme.getInstance();
 
-	public static Dimension defaultSize = new Dimension(1200, 800);
+	private static final Dimension defaultSize = new Dimension(1200, 800);
 
 	public static PrintStream consoleOut = new PrintStream(System.out);
-	public static TextAreaOutputStream textConsoleOut = null;
-	public static JEditorPane console;
-	public static final int CONSOLE_HEIGHT = 200;
+	private static TextAreaOutputStream textConsoleOut = null;
+	private static final int CONSOLE_HEIGHT = 200;
 
 	public Window() {
 		jframe = new JFrame("Command Block Engine");
-		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-		jframe.getContentPane().setBackground(theme.p3);
+		ThemeChangeListener.addThemeChangeListener(t -> jframe.getContentPane().setBackground(t.p3));
 
-		try {
+		/*try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		menuBar = new JMenuBar();
-		menuBar.setBackground(theme.p1);
+		ThemeChangeListener.addThemeChangeListener(t -> {
+			menuBar.setBackground(t.p3);
+			menuBar.setBorder(BorderFactory.createMatteBorder(0,0,1,0,t.l2));
+		});
 
 		menuBar.setPreferredSize(new Dimension(0, 20));
 		jframe.setJMenuBar(menuBar);
 
-		if (true) {
-			{
-				JMenu menu = new JMenu(" File ");
-				menu.setMnemonic(KeyEvent.VK_F);
+		{
+            TCMenu menu = new TCMenu(" File ");
 
-				// --------------------------------------------------
+            menu.setMnemonic(KeyEvent.VK_F);
 
-				JMenu newMenu = MenuItems.newMenu("New                    ");
-				menu.add(newMenu);
+            // --------------------------------------------------
 
-				// --------------------------------------------------
 
-				menu.addSeparator();
+            TCMenu newMenu = MenuItems.newMenu("New                    ");
+            menu.add(newMenu);
 
-				// --------------------------------------------------
+            // --------------------------------------------------
 
-				JMenuItem saveItem = new JMenuItem("Save", new ImageIcon(ImageManager.load("/assets/icons/light_theme/save.png")
-						.getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
-				menu.add(saveItem);
-				saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+            menu.addSeparator();
 
-				// --------------------------------------------------
+            // --------------------------------------------------
 
-				JMenuItem saveAsItem = new JMenuItem("Save As", new ImageIcon(ImageManager
-						.load("/assets/icons/light_theme/save_as.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
-				menu.add(saveAsItem);
-				saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 3));
+            {
+                TCMenuItem item = new TCMenuItem("Save", "save");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+                menu.add(item);
+            }
 
-				// --------------------------------------------------
+            // --------------------------------------------------
 
-				JMenuItem saveAllItem = new JMenuItem("Save All", new ImageIcon(ImageManager
-						.load("/assets/icons/light_theme/save_all.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
-				menu.add(saveAllItem);
-				saveAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 10));
+            {
+                TCMenuItem item = new TCMenuItem("Save As", "save_as");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 3));
+                menu.add(item);
+            }
 
-				// --------------------------------------------------
+            // --------------------------------------------------
 
-				menu.addSeparator();
+            {
+                TCMenuItem item = new TCMenuItem("Save All", "save_all");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 10));
+                menu.add(item);
+            }
 
-				// --------------------------------------------------
+            // --------------------------------------------------
 
-				JMenuItem closeItem = new JMenuItem("Close");
-				menu.add(closeItem);
-				closeItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, 2));
+            menu.addSeparator();
 
-				// --------------------------------------------------
+            // --------------------------------------------------
 
-				JMenuItem closeAllItem = new JMenuItem("Close All");
-				menu.add(closeAllItem);
-				closeAllItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, 3));
+            {
+                TCMenuItem item = new TCMenuItem("Close");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
+                menu.add(item);
+            }
 
-				// --------------------------------------------------
+            // --------------------------------------------------
 
-				menu.addSeparator();
+            {
+                TCMenuItem item = new TCMenuItem("Close All");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, 3));
+                menu.add(item);
+            }
 
-				// --------------------------------------------------
 
-				JMenuItem moveItem = new JMenuItem("Move");
-				menu.add(moveItem);
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            menu.addSeparator();
 
-				JMenuItem renameItem = new JMenuItem("Rename", new ImageIcon(ImageManager
-						.load("/assets/icons/light_theme/rename.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
-				menu.add(renameItem);
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            {
+                TCMenuItem item = new TCMenuItem("Move");
+                menu.add(item);
+            }
 
-				JMenuItem refreshItem = new JMenuItem("Refresh", new ImageIcon(ImageManager
-						.load("/assets/icons/light_theme/reload.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
-				refreshItem.addActionListener(new ActionListener() {
+            // --------------------------------------------------
 
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						Window.explorer.generateProjectList();
-					}
+            {
+                TCMenuItem item = new TCMenuItem("Rename", "rename");
+                menu.add(item);
+            }
 
-				});
-				menu.add(refreshItem);
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            {
+                TCMenuItem item = new TCMenuItem("Refresh", "reload");
+                item.addActionListener(e -> Window.explorer.generateProjectList());
+                menu.add(item);
+            }
 
-				menu.addSeparator();
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            menu.addSeparator();
 
-				JMenuItem exitItem = new JMenuItem("Exit");
-				exitItem.addActionListener(new ActionListener() {
+            // --------------------------------------------------
 
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						jframe.dispatchEvent(new WindowEvent(jframe, WindowEvent.WINDOW_CLOSING));
-					}
+            {
+                TCMenuItem item = new TCMenuItem("Exit");
+                item.addActionListener(e ->	jframe.dispatchEvent(new WindowEvent(jframe, WindowEvent.WINDOW_CLOSING)));
+                menu.add(item);
+            }
 
-				});
-				menu.add(exitItem);
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            menuBar.add(menu);
+        }
 
-				menuBar.add(menu);
-			}
+		{
+            TCMenu menu = new TCMenu(" Edit ");
+            menu.setMnemonic(KeyEvent.VK_E);
 
-			{
-				JMenu menu = new JMenu(" Edit ");
-				menu.setMnemonic(KeyEvent.VK_E);
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            {
+                TCMenuItem item = new TCMenuItem("Undo", "undo");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+                menu.add(item);
+            }
 
-				JMenuItem undoItem = new JMenuItem("Undo                    ", new ImageIcon(ImageManager
-						.load("/assets/icons/light_theme/undo.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
-				menu.add(undoItem);
-				undoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            {
+                TCMenuItem item = new TCMenuItem("Redo", "redo");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+                menu.add(item);
+            }
 
-				JMenuItem redoItem = new JMenuItem("Redo", new ImageIcon(ImageManager.load("/assets/icons/light_theme/redo.png")
-						.getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
-				menu.add(redoItem);
-				redoItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            menu.addSeparator();
 
-				menu.addSeparator();
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            {
+                TCMenuItem item = new TCMenuItem("Copy");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+                menu.add(item);
+            }
 
-				JMenuItem copyItem = new JMenuItem("Copy");
-				menu.add(copyItem);
-				copyItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            {
+                TCMenuItem item = new TCMenuItem("Cut");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+                menu.add(item);
+            }
 
-				JMenuItem cutItem = new JMenuItem("Cut");
-				menu.add(cutItem);
-				cutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            {
+                TCMenuItem item = new TCMenuItem("Paste");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+                menu.add(item);
+            }
 
-				JMenuItem pasteItem = new JMenuItem("Paste");
-				menu.add(pasteItem);
-				pasteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            menu.addSeparator();
 
-				menu.addSeparator();
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            {
+                TCMenuItem item = new TCMenuItem("Delete");
+                item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+                menu.add(item);
+            }
 
-				JMenuItem deleteItem = new JMenuItem("Delete");
-				menu.add(deleteItem);
-				deleteItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+            // --------------------------------------------------
 
-				// --------------------------------------------------
+            menuBar.add(menu);
+        }
 
-				menuBar.add(menu);
-			}
+		{
+            TCMenu menu = new TCMenu(" Project ");
+            menu.setMnemonic(KeyEvent.VK_P);
 
-			{
-				JMenu menu = new JMenu(" Project ");
-				menu.setMnemonic(KeyEvent.VK_P);
-
-				// --------------------------------------------------
-
-				JMenuItem generateItem = new JMenuItem("Generate                    ");
-				menu.add(generateItem);
-
-				// --------------------------------------------------
-
-				menu.addSeparator();
-
-				// --------------------------------------------------
-
-				JMenuItem propertiesItem = new JMenuItem("Properties");
-				menu.add(propertiesItem);
-
-				propertiesItem.addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						if(ProjectManager.getSelected() != null) ProjectManager.getSelected().showPropertiesDialog();
-					}
-
-				});
-
-				// --------------------------------------------------
-
-				menuBar.add(menu);
-			}
+            // --------------------------------------------------
 
 			{
-				JMenu menu = new JMenu(" Debug ");
-				menu.setMnemonic(KeyEvent.VK_D);
-
-				// --------------------------------------------------
-
-				JMenuItem generateItem = new JMenuItem("Reset Preferences        ");
-				menu.add(generateItem);
-
-				generateItem.addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						int confirmation = JOptionPane.showConfirmDialog(null,
-								"        Are you sure you want to reset all saved settings?        ",
-								"Reset Preferences? ", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-						if (confirmation == JOptionPane.YES_OPTION) {
-							Preferences.reset();
-						}
-					}
-
-				});
-
-				// --------------------------------------------------
-
-				menuBar.add(menu);
+				TCMenuItem item = new TCMenuItem("Generate                    ", "export");
+				item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, 9));
+				menu.add(item);
 			}
-		}
+
+            // --------------------------------------------------
+
+            menu.addSeparator();
+
+            // --------------------------------------------------
+
+			{
+				TCMenuItem item = new TCMenuItem("Properties");
+				item.addActionListener(e -> {if(ProjectManager.getSelected() != null) ProjectManager.getSelected().showPropertiesDialog();});
+				menu.add(item);
+			}
+
+            // --------------------------------------------------
+
+            menuBar.add(menu);
+        }
+
+		{
+			TCMenu menu = new TCMenu(" Debug ");
+			menu.setMnemonic(KeyEvent.VK_D);
+
+            // --------------------------------------------------
+
+			{
+				TCMenuItem item = new TCMenuItem("Reset Preferences", "warn");
+				item.addActionListener(e -> {
+					int confirmation = JOptionPane.showConfirmDialog(null,
+							"        Are you sure you want to reset all saved settings?        ",
+							"Reset Preferences? ", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+					if (confirmation == JOptionPane.YES_OPTION) {
+						Preferences.reset();
+					}
+				});
+				menu.add(item);
+			}
+
+            // --------------------------------------------------
+
+            menuBar.add(menu);
+        }
+
+		{
+			TCMenu menu = new TCMenu(" Window ");
+			menu.setMnemonic(KeyEvent.VK_W);
+
+            // --------------------------------------------------
+
+            TCMenu setThemeItem = new TCMenu("Set Theme        ");
+            menu.add(setThemeItem);
+
+            // --------------------------------------------------
+
+            TCMenuItem setLightThemeItem = new TCMenuItem("Light Theme");
+            setThemeItem.add(setLightThemeItem);
+
+            setLightThemeItem.addActionListener(e -> setTheme(LightTheme.getInstance()));
+
+            // --------------------------------------------------
+
+            TCMenuItem setDarkThemeItem = new TCMenuItem("Dark Theme");
+            setThemeItem.add(setDarkThemeItem);
+
+            setDarkThemeItem.addActionListener(e -> setTheme(DarkTheme.getInstance()));
+
+            // --------------------------------------------------
+
+            menuBar.add(menu);
+        }
 
 		jframe.setLayout(new BorderLayout());
 
@@ -297,103 +332,66 @@ public class Window {
 			JPanel toolbar = new JPanel();
 			toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
 			toolbar.setPreferredSize(new Dimension(1, 30));
-			toolbar.setBackground(theme.p2);
-			toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, theme.l1));
+			ThemeChangeListener.addThemeChangeListener(t -> {
+				toolbar.setBackground(t.p2);
+				toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.l1));
+			});
 			jframe.getContentPane().add(toolbar, BorderLayout.NORTH);
 
 			toolbar.add(new ToolbarSeparator());
 
 			{
-				ToolbarButton button = new ToolbarButton();
-				button.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "project_new.png").getScaledInstance(16,
-						16, java.awt.Image.SCALE_SMOOTH)));
+				ToolbarButton button = new ToolbarButton("project_new");
 				button.setToolTipText("New Project");
-
 				toolbar.add(button);
-				
 			}
 
 			{
-				ToolbarButton button = new ToolbarButton();
-				button.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "save.png").getScaledInstance(16, 16,
-						java.awt.Image.SCALE_SMOOTH)));
+				ToolbarButton button = new ToolbarButton("save");
 				button.setToolTipText("Save File");
-
 				toolbar.add(button);
-
 			}
 
 			{
-				ToolbarButton button = new ToolbarButton();
-				button.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "save_all.png").getScaledInstance(16, 16,
-						java.awt.Image.SCALE_SMOOTH)));
+				ToolbarButton button = new ToolbarButton("save_all");
 				button.setToolTipText("Save All Files");
-
 				toolbar.add(button);
-
 			}
 
 			toolbar.add(new ToolbarSeparator());
 
 			{
-				ToolbarButton button = new ToolbarButton();
-				button.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "undo.png").getScaledInstance(16, 16,
-						java.awt.Image.SCALE_SMOOTH)));
+				ToolbarButton button = new ToolbarButton("undo");
 				button.setToolTipText("Undo");
-
 				toolbar.add(button);
-
 			}
 
 			{
-				ToolbarButton button = new ToolbarButton();
-				button.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "redo.png").getScaledInstance(16, 16,
-						java.awt.Image.SCALE_SMOOTH)));
+				ToolbarButton button = new ToolbarButton("redo");
 				button.setToolTipText("Redo");
-
 				toolbar.add(button);
-
 			}
 
 			toolbar.add(new ToolbarSeparator());
 
 			{
-				ToolbarButton button = new ToolbarButton();
-				button.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "entity_new.png").getScaledInstance(16, 16,
-						java.awt.Image.SCALE_SMOOTH)));
+				ToolbarButton button = new ToolbarButton("entity_new");
 				button.setToolTipText("New Entity");
-
 				toolbar.add(button);
-
 			}
+
 			{
-				ToolbarButton button = new ToolbarButton();
-				button.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "item_new.png").getScaledInstance(16, 16,
-						java.awt.Image.SCALE_SMOOTH)));
+				ToolbarButton button = new ToolbarButton("item_new");
 				button.setToolTipText("New Item");
-
 				toolbar.add(button);
-
 			}
 
 			toolbar.add(new ToolbarSeparator());
 
 			{
-				ToolbarButton button = new ToolbarButton();
-				button.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "export.png").getScaledInstance(16, 16,
-						java.awt.Image.SCALE_SMOOTH)));
+				ToolbarButton button = new ToolbarButton("export");
 				button.setToolTipText("Generate Structure");
-				button.addActionListener(new AbstractAction() {
-					/**
-					 * 
-					 */
-					private static final long serialVersionUID = -6494932842671220561L;
-
-					@Override
-					public void actionPerformed(ActionEvent arg0) {
-						Compiler.compile();
-					}
-				});
+				button.addActionListener(e -> Compiler.compile());
 				toolbar.add(button);
 			}
 
@@ -403,32 +401,27 @@ public class Window {
 			JPanel sidebar = new JPanel();
 			sidebar.setLayout(new BorderLayout());
 			sidebar.setPreferredSize(new Dimension(350, 500));
-			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, theme.l1));
-			sidebar.setBackground(theme.p1);
+			ThemeChangeListener.addThemeChangeListener(t -> {
+				sidebar.setBackground(t.p1);
+				sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, t.l1));
+			});
 			jframe.getContentPane().add(sidebar, BorderLayout.WEST);
 
 			JPanel header = new JPanel(new BorderLayout());
-			header.setBackground(theme.p1);
+			ThemeChangeListener.addThemeChangeListener(t -> header.setBackground(t.p1));
 
 			JLabel label = new JLabel("    Project Explorer");
-			label.setForeground(theme.t1);
-			label.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			ThemeChangeListener.addThemeChangeListener(t -> {
+				label.setFont(new Font(t.font1, Font.PLAIN, 14));
+				label.setForeground(theme.t1);
+			});
 			label.setPreferredSize(new Dimension(500, 25));
 			header.add(label, BorderLayout.WEST);
 
-			ToolbarButton refresh = new ToolbarButton();
-			refresh.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "reload.png").getScaledInstance(16, 16,
-					java.awt.Image.SCALE_SMOOTH)));
+			ToolbarButton refresh = new ToolbarButton("reload");
 			refresh.setToolTipText("Refresh Explorer");
 
-			refresh.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					Window.explorer.generateProjectList();
-				}
-
-			});
+			refresh.addActionListener(e -> Window.explorer.generateProjectList());
 
 			header.add(refresh, BorderLayout.EAST);
 			sidebar.add(header, BorderLayout.NORTH);
@@ -437,48 +430,35 @@ public class Window {
 			sp.getViewport().setBackground(Color.BLACK);
 
 			sp.getViewport().add(explorer = new Explorer());
-			sp.setBackground(theme.p1);
-			sp.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, theme.p1));
+			ThemeChangeListener.addThemeChangeListener(t -> {
+				sp.setBackground(t.p1);
+				sp.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, t.p1));
+			});
 
 			sidebar.add(sp, BorderLayout.CENTER);
 		}
 
 		edit_area = new JPanel(new BorderLayout());
 		edit_area.setPreferredSize(new Dimension(500, 500));
-		edit_area.setBackground(theme.p3);
+		ThemeChangeListener.addThemeChangeListener(t -> edit_area.setBackground(t.p3));
 		jframe.getContentPane().add(edit_area, BorderLayout.CENTER);
 
 		JPanel tabListHolder = new JPanel(new BorderLayout());
 		tabListHolder.setPreferredSize(new Dimension(1,30));
-		tabListHolder.setBackground(theme.p4);
+		ThemeChangeListener.addThemeChangeListener(t -> tabListHolder.setBackground(t.p4));
 		
 		JPanel tabActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
 		tabActionPanel.setOpaque(false);
-		tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, theme.l1));
-		
+		ThemeChangeListener.addThemeChangeListener(t -> tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.l1)));
+
 		{
-			ToolbarButton more = new ToolbarButton();
-			more.setIcon(new ImageIcon(ImageManager.load("/assets/icons/ui/more.png").getScaledInstance(16, 16,
-					java.awt.Image.SCALE_SMOOTH)));
+			ToolbarButton more = new ToolbarButton("more");
 			more.setToolTipText("View all tabs");
 			more.setPreferredSize(new Dimension(25,25));
 			tabActionPanel.add(more);
 			
-			more.addActionListener(new AbstractAction() {
+			more.addActionListener(e -> TabManager.getMenu().show(more, more.getX(), more.getY() + more.getHeight()));
 
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = -6051046434889434022L;
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					TabManager.getMenu().show(more, more.getX(), more.getY() + more.getHeight());
-				}
-				
-			});
-			
-			
 		}
 		
 		tabListHolder.add(tabActionPanel, BorderLayout.EAST);
@@ -486,67 +466,52 @@ public class Window {
 		edit_area.add(tabListHolder, BorderLayout.NORTH);
 		tabList = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		tabList.setPreferredSize(new Dimension(1, 30));
-		tabList.setBackground(theme.p4);
-		tabList.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, theme.l1));
+		ThemeChangeListener.addThemeChangeListener(t -> {
+			tabList.setBackground(t.p4);
+			tabList.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.l1));
+		});
 		tabListHolder.add(tabList, BorderLayout.CENTER);
 
 		if (useConsole) {
 			JPanel consoleArea = new JPanel(new BorderLayout());
 			consoleArea.setPreferredSize(new Dimension(0, CONSOLE_HEIGHT));
-			consoleArea.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, theme.l1));
+			ThemeChangeListener.addThemeChangeListener(t -> consoleArea.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, t.l1)));
 
 			JPanel consoleHeader = new JPanel(new BorderLayout());
-			consoleHeader.setBackground(theme.p2);
-			consoleHeader.setPreferredSize(new Dimension(0, 25));
+			ThemeChangeListener.addThemeChangeListener(t -> consoleHeader.setBackground(t.p2));
 			consoleHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+			consoleHeader.setPreferredSize(new Dimension(0, 25));
 
 			JLabel consoleLabel = new JLabel("Java Console");
-			consoleLabel.setForeground(theme.t1);
-			consoleLabel.setFont(new Font("Tahoma", 0, 12));
-			// consoleLabel.setPreferredSize(new Dimension(0,20));
+			ThemeChangeListener.addThemeChangeListener(t -> {
+				consoleLabel.setForeground(t.t1);
+				consoleLabel.setFont(new Font(t.font1, 0, 12));
+			});
 			consoleHeader.add(consoleLabel, BorderLayout.WEST);
-			
-			
 			
 			JPanel consoleActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
 			consoleActionPanel.setOpaque(false);
 
-			ToolbarButton toggle = new ToolbarButton(true);
-			toggle.setIcon(new ImageIcon(ImageManager.load("/assets/icons/ui/toggle.png").getScaledInstance(16, 16,
-					java.awt.Image.SCALE_SMOOTH)));
+			ToolbarButton toggle = new ToolbarButton("toggle", true);
 			toggle.setToolTipText("Toggle Java Console");
 			toggle.setPreferredSize(new Dimension(20,20));
 
-			toggle.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (consoleArea.getPreferredSize().height == 25) {
-						consoleArea.setPreferredSize(new Dimension(0, CONSOLE_HEIGHT));
-					} else {
-						consoleArea.setPreferredSize(new Dimension(0, 25));
-					}
-					consoleArea.revalidate();
-					consoleArea.repaint();
+			toggle.addActionListener(e -> {
+				if (consoleArea.getPreferredSize().height == 25) {
+					consoleArea.setPreferredSize(new Dimension(0, CONSOLE_HEIGHT));
+				} else {
+					consoleArea.setPreferredSize(new Dimension(0, 25));
 				}
-
+				consoleArea.revalidate();
+				consoleArea.repaint();
 			});
 
 
-			ToolbarButton clear = new ToolbarButton(true);
-			clear.setIcon(new ImageIcon(ImageManager.load("/assets/icons/ui/clear.png").getScaledInstance(16, 16,
-					java.awt.Image.SCALE_SMOOTH)));
+			ToolbarButton clear = new ToolbarButton("clear", true);
 			clear.setToolTipText("Clear Console");
 			clear.setPreferredSize(new Dimension(20,20));
 			
-			clear.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					textConsoleOut.clear();
-				}
-
-			});
+			clear.addActionListener(e -> textConsoleOut.clear());
 
 			consoleActionPanel.add(clear);
 			consoleActionPanel.add(toggle);
@@ -554,23 +519,22 @@ public class Window {
 
 			consoleArea.add(consoleHeader, BorderLayout.NORTH);
 
-			console = new JEditorPane();
-			console.setBackground(theme.p1);
+			JEditorPane console = new JEditorPane();
+			ThemeChangeListener.addThemeChangeListener(t -> console.setBackground(t.p1));
 			console.setEditable(false);
 			console.setFont(new Font("monospaced", 0, 12));
 			console.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
 			console.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
 
-			console.addHyperlinkListener(new HyperlinkListener() {
-				@Override
-				public void hyperlinkUpdate(HyperlinkEvent e) {
-					if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-						String path = e.getURL().toString().substring(7, e.getURL().toString().lastIndexOf('?'));
-						String location = e.getURL().toString().substring(e.getURL().toString().lastIndexOf('?') + 1);
-						TabManager.openTab(path, Integer.parseInt(location.split(":")[0]),
-								Integer.parseInt(location.split(":")[1]));
-					}
+			console.addHyperlinkListener(e -> {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					String path = e.getURL().toString().substring(7, e.getURL().toString().lastIndexOf('?'));
+					String location = e.getURL().toString().substring(e.getURL().toString().lastIndexOf('?') + 1);
+					String length = location.substring(location.indexOf('&')+1);
+					location = location.substring(0,location.indexOf('&'));
+					TabManager.openTab(path, Integer.parseInt(location.split(":")[0]),
+							Integer.parseInt(location.split(":")[1]), Integer.parseInt(length));
 				}
 			});
 
@@ -580,7 +544,7 @@ public class Window {
 			System.setErr(new PrintStream(new MultiOutputStream(consoleOut, System.err)));
 
 			JScrollPane consoleScrollPane = new JScrollPane(console);
-			consoleScrollPane.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, theme.l1));
+			ThemeChangeListener.addThemeChangeListener(t -> consoleScrollPane.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, t.l1)));
 
 			consoleArea.add(consoleScrollPane, BorderLayout.CENTER);
 
@@ -592,7 +556,7 @@ public class Window {
 		jframe.setPreferredSize(defaultSize);
 		jframe.setVisible(true);
 
-		List<Image> icons = new ArrayList<Image>();
+		List<Image> icons = new ArrayList<>();
 		icons.add(
 				ImageManager.load("/assets/logo/logo_icon.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH));
 		icons.add(ImageManager.load("/assets/logo/logo.png").getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
@@ -603,10 +567,17 @@ public class Window {
 		center.x -= jframe.getWidth() / 2;
 		center.y -= jframe.getHeight() / 2;
 		jframe.setLocation(center);
-
 	}
 	
 	public static Syntax getSyntaxForTheme() {
 		return (theme instanceof DarkTheme ? CBESyntaxDark.INSTANCE : CBESyntax.INSTANCE);
+	}
+
+	public static void setTheme(Theme t) {
+		Window.theme = t;
+		ThemeChangeListener.dispatchThemeChange(t);
+		UIManager.put("ToolTip.background",t.p1);
+		UIManager.put("ToolTip.foreground",t.t1);
+		UIManager.put("ToolTip.border",BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1,1,1,1,t.l1),BorderFactory.createEmptyBorder(3,5,3,5)));
 	}
 }

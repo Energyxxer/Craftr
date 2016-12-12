@@ -1,18 +1,16 @@
 package com.energyxxer.cbe.ui.explorer;
 
-import java.awt.FlowLayout;
+import com.energyxxer.cbe.global.Preferences;
+import com.energyxxer.cbe.global.ProjectManager;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-
-import com.energyxxer.cbe.global.Preferences;
-import com.energyxxer.cbe.global.ProjectManager;
-import com.energyxxer.cbe.main.Window;
 
 /**
  * The component that shows a list of files in the workspace.
@@ -24,26 +22,27 @@ public class Explorer extends JPanel implements MouseListener {
 	 */
 	private static final long serialVersionUID = -9100022225860900968L;
 	
-	public static final boolean SHOW_PROJECT_FILES = true;
+	static final boolean SHOW_PROJECT_FILES = true;
 
-	public static ArrayList<ExplorerItemLabel> selectedLabels = new ArrayList<ExplorerItemLabel>();
-	public static ArrayList<String> openDirectories = new ArrayList<String>();
+	public static ArrayList<ExplorerItemLabel> selectedLabels = new ArrayList<>();
+	static ArrayList<String> openDirectories = new ArrayList<>();
 
 	public Explorer() {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		setBackground(Window.theme.p1);
+		ThemeChangeListener.addThemeChangeListener(t -> setBackground(t.p1));
+
 
 		this.addMouseListener(this);
 	}
 
 	public void generateProjectList() {
-		ArrayList<String> copy = new ArrayList<String>();
+		ArrayList<String> copy = new ArrayList<>();
 		copy.addAll(openDirectories);
 		generateProjectList(copy);
 	}
 
-	public void generateProjectList(ArrayList<String> toOpen) {
+	private void generateProjectList(ArrayList<String> toOpen) {
 
 		ProjectManager.loadWorkspace();
 		removeAll();
@@ -59,25 +58,23 @@ public class Explorer extends JPanel implements MouseListener {
 			return;
 		}
 
-		ArrayList<File> files = new ArrayList<File>();
+		ArrayList<File> files = new ArrayList<>();
 
-		for (int i = 0; i < fileList.length; i++) {
-			File file = fileList[i];
+		for (File file : fileList) {
 			if (file.isDirectory() && new File(file.getAbsolutePath() + File.separator + ".project").exists()) {
 				files.add(file);
 			}
 		}
-		for (int i = 0; i < fileList.length; i++) {
-			File file = fileList[i];
+		for (File file : fileList) {
 			if (file.isFile() && (!file.getName().equals(".project") || SHOW_PROJECT_FILES)) {
 				files.add(file);
 			}
 		}
 		Collections.reverse(files);
 
-		for (int i = 0; i < files.size(); i++) {
+		for (File file : files) {
 
-			add(new ExplorerItem(files.get(i), null, toOpen), FlowLayout.LEFT);
+			add(new ExplorerItem(file, null, toOpen), FlowLayout.LEFT);
 
 		}
 

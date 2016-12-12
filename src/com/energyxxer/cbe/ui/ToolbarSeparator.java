@@ -1,11 +1,11 @@
 package com.energyxxer.cbe.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.*;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 
 /**
  * It's literally just a line.
@@ -22,18 +22,25 @@ public class ToolbarSeparator extends JPanel {
 		this.setMinimumSize(new Dimension(15, 30));
 		this.setMaximumSize(new Dimension(15, 30));
 		this.setPreferredSize(new Dimension(15, 30));
-		this.setBackground(Window.theme.p2);
+
+		this.setOpaque(true);
+		this.setBackground(new Color(0,0,0,0));
 
 		{
 			JPanel separatorLine = new JPanel(new BorderLayout());
 			separatorLine.setPreferredSize(new Dimension(2, 20));
-			separatorLine.setBackground(Window.theme.l1);
+			separatorLine.setBackground(Window.theme.l2);
 			this.add(separatorLine);
 
 			JPanel lightLine = new JPanel();
 			lightLine.setPreferredSize(new Dimension(1, 1));
-			lightLine.setBackground(Window.theme.p1);
+			lightLine.setBackground(Window.theme.p2);
 			separatorLine.add(lightLine, BorderLayout.EAST);
+
+			ThemeChangeListener.addThemeChangeListener(t -> {
+				separatorLine.setBackground(t.l2);
+				lightLine.setBackground(t.p2);
+			});
 		}
 	}
 }

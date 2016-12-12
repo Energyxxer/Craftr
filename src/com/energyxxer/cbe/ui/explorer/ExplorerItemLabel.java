@@ -1,8 +1,6 @@
 package com.energyxxer.cbe.ui.explorer;
 
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -25,6 +23,9 @@ import com.energyxxer.cbe.global.TabManager;
 import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.ui.common.MenuItems;
 import com.energyxxer.cbe.ui.common.MenuItems.FileMenuItem;
+import com.energyxxer.cbe.ui.components.themechange.TCMenuItem;
+import com.energyxxer.cbe.ui.theme.Theme;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.cbe.util.ColorUtil;
 import com.energyxxer.cbe.util.FileUtil;
 import com.energyxxer.cbe.util.ImageManager;
@@ -35,7 +36,7 @@ import com.energyxxer.cbe.util.StringValidator;
 /**
  * Non-recursive label for an explorer item.
  */
-public class ExplorerItemLabel extends JLabel implements MouseListener {
+public class ExplorerItemLabel extends JLabel implements MouseListener, ThemeChangeListener {
 
 	/**
 	 * 
@@ -50,17 +51,20 @@ public class ExplorerItemLabel extends JLabel implements MouseListener {
 	public ExplorerItemLabel(File file, ExplorerItem parent) {
 		super(file.getName());
 		this.parent = parent;
-		this.setForeground(Window.theme.t1);
 		updateLabel();
 		this.addMouseListener(this);
 		this.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+		this.addThemeChangeListener();
 	}
 
 	public void updateLabel() {
 		File file = new File(parent.path);
 		setText(file.getName());
+		String icon = ProjectManager.getIconFor(file);
 		if (file.isDirectory()) {
-			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "folder.png").getScaledInstance(16, 16,
+			if(icon != null)
+				this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + icon + ".png").getScaledInstance(16,16, Image.SCALE_SMOOTH)));
+			else this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "folder.png").getScaledInstance(16, 16,
 					java.awt.Image.SCALE_SMOOTH)));
 			try {
 				File workspaceFile = new File(Preferences.get("workspace_dir"));
@@ -73,7 +77,6 @@ public class ExplorerItemLabel extends JLabel implements MouseListener {
 			}
 		} else {
 			if (file.getName().endsWith(".mcbe")) {
-				String icon = ProjectManager.getIconFor(file);
 				if(icon == null) icon = Window.theme.path + "warn";
 				this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + icon + ".png").getScaledInstance(16, 16,
 						java.awt.Image.SCALE_SMOOTH)));
@@ -216,6 +219,13 @@ public class ExplorerItemLabel extends JLabel implements MouseListener {
 		ExplorerItemPopup menu = new ExplorerItemPopup();
 		menu.show(e.getComponent(), e.getX(), e.getY());
 	}
+
+	@Override
+	public void themeChanged(Theme t) {
+		this.setForeground(t.t1);
+		this.setFont(new Font(t.font1, 0, 12));
+		updateLabel();
+	}
 }
 
 class ExplorerItemPopup extends JPopupMenu {
@@ -228,7 +238,7 @@ class ExplorerItemPopup extends JPopupMenu {
 		add(MenuItems.newMenu("New                    "));
 		addSeparator();
 
-		JMenuItem openItem = new JMenuItem("Open");
+		TCMenuItem openItem = new TCMenuItem("Open");
 		openItem.addActionListener(new AbstractAction() {
 			/**
 			 * 

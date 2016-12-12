@@ -44,7 +44,7 @@ public class ProjectProperties {
 		{
 			JPanel sidebar = new JPanel(new BorderLayout());
 			sidebar.setBackground(Window.theme.p1);
-			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, Window.theme.l1));
+			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Window.theme.l1));
 			
 			ComponentResizer sidebarResizer = new ComponentResizer(sidebar);
 			sidebarResizer.setResizable(false, false, false, true);
@@ -81,7 +81,7 @@ public class ProjectProperties {
 			{
 				JPanel header = new JPanel(new BorderLayout());
 				header.setBackground(Window.theme.p2);
-				header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Window.theme.l1));
+				header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Window.theme.l1));
 				header.setPreferredSize(new Dimension(0,40));
 				contentCompiler.add(header, BorderLayout.NORTH);
 				

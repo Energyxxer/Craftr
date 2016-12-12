@@ -108,14 +108,4 @@ public class TokenItemMatch extends TokenPatternMatch {
 	public String toTrimmedString() {
 		return (stringMatch != null) ? stringMatch : type;
 	}
-
-	@Override
-	public boolean isSensitive() {
-		return false;
-	}
-
-	@Override
-	public boolean isOmittable() {
-		return false;
-	}
 }

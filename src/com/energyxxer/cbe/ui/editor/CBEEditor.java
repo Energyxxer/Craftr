@@ -1,48 +1,5 @@
 package com.energyxxer.cbe.ui.editor;
 
-import java.awt.Color;
-import java.awt.Event;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.PrintWriter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.KeyStroke;
-import javax.swing.Timer;
-import javax.swing.event.DocumentEvent.EventType;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
-import javax.swing.text.TabSet;
-import javax.swing.text.TabStop;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
-import javax.swing.undo.UndoableEdit;
-
 import com.energyxxer.cbe.compile.analysis.Analyzer;
 import com.energyxxer.cbe.compile.analysis.token.Token;
 import com.energyxxer.cbe.compile.analysis.token.TokenStream;
@@ -51,13 +8,32 @@ import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.syntax.Syntax;
 import com.energyxxer.cbe.ui.Tab;
 import com.energyxxer.cbe.ui.explorer.ExplorerItemLabel;
-import com.energyxxer.cbe.util.TextLineNumber;
+import com.energyxxer.cbe.ui.theme.Theme;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.cbe.util.LinePainter;
+import com.energyxxer.cbe.util.linenumber.TextLineNumber;
+
+import javax.swing.*;
+import javax.swing.Timer;
+import javax.swing.event.DocumentEvent.EventType;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.*;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.*;
 
 /**
  * Main text editor of the program. Has support for syntax highlighting, undo,
  * and is linked to abstract tabs.
  */
-public class CBEEditor extends JScrollPane implements UndoableEditListener, ActionListener, MouseListener {
+public class CBEEditor extends JScrollPane implements UndoableEditListener, ActionListener, MouseListener, ThemeChangeListener {
 
 	/**
 	 * 
@@ -65,39 +41,36 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 	private static final long serialVersionUID = -8584609859858654496L;
 
 	public JTextPane editor;
-	public TextLineNumber tln;
-	public Tab associatedTab;
-	public StyledDocument sd;
-	public Syntax syntax;
+	private TextLineNumber tln;
+	private Tab associatedTab;
+	private StyledDocument sd;
+	private Syntax syntax;
 	UndoManagerFix undoManager;
+	LinePainter linePainter;
 
 	private long lastEdit;
 	public long lastToolTip = new Date().getTime();
 	private Timer timer;
 
 	public CBEEditor(Tab tab) {
-		super(new JTextPane(new DefaultStyledDocument()));
-		editor = (JTextPane) this.getViewport().getView();
-		editor.setBackground(Window.theme.p1);
-		editor.setForeground(Window.theme.t1);
-		editor.setCaretColor(Window.theme.t1);
-		tln = new TextLineNumber(editor);
+		super();
+		editor = new JTextPane(new DefaultStyledDocument());
+		editor.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
+		super.setViewportView(editor);
+
+		this.getVerticalScrollBar().setBlockIncrement(1);
+
+		linePainter = new LinePainter(editor);
+
+		tln = new TextLineNumber(editor, this);
+		tln.setPadding(10);
+
 		associatedTab = tab;
 		this.setBorder(BorderFactory.createEmptyBorder());
-
-		if (tab.path.endsWith(".mcbi") || tab.path.endsWith(".mcbe"))
-			setSyntax(Window.getSyntaxForTheme());
 
 		sd = editor.getStyledDocument();
 
 		undoManager = new UndoManagerFix();
-
-		editor.setFont(new Font("Consolas", 0, 12));
-		setTabs(4);
-
-		tln.setBackground(Window.theme.p2);
-		tln.setForeground(Window.theme.t3);
-		tln.setCurrentLineForeground(tln.getForeground());
 
 		KeyStroke undoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.CTRL_MASK);
 		KeyStroke redoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.CTRL_MASK);
@@ -113,7 +86,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 
 		editor.getActionMap().put("undoKeystroke", new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -162,9 +135,13 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		editor.addMouseListener(this);
 
 		this.setRowHeaderView(tln);
+		//tln.setPreferredSize(new Dimension(10,0));
+
 
 		timer = new Timer(20, this);
 		timer.start();
+
+		addThemeChangeListener();
 	}
 
 	public void startEditListeners() {
@@ -179,7 +156,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 				Map.Entry pair = (Map.Entry) it.next();
 				//System.out.println(pair.getKey() + " = " + pair.getValue());
 				editor.removeStyle((String) pair.getKey());
-				it.remove();
+				//it.remove();
 			}
 		}
 
@@ -255,15 +232,9 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 	}
 
 	@Override
-	protected void paintComponent(Graphics g) {
-		tln.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Window.theme.l1));
-		super.paintComponent(g);
-	}
-
-	@Override
 	public void undoableEditHappened(UndoableEditEvent e) {
 		if (e.getEdit().getPresentationName() != "style change") {
-			lastEdit = new Date().getTime();
+			highlight();
 			associatedTab.onEdit();
 			undoManager.undoableEditHappened(e);
 		}
@@ -271,11 +242,11 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		if (lastEdit > -1 && (new Date().getTime()) - lastEdit > 500) {
+		if (lastEdit > -1 && (new Date().getTime()) - lastEdit > 500 && associatedTab.isActive()) {
 			try {
 				highlightSyntax();
 			} catch (BadLocationException e) {
-				e.printStackTrace(new PrintWriter(Window.consoleOut));
+				e.printStackTrace();
 			}
 			lastEdit = -1;
 		}
@@ -298,6 +269,10 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		StyleConstants.setTabSet(attributes, tabSet);
 		int length = editor.getDocument().getLength();
 		editor.getStyledDocument().setParagraphAttributes(0, length, attributes, false);
+	}
+
+	public void highlight() {
+		lastEdit = new Date().getTime();
 	}
 
 	@Override
@@ -325,6 +300,44 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		
 	}
 
+	@Override
+	public void themeChanged(Theme t) {
+		setBackground(Color.RED);
+		editor.setBackground(t.e1);
+		editor.setForeground(t.t1);
+		editor.setCaretColor(t.t1);
+		editor.setSelectionColor(t.h3);
+		editor.setSelectedTextColor(t.h4);
+		linePainter.setColor(t.h1);
+		editor.setFont(new Font(t.font2, 0, 12));
+		tln.setBackground(t.e2);
+		tln.setForeground(t.t3);
+		//tln.setCurrentLineForeground(t.h3);
+		tln.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, t.l1), BorderFactory.createEmptyBorder(0, 0, 0, 15)));
+		tln.setFont(editor.getFont());
+		setTabs(4);
+
+		if (associatedTab.path.endsWith(".mcbe")) {
+			setSyntax(Window.getSyntaxForTheme());
+			highlight();
+		}
+	}
+
+	/*@Override
+	public int getNumberLines() {
+		return getText().split("\n").length;
+	}
+
+	@Override
+	public Rectangle getLineRect(int line) {
+		try {
+			int start = Utilities.getRowStart(editor, line);
+			int end = Utilities.getRowEnd(editor, line);
+			return new Rectangle(0, start,0, end-start);
+		} catch (BadLocationException e) {
+			return new Rectangle();
+		}
+	}*/
 }
 
 class UndoManagerFix extends UndoManager {

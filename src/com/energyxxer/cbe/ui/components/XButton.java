@@ -22,6 +22,7 @@ public class XButton extends JButton {
 		setOpaque(false);
 		setContentAreaFilled(false);
 		setBackground(new Color(225,225,225));
+		this.setBorderPainted(false);
 	}
 	
 	public XButton() {

@@ -1,15 +1,11 @@
 package com.energyxxer.cbe.ui.explorer;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
-
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-
-import com.energyxxer.cbe.main.Window;
 
 /**
  * An explorer item. Can contain multiple explorer items.
@@ -21,19 +17,19 @@ public class ExplorerItem extends JPanel {
 	 */
 	private static final long serialVersionUID = 2182029271616352961L;
 
-	JPanel header;
-	JPanel children;
+	private JPanel header;
+	private JPanel children;
 	public String path;
-	public ExplorerExpand expand;
+	ExplorerExpand expand;
 	ExplorerItem parent;
 
-	public ExplorerItem(File file, ExplorerItem parent, ArrayList<String> toOpen) {
+	ExplorerItem(File file, ExplorerItem parent, ArrayList<String> toOpen) {
 		super(new BorderLayout());
 		this.path = file.getAbsolutePath();
 		this.parent = parent;
 
 		header = new JPanel(new BorderLayout());
-		header.setBackground(Window.theme.p1);
+
 
 		this.add(header, BorderLayout.NORTH);
 
@@ -41,7 +37,8 @@ public class ExplorerItem extends JPanel {
 
 		header.add(expand, BorderLayout.WEST);
 
-		expand.setEnabled(file.isDirectory() && file.listFiles().length > 0);
+		File[] fileList = file.listFiles();
+		expand.setEnabled(file.isDirectory() && fileList != null && fileList.length > 0);
 
 		ExplorerItemLabel label = new ExplorerItemLabel(file, this);
 
@@ -49,11 +46,9 @@ public class ExplorerItem extends JPanel {
 
 		JPanel indentation = new JPanel();
 		indentation.setPreferredSize(new Dimension(15, 1));
-		indentation.setBackground(Window.theme.p1);
 		this.add(indentation, BorderLayout.WEST);
 
 		children = new JPanel();
-		children.setBackground(Window.theme.p1);
 		children.setLayout(new BoxLayout(children, BoxLayout.Y_AXIS));
 		this.add(children, BorderLayout.CENTER);
 
@@ -61,17 +56,23 @@ public class ExplorerItem extends JPanel {
 
 		this.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+		ThemeChangeListener.addThemeChangeListener(t -> {
+			header.setBackground(t.p1);
+			indentation.setBackground(t.p1);
+			children.setBackground(t.p1);
+		});
+
 		if(toOpen != null && toOpen.contains(this.path)) {
 			expand(toOpen);
 			expand.expanded = true;
 		}
 	}
 
-	public void expand() {
+	void expand() {
 		expand(null);
 	}
 
-	public void expand(ArrayList<String> toOpen) {
+	private void expand(ArrayList<String> toOpen) {
 
 		children.removeAll();
 		Explorer.openDirectories.add(path);
@@ -79,36 +80,27 @@ public class ExplorerItem extends JPanel {
 		File[] childrenFiles = new File(this.path).listFiles();
 
 		if (childrenFiles != null && childrenFiles.length > 0) {
-			ArrayList<File> files = new ArrayList<File>();
-			for (int i = 0; i < childrenFiles.length; i++) {
+			ArrayList<File> files = new ArrayList<>();
+			for (File child : childrenFiles) if (child.isDirectory()) files.add(child);
 
-				if (childrenFiles[i].isDirectory()) {
-					files.add(childrenFiles[i]);
-				}
-			}
-			for (int i = 0; i < childrenFiles.length; i++) {
+			for (File child : childrenFiles)
+				if (child.isFile() && (!child.getName().equals(".project") || Explorer.SHOW_PROJECT_FILES))
+					files.add(child);
 
-				if (childrenFiles[i].isFile() && (!childrenFiles[i].getName().equals(".project") || Explorer.SHOW_PROJECT_FILES)) {
-					files.add(childrenFiles[i]);
-				}
-			}
-
-			for (int i = 0; i < files.size(); i++) {
-				children.add(new ExplorerItem(files.get(i), this, toOpen));
-			}
+			for (File file : files) children.add(new ExplorerItem(file, this, toOpen));
 		}
 
 		this.updateNest();
 	}
 
-	public void collapse() {
+	void collapse() {
 		children.removeAll();
 		Explorer.openDirectories.remove(path);
 
 		this.updateNest();
 	}
 
-	public void updateNest() {
+	private void updateNest() {
 
 		this.updateView();
 		if (this.parent != null) {
@@ -116,7 +108,7 @@ public class ExplorerItem extends JPanel {
 		}
 	}
 
-	public void updateView() {
+	private void updateView() {
 
 		this.children.setMinimumSize(children.getPreferredSize());
 		this.children.setMaximumSize(children.getPreferredSize());

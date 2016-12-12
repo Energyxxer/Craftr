@@ -11,4 +11,9 @@ public class StringLocation {
 		this.line = line;
 		this.column = column;
 	}
+
+	@Override
+	public String toString() {
+		return new StringBuilder().append(line).append(':').append(column).append('#').append(index).toString();
+	}
 }

@@ -30,7 +30,12 @@ public class TabManager {
 
 	public static void openTab(String path, int line, int column) {
 		openTab(path);
-		selectLocation(selectedTab.getLinkedTab(), line, column);
+		selectLocation(selectedTab.getLinkedTab(), line, column, 0);
+	}
+
+	public static void openTab(String path, int line, int column, int length) {
+		openTab(path);
+		selectLocation(selectedTab.getLinkedTab(), line, column, length);
 	}
 
 	public static void openTab(String path) {
@@ -45,13 +50,18 @@ public class TabManager {
 		
 	}
 
-	public static void selectLocation(Tab tab, int line, int column) {
+	public static void selectLocation(Tab tab, int line, int column, int length) {
 		int l = 1;
 		int c = 1;
 		for (int i = 0; i < tab.editor.getText().length(); i++) {
 			if (l == line && c == column) {
 				tab.editor.editor.requestFocus();
-				tab.editor.editor.setCaretPosition(i);
+				if(length == 0) {
+					tab.editor.editor.setCaretPosition(i);
+				} else {
+					tab.editor.editor.setSelectionStart(i);
+					tab.editor.editor.setSelectionEnd(i+length);
+				}
 				return;
 			}
 			if (tab.editor.getText().charAt(i) == '\n') {

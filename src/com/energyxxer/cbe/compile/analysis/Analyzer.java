@@ -330,7 +330,7 @@ public class Analyzer {
 			}
 		}
 		if(stream.tokens.size() >= 1) {
-			if(token.type == TokenType.IDENTIFIER && Arrays.asList(LangConstants.unit_types).indexOf(token.value) >= 0 && stream.tokens.get(stream.tokens.size()-1).type == TokenType.QUALIFIER)
+			if(token.type == TokenType.IDENTIFIER && Arrays.asList(LangConstants.unit_types).indexOf(token.value) >= 0 && stream.tokens.get(stream.tokens.size()-1).type == TokenType.MODIFIER)
 				token.type = TokenType.UNIT_TYPE;
 		} else {
 			if(token.type == TokenType.IDENTIFIER && Arrays.asList(LangConstants.unit_types).indexOf(token.value) >= 0)

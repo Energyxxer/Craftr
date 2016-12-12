@@ -8,13 +8,16 @@ import com.energyxxer.cbe.compile.analysis.token.structures.TokenList;
 import com.energyxxer.cbe.util.MethodInvocation;
 import com.energyxxer.cbe.util.Stack;
 
+import static com.energyxxer.cbe.compile.analysis.token.TokenMatchResponse.COMPLETE_MATCH;
+import static com.energyxxer.cbe.compile.analysis.token.TokenMatchResponse.NO_MATCH;
+import static com.energyxxer.cbe.compile.analysis.token.TokenMatchResponse.PARTIAL_MATCH;
+
 /**
  * Represents a sequence of tokens of a given type, of an undefined length.
  */
 public class TokenListMatch extends TokenPatternMatch {
 	protected TokenPatternMatch pattern;
 	protected TokenPatternMatch separator = null;
-	protected boolean omittable = false;
 
 	public TokenListMatch(String type) {
 		this.pattern = new TokenItemMatch(type);
@@ -74,7 +77,7 @@ public class TokenListMatch extends TokenPatternMatch {
 	public TokenMatchResponse match(List<Token> tokens, Stack st) {
 		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
 		st.push(thisInvoc);
-		if (tokens.size() == 0 && !omittable) {
+		if (tokens.size() <= 0) {
 			st.pop();
 			return new TokenMatchResponse(false, null, 0, this.pattern, null);
 		}
@@ -86,65 +89,91 @@ public class TokenListMatch extends TokenPatternMatch {
 		TokenPatternMatch expected = null;
 		TokenList list = new TokenList().setName(this.name);
 
-		for (int i = 0; i < tokens.size();) {
+		itemLoop: for (int i = 0; i < tokens.size();) {
 
 			if (this.separator != null && expectSeparator) {
 				TokenMatchResponse itemMatch = this.separator.match(tokens.subList(i, tokens.size()), st);
 				expectSeparator = false;
-				if(!itemMatch.matched) {
-					if(itemMatch.length > 0) {
+				switch(itemMatch.getMatchType()) {
+					case NO_MATCH: {
+						break itemLoop;
+					}
+					case PARTIAL_MATCH: {
 						hasMatched = false;
 						faultyToken = itemMatch.faultyToken;
 						expected = itemMatch.expected;
 						length += itemMatch.length;
 						list.add(itemMatch.pattern);
-						break;
-					} else {
-						break;
+						break itemLoop;
 					}
-				} else {
-					i += itemMatch.length;
-					length += itemMatch.length;
-					list.add(itemMatch.pattern);
+					case COMPLETE_MATCH: {
+						i += itemMatch.length;
+						length += itemMatch.length;
+						list.add(itemMatch.pattern);
+					}
 				}
 			} else {
 				if (this.separator != null) {
 					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
-					if(!itemMatch.matched && (length > 0 || (length == 0 && !omittable))) {
-						hasMatched = false;
-						faultyToken = itemMatch.faultyToken;
-						expected = itemMatch.expected;
-						length += itemMatch.length;
-						list.add(itemMatch.pattern);
-						break;
-					} else {
-						i += itemMatch.length;
-						length += itemMatch.length;
-						list.add(itemMatch.pattern);
+					switch(itemMatch.getMatchType()) {
+						case NO_MATCH: {
+							if(length <= 0) {
+								hasMatched = false;
+								faultyToken = itemMatch.faultyToken;
+								expected = itemMatch.expected;
+								length += itemMatch.length;
+								list.add(itemMatch.pattern);
+								break itemLoop;
+							} else {
+								break itemLoop;
+							}
+						}
+						case PARTIAL_MATCH: {
+							hasMatched = false;
+							faultyToken = itemMatch.faultyToken;
+							expected = itemMatch.expected;
+							length += itemMatch.length;
+							list.add(itemMatch.pattern);
+							break itemLoop;
+						}
+						case COMPLETE_MATCH: {
+							i += itemMatch.length;
+							length += itemMatch.length;
+							list.add(itemMatch.pattern);
+							expectSeparator = true;
+							continue;
+						}
 					}
 				} else {
 					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
 					length += itemMatch.length;
-					if(!itemMatch.matched) {
-						if((length > 0 || (length <= 0 && !omittable)) && itemMatch.length > 0) {
+					switch(itemMatch.getMatchType()) {
+						case NO_MATCH: {
+							if(length <= 0) {
+								hasMatched = false;
+								faultyToken = itemMatch.faultyToken;
+								expected = itemMatch.expected;
+								length += itemMatch.length;
+								list.add(itemMatch.pattern);
+								break itemLoop;
+							} else {
+								break itemLoop;
+							}
+						}
+						case PARTIAL_MATCH: {
 							hasMatched = false;
 							faultyToken = itemMatch.faultyToken;
 							expected = itemMatch.expected;
 							list.add(itemMatch.pattern);
-							break;
-
-						} else {
-							hasMatched = true;
-							faultyToken = null;
-							expected = null;
-							break;
+							break itemLoop;
 						}
-					} else {
-						i += itemMatch.length;
-						list.add(itemMatch.pattern);
+						case COMPLETE_MATCH: {
+							i += itemMatch.length;
+							list.add(itemMatch.pattern);
+							continue;
+						}
 					}
 				}
-				expectSeparator = true;
 			}
 		}
 		st.pop();
@@ -203,20 +232,5 @@ public class TokenListMatch extends TokenPatternMatch {
 		}
 		s += "...";
 		return s;
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return true;
-	}
-
-	@Override
-	public boolean isOmittable() {
-		return omittable;
-	}
-
-	public TokenListMatch setOmittable(boolean value) {
-		this.omittable = value;
-		return this;
 	}
 }

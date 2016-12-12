@@ -43,6 +43,7 @@ public class Tab {
 			encoded = Files.readAllBytes(Paths.get(path));
 			String s = new String(encoded);
 			editor.setText(s);
+			editor.editor.setCaretPosition(0);
 			editor.startEditListeners();
 			savedString = s.intern();
 		} catch (IOException e) {
@@ -89,6 +90,10 @@ public class Tab {
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+
+	public boolean isActive() {
+		return this.linkedTabComponent.selected;
 	}
 
 	public void save() {

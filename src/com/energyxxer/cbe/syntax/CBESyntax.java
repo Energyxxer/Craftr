@@ -19,7 +19,7 @@ public class CBESyntax extends Syntax {
 		styles.put("comment", new Style().setColor("#777777").setItalic().getMap());
 		styles.put("multilinecomment", new Style().setColor("#777777").setItalic().getMap());
 		styles.put("number", new Style().setColor("#E89089").getMap());
-		styles.put("qualifier", new Style().setColor("#6655CC").setBold().getMap());
+		styles.put("modifier", new Style().setColor("#6655CC").setBold().getMap());
 		styles.put("unit_type", new Style().setColor("#6655CC").setBold().getMap());
 		styles.put("unit_action", new Style().setColor("#6655CC").setBold().getMap());
 		styles.put("data_type", new Style().setColor("#6655CC").setBold().getMap());

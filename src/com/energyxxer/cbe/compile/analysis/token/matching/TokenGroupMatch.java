@@ -10,6 +10,10 @@ import com.energyxxer.cbe.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.energyxxer.cbe.compile.analysis.token.TokenMatchResponse.COMPLETE_MATCH;
+import static com.energyxxer.cbe.compile.analysis.token.TokenMatchResponse.NO_MATCH;
+import static com.energyxxer.cbe.compile.analysis.token.TokenMatchResponse.PARTIAL_MATCH;
+
 /**
  * Represents a group of token items. This represents a structure a sequence of
  * tokens should meet to match a given token structure.
@@ -56,7 +60,7 @@ public class TokenGroupMatch extends TokenPatternMatch {
 		Token faultyToken = null;
 		int length = 0;
 		TokenPatternMatch expected = null;
-		for (int i = 0; i < items.size(); i++) {
+		itemLoop: for (int i = 0; i < items.size(); i++) {
 
 			if (currentToken >= tokens.size() && !items.get(i).optional) {
 				hasMatched = false;
@@ -65,18 +69,28 @@ public class TokenGroupMatch extends TokenPatternMatch {
 			}
 
 			TokenMatchResponse itemMatch = items.get(i).match(tokens.subList(currentToken, tokens.size()),st);
-			if (!itemMatch.matched) {
-				length += itemMatch.length;
-				if(!items.get(i).optional || items.get(i).isSensitive()) {
-					hasMatched = false;
-					faultyToken = itemMatch.faultyToken;
-					expected = itemMatch.expected;
+			switch(itemMatch.getMatchType()) {
+				case NO_MATCH: {
+					if(!items.get(i).optional) {
+						hasMatched = false;
+						faultyToken = itemMatch.faultyToken;
+						expected = itemMatch.expected;
+						break itemLoop;
+					}
 					break;
 				}
-			} else {
-				group.add(itemMatch.pattern);
-				currentToken += itemMatch.length;
-				length += itemMatch.length;
+				case PARTIAL_MATCH: {
+					hasMatched = false;
+					length += itemMatch.length;
+					faultyToken = itemMatch.faultyToken;
+					expected = itemMatch.expected;
+					break itemLoop;
+				}
+				case COMPLETE_MATCH: {
+					group.add(itemMatch.pattern);
+					currentToken += itemMatch.length;
+					length += itemMatch.length;
+				}
 			}
 		}
 		st.pop();
@@ -138,15 +152,5 @@ public class TokenGroupMatch extends TokenPatternMatch {
 			}
 		}
 		return s;
-	}
-
-	@Override
-	public boolean isSensitive() {
-		return false;
-	}
-
-	@Override
-	public boolean isOmittable() {
-		return false;
 	}
 }

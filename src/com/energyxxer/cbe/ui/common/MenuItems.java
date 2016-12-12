@@ -3,15 +3,16 @@ package com.energyxxer.cbe.ui.common;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import com.energyxxer.cbe.files.FileFactory;
 import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.ui.components.themechange.TCMenu;
+import com.energyxxer.cbe.ui.components.themechange.TCMenuItem;
 import com.energyxxer.cbe.ui.explorer.Explorer;
 import com.energyxxer.cbe.util.FileUtil;
 import com.energyxxer.cbe.util.ImageManager;
@@ -20,15 +21,14 @@ import com.energyxxer.cbe.util.ImageManager;
  * Provides methods that create menu components for file and project management.
  */
 public class MenuItems {
-	public static JMenu newMenu(String title) {
-		JMenu newMenu = new JMenu(title);
+	public static TCMenu newMenu(String title) {
+		TCMenu newMenu = new TCMenu(title);
 		newMenu.setIcon(new ImageIcon(
 				ImageManager.load("/assets/icons/light_theme/cbe.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
 
 		// --------------------------------------------------
 
-		JMenuItem projectItem = new JMenuItem("Project        ", new ImageIcon(ImageManager
-				.load("/assets/icons/light_theme/project_new.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
+		TCMenuItem projectItem = new TCMenuItem("Project        ", "project_new");
 		projectItem.addActionListener(new AbstractAction() {
 			/**
 			 * 
@@ -49,8 +49,7 @@ public class MenuItems {
 
 		// --------------------------------------------------
 		
-		JMenuItem folderItem = new JMenuItem("Folder", new ImageIcon(ImageManager
-				.load("/assets/icons/light_theme/folder_new.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
+		TCMenuItem folderItem = new TCMenuItem("Folder", "folder_new");
 		folderItem.addActionListener(new AbstractAction() {
 			/**
 			 * 
@@ -71,8 +70,7 @@ public class MenuItems {
 
 		// --------------------------------------------------
 
-		JMenuItem entityItem = new JMenuItem("Entity", new ImageIcon(ImageManager.load("/assets/icons/light_theme/entity_new.png")
-				.getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
+		TCMenuItem entityItem = new TCMenuItem("Entity", "entity_new");
 		entityItem.addActionListener(new AbstractAction() {
 			/**
 			 * 
@@ -89,8 +87,7 @@ public class MenuItems {
 
 		// --------------------------------------------------
 
-		JMenuItem itemItem = new JMenuItem("Item", new ImageIcon(ImageManager.load("/assets/icons/light_theme/item_new.png")
-				.getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
+		TCMenuItem itemItem = new TCMenuItem("Item", "item_new");
 		itemItem.addActionListener(new AbstractAction() {
 			/**
 			 * 
@@ -105,70 +102,58 @@ public class MenuItems {
 		
 		newMenu.add(itemItem);
 		return newMenu;
-	};
+	}
 
 	public enum FileMenuItem {
 		COPY, PASTE, DELETE, RENAME, MOVE
 	}
 
-	public static JMenuItem fileItem(FileMenuItem type) {
-		JMenuItem item = null;
+	public static TCMenuItem fileItem(FileMenuItem type) {
+		TCMenuItem item = null;
 		switch (type) {
 		case COPY:
-			item = new JMenuItem("Copy");
+			item = new TCMenuItem("Copy");
 			break;
 		case DELETE:
-			item = new JMenuItem("Delete");
+			item = new TCMenuItem("Delete");
 			item.setEnabled(Explorer.selectedLabels.size() > 0);
-			item.addActionListener(new AbstractAction() {
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 219892145361786637L;
+			item.addActionListener(e -> {
+				ArrayList<File> files = new ArrayList<>();
+				String fileType = null;
+				for(int i = 0; i < Explorer.selectedLabels.size(); i++) {
+					File file = new File(Explorer.selectedLabels.get(i).parent.path);
+					if(file.isFile() && fileType == null) {
+						fileType = "file";
+					} else if(file.isDirectory() && fileType == null) {
+						fileType = "folder";
+					} else if(file.isDirectory() && "file".equals(fileType)) {
+						fileType = "item";
+					} else if(file.isFile() && "folder".equals(fileType)) {
+						fileType = "item";
+					}
+					files.add(file);
+				}
 
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					ArrayList<File> files = new ArrayList<File>();
-					String fileType = null;
-					for(int i = 0; i < Explorer.selectedLabels.size(); i++) {
-						File file = new File(Explorer.selectedLabels.get(i).parent.path);
-						if(file.isFile() && fileType == null) {
-							fileType = "file";
-						} else if(file.isDirectory() && fileType == null) {
-							fileType = "folder";
-						} else if(file.isDirectory() && fileType == "file") {
-							fileType = "item";
-						} else if(file.isFile() && fileType == "folder") {
-							fileType = "item";
-						}
-						files.add(file);
-					}
-					
-					String subject = ((Explorer.selectedLabels.size() == 1) ? "this" : "these") + " " + ((Explorer.selectedLabels.size() == 1) ? "" : "" + Explorer.selectedLabels.size() + " ") + fileType + ((Explorer.selectedLabels.size() == 1) ? "" : "s");
-					
-					int confirmation = JOptionPane.showConfirmDialog(null,
-							"        Are you sure you want to delete " + subject + "?        ",
-							"Delete " + fileType, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-					if (confirmation == JOptionPane.YES_OPTION) {
-						for(int i = 0; i < files.size(); i++) {
-							File file = files.get(i);
-							FileUtil.deleteFolder(file);
-						}
-						Window.explorer.generateProjectList();
-					}
+				String subject = ((Explorer.selectedLabels.size() == 1) ? "this" : "these") + " " + ((Explorer.selectedLabels.size() == 1) ? "" : "" + Explorer.selectedLabels.size() + " ") + fileType + ((Explorer.selectedLabels.size() == 1) ? "" : "s");
+
+				int confirmation = JOptionPane.showConfirmDialog(null,
+						"        Are you sure you want to delete " + subject + "?        ",
+						"Delete " + fileType, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				if (confirmation == JOptionPane.YES_OPTION) {
+					for(File file : files) FileUtil.deleteFolder(file);
+					Window.explorer.generateProjectList();
 				}
 			});
 			break;
 		case MOVE:
-			item = new JMenuItem("Move");
+			item = new TCMenuItem("Move");
 			item.setEnabled(Explorer.selectedLabels.size() > 0);
 			break;
 		case PASTE:
-			item = new JMenuItem("Paste");
+			item = new TCMenuItem("Paste");
 			break;
 		case RENAME:
-			item = new JMenuItem("Rename", new ImageIcon(ImageManager.load("/assets/icons/light_theme/rename.png")
-					.getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
+			item = new TCMenuItem("Rename", "rename");
 			item.setEnabled(Explorer.selectedLabels.size() == 1);
 			break;
 		default:
@@ -177,8 +162,8 @@ public class MenuItems {
 		return item;
 	}
 
-	public static JMenu refactorMenu(String title) {
-		JMenu newMenu = new JMenu(title);
+	public static TCMenu refactorMenu(String title) {
+		TCMenu newMenu = new TCMenu(title);
 
 		newMenu.add(fileItem(FileMenuItem.RENAME));
 		newMenu.add(fileItem(FileMenuItem.MOVE));

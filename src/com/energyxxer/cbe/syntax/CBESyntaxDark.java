@@ -16,7 +16,7 @@ public class CBESyntaxDark extends Syntax {
     static {
 		styles.put("comment", new Style().setColor("#666666").setItalic().getMap());
 		styles.put("number", new Style().setColor("#FF7766").getMap());
-		styles.put("qualifier", new Style().setColor("#1290c3").setBold().getMap());
+		styles.put("modifier", new Style().setColor("#1290c3").setBold().getMap());
 		styles.put("unit_type", new Style().setColor("#1290c3").setBold().getMap());
 		styles.put("unit_action", new Style().setColor("#1290c3").setBold().getMap());
 		styles.put("data_type", new Style().setColor("#1290c3").setBold().getMap());

@@ -23,8 +23,4 @@ public abstract class TokenPatternMatch {
 	public abstract String deepToString(int levels);
 
 	public abstract String toTrimmedString();
-
-	public abstract boolean isSensitive();
-
-	public abstract boolean isOmittable();
 }
