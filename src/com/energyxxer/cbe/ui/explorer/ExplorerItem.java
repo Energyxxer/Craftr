@@ -57,9 +57,9 @@ public class ExplorerItem extends JPanel {
 		this.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		ThemeChangeListener.addThemeChangeListener(t -> {
-			header.setBackground(t.p1);
-			indentation.setBackground(t.p1);
-			children.setBackground(t.p1);
+			header.setBackground(t.getColor("Explorer.background",Color.WHITE));
+			indentation.setBackground(header.getBackground());
+			children.setBackground(header.getBackground());
 		});
 
 		if(toOpen != null && toOpen.contains(this.path)) {

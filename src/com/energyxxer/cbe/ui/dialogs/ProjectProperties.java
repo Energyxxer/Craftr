@@ -1,87 +1,74 @@
 package com.energyxxer.cbe.ui.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.Point;
-import java.io.File;
-import java.util.Base64;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import com.energyxxer.cbe.logic.Project;
 import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.minecraft.MinecraftConstants;
-import com.energyxxer.cbe.ui.components.*;
+import com.energyxxer.cbe.ui.components.ComponentResizer;
+import com.energyxxer.cbe.ui.components.XFileField;
+import com.energyxxer.cbe.ui.styledcomponents.*;
+import com.energyxxer.cbe.ui.theme.Theme;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.cbe.util.ImageManager;
 import com.energyxxer.cbe.util.StringUtil;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
 
 public class ProjectProperties {
 	
 	//private static final Font FIELD_FONT = new Font("Consolas", 0, 12);
 
+	private static Theme t;
+
 	public static void show(Project project) {
 
 		JDialog dialog = new JDialog(Window.jframe);
+
+
+		ThemeChangeListener.addThemeChangeListener(th -> t = th);
 		
-		XTextField cPrefix;
-		XFileField cWorld;
+		StyledTextField cPrefix;
+		StyledFileField cWorld;
 		
 		JPanel pane = new JPanel(new BorderLayout());
 		//JButton okay = new JButton("OK");
 		//JButton cancel = new JButton("Cancel");
 		
 		pane.setPreferredSize(new Dimension(900,600));
-		pane.setBackground(Window.theme.p2);
+		pane.setBackground(t.getColor("ProjectProperties.background", new Color(235, 235, 235)));
 		
 		{
 			JPanel sidebar = new JPanel(new BorderLayout());
-			sidebar.setBackground(Window.theme.p1);
-			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Window.theme.l1));
-			
+
 			ComponentResizer sidebarResizer = new ComponentResizer(sidebar);
 			sidebarResizer.setResizable(false, false, false, true);
-			
+
 			String[] sections = new String[] { "General", "Compiler", "Editor", "Code Style", "Resources" };
-			
-			XList<String> navigator = new XList<String>(sections);
+
+			StyledList<String> navigator = new StyledList<>(sections, "ProjectProperties");
+			sidebar.setBackground(navigator.getBackground());
+			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, t.getColor("ProjectProperties.content.border",new Color(200, 200, 200))));
 			navigator.setPreferredSize(new Dimension(200,500));
-			navigator.setBackground(Window.theme.p1);
-			navigator.setForeground(Window.theme.t1);
-			navigator.setFont(navigator.getFont().deriveFont(14.0f));
-			
-			navigator.setCellBackground(Window.theme.p3);
-			
-			navigator.setSelectedCellBackground(Window.theme.p2);
-			navigator.setSelectedCellBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Window.theme.l1));
-			
-			navigator.setRolloverCellBackground(Window.theme.p2);
-			navigator.setRolloverCellBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, Window.theme.l1));
-			
+
 			sidebar.add(navigator, BorderLayout.CENTER);
 			
 			pane.add(sidebar, BorderLayout.WEST);
 		}
 		
 		JPanel contentPane = new JPanel(new BorderLayout());
+		contentPane.setBackground(t.getColor("ProjectProperties.content.background", new Color(235, 235, 235)));
 		pane.add(contentPane, BorderLayout.CENTER);
-		
+
 		JPanel contentCompiler = new JPanel(new BorderLayout());
 		{
-			contentCompiler.setBackground(Window.theme.p2);
+			contentCompiler.setBackground(contentPane.getBackground());
 			contentPane.add(contentCompiler, BorderLayout.CENTER);
 			
 			{
 				JPanel header = new JPanel(new BorderLayout());
-				header.setBackground(Window.theme.p2);
-				header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Window.theme.l1));
+				header.setBackground(t.getColor("ProjectProperties.content.header.background", new Color(235, 235, 235)));
+				header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.getColor("ProjectProperties.content.header.border", new Color(200, 200, 200))));
 				header.setPreferredSize(new Dimension(0,40));
 				contentCompiler.add(header, BorderLayout.NORTH);
 				
@@ -93,8 +80,8 @@ public class ProjectProperties {
 				}
 				
 				JLabel label = new JLabel("Compiler");
-				label.setForeground(Window.theme.t1);
-				label.setFont(label.getFont().deriveFont(20f).deriveFont(Font.BOLD));
+				label.setForeground(t.getColor("ProjectProperties.content.header.foreground", Color.BLACK));
+				label.setFont(new Font(t.getString("ProjectProperties.content.header.font",t.getString("General.font","Tahoma")),1,20));
 				header.add(label, BorderLayout.CENTER);
 			}
 			
@@ -127,49 +114,32 @@ public class ProjectProperties {
 				}
 
 				{
-					JLabel label = new JLabel("Prefix:");
-					label.setForeground(Window.theme.t1);
-					label.setFont(label.getFont().deriveFont(1));
-					content.add(label);
+					content.add(new StyledLabel("Prefix:", "ProjectProperties.content"));
 				}
 				{
 					JPanel prefixFields = new JPanel();
+
 					prefixFields.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 2));
 					prefixFields.setOpaque(false);
 					prefixFields.setAlignmentX(Component.LEFT_ALIGNMENT);
 					{
-						cPrefix = new XTextField(project.getPrefix());
-						cPrefix.setForeground(Window.theme.t1);
+						cPrefix = new StyledTextField(project.getPrefix(),"ProjectProperties.content");
 						cPrefix.setPreferredSize(new Dimension(150,25));
-						cPrefix.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-						cPrefix.setBackground(Window.theme.b3);
-						cPrefix.setBorderColor(Window.theme.l1);
-						cPrefix.setForeground(Window.theme.t1);
+						//cPrefix.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 						prefixFields.add(cPrefix);
 					}
 					{
-						XButton randomize = new XButton("Generate Random Prefix");
+						StyledButton randomize = new StyledButton("Generate Random Prefix", "ProjectProperties.content");
 						randomize.setPreferredSize(new Dimension(150, 25));
-						randomize.setBackground(Window.theme.p3);
-						randomize.setForeground(Window.theme.t1);
-						randomize.setBorderColor(Window.theme.l1);
-						randomize.setRolloverColor(Window.theme.p4);
-						randomize.setPressedColor(Window.theme.p1);
 
 						randomize.addActionListener(e -> cPrefix.setText(StringUtil.getRandomString(4)));
 
 						prefixFields.add(randomize);
 					}
 					{
-						XButton reset = new XButton("Reset Prefix");
+						StyledButton reset = new StyledButton("Reset Prefix", "ProjectProperties.content");
 						reset.setPreferredSize(new Dimension(100, 25));
-						reset.setBackground(Window.theme.p3);
-						reset.setForeground(Window.theme.t1);
-						reset.setBorderColor(Window.theme.l1);
-						reset.setRolloverColor(Window.theme.p4);
-						reset.setPressedColor(Window.theme.p1);
 
 						reset.addActionListener(e -> cPrefix.setText(StringUtil.getInitials(project.getName()).toLowerCase()));
 
@@ -194,22 +164,17 @@ public class ProjectProperties {
 				{
 					{
 						JLabel label = new JLabel("World Output:");
-						label.setForeground(Window.theme.t1);
-						label.setFont(label.getFont().deriveFont(1));
+						label.setForeground(t.getColor("ProjectProperties.content.label.foreground", Color.BLACK));
+						label.setFont(new Font(t.getString("ProjectProperties.content.label.font",t.getString("General.font","Tahoma")),1,12));
 						content.add(label);
 					}
 					File file = new File(MinecraftConstants.getMinecraftDir() + File.separator + "saves");
 					if(project.getWorld() != null) file = new File(project.getWorld());
-					cWorld = new XFileField(file);
+					cWorld = new StyledFileField(file,"ProjectProperties.content");
 					cWorld.setDialogTitle("Open world...");
 					cWorld.setOperation(XFileField.OPEN_DIRECTORY);
-					cWorld.setForeground(Window.theme.t1);
 					cWorld.setMaximumSize(new Dimension(cWorld.getMaximumSize().width,25));
 					cWorld.setAlignmentX(Component.LEFT_ALIGNMENT);
-	
-					cWorld.setBackground(Window.theme.b3);
-					cWorld.setBorderColor(Window.theme.l1);
-					cWorld.setForeground(Window.theme.t1);
 					
 					content.add(cWorld);
 				}
@@ -221,7 +186,7 @@ public class ProjectProperties {
 		{
 			JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT));
 			buttons.setPreferredSize(new Dimension(0,50));
-			buttons.setBackground(Window.theme.p2);
+			buttons.setBackground(contentPane.getBackground());
 			
 			{
 				JPanel padding = new JPanel();
@@ -231,13 +196,8 @@ public class ProjectProperties {
 			}
 			
 			{
-				XButton okay = new XButton("OK");
+				StyledButton okay = new StyledButton("OK", "ProjectProperties");
 				okay.setPreferredSize(new Dimension(75, 25));
-				okay.setBackground(Window.theme.p3);
-				okay.setForeground(Window.theme.t1);
-				okay.setBorderColor(Window.theme.l1);
-				okay.setRolloverColor(Window.theme.p4);
-				okay.setPressedColor(Window.theme.p1);
 				buttons.add(okay);
 
 				okay.addActionListener(e -> {
@@ -251,13 +211,8 @@ public class ProjectProperties {
 			}
 			
 			{
-				XButton cancel = new XButton("Cancel");
+				StyledButton cancel = new StyledButton("Cancel", "ProjectProperties");
 				cancel.setPreferredSize(new Dimension(75, 25));
-				cancel.setBackground(Window.theme.p3);
-				cancel.setForeground(Window.theme.t1);
-				cancel.setBorderColor(Window.theme.l1);
-				cancel.setRolloverColor(Window.theme.p4);
-				cancel.setPressedColor(Window.theme.p1);
 				buttons.add(cancel);
 
 				cancel.addActionListener(e -> {
@@ -268,25 +223,6 @@ public class ProjectProperties {
 			
 			contentPane.add(buttons, BorderLayout.SOUTH);
 		}
-		
-		
-		/*okay.setFocusPainted(false);
-		okay.setPreferredSize(new Dimension(75, 25));
-		okay.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//optionPane.setValue(okay);
-			}
-		});
-		cancel.setFocusPainted(false);
-		cancel.setPreferredSize(new Dimension(75, 25));
-		cancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//optionPane.setValue(cancel);
-			}
-		});*/
-		
 
 		dialog.setVisible(true);
 		dialog.setContentPane(pane);

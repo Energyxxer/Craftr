@@ -1,9 +1,13 @@
 package com.energyxxer.cbe.util;
 
+import com.energyxxer.cbe.global.Commons;
+import com.energyxxer.cbe.main.Window;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 import javax.imageio.ImageIO;
@@ -32,14 +36,15 @@ public class ImageManager {
 	public static BufferedImage load(String path) {
 		if (!loadedImages.containsKey(path)) {
 			try {
-				if (Class.class.getResourceAsStream(path) != null) {
-					loadedImages.put(path, ImageIO.read(Class.class.getResourceAsStream(path)));
+				InputStream is = Class.class.getResourceAsStream(path);
+				if (is != null) {
+					loadedImages.put(path, ImageIO.read(is));
 				} else {
-					System.err.println("<span color=\"orange\">[WARN] File \"" + path + "\" not found.</span>");
+					System.err.println("<span color=\"" + ColorUtil.toCSS(Commons.warningColor) + "\">[WARN] File \"" + path + "\" not found.</span>");
 				}
 
 			} catch (IOException e) {
-				System.err.println("<span color=\"orange\">[WARN] File \"" + path + "\" not found.</span>");
+				System.err.println("<span color=\"" + ColorUtil.toCSS(Commons.warningColor) + "\">[WARN] File \"" + path + "\" not found.</span>");
 			}
 		}
 		if (loadedImages.get(path) != null) {

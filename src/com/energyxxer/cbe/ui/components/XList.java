@@ -1,30 +1,17 @@
 package com.energyxxer.cbe.ui.components;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 public class XList<T> extends JPanel {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2236225764971406759L;
 
-	protected ArrayList<T> options = new ArrayList<T>();
+	protected ArrayList<T> options = new ArrayList<>();
 	
 	protected int selected = 0;
 
@@ -32,15 +19,21 @@ public class XList<T> extends JPanel {
 	protected ComponentStyle rolloverStyle = new ComponentStyle(null);
 	protected ComponentStyle selectedStyle = new ComponentStyle(null);
 	
-	private ArrayList<ListSelectionListener> listSelectionListeners = new ArrayList<ListSelectionListener>();
+	private ArrayList<ListSelectionListener> listSelectionListeners = new ArrayList<>();
+
+	{
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+	}
 
 	public XList() {
-		normalStyle = new ComponentStyle();
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	}
 	
 	public XList(T[] options) {
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setOptions(options);
+	}
+
+	public void setOptions(T[] options) {
+		this.options.clear();
 		for(T o : options) {
 			this.options.add(o);
 		}
@@ -116,7 +109,6 @@ public class XList<T> extends JPanel {
 
 	public void setCellForeground(Color cellForeground) {
 		if(this.normalStyle == null) {
-			//FOR THE LOVE OF ALL THAT IS LOGICAL, PLEASE DON'T DO THIS TO ME, JAVA.
 			return;
 		}
 		this.normalStyle.foreground = cellForeground;
@@ -250,6 +242,10 @@ public class XList<T> extends JPanel {
 			updateStyle();
 			repaint();
 		}
+	}
+
+	public T getSelected() {
+		return options.get(selected);
 	}
 }
 

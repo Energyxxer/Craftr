@@ -6,11 +6,13 @@ import com.energyxxer.cbe.compile.analysis.token.TokenStream;
 import com.energyxxer.cbe.global.TabManager;
 import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.syntax.Syntax;
+import com.energyxxer.cbe.ui.scrollbar.OverlayScrollPaneLayout;
+import com.energyxxer.cbe.ui.scrollbar.ScrollbarUI;
 import com.energyxxer.cbe.ui.Tab;
 import com.energyxxer.cbe.ui.explorer.ExplorerItemLabel;
 import com.energyxxer.cbe.ui.theme.Theme;
 import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.cbe.util.LinePainter;
+import com.energyxxer.cbe.util.linepainter.LinePainter;
 import com.energyxxer.cbe.util.linenumber.TextLineNumber;
 
 import javax.swing.*;
@@ -54,11 +56,10 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 
 	public CBEEditor(Tab tab) {
 		super();
+
 		editor = new JTextPane(new DefaultStyledDocument());
 		editor.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
 		super.setViewportView(editor);
-
-		this.getVerticalScrollBar().setBlockIncrement(1);
 
 		linePainter = new LinePainter(editor);
 
@@ -98,7 +99,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		});
 		editor.getActionMap().put("redoKeystroke", new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 2L;
 
@@ -110,7 +111,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		});
 		editor.getActionMap().put("closeKeystroke", new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 2L;
 
@@ -121,7 +122,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		});
 		editor.getActionMap().put("saveKeystroke", new AbstractAction() {
 			/**
-			 * 
+			 *
 			 */
 			private static final long serialVersionUID = 2L;
 
@@ -137,9 +138,25 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		this.setRowHeaderView(tln);
 		//tln.setPreferredSize(new Dimension(10,0));
 
+		this.getVerticalScrollBar().setUI(new ScrollbarUI(this, 20));
+		this.getHorizontalScrollBar().setUI(new ScrollbarUI(this, 20));
+		this.getVerticalScrollBar().setOpaque(false);
+		this.getHorizontalScrollBar().setOpaque(false);
+
+		this.setLayout(new OverlayScrollPaneLayout());
+
+		linePainter.addPaintListener(() -> {
+			this.getVerticalScrollBar().repaint();
+			this.getHorizontalScrollBar().repaint();
+		});
 
 		timer = new Timer(20, this);
 		timer.start();
+
+		setComponentZOrder(getVerticalScrollBar(), 0);
+		setComponentZOrder(getHorizontalScrollBar(), 1);
+		setComponentZOrder(getViewport(), 2);
+
 
 		addThemeChangeListener();
 	}
@@ -302,19 +319,42 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 
 	@Override
 	public void themeChanged(Theme t) {
-		setBackground(Color.RED);
-		editor.setBackground(t.e1);
-		editor.setForeground(t.t1);
-		editor.setCaretColor(t.t1);
-		editor.setSelectionColor(t.h3);
-		editor.setSelectedTextColor(t.h4);
-		linePainter.setColor(t.h1);
-		editor.setFont(new Font(t.font2, 0, 12));
-		tln.setBackground(t.e2);
-		tln.setForeground(t.t3);
-		//tln.setCurrentLineForeground(t.h3);
-		tln.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, t.l1), BorderFactory.createEmptyBorder(0, 0, 0, 15)));
-		tln.setFont(editor.getFont());
+		editor.setBackground(t.getColor("Editor.background",Color.WHITE));
+		setBackground(editor.getBackground());
+		editor.setForeground(t.getColor("Editor.foreground",t.getColor("General.foreground",Color.BLACK)));
+		editor.setCaretColor(editor.getForeground());
+		editor.setSelectionColor(t.getColor("Editor.selection.background",new Color(50, 100, 175)));
+		editor.setSelectedTextColor(t.getColor("Editor.selection.foreground",editor.getForeground()));
+		linePainter.setColor(t.getColor("Editor.currentLine.background",new Color(235, 235, 235)));
+		editor.setFont(new Font(t.getString("Editor.font","monospaced"), 0, 12));
+		tln.setBackground(t.getColor("Editor.lineNumber.background",new Color(235, 235, 235)));
+		tln.setForeground(t.getColor("Editor.lineNumber.foreground",new Color(150, 150, 150)));
+		//tln current line background
+		tln.setCurrentLineForeground(t.getColor("Editor.lineNumber.currentLine.foreground",tln.getForeground()));
+		tln.setBorder(
+				BorderFactory.createCompoundBorder(
+						BorderFactory.createMatteBorder(
+								0,
+								0,
+								0,
+								1,
+								t.getColor(
+										"Editor.lineNumber.border",
+										t.getColor(
+												"General.line",
+												new Color(200, 200, 200)
+										)
+								)
+						),
+						BorderFactory.createEmptyBorder(
+								0,
+								0,
+								0,
+								15
+						)
+				)
+		);
+		tln.setFont(new Font(t.getString("Editor.lineNumber.font","monospaced"),0,12));
 		setTabs(4);
 
 		if (associatedTab.path.endsWith(".mcbe")) {

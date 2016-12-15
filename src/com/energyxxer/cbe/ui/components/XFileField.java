@@ -8,16 +8,11 @@ import java.io.File;
 
 public class XFileField extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2485998770143980714L;
-	
-	protected XTextField field;
-	protected XButton browse;
-	protected byte operation = OPEN_ALL;
+	private XTextField field;
+	private XButton button;
+	private byte operation = OPEN_ALL;
 	protected File value = new File(System.getProperty("user.home"));
-	protected String dialogTitle = "Open...";
+	private String dialogTitle = "Open...";
 
 	public static final byte OPEN_ALL = 0;
 	public static final byte OPEN_FILE = 1;
@@ -25,12 +20,13 @@ public class XFileField extends JPanel {
 	public static final byte SAVE = 3;
 	
 	{
+		setLayout(new BorderLayout());
 		setOpaque(false);
 		field = new XTextField();
-		browse = new XButton("Browse...");
-		browse.setPreferredSize(new Dimension(100,25));
+		button = new XButton("Browse...");
+		button.setPreferredSize(new Dimension(100,25));
 
-		browse.addActionListener(e -> {
+		button.addActionListener(e -> {
 			JFileChooser jfc = new JFileChooser();
 			int[] modes = new int[] {JFileChooser.FILES_AND_DIRECTORIES,JFileChooser.FILES_ONLY,JFileChooser.DIRECTORIES_ONLY,JFileChooser.FILES_AND_DIRECTORIES};
 			jfc.setFileSelectionMode(modes[operation]);
@@ -84,25 +80,20 @@ public class XFileField extends JPanel {
 		});
 
 		this.add(field, BorderLayout.CENTER);
-		this.add(browse, BorderLayout.EAST);
+		this.add(button, BorderLayout.EAST);
 	}
 
-	public XFileField() {
-		super(new BorderLayout());
-	}
+	public XFileField() {}
 
 	public XFileField(byte operation) {
-		super(new BorderLayout());
 		setOperation(operation);
 	}
 
 	public XFileField(File file) {
-		super(new BorderLayout());
 		setFile(file);
 	}
 
 	public XFileField(byte operation, File file) {
-		super(new BorderLayout());
 		setFile(file);
 		setOperation(operation);
 	}
@@ -110,6 +101,8 @@ public class XFileField extends JPanel {
 	public void setOperation(byte operation) {
 		this.operation = operation;
 	}
+
+	public byte getOperation() {return this.operation;}
 	
 	public void setFile(File file) {
 		if(file != null) {
@@ -132,5 +125,13 @@ public class XFileField extends JPanel {
 
 	public void setDialogTitle(String title) {
 		this.dialogTitle = title;
+	}
+
+	public XTextField getField() {
+		return field;
+	}
+
+	public XButton getButton() {
+		return button;
 	}
 }

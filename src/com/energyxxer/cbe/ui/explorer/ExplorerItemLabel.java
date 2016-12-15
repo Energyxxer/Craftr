@@ -1,5 +1,20 @@
 package com.energyxxer.cbe.ui.explorer;
 
+import com.energyxxer.cbe.global.Commons;
+import com.energyxxer.cbe.global.Preferences;
+import com.energyxxer.cbe.global.ProjectManager;
+import com.energyxxer.cbe.global.TabManager;
+import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.ui.common.MenuItems;
+import com.energyxxer.cbe.ui.common.MenuItems.FileMenuItem;
+import com.energyxxer.cbe.ui.styledcomponents.StyledMenu;
+import com.energyxxer.cbe.ui.styledcomponents.StyledMenuItem;
+import com.energyxxer.cbe.ui.styledcomponents.StyledPopupMenu;
+import com.energyxxer.cbe.ui.theme.Theme;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.cbe.util.*;
+
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
@@ -7,31 +22,6 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-
-import com.energyxxer.cbe.global.Preferences;
-import com.energyxxer.cbe.global.ProjectManager;
-import com.energyxxer.cbe.global.TabManager;
-import com.energyxxer.cbe.main.Window;
-import com.energyxxer.cbe.ui.common.MenuItems;
-import com.energyxxer.cbe.ui.common.MenuItems.FileMenuItem;
-import com.energyxxer.cbe.ui.components.themechange.TCMenuItem;
-import com.energyxxer.cbe.ui.theme.Theme;
-import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.cbe.util.ColorUtil;
-import com.energyxxer.cbe.util.FileUtil;
-import com.energyxxer.cbe.util.ImageManager;
-import com.energyxxer.cbe.util.StringPrompt;
-import com.energyxxer.cbe.util.StringUtil;
-import com.energyxxer.cbe.util.StringValidator;
 
 /**
  * Non-recursive label for an explorer item.
@@ -43,8 +33,13 @@ public class ExplorerItemLabel extends JLabel implements MouseListener, ThemeCha
 	 */
 	private static final long serialVersionUID = 3655326885011257489L;
 
-	public boolean rollover = false;
-	public boolean selected = false;
+	private boolean rollover = false;
+	private boolean selected = false;
+
+	private Color rollover_bg;
+	private Color rollover_border;
+	private Color selected_bg;
+	private Color selected_border;
 
 	public ExplorerItem parent;
 
@@ -64,24 +59,24 @@ public class ExplorerItemLabel extends JLabel implements MouseListener, ThemeCha
 		if (file.isDirectory()) {
 			if(icon != null)
 				this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + icon + ".png").getScaledInstance(16,16, Image.SCALE_SMOOTH)));
-			else this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "folder.png").getScaledInstance(16, 16,
+			else this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "folder.png").getScaledInstance(16, 16,
 					java.awt.Image.SCALE_SMOOTH)));
 			try {
 				File workspaceFile = new File(Preferences.get("workspace_dir"));
 				if (file.getParentFile().getCanonicalPath() == workspaceFile.getCanonicalPath()) {
-					this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "project.png").getScaledInstance(16, 16,
+					this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "project.png").getScaledInstance(16, 16,
 							java.awt.Image.SCALE_SMOOTH)));
 				}
 			} catch (IOException e) {
-				e.printStackTrace(new PrintWriter(Window.consoleOut));
+				e.printStackTrace();
 			}
 		} else {
 			if (file.getName().endsWith(".mcbe")) {
-				if(icon == null) icon = Window.theme.path + "warn";
+				if(icon == null) icon = Commons.themeAssetsPath + "warn";
 				this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + icon + ".png").getScaledInstance(16, 16,
 						java.awt.Image.SCALE_SMOOTH)));
 			} else {
-				this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "file.png").getScaledInstance(16, 16,
+				this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "file.png").getScaledInstance(16, 16,
 						java.awt.Image.SCALE_SMOOTH)));
 			}
 		}
@@ -94,9 +89,11 @@ public class ExplorerItemLabel extends JLabel implements MouseListener, ThemeCha
 		Graphics2D g2 = (Graphics2D) g;
 
 		if (selected) {
-			g2.setColor(Window.theme.b4);
+			g2.setColor(selected_border);
 			g2.fillRect(0, 0, this.getWidth(), this.getHeight());
-
+			g2.setColor(selected_bg);
+			g2.fillRect(1, 1, this.getWidth()-2, this.getHeight()-2);
+/*
 			GradientPaint grad = new GradientPaint(this.getWidth() / 2, 0, ColorUtil.add(Window.theme.b3,Window.theme.g1), this.getWidth() / 2,
 					this.getHeight(), Window.theme.b3);
 
@@ -115,8 +112,13 @@ public class ExplorerItemLabel extends JLabel implements MouseListener, ThemeCha
 			g2.fillRect(1, 1, 1, 1);
 			g2.fillRect(1, this.getHeight() - 2, 1, 1);
 			g2.fillRect(this.getWidth() - 2, 1, 1, 1);
-			g2.fillRect(this.getWidth() - 2, this.getHeight() - 2, 1, 1);
+			g2.fillRect(this.getWidth() - 2, this.getHeight() - 2, 1, 1);*/
 		} else if (rollover) {
+			g2.setColor(rollover_border);
+			g2.fillRect(0, 0, this.getWidth(), this.getHeight());
+			g2.setColor(rollover_bg);
+			g2.fillRect(1, 1, this.getWidth()-2, this.getHeight()-2);
+			/*
 			g2.setColor(Window.theme.b2);
 			g2.fillRect(0, 0, this.getWidth(), this.getHeight());
 
@@ -132,7 +134,7 @@ public class ExplorerItemLabel extends JLabel implements MouseListener, ThemeCha
 			g2.fillRect(1, 1, 1, 1);
 			g2.fillRect(1, this.getHeight() - 2, 1, 1);
 			g2.fillRect(this.getWidth() - 2, 1, 1, 1);
-			g2.fillRect(this.getWidth() - 2, this.getHeight() - 2, 1, 1);
+			g2.fillRect(this.getWidth() - 2, this.getHeight() - 2, 1, 1);*/
 		}
 
 		super.paintComponent(g);
@@ -222,13 +224,19 @@ public class ExplorerItemLabel extends JLabel implements MouseListener, ThemeCha
 
 	@Override
 	public void themeChanged(Theme t) {
-		this.setForeground(t.t1);
-		this.setFont(new Font(t.font1, 0, 12));
+		this.setFont(new Font(t.getString("Explorer.label.font",t.getString("General.font","Tahoma")), 0, 12));
+		this.setForeground(t.getColor("Explorer.label.foreground",t.getColor("General.foreground", Color.BLACK)));
+
+		this.rollover_bg = t.getColor("Explorer.label.hover.background",new Color(235, 235, 235));
+		this.rollover_border = t.getColor("Explorer.label.hover.border",new Color(200, 200, 200));
+		this.selected_bg = t.getColor("Explorer.label.selected.background",new Color(235, 235, 235));
+		this.selected_border = t.getColor("Explorer.label.selected.border",new Color(200, 200, 200));
+
 		updateLabel();
 	}
 }
 
-class ExplorerItemPopup extends JPopupMenu {
+class ExplorerItemPopup extends StyledPopupMenu {
 	/**
 	 * 
 	 */
@@ -238,7 +246,7 @@ class ExplorerItemPopup extends JPopupMenu {
 		add(MenuItems.newMenu("New                    "));
 		addSeparator();
 
-		TCMenuItem openItem = new TCMenuItem("Open");
+		StyledMenuItem openItem = new StyledMenuItem("Open");
 		openItem.addActionListener(new AbstractAction() {
 			/**
 			 * 
@@ -255,7 +263,7 @@ class ExplorerItemPopup extends JPopupMenu {
 
 		add(openItem);
 
-		JMenuItem openInSystemItem = new JMenuItem("Show in System Explorer");
+		StyledMenuItem openInSystemItem = new StyledMenuItem("Show in System Explorer");
 		openInSystemItem.addActionListener(new AbstractAction() {
 			/**
 			 * 
@@ -279,9 +287,9 @@ class ExplorerItemPopup extends JPopupMenu {
 		add(MenuItems.fileItem(FileMenuItem.PASTE));
 		add(MenuItems.fileItem(FileMenuItem.DELETE));
 		addSeparator();
-		JMenu refactorMenu = new JMenu("Refactor");
+		StyledMenu refactorMenu = new StyledMenu("Refactor");
 
-		JMenuItem renameItem = MenuItems.fileItem(FileMenuItem.RENAME);
+		StyledMenuItem renameItem = MenuItems.fileItem(FileMenuItem.RENAME);
 		renameItem.addActionListener(new AbstractAction() {
 			/**
 			 * 

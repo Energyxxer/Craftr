@@ -4,6 +4,7 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import com.energyxxer.cbe.global.Commons;
 import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.cbe.util.ImageManager;
@@ -37,14 +38,16 @@ public class ToolbarButton extends JButton {
 		super();
 		this.icon = icon;
 		this.setContentAreaFilled(false);
-		this.setBackground(Window.theme.p3);
+		this.setOpaque(false);
+		this.setBackground(new Color(0,0,0,0));
+		//this.setBackground(Window.theme.p3);
 		this.setMinimumSize(new Dimension(25, 25));
 		this.setMaximumSize(new Dimension(25, 25));
 		this.setPreferredSize(new Dimension(25, 25));
 		this.setBorder(BorderFactory.createEmptyBorder());
 
 		ThemeChangeListener.addThemeChangeListener(t -> {
-			if(icon != null) this.setIcon(new ImageIcon(ImageManager.load(String.format("/assets/icons/%s%s.png", t.path, icon)).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
+			if(icon != null) this.setIcon(new ImageIcon(ImageManager.load(String.format("/assets/icons/%s%s.png", Commons.themeAssetsPath, icon)).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
 		});
 
 		this.setFocusPainted(false);

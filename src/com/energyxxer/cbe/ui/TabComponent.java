@@ -1,33 +1,21 @@
 package com.energyxxer.cbe.ui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import com.energyxxer.cbe.global.Commons;
+import com.energyxxer.cbe.global.TabManager;
+import com.energyxxer.cbe.ui.styledcomponents.StyledMenuItem;
+import com.energyxxer.cbe.ui.styledcomponents.StyledPopupMenu;
+import com.energyxxer.cbe.ui.theme.Theme;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.cbe.util.ImageManager;
+import com.energyxxer.cbe.util.StringUtil;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingConstants;
-
-import com.energyxxer.cbe.global.TabManager;
-import com.energyxxer.cbe.main.Window;
-import com.energyxxer.cbe.ui.components.themechange.TCMenuItem;
-import com.energyxxer.cbe.ui.theme.Theme;
-import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.cbe.util.ImageManager;
-import com.energyxxer.cbe.util.StringUtil;
 
 /**
  * Representation of a tab in the interface.
@@ -50,6 +38,12 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 
 	private boolean rollover;
 
+	private Color normal_bg;
+	private Color normal_line;
+	private Color rollover_bg;
+	private Color rollover_line;
+	private Color selected_bg;
+	private Color selected_line;
 
 	TabComponent(Tab associatedTab) {
 		super();
@@ -87,10 +81,10 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 
 	private void updateIcon() {
 		if (name.endsWith(".mcbe")) {
-			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "entity.png").getScaledInstance(16, 16,
+			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "entity.png").getScaledInstance(16, 16,
 					java.awt.Image.SCALE_SMOOTH)));
 		} else {
-			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Window.theme.path + "file.png").getScaledInstance(16, 16,
+			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "file.png").getScaledInstance(16, 16,
 					java.awt.Image.SCALE_SMOOTH)));
 		}
 	}
@@ -129,24 +123,24 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 		Graphics2D g2 = (Graphics2D) g;
 
 		if (selected) {
-			g2.setColor(Window.theme.l1);
+			g2.setColor(selected_line);
 			g2.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-			g2.setColor(Window.theme.p1);
+			g2.setColor(selected_bg);
 			g2.fillRect(0, 0, this.getWidth() - 1, this.getHeight());
 
 		} else if (rollover || close.getModel().isRollover()) {
-			g2.setColor(Window.theme.l1);
+			g2.setColor(rollover_line);
 			g2.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-			g2.setColor(Window.theme.p1);
+			g2.setColor(rollover_bg);
 			g2.fillRect(0, 0, this.getWidth() - 1, this.getHeight() - 1);
 
 		} else {
-			g2.setColor(Window.theme.l1);
+			g2.setColor(normal_line);
 			g2.fillRect(0, 0, this.getWidth(), this.getHeight());
 
-			g2.setColor(Window.tabList.getBackground());
+			g2.setColor(normal_bg);
 			g2.fillRect(0, 0, this.getWidth() - 1, this.getHeight() - 1);
 		}
 
@@ -196,19 +190,27 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 
 	@Override
 	public void themeChanged(Theme t) {
-		setFont(new Font(t.font1, 0, 11));
-		setForeground(t.t1);
+		setFont(new Font(t.getString("Tab.font",t.getString("General.font","Tahoma")), 0, 11));
+		setForeground(t.getColor("Tab.foreground",t.getColor("General.foreground",Color.BLACK)));
+
+		this.normal_bg = t.getColor("Tab.background",new Color(200, 202, 205));
+		this.normal_line = t.getColor("Tab.border",new Color(200, 200, 200));
+		this.rollover_bg = t.getColor("Tab.hover.background",Color.WHITE);
+		this.rollover_line = t.getColor("Tab.hover.border",new Color(200, 200, 200));
+		this.selected_bg = t.getColor("Tab.selected.background",Color.WHITE);
+		this.selected_line = t.getColor("Tab.selected.border",new Color(200, 200, 200));
+
 		if (name.endsWith(".mcbe")) {
-			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + t.path + "entity.png").getScaledInstance(16, 16,
+			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "entity.png").getScaledInstance(16, 16,
 					java.awt.Image.SCALE_SMOOTH)));
 		} else {
-			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + t.path + "file.png").getScaledInstance(16, 16,
+			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "file.png").getScaledInstance(16, 16,
 					java.awt.Image.SCALE_SMOOTH)));
 		}
 	}
 }
 
-class TabPopup extends JPopupMenu {
+class TabPopup extends StyledPopupMenu {
 	/**
 	 * 
 	 */
@@ -216,12 +218,12 @@ class TabPopup extends JPopupMenu {
 
 	TabPopup(Tab tab) {
 		{
-			TCMenuItem item = new TCMenuItem("Close");
+			StyledMenuItem item = new StyledMenuItem("Close");
 			item.addActionListener(e -> TabManager.closeTab(tab));
 			add(item);
 		}
 		{
-			TCMenuItem item = new TCMenuItem("Close Others");
+			StyledMenuItem item = new StyledMenuItem("Close Others");
 			item.addActionListener(e -> {
 				for (int i = 0; i < TabManager.openTabs.size();) {
 					if (TabManager.openTabs.get(i) != tab) {
@@ -234,7 +236,7 @@ class TabPopup extends JPopupMenu {
 			add(item);
 		}
 		{
-			TCMenuItem item = new TCMenuItem("Close Tabs to the Left");
+			StyledMenuItem item = new StyledMenuItem("Close Tabs to the Left");
 			item.addActionListener(e -> {
 				for (int i = 0; i < TabManager.openTabs.size();) {
 					if (TabManager.openTabs.get(i) == tab) {
@@ -248,7 +250,7 @@ class TabPopup extends JPopupMenu {
 		}
 
 		{
-			TCMenuItem item = new TCMenuItem("Close Tabs to the Right");
+			StyledMenuItem item = new StyledMenuItem("Close Tabs to the Right");
 			item.addActionListener(e -> {
 				boolean close = false;
 				for (int i = 0; i < TabManager.openTabs.size(); i++) {
@@ -265,7 +267,7 @@ class TabPopup extends JPopupMenu {
 
 		addSeparator();
 		{
-			TCMenuItem item = new TCMenuItem("Close All");
+			StyledMenuItem item = new StyledMenuItem("Close All");
 			item.addActionListener(e -> {
 				for (int i = 0; i < TabManager.openTabs.size();) {
 					TabManager.closeTab(TabManager.openTabs.get(i));

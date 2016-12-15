@@ -36,6 +36,10 @@ public class TextAreaOutputStream extends OutputStream {
 	public void close() {
 	}
 
+	public void update() {
+		textArea.setText(html.getText());
+	};
+
 	@Override
 	public void write(int b) throws IOException {
 
@@ -46,12 +50,7 @@ public class TextAreaOutputStream extends OutputStream {
 			final String text = sb.toString() + "\n";
 
 			html.append(text);
-			SwingUtilities.invokeLater(new Runnable() {
-				@Override
-				public void run() {
-					textArea.setText(html.getText());
-				}
-			});
+			SwingUtilities.invokeLater(() -> textArea.setText(html.getText()));
 			sb.setLength(0);
 			sb.append("");
 			return;

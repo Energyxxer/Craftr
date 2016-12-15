@@ -12,6 +12,7 @@ public class Preferences {
             .userNodeForPackage(Preferences.class);
 
     static {
+        if(prefs.get("theme",null) == null) prefs.put("theme", "CBE Light");
         if (prefs.get("workspace_dir", null) == null) {
             prefs.put("workspace_dir", WorkspaceSelector.prompt());
         }

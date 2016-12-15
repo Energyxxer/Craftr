@@ -1,7 +1,8 @@
-package com.energyxxer.cbe.util;
+package com.energyxxer.cbe.util.linepainter;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
@@ -18,6 +19,8 @@ public class LinePainter
     private Color color;
 
     private Rectangle lastView;
+
+    private ArrayList<LinePaintListener> paintListeners = new ArrayList<>();
 
     /*
      *  The line color will be calculated automatically by attempting
@@ -90,6 +93,8 @@ public class LinePainter
             g.setColor( color );
             g.fillRect(0, r.y, c.getWidth(), r.height);
 
+            dispatchPaintEvent();
+
             if (lastView == null)
                 lastView = r;
         }
@@ -124,6 +129,14 @@ public class LinePainter
                 catch(BadLocationException ble) {}
             }
         });
+    }
+
+    public void addPaintListener(LinePaintListener l) {
+        paintListeners.add(l);
+    }
+
+    private void dispatchPaintEvent() {
+        for(LinePaintListener l : paintListeners) l.onPaint();
     }
 
     //  Implement CaretListener

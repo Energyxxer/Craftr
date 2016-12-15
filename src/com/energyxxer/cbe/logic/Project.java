@@ -11,11 +11,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import com.energyxxer.cbe.global.Commons;
 import com.energyxxer.cbe.global.Preferences;
 import com.energyxxer.cbe.main.FileSelector;
 import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.minecraft.MinecraftConstants;
 import com.energyxxer.cbe.ui.dialogs.ProjectProperties;
+import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.cbe.util.StringUtil;
 
 public class Project {
@@ -192,7 +194,7 @@ public class Project {
 		if(path != null) {
 			String icon = icons.get(path);
 			if(icon == null) return null;
-			return (icon.startsWith("*") ? icon.substring(1) : Window.theme.path + icon);
+			return (icon.startsWith("*") ? icon.substring(1) : Commons.themeAssetsPath + icon);
 		}
 		return null;
 	}

@@ -1,13 +1,16 @@
 package com.energyxxer.cbe.ui.theme;
 
-import java.awt.Color;
-
 public class LightTheme extends Theme {
 	
 	private static Theme INSTANCE = new LightTheme();
 	
 	private LightTheme() {
-		
+		super("CBE Light");
+
+		put("Assets.path","light_theme/");
+
+		put("General.font","Tahoma");
+		/*
 		name = "Light Theme";
 		path = "light_theme/";
 
@@ -55,7 +58,7 @@ public class LightTheme extends Theme {
 		g1 = Color.WHITE;
 
 		//Error Text Colors
-		err0 = new Color(255,100,100);
+		err0 = new Color(255,100,100);*/
 	}
 	
 	public static Theme getInstance() {

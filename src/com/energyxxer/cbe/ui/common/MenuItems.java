@@ -3,7 +3,6 @@ package com.energyxxer.cbe.ui.common;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
@@ -11,8 +10,8 @@ import javax.swing.JOptionPane;
 
 import com.energyxxer.cbe.files.FileFactory;
 import com.energyxxer.cbe.main.Window;
-import com.energyxxer.cbe.ui.components.themechange.TCMenu;
-import com.energyxxer.cbe.ui.components.themechange.TCMenuItem;
+import com.energyxxer.cbe.ui.styledcomponents.StyledMenu;
+import com.energyxxer.cbe.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.cbe.ui.explorer.Explorer;
 import com.energyxxer.cbe.util.FileUtil;
 import com.energyxxer.cbe.util.ImageManager;
@@ -21,14 +20,14 @@ import com.energyxxer.cbe.util.ImageManager;
  * Provides methods that create menu components for file and project management.
  */
 public class MenuItems {
-	public static TCMenu newMenu(String title) {
-		TCMenu newMenu = new TCMenu(title);
+	public static StyledMenu newMenu(String title) {
+		StyledMenu newMenu = new StyledMenu(title);
 		newMenu.setIcon(new ImageIcon(
 				ImageManager.load("/assets/icons/light_theme/cbe.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH)));
 
 		// --------------------------------------------------
 
-		TCMenuItem projectItem = new TCMenuItem("Project        ", "project_new");
+		StyledMenuItem projectItem = new StyledMenuItem("Project        ", "project_new");
 		projectItem.addActionListener(new AbstractAction() {
 			/**
 			 * 
@@ -49,7 +48,7 @@ public class MenuItems {
 
 		// --------------------------------------------------
 		
-		TCMenuItem folderItem = new TCMenuItem("Folder", "folder_new");
+		StyledMenuItem folderItem = new StyledMenuItem("Folder", "folder_new");
 		folderItem.addActionListener(new AbstractAction() {
 			/**
 			 * 
@@ -70,7 +69,7 @@ public class MenuItems {
 
 		// --------------------------------------------------
 
-		TCMenuItem entityItem = new TCMenuItem("Entity", "entity_new");
+		StyledMenuItem entityItem = new StyledMenuItem("Entity", "entity_new");
 		entityItem.addActionListener(new AbstractAction() {
 			/**
 			 * 
@@ -87,7 +86,7 @@ public class MenuItems {
 
 		// --------------------------------------------------
 
-		TCMenuItem itemItem = new TCMenuItem("Item", "item_new");
+		StyledMenuItem itemItem = new StyledMenuItem("Item", "item_new");
 		itemItem.addActionListener(new AbstractAction() {
 			/**
 			 * 
@@ -108,14 +107,14 @@ public class MenuItems {
 		COPY, PASTE, DELETE, RENAME, MOVE
 	}
 
-	public static TCMenuItem fileItem(FileMenuItem type) {
-		TCMenuItem item = null;
+	public static StyledMenuItem fileItem(FileMenuItem type) {
+		StyledMenuItem item = null;
 		switch (type) {
 		case COPY:
-			item = new TCMenuItem("Copy");
+			item = new StyledMenuItem("Copy");
 			break;
 		case DELETE:
-			item = new TCMenuItem("Delete");
+			item = new StyledMenuItem("Delete");
 			item.setEnabled(Explorer.selectedLabels.size() > 0);
 			item.addActionListener(e -> {
 				ArrayList<File> files = new ArrayList<>();
@@ -146,14 +145,14 @@ public class MenuItems {
 			});
 			break;
 		case MOVE:
-			item = new TCMenuItem("Move");
+			item = new StyledMenuItem("Move");
 			item.setEnabled(Explorer.selectedLabels.size() > 0);
 			break;
 		case PASTE:
-			item = new TCMenuItem("Paste");
+			item = new StyledMenuItem("Paste");
 			break;
 		case RENAME:
-			item = new TCMenuItem("Rename", "rename");
+			item = new StyledMenuItem("Rename", "rename");
 			item.setEnabled(Explorer.selectedLabels.size() == 1);
 			break;
 		default:
@@ -162,8 +161,8 @@ public class MenuItems {
 		return item;
 	}
 
-	public static TCMenu refactorMenu(String title) {
-		TCMenu newMenu = new TCMenu(title);
+	public static StyledMenu refactorMenu(String title) {
+		StyledMenu newMenu = new StyledMenu(title);
 
 		newMenu.add(fileItem(FileMenuItem.RENAME));
 		newMenu.add(fileItem(FileMenuItem.MOVE));

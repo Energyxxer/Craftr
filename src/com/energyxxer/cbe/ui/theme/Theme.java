@@ -1,54 +1,77 @@
 package com.energyxxer.cbe.ui.theme;
 
-import java.awt.Color;
+import java.awt.*;
+import java.util.HashMap;
 
-public abstract class Theme {
-	public String name;
-	public String path;
+public class Theme {
+	private String name;
+	private HashMap<String, Object> values = new HashMap<>();
 
-	//Fonts
-	public String font1;
-	public String font2;
-	//Primary Colors
-	public Color p1;
-	public Color p2;
-	public Color p3;
-	public Color p4;
-	public Color p5;
-	public Color p6;
-	public Color p7;
-	public Color p8;
-	//Secondary Colors
-	public Color s1;
-	public Color s2;
-	public Color s3;
-	public Color s4;
-	//Editor Colors
-	public Color e1;
-	public Color e2;
-	public Color e3;
-	//Highlighting Colors
-	public Color h1;
-	public Color h2;
-	public Color h3;
-	public Color h4;
-	//Text Colors
-	public Color t1;
-	public Color t2;
-	public Color t3;
-	public Color t4;
-	//Line Colors
-	public Color l1;
-	public Color l2;
-	public Color l3;
-	//Button Colors
-	public Color b1;
-	public Color b2;
-	public Color b3;
-	public Color b4;
-	//Gradient Colors
-	public Color g1;
+	public Theme(String name) {
+		this.name = name;
+	}
+	public Theme(String name, HashMap<String, Object> values) {
+		this.name = name;
+		this.values = values;
+	}
 
-	//Error Text Colors
-	public Color err0;
+	protected void put(String key, Object value) {
+		values.put(key,value);
+	}
+
+	public Object get(String key, Object defaultValue) {
+		Object value = values.get(key);
+		return (value != null) ? value : defaultValue;
+	}
+
+	public Color getColor(String key, Color defaultValue) {
+		Object value = values.get(key);
+		if(value == null) return defaultValue;
+		if(value instanceof Color) return (Color) value;
+		else return defaultValue;
+	}
+
+	public Color getColor(String key) { return getColor(key, null); }
+
+	public boolean getBoolean(String key, boolean defaultValue) {
+		Object value = values.get(key);
+		if(value == null) return defaultValue;
+		if(value instanceof Boolean) return (Boolean) value;
+		else return defaultValue;
+	}
+
+	public boolean getBoolean(String key) { return getBoolean(key, false); }
+
+	public String getString(String key, String defaultValue) {
+		Object value = values.get(key);
+		if(value == null) return defaultValue;
+		if(value instanceof String) return (String) value;
+		else return defaultValue;
+	}
+
+	public String getString(String key) { return getString(key, null); }
+
+	public int getInteger(String key, int defaultValue) {
+		Object value = values.get(key);
+		if(value == null) return defaultValue;
+		if(value instanceof Integer) return (Integer) value;
+		else return defaultValue;
+	}
+
+	public int getInteger(String key) { return getInteger(key, 0); }
+
+	public String getName() {return name;}
+
+	@Override
+	public String toString() {return name;}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Theme theme = (Theme) o;
+
+		return name != null ? name.equals(theme.name) : theme.name == null;
+	}
 }

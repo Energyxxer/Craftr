@@ -10,12 +10,15 @@ import com.energyxxer.cbe.syntax.Syntax;
 import com.energyxxer.cbe.ui.ToolbarButton;
 import com.energyxxer.cbe.ui.ToolbarSeparator;
 import com.energyxxer.cbe.ui.common.MenuItems;
-import com.energyxxer.cbe.ui.components.themechange.TCMenu;
-import com.energyxxer.cbe.ui.components.themechange.TCMenuItem;
+import com.energyxxer.cbe.ui.dialogs.Settings;
 import com.energyxxer.cbe.ui.explorer.Explorer;
+import com.energyxxer.cbe.ui.scrollbar.ScrollbarUI;
+import com.energyxxer.cbe.ui.styledcomponents.StyledMenu;
+import com.energyxxer.cbe.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.cbe.ui.theme.DarkTheme;
 import com.energyxxer.cbe.ui.theme.LightTheme;
 import com.energyxxer.cbe.ui.theme.Theme;
+import com.energyxxer.cbe.ui.theme.ThemeManager;
 import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.cbe.util.ImageManager;
 import com.energyxxer.cbe.util.out.MultiOutputStream;
@@ -28,8 +31,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Literally what it sounds like.
@@ -47,7 +48,7 @@ public class Window {
 
 	public static JPanel edit_area;
 	
-	public static Theme theme = LightTheme.getInstance();
+	private static Theme theme = new Theme("null");
 
 	private static final Dimension defaultSize = new Dimension(1200, 800);
 
@@ -56,10 +57,14 @@ public class Window {
 	private static final int CONSOLE_HEIGHT = 200;
 
 	public Window() {
+
+		ThemeManager.loadAll();
+		ThemeManager.setTheme(Preferences.get("theme"));
+
 		jframe = new JFrame("Command Block Engine");
 		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-		ThemeChangeListener.addThemeChangeListener(t -> jframe.getContentPane().setBackground(t.p3));
+		ThemeChangeListener.addThemeChangeListener(t -> jframe.getContentPane().setBackground(t.getColor("Window.background",new Color(215, 215, 215))));
 
 		/*try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -70,22 +75,22 @@ public class Window {
 
 		menuBar = new JMenuBar();
 		ThemeChangeListener.addThemeChangeListener(t -> {
-			menuBar.setBackground(t.p3);
-			menuBar.setBorder(BorderFactory.createMatteBorder(0,0,1,0,t.l2));
+			menuBar.setBackground(t.getColor("MenuBar.background",new Color(215, 215, 215)));
+			menuBar.setBorder(BorderFactory.createMatteBorder(0,0,1,0,t.getColor("MenuBar.border",new Color(150, 150, 150))));
 		});
 
 		menuBar.setPreferredSize(new Dimension(0, 20));
 		jframe.setJMenuBar(menuBar);
 
 		{
-            TCMenu menu = new TCMenu(" File ");
+            StyledMenu menu = new StyledMenu(" File ");
 
             menu.setMnemonic(KeyEvent.VK_F);
 
             // --------------------------------------------------
 
 
-            TCMenu newMenu = MenuItems.newMenu("New                    ");
+            StyledMenu newMenu = MenuItems.newMenu("New                    ");
             menu.add(newMenu);
 
             // --------------------------------------------------
@@ -95,7 +100,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Save", "save");
+                StyledMenuItem item = new StyledMenuItem("Save", "save");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
                 menu.add(item);
             }
@@ -103,7 +108,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Save As", "save_as");
+                StyledMenuItem item = new StyledMenuItem("Save As", "save_as");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 3));
                 menu.add(item);
             }
@@ -111,7 +116,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Save All", "save_all");
+                StyledMenuItem item = new StyledMenuItem("Save All", "save_all");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, 10));
                 menu.add(item);
             }
@@ -123,7 +128,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Close");
+                StyledMenuItem item = new StyledMenuItem("Close");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, ActionEvent.CTRL_MASK));
                 menu.add(item);
             }
@@ -131,7 +136,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Close All");
+                StyledMenuItem item = new StyledMenuItem("Close All");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, 3));
                 menu.add(item);
             }
@@ -144,21 +149,21 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Move");
+                StyledMenuItem item = new StyledMenuItem("Move");
                 menu.add(item);
             }
 
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Rename", "rename");
+                StyledMenuItem item = new StyledMenuItem("Rename", "rename");
                 menu.add(item);
             }
 
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Refresh", "reload");
+                StyledMenuItem item = new StyledMenuItem("Refresh", "reload");
                 item.addActionListener(e -> Window.explorer.generateProjectList());
                 menu.add(item);
             }
@@ -170,7 +175,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Exit");
+                StyledMenuItem item = new StyledMenuItem("Exit");
                 item.addActionListener(e ->	jframe.dispatchEvent(new WindowEvent(jframe, WindowEvent.WINDOW_CLOSING)));
                 menu.add(item);
             }
@@ -181,13 +186,13 @@ public class Window {
         }
 
 		{
-            TCMenu menu = new TCMenu(" Edit ");
+            StyledMenu menu = new StyledMenu(" Edit ");
             menu.setMnemonic(KeyEvent.VK_E);
 
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Undo", "undo");
+                StyledMenuItem item = new StyledMenuItem("Undo", "undo");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
                 menu.add(item);
             }
@@ -195,7 +200,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Redo", "redo");
+                StyledMenuItem item = new StyledMenuItem("Redo", "redo");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
                 menu.add(item);
             }
@@ -207,7 +212,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Copy");
+                StyledMenuItem item = new StyledMenuItem("Copy");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
                 menu.add(item);
             }
@@ -215,7 +220,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Cut");
+                StyledMenuItem item = new StyledMenuItem("Cut");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
                 menu.add(item);
             }
@@ -223,7 +228,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Paste");
+                StyledMenuItem item = new StyledMenuItem("Paste");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
                 menu.add(item);
             }
@@ -235,7 +240,7 @@ public class Window {
             // --------------------------------------------------
 
             {
-                TCMenuItem item = new TCMenuItem("Delete");
+                StyledMenuItem item = new StyledMenuItem("Delete");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
                 menu.add(item);
             }
@@ -246,13 +251,13 @@ public class Window {
         }
 
 		{
-            TCMenu menu = new TCMenu(" Project ");
+            StyledMenu menu = new StyledMenu(" Project ");
             menu.setMnemonic(KeyEvent.VK_P);
 
             // --------------------------------------------------
 
 			{
-				TCMenuItem item = new TCMenuItem("Generate                    ", "export");
+				StyledMenuItem item = new StyledMenuItem("Generate                    ", "export");
 				item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, 9));
 				menu.add(item);
 			}
@@ -264,7 +269,7 @@ public class Window {
             // --------------------------------------------------
 
 			{
-				TCMenuItem item = new TCMenuItem("Properties");
+				StyledMenuItem item = new StyledMenuItem("Properties");
 				item.addActionListener(e -> {if(ProjectManager.getSelected() != null) ProjectManager.getSelected().showPropertiesDialog();});
 				menu.add(item);
 			}
@@ -275,13 +280,13 @@ public class Window {
         }
 
 		{
-			TCMenu menu = new TCMenu(" Debug ");
+			StyledMenu menu = new StyledMenu(" Debug ");
 			menu.setMnemonic(KeyEvent.VK_D);
 
             // --------------------------------------------------
 
 			{
-				TCMenuItem item = new TCMenuItem("Reset Preferences", "warn");
+				StyledMenuItem item = new StyledMenuItem("Reset Preferences", "warn");
 				item.addActionListener(e -> {
 					int confirmation = JOptionPane.showConfirmDialog(null,
 							"        Are you sure you want to reset all saved settings?        ",
@@ -299,24 +304,33 @@ public class Window {
         }
 
 		{
-			TCMenu menu = new TCMenu(" Window ");
+			StyledMenu menu = new StyledMenu(" Window ");
 			menu.setMnemonic(KeyEvent.VK_W);
+
+			// --------------------------------------------------
+
+			{
+				StyledMenuItem item = new StyledMenuItem("Settings");
+
+				item.addActionListener(e -> Settings.show());
+				menu.add(item);
+			}
 
             // --------------------------------------------------
 
-            TCMenu setThemeItem = new TCMenu("Set Theme        ");
+            StyledMenu setThemeItem = new StyledMenu("Set Theme        ");
             menu.add(setThemeItem);
 
             // --------------------------------------------------
 
-            TCMenuItem setLightThemeItem = new TCMenuItem("Light Theme");
+            StyledMenuItem setLightThemeItem = new StyledMenuItem("Light Theme");
             setThemeItem.add(setLightThemeItem);
 
             setLightThemeItem.addActionListener(e -> setTheme(LightTheme.getInstance()));
 
             // --------------------------------------------------
 
-            TCMenuItem setDarkThemeItem = new TCMenuItem("Dark Theme");
+            StyledMenuItem setDarkThemeItem = new StyledMenuItem("Dark Theme");
             setThemeItem.add(setDarkThemeItem);
 
             setDarkThemeItem.addActionListener(e -> setTheme(DarkTheme.getInstance()));
@@ -333,8 +347,8 @@ public class Window {
 			toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
 			toolbar.setPreferredSize(new Dimension(1, 30));
 			ThemeChangeListener.addThemeChangeListener(t -> {
-				toolbar.setBackground(t.p2);
-				toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.l1));
+				toolbar.setBackground(t.getColor("Toolbar.background",new Color(235, 235, 235)));
+				toolbar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.getColor("Toolbar.border",new Color(200, 200, 200))));
 			});
 			jframe.getContentPane().add(toolbar, BorderLayout.NORTH);
 
@@ -402,18 +416,18 @@ public class Window {
 			sidebar.setLayout(new BorderLayout());
 			sidebar.setPreferredSize(new Dimension(350, 500));
 			ThemeChangeListener.addThemeChangeListener(t -> {
-				sidebar.setBackground(t.p1);
-				sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, t.l1));
+				sidebar.setBackground(t.getColor("Explorer.background",Color.WHITE));
+				sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, t.getColor("Explorer.border",new Color(200, 200, 200))));
 			});
 			jframe.getContentPane().add(sidebar, BorderLayout.WEST);
 
 			JPanel header = new JPanel(new BorderLayout());
-			ThemeChangeListener.addThemeChangeListener(t -> header.setBackground(t.p1));
+			ThemeChangeListener.addThemeChangeListener(t -> header.setBackground(sidebar.getBackground()));
 
 			JLabel label = new JLabel("    Project Explorer");
 			ThemeChangeListener.addThemeChangeListener(t -> {
-				label.setFont(new Font(t.font1, Font.PLAIN, 14));
-				label.setForeground(theme.t1);
+				label.setFont(new Font(t.getString("Explorer.header.font",t.getString("General.font","Tahoma")), Font.PLAIN, 14));
+				label.setForeground(t.getColor("Explorer.header.foreground",t.getColor("General.foreground",Color.BLACK)));
 			});
 			label.setPreferredSize(new Dimension(500, 25));
 			header.add(label, BorderLayout.WEST);
@@ -431,8 +445,8 @@ public class Window {
 
 			sp.getViewport().add(explorer = new Explorer());
 			ThemeChangeListener.addThemeChangeListener(t -> {
-				sp.setBackground(t.p1);
-				sp.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, t.p1));
+				sp.setBackground(t.getColor("Explorer.background",Color.WHITE));
+				sp.setBorder(BorderFactory.createEmptyBorder());
 			});
 
 			sidebar.add(sp, BorderLayout.CENTER);
@@ -440,16 +454,16 @@ public class Window {
 
 		edit_area = new JPanel(new BorderLayout());
 		edit_area.setPreferredSize(new Dimension(500, 500));
-		ThemeChangeListener.addThemeChangeListener(t -> edit_area.setBackground(t.p3));
+		ThemeChangeListener.addThemeChangeListener(t -> edit_area.setBackground(t.getColor("Editor.background",new Color(215, 215, 215))));
 		jframe.getContentPane().add(edit_area, BorderLayout.CENTER);
 
 		JPanel tabListHolder = new JPanel(new BorderLayout());
 		tabListHolder.setPreferredSize(new Dimension(1,30));
-		ThemeChangeListener.addThemeChangeListener(t -> tabListHolder.setBackground(t.p4));
+		ThemeChangeListener.addThemeChangeListener(t -> tabListHolder.setBackground(t.getColor("TabList.background",new Color(200, 202, 205))));
 		
 		JPanel tabActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
 		tabActionPanel.setOpaque(false);
-		ThemeChangeListener.addThemeChangeListener(t -> tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.l1)));
+		ThemeChangeListener.addThemeChangeListener(t -> tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.getColor("TabList.border",new Color(200, 200, 200)))));
 
 		{
 			ToolbarButton more = new ToolbarButton("more");
@@ -467,25 +481,25 @@ public class Window {
 		tabList = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		tabList.setPreferredSize(new Dimension(1, 30));
 		ThemeChangeListener.addThemeChangeListener(t -> {
-			tabList.setBackground(t.p4);
-			tabList.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.l1));
+			tabList.setBackground(t.getColor("TabList.background",new Color(200, 202, 205)));
+			tabList.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.getColor("TabList.border",new Color(200, 200, 200))));
 		});
 		tabListHolder.add(tabList, BorderLayout.CENTER);
 
 		if (useConsole) {
 			JPanel consoleArea = new JPanel(new BorderLayout());
 			consoleArea.setPreferredSize(new Dimension(0, CONSOLE_HEIGHT));
-			ThemeChangeListener.addThemeChangeListener(t -> consoleArea.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, t.l1)));
+			ThemeChangeListener.addThemeChangeListener(t -> consoleArea.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, t.getColor("Console.header.border",new Color(200, 200, 200)))));
 
 			JPanel consoleHeader = new JPanel(new BorderLayout());
-			ThemeChangeListener.addThemeChangeListener(t -> consoleHeader.setBackground(t.p2));
+			ThemeChangeListener.addThemeChangeListener(t -> consoleHeader.setBackground(t.getColor("Console.header.background",new Color(235, 235, 235))));
 			consoleHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 			consoleHeader.setPreferredSize(new Dimension(0, 25));
 
 			JLabel consoleLabel = new JLabel("Java Console");
 			ThemeChangeListener.addThemeChangeListener(t -> {
-				consoleLabel.setForeground(t.t1);
-				consoleLabel.setFont(new Font(t.font1, 0, 12));
+				consoleLabel.setForeground(t.getColor("Console.header.foreground",Color.BLACK));
+				consoleLabel.setFont(new Font(t.getString("Console.header.font",t.getString("General.font","Tahoma")), 0, 12));
 			});
 			consoleHeader.add(consoleLabel, BorderLayout.WEST);
 			
@@ -520,7 +534,11 @@ public class Window {
 			consoleArea.add(consoleHeader, BorderLayout.NORTH);
 
 			JEditorPane console = new JEditorPane();
-			ThemeChangeListener.addThemeChangeListener(t -> console.setBackground(t.p1));
+			ThemeChangeListener.addThemeChangeListener(t -> {
+				console.setBackground(t.getColor("Console.background",Color.WHITE));
+				console.setSelectionColor(t.getColor("Console.selection.background",t.getColor("General.textfield.selection.background",new Color(50, 100, 175))));
+				console.setSelectedTextColor(t.getColor("Console.selection.foreground",t.getColor("General.textfield.selection.foreground",t.getColor("Console.foreground",t.getColor("General.foreground",Color.BLACK)))));
+			});
 			console.setEditable(false);
 			console.setFont(new Font("monospaced", 0, 12));
 			console.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -539,12 +557,26 @@ public class Window {
 			});
 
 			textConsoleOut = new TextAreaOutputStream(console);
+
+			ThemeChangeListener.addThemeChangeListener(t -> textConsoleOut.update());
+
 			consoleOut = new PrintStream(textConsoleOut);
 			System.setOut(new PrintStream(new MultiOutputStream(consoleOut, System.out)));
 			System.setErr(new PrintStream(new MultiOutputStream(consoleOut, System.err)));
 
 			JScrollPane consoleScrollPane = new JScrollPane(console);
-			ThemeChangeListener.addThemeChangeListener(t -> consoleScrollPane.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, t.l1)));
+
+			//consoleScrollPane.setLayout(new OverlayScrollPaneLayout());
+
+			consoleScrollPane.getVerticalScrollBar().setUI(new ScrollbarUI(consoleScrollPane, 20));
+			consoleScrollPane.getHorizontalScrollBar().setUI(new ScrollbarUI(consoleScrollPane, 20));
+			consoleScrollPane.getVerticalScrollBar().setOpaque(false);
+			consoleScrollPane.getHorizontalScrollBar().setOpaque(false);
+
+			ThemeChangeListener.addThemeChangeListener(t -> {
+				consoleScrollPane.setBackground(console.getBackground());
+				consoleScrollPane.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, t.getColor("Console.header.border",new Color(200, 200, 200))));
+			});
 
 			consoleArea.add(consoleScrollPane, BorderLayout.CENTER);
 
@@ -556,28 +588,43 @@ public class Window {
 		jframe.setPreferredSize(defaultSize);
 		jframe.setVisible(true);
 
-		List<Image> icons = new ArrayList<>();
+		/*List<Image> icons = new ArrayList<>();
 		icons.add(
 				ImageManager.load("/assets/logo/logo_icon.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH));
 		icons.add(ImageManager.load("/assets/logo/logo.png").getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
-		jframe.setIconImages(icons);
+		jframe.setIconImages(icons);*/
+		jframe.setIconImage(ImageManager.load("/assets/logo/logo.png"));
 
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		Point center = env.getCenterPoint();
 		center.x -= jframe.getWidth() / 2;
 		center.y -= jframe.getHeight() / 2;
 		jframe.setLocation(center);
+
+		ThemeChangeListener.addThemeChangeListener(t -> {
+			UIManager.put("ToolTip.background",t.getColor("Tooltip.background",Color.WHITE));
+			UIManager.put("ToolTip.foreground",t.getColor("Tooltip.foreground",Color.BLACK));
+			UIManager.put("ToolTip.border",BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1,1,1,1,t.getColor("Tooltip.border",Color.BLACK)),BorderFactory.createEmptyBorder(3,5,3,5)));
+		});
+
 	}
 	
 	public static Syntax getSyntaxForTheme() {
-		return (theme instanceof DarkTheme ? CBESyntaxDark.INSTANCE : CBESyntax.INSTANCE);
+		if(theme == null) return CBESyntax.INSTANCE;
+		switch(theme.getString("Syntax", "Light")) {
+			case "Dark": return CBESyntaxDark.INSTANCE;
+			case "Light": return CBESyntax.INSTANCE;
+			default: return CBESyntax.INSTANCE;
+		}
 	}
 
 	public static void setTheme(Theme t) {
+		System.out.println("Setting theme " + t);
 		Window.theme = t;
 		ThemeChangeListener.dispatchThemeChange(t);
-		UIManager.put("ToolTip.background",t.p1);
-		UIManager.put("ToolTip.foreground",t.t1);
-		UIManager.put("ToolTip.border",BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1,1,1,1,t.l1),BorderFactory.createEmptyBorder(3,5,3,5)));
 	}
+
+    public static Theme getTheme() {
+        return theme;
+    }
 }
