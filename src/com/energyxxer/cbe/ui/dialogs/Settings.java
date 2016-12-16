@@ -163,8 +163,6 @@ public class Settings {
 
 			contentPane.add(buttons, BorderLayout.SOUTH);
 		}
-
-		dialog.setVisible(true);
 		dialog.setContentPane(pane);
 		dialog.pack();
 		//dialog.setResizable(false);
@@ -177,5 +175,8 @@ public class Settings {
 		center.y -= dialog.getHeight()/2;
 
 		dialog.setLocation(center);
+
+		dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+		dialog.setVisible(true);
 	}
 }

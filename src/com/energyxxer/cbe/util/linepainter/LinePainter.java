@@ -1,11 +1,19 @@
 package com.energyxxer.cbe.util.linepainter;
 
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.SwingUtilities;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
 
 /*
  *  Track the movement of the Caret by painting a background line at the

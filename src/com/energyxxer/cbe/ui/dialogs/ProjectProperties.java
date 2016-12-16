@@ -225,21 +225,21 @@ public class ProjectProperties {
 			
 			contentPane.add(buttons, BorderLayout.SOUTH);
 		}
-
-		dialog.setVisible(true);
 		dialog.setContentPane(pane);
 		dialog.pack();
 		//dialog.setResizable(false);
-		
+
 		dialog.setTitle("Editing properties for project \"" + project.getName() + "\"");
 		dialog.setIconImage(ImageManager.load("/assets/icons/ui/settings.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH));
-		
+
 		Point center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
 		center.x -= dialog.getWidth()/2;
 		center.y -= dialog.getHeight()/2;
-		
+
 		dialog.setLocation(center);
-		
-		//JOptionPane.showOptionDialog(Window.jframe, optionPane, "Editing properties for project \"" + project.getName() + "\"", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, new Object[] { okay, cancel }, null);
+
+		dialog.setModalityType(Dialog.ModalityType.DOCUMENT_MODAL);
+		dialog.setVisible(true);
+
 	}
 }

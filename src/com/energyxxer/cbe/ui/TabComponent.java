@@ -9,13 +9,26 @@ import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.cbe.util.ImageManager;
 import com.energyxxer.cbe.util.StringUtil;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+
+import static com.energyxxer.cbe.ui.Draggable.AXIS_X;
 
 /**
  * Representation of a tab in the interface.
@@ -26,7 +39,7 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 	 */
 	private static final long serialVersionUID = 2118880845845349145L;
 
-	//Whether this tab component is the one selected and active.
+	/**Whether this tab component is the one selected and active.*/
 	public boolean selected = false;
 
 	private String name;
@@ -44,6 +57,8 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 	private Color rollover_line;
 	private Color selected_bg;
 	private Color selected_line;
+
+	private Draggable dragState = new Draggable(this, AXIS_X);
 
 	TabComponent(Tab associatedTab) {
 		super();
@@ -68,6 +83,18 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 		
 		addMouseListener(this);
 		addThemeChangeListener();
+
+		dragState.addDragListener(new DragListener() {
+			@Override
+			public void onDrag(Point offset) {
+				TabComponent.this.repaint();
+			}
+
+			@Override
+			public void onDrop(Point point) {
+				TabComponent.this.repaint();
+			}
+		});
 	}
 
 	@Override
@@ -97,7 +124,7 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 	private void updateName() {
 		setText(((!saved) ? "*" : "") + StringUtil.ellipsis(name, 32));
 		setPreferredSize(null);
-		setPreferredSize(new Dimension(getPreferredSize().width + 25, 30));
+		setPreferredSize(new Dimension(getPreferredSize().width + 30, 30));
 		revalidate();
 	}
 
@@ -121,6 +148,11 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 	protected void paintComponent(Graphics g) {
 		
 		Graphics2D g2 = (Graphics2D) g;
+		Point offset = dragState.getOffset();
+		g2.translate(offset.x, offset.y);
+		//Rectangle tabListRect = Window.editArea.tabList.getBounds();
+		//g2.setClip(new Rectangle(0,0,tabListRect.width,tabListRect.height));
+		//System.out.println(getParent().getGraphics());
 
 		if (selected) {
 			g2.setColor(selected_line);
@@ -167,6 +199,8 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 	public void mousePressed(MouseEvent e) {
 		if (e.isPopupTrigger()) {
 			showContextMenu(e);
+		} else if (e.getButton() == MouseEvent.BUTTON1) {
+			TabManager.setSelectedTab(this.getLinkedTab());
 		}
 	}
 
@@ -174,8 +208,6 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 	public void mouseReleased(MouseEvent e) {
 		if (e.isPopupTrigger()) {
 			showContextMenu(e);
-		} else if (e.getButton() == MouseEvent.BUTTON1) {
-			TabManager.setSelectedTab(this.getLinkedTab());
 		}
 	}
 
@@ -200,13 +232,8 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 		this.selected_bg = t.getColor("Tab.selected.background",Color.WHITE);
 		this.selected_line = t.getColor("Tab.selected.border",new Color(200, 200, 200));
 
-		if (name.endsWith(".mcbe")) {
-			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "entity.png").getScaledInstance(16, 16,
-					java.awt.Image.SCALE_SMOOTH)));
-		} else {
-			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "file.png").getScaledInstance(16, 16,
-					java.awt.Image.SCALE_SMOOTH)));
-		}
+		updateIcon();
+		updateName();
 	}
 }
 
@@ -280,10 +307,6 @@ class TabPopup extends StyledPopupMenu {
 
 class TabCloseButton extends JButton implements ActionListener, MouseListener {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4960575042835469824L;
 	private TabComponent parent;
 
 	TabCloseButton(int size, TabComponent parent) {
@@ -322,10 +345,7 @@ class TabCloseButton extends JButton implements ActionListener, MouseListener {
 
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseClicked(MouseEvent arg0) {}
 
 
 	@Override
@@ -341,17 +361,11 @@ class TabCloseButton extends JButton implements ActionListener, MouseListener {
 
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mousePressed(MouseEvent arg0) {}
 
 
 	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseReleased(MouseEvent arg0) {}
 	
 	
 }
