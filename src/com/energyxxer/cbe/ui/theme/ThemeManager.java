@@ -1,7 +1,7 @@
 package com.energyxxer.cbe.ui.theme;
 
 import com.energyxxer.cbe.global.Preferences;
-import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.main.window.Window;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -41,8 +41,6 @@ public class ThemeManager {
         } catch(URISyntaxException e) {
             e.printStackTrace();
         }
-        System.out.println(themes);
-
     }
 
     public static HashMap<String, Theme> getThemes() {

@@ -1,6 +1,7 @@
 package com.energyxxer.cbe.main;
 
 import com.energyxxer.cbe.global.ProjectManager;
+import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.minecraft.schematic.block.nbt.TagCompound;
 import com.energyxxer.cbe.minecraft.schematic.block.nbt.TagInt;
 import com.energyxxer.cbe.minecraft.schematic.block.nbt.TagList;

@@ -1,5 +1,10 @@
 package com.energyxxer.cbe.ui;
 
+import com.energyxxer.cbe.global.ProjectManager;
+import com.energyxxer.cbe.global.TabManager;
+import com.energyxxer.cbe.logic.Project;
+import com.energyxxer.cbe.ui.editor.CBEEditor;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -8,12 +13,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
-
-import com.energyxxer.cbe.global.ProjectManager;
-import com.energyxxer.cbe.global.TabManager;
-import com.energyxxer.cbe.logic.Project;
-import com.energyxxer.cbe.main.Window;
-import com.energyxxer.cbe.ui.editor.CBEEditor;
 
 /**
  * Concept of an open tab in the interface. Contains a component that represents
@@ -106,7 +105,7 @@ public class Tab {
 			savedString = editor.editor.getText().intern();
 			linkedTabComponent.setSaved(true);
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			e.printStackTrace(new PrintWriter(Window.consoleOut));
+			e.printStackTrace();
 		}
 	}
 

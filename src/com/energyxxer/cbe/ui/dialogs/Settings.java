@@ -1,6 +1,6 @@
 package com.energyxxer.cbe.ui.dialogs;
 
-import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.ui.components.ComponentResizer;
 import com.energyxxer.cbe.ui.components.XDropdownMenu;
 import com.energyxxer.cbe.ui.styledcomponents.*;
@@ -110,14 +110,14 @@ public class Settings {
 				}
 
 				{
-					JLabel label = new StyledLabel("Color Scheme:","Settings.content");
+					StyledLabel label = new StyledLabel("Color Scheme:","Settings.content");
+					label.setStyle(Font.BOLD);
 					content.add(label);
 				}
 				{
 					themeDropdown = new XDropdownMenu<>(ThemeManager.getThemesAsArray());
 					themeDropdown.setPopupFactory(StyledPopupMenu::new);
 					themeDropdown.setPopupItemFactory(StyledMenuItem::new);
-					System.out.println(Window.getTheme());
 					themeDropdown.setValue(Window.getTheme());
 					content.add(themeDropdown);
 				}
@@ -170,7 +170,7 @@ public class Settings {
 		//dialog.setResizable(false);
 
 		dialog.setTitle("Settings");
-		dialog.setIconImage(ImageManager.load("/assets/logo/logo_icon.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH));
+		dialog.setIconImage(ImageManager.load("/assets/icons/ui/settings.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH));
 
 		Point center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
 		center.x -= dialog.getWidth()/2;

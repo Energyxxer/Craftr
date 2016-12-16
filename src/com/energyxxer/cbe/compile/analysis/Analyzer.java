@@ -1,19 +1,17 @@
 package com.energyxxer.cbe.compile.analysis;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-
 import com.energyxxer.cbe.compile.analysis.token.Token;
 import com.energyxxer.cbe.compile.analysis.token.TokenAttributes;
 import com.energyxxer.cbe.compile.analysis.token.TokenStream;
 import com.energyxxer.cbe.compile.analysis.token.TokenType;
 import com.energyxxer.cbe.global.Preferences;
-import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.util.StringLocation;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 
 /**
  * For tokenizing CBE files. At the moment, all tokens go through the static
@@ -51,7 +49,7 @@ public class Analyzer {
 				try {
 					tokenize(files[i], new String(Files.readAllBytes(Paths.get(files[i].getPath()))));
 				} catch (IOException e) {
-					e.printStackTrace(new PrintWriter(Window.consoleOut));
+					e.printStackTrace();
 				}
 			}
 		}

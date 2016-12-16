@@ -30,7 +30,10 @@ public class Explorer extends JPanel implements MouseListener {
 	public Explorer() {
 		super();
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		ThemeChangeListener.addThemeChangeListener(t -> setBackground(t.getColor("Explorer.background",Color.WHITE)));
+		ThemeChangeListener.addThemeChangeListener(t -> {
+			setBackground(t.getColor("Explorer.background",Color.WHITE));
+			generateProjectList();
+		});
 
 
 		this.addMouseListener(this);

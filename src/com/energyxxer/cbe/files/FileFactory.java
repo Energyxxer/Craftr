@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 
 import com.energyxxer.cbe.global.Preferences;
 import com.energyxxer.cbe.global.ProjectManager;
-import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.ui.explorer.Explorer;
 import com.energyxxer.cbe.util.FileUtil;
 import com.energyxxer.cbe.util.StringPrompt;

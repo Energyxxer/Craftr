@@ -5,7 +5,6 @@ import java.awt.*;
 import javax.swing.*;
 
 import com.energyxxer.cbe.global.Commons;
-import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.cbe.util.ImageManager;
 

@@ -9,14 +9,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
+@SuppressWarnings("unused")
 public class XDropdownMenu<T> extends XButton implements ActionListener {
 
-    protected ArrayList<T> options = new ArrayList<>();
+    private ArrayList<T> options = new ArrayList<>();
 
     protected int selected = -1;
 
-    protected Factory<JPopupMenu> popupFactory = JPopupMenu::new;
-    protected Factory<JMenuItem> itemFactory = JMenuItem::new;
+    private Factory<JPopupMenu> popupFactory = JPopupMenu::new;
+    private Factory<JMenuItem> itemFactory = JMenuItem::new;
 
     private ArrayList<ChoiceListener<T>> choiceListeners = new ArrayList<>();
 
@@ -84,9 +85,6 @@ public class XDropdownMenu<T> extends XButton implements ActionListener {
 
     public void setValue(T value) {
         int index = options.indexOf(value);
-        System.out.println(options);
-        System.out.println(value);
-        System.out.println(index);
         if(index >= 0) {
             selected = index;
             updateOptions();

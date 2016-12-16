@@ -1,20 +1,19 @@
 package com.energyxxer.cbe.global;
 
+import com.energyxxer.cbe.main.window.Window;
+import com.energyxxer.cbe.ui.Tab;
+import com.energyxxer.cbe.ui.TabComponent;
+import com.energyxxer.cbe.util.ImageManager;
+
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
-
-import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-
-import com.energyxxer.cbe.main.Window;
-import com.energyxxer.cbe.ui.Tab;
-import com.energyxxer.cbe.ui.TabComponent;
-import com.energyxxer.cbe.util.ImageManager;
 
 /**
  * Interface that allows communication between parts of the program and the tab
@@ -80,8 +79,8 @@ public class TabManager {
 				if (selectedTab == openTabs.get(i).getLinkedTabComponent())
 					closedActive = true;
 				openTabs.get(i).getLinkedTabComponent().getParent().remove(openTabs.get(i).getLinkedTabComponent());
-				Window.tabList.revalidate();
-				Window.tabList.repaint();
+				Window.editArea.tabList.revalidate();
+				Window.editArea.tabList.repaint();
 				openTabs.remove(i);
 				if (closedActive) {
 					if (openTabs.size() == 0) {
@@ -145,7 +144,7 @@ public class TabManager {
 	public static void setSelectedTab(Tab tab) {
 		if (selectedTab != null) {
 			selectedTab.selected = false;
-			Window.edit_area.remove(selectedTab.getLinkedTab().editor);
+			Window.editArea.remove(selectedTab.getLinkedTab().editor);
 		}
 		selectedTab = null;
 		if (tab != null) {
@@ -156,23 +155,23 @@ public class TabManager {
 				if(openTabs.indexOf(tab) >= 0) {
 					openTabs.remove(openTabs.indexOf(tab));
 					openTabs.add(0,tab);
-					Window.tabList.add(tab.getLinkedTabComponent(), 0);
+					Window.editArea.tabList.add(tab.getLinkedTabComponent(), 0);
 				}
 			}
 			tab.getLinkedTabComponent().selected = true;
 			
 			tab.onSelect();
-			Window.edit_area.add(tab.editor, BorderLayout.CENTER);
+			Window.editArea.add(tab.editor, BorderLayout.CENTER);
 		}
 
-		Window.edit_area.revalidate();
-		Window.edit_area.repaint();
+		Window.editArea.revalidate();
+		Window.editArea.repaint();
 	}
 
 	public static void addTabComponent(TabComponent tab) {
-		Window.tabList.add(tab);
-		Window.tabList.revalidate();
-		Window.tabList.repaint();
+		Window.editArea.tabList.add(tab);
+		Window.editArea.tabList.revalidate();
+		Window.editArea.tabList.repaint();
 	}
 	
 	private static void updateTabVisibility() {

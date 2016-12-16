@@ -1,7 +1,7 @@
 package com.energyxxer.cbe.ui.dialogs;
 
 import com.energyxxer.cbe.logic.Project;
-import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.minecraft.MinecraftConstants;
 import com.energyxxer.cbe.ui.components.ComponentResizer;
 import com.energyxxer.cbe.ui.components.XFileField;
@@ -114,7 +114,9 @@ public class ProjectProperties {
 				}
 
 				{
-					content.add(new StyledLabel("Prefix:", "ProjectProperties.content"));
+					StyledLabel label = new StyledLabel("Prefix:", "ProjectProperties.content");
+					label.setStyle(Font.BOLD);
+					content.add(label);
 				}
 				{
 					JPanel prefixFields = new JPanel();
@@ -230,7 +232,7 @@ public class ProjectProperties {
 		//dialog.setResizable(false);
 		
 		dialog.setTitle("Editing properties for project \"" + project.getName() + "\"");
-		dialog.setIconImage(ImageManager.load("/assets/logo/logo_icon.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH));
+		dialog.setIconImage(ImageManager.load("/assets/icons/ui/settings.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH));
 		
 		Point center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
 		center.x -= dialog.getWidth()/2;

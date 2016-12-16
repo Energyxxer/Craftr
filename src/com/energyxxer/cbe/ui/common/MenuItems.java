@@ -9,7 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import com.energyxxer.cbe.files.FileFactory;
-import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.ui.styledcomponents.StyledMenu;
 import com.energyxxer.cbe.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.cbe.ui.explorer.Explorer;

@@ -1,12 +1,15 @@
 package com.energyxxer.cbe.ui.components;
 
+import com.energyxxer.cbe.global.Status;
+import com.energyxxer.cbe.main.window.Window;
+
+import javax.swing.JComponent;
+import javax.swing.SwingConstants;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import javax.swing.JComponent;
-import javax.swing.SwingConstants;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ComponentResizer {
 	
@@ -33,15 +36,22 @@ public class ComponentResizer {
 		resizable = component;
 		
 		MouseAdapter adapter = new MouseAdapter() {
+
+			Status status = new Status();
+			String[] types = new String[] {Status.INFO, Status.WARNING, Status.ERROR};
+
 			@Override
 	        public void mouseMoved(MouseEvent me) {
-            	System.out.println(getCursor(me));
+				status.setMessage(getCursor(me).toString());
+				status.setType(types[ThreadLocalRandom.current().nextInt(0, 3)]);
+				Window.setStatus(status);
                 component.setCursor(getCursor(me));
 	        }
 
 	        @Override
 	        public void mouseExited(MouseEvent me) {
-	            component.setCursor(Cursor.getDefaultCursor());
+				Window.dismissStatus(status);
+				component.setCursor(Cursor.getDefaultCursor());
 	        }
 		};
 

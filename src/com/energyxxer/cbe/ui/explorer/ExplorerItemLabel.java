@@ -4,7 +4,7 @@ import com.energyxxer.cbe.global.Commons;
 import com.energyxxer.cbe.global.Preferences;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.global.TabManager;
-import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.ui.common.MenuItems;
 import com.energyxxer.cbe.ui.common.MenuItems.FileMenuItem;
 import com.energyxxer.cbe.ui.styledcomponents.StyledMenu;
@@ -276,7 +276,7 @@ class ExplorerItemPopup extends StyledPopupMenu {
 					if(Explorer.selectedLabels.size() != 1) return;
 					Runtime.getRuntime().exec("explorer.exe /select," + Explorer.selectedLabels.get(0).parent.path);
 				} catch (IOException e) {
-					e.printStackTrace(new PrintWriter(Window.consoleOut));
+					e.printStackTrace();
 				}
 			}
 		});

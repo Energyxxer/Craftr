@@ -14,10 +14,8 @@ import java.util.List;
 import com.energyxxer.cbe.global.Commons;
 import com.energyxxer.cbe.global.Preferences;
 import com.energyxxer.cbe.main.FileSelector;
-import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.minecraft.MinecraftConstants;
 import com.energyxxer.cbe.ui.dialogs.ProjectProperties;
-import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.cbe.util.StringUtil;
 
 public class Project {

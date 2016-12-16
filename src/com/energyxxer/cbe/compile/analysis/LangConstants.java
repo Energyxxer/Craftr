@@ -1,9 +1,9 @@
 package com.energyxxer.cbe.compile.analysis;
 
+import com.energyxxer.cbe.minecraft.MinecraftConstants;
+
 import java.util.Arrays;
 import java.util.List;
-
-import com.energyxxer.cbe.minecraft.MinecraftConstants;
 
 /**
  * Contains most of the language's token patterns.
@@ -39,7 +39,7 @@ public class LangConstants {
 
 	public static final List<String> enums = Arrays.asList("Block", "Item", "Gamemode", "Stat", "Achievement", "Effect", "Particle", "Enchantment", "Dimension");
 
-	public static final List<String> pseudo_keywords = Arrays.asList("this");
+	public static final List<String> pseudo_keywords = Arrays.asList("this", "that");
 
 	public static final String[] blockstate_marker = { "#" };
 	public static final List<String> blockstate_specials = Arrays.asList("default");

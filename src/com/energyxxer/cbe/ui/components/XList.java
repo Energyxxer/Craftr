@@ -11,13 +11,13 @@ import java.util.ArrayList;
 
 public class XList<T> extends JPanel {
 
-	protected ArrayList<T> options = new ArrayList<>();
+	private ArrayList<T> options = new ArrayList<>();
 	
 	protected int selected = 0;
 
-	protected ComponentStyle normalStyle = new ComponentStyle();
-	protected ComponentStyle rolloverStyle = new ComponentStyle(null);
-	protected ComponentStyle selectedStyle = new ComponentStyle(null);
+	ComponentStyle normalStyle = new ComponentStyle();
+	ComponentStyle rolloverStyle = new ComponentStyle(null);
+	ComponentStyle selectedStyle = new ComponentStyle(null);
 	
 	private ArrayList<ListSelectionListener> listSelectionListeners = new ArrayList<>();
 
@@ -25,7 +25,7 @@ public class XList<T> extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 	}
 
-	public XList() {
+	protected XList() {
 	}
 	
 	public XList(T[] options) {
@@ -256,14 +256,13 @@ class XListItem extends JPanel implements MouseListener {
 	 */
 	private static final long serialVersionUID = -13039223639668919L;
 	
-	int index;
-	JLabel label;
-	XList<?> parent;
+	private int index;
+	private XList<?> parent;
 	
 	XListItem(String labelText, int index, XList<?> parent) {
 		this.index = index;
 		this.parent = parent;
-		this.label = new JLabel(labelText);
+		JLabel label = new JLabel(labelText);
 		this.add(label);
 		
 		this.addMouseListener(this);
@@ -275,13 +274,11 @@ class XListItem extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		parent.registerSelectionChange(index);
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		if(isSelected()) {
 			parent.selectedStyle.applyStyle(this);
 		} else {
@@ -291,7 +288,6 @@ class XListItem extends JPanel implements MouseListener {
 
 	@Override
 	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		if(isSelected()) {
 			parent.selectedStyle.applyStyle(this);
 		} else {
@@ -301,13 +297,11 @@ class XListItem extends JPanel implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 	

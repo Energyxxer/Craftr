@@ -1,6 +1,6 @@
 package com.energyxxer.cbe.ui.theme.change;
 
-import com.energyxxer.cbe.main.Window;
+import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.ui.theme.Theme;
 
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ public interface ThemeChangeListener {
 	}
 	
 	static void dispatchThemeChange(Theme t) {
-		for(ThemeChangeListener i : listeners) {
-			i.themeChanged(t);
+		for(int i = 0; i < listeners.size(); i++) {
+			listeners.get(i).themeChanged(t);
 		}
 	}
 	

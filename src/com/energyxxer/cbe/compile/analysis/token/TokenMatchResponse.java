@@ -1,14 +1,10 @@
 package com.energyxxer.cbe.compile.analysis.token;
 
-import com.energyxxer.cbe.compile.analysis.token.matching.TokenItemMatch;
 import com.energyxxer.cbe.compile.analysis.token.matching.TokenPatternMatch;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
 import com.energyxxer.cbe.global.Commons;
-import com.energyxxer.cbe.main.Window;
 import com.energyxxer.cbe.util.ColorUtil;
 import com.energyxxer.cbe.util.StringUtil;
-
-import java.awt.*;
 
 public class TokenMatchResponse {
 	public final boolean matched;

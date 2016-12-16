@@ -128,7 +128,7 @@ public class WorkspaceSelector {
             initialize();
         }
 
-        int result = JOptionPane.showOptionDialog(Window.jframe, dialog, "Setup workspace", JOptionPane.YES_NO_OPTION,
+        int result = JOptionPane.showOptionDialog(com.energyxxer.cbe.main.window.Window.jframe, dialog, "Setup workspace", JOptionPane.YES_NO_OPTION,
                 JOptionPane.PLAIN_MESSAGE, null, new Object[] { okay, cancel }, null);
 
         System.out.println(dialog.getComponents());
