@@ -71,8 +71,8 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 	private Tab associatedTab;
 	private StyledDocument sd;
 	private Syntax syntax;
-	UndoManagerFix undoManager;
-	LinePainter linePainter;
+	private UndoManagerFix undoManager;
+	private LinePainter linePainter;
 
 	private long lastEdit;
 	public long lastToolTip = new Date().getTime();
@@ -226,11 +226,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 	public void setText(String text) {
 		editor.setText(text);
 
-		try {
-			highlightSyntax();
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
+		highlight();
 	}
 
 	public String getText() {
@@ -242,7 +238,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 		}
 	}
 	
-	public void highlightSyntax() throws BadLocationException {
+	private void highlightSyntax() throws BadLocationException {
 		
 		sd.putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
 		
@@ -261,9 +257,8 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 				
 				Set<String> set = token.attributes.keySet();
 				Iterator<String> setI = set.iterator();
-				while(setI.hasNext()) {
-					String key = setI.next();
-					if(!token.attributes.get(key).equals(Boolean.valueOf(true))) continue;
+				for(String key : set) {
+					if(!token.attributes.get(key).equals(true)) continue;
 					Style attrStyle = editor.getStyle("#" + key.toLowerCase());
 					if(attrStyle == null) continue;
 					sd.setCharacterAttributes(token.loc.index, token.value.length(), attrStyle, false);
@@ -284,11 +279,13 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if (lastEdit > -1 && (new Date().getTime()) - lastEdit > 500 && associatedTab.isActive()) {
-			try {
-				highlightSyntax();
-			} catch (BadLocationException e) {
-				e.printStackTrace();
-			}
+			new Thread(() -> {
+				try {
+					this.highlightSyntax();
+				} catch(BadLocationException e) {
+					e.printStackTrace();
+				}
+			},"Text Highlighter").start();
 			lastEdit = -1;
 		}
 	}

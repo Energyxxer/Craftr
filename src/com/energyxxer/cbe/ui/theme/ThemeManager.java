@@ -30,6 +30,7 @@ public class ThemeManager {
 
             File[] themeFiles = directory.listFiles();
             ThemeReader tr = new ThemeReader();
+            if(themeFiles == null) return;
             for(File file : themeFiles) {
                 try {
                     Theme theme = tr.read(file);

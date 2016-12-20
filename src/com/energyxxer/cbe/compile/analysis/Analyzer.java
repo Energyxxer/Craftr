@@ -90,7 +90,7 @@ public class Analyzer {
 			}
 
 			// CHECK FOR SPECIAL CASES FIRST
-			if (!isString && Arrays.asList(LangConstants.stringLiteral).indexOf(c) >= 0) {
+			if (!isString && Arrays.asList(LangConstants.string_literal).indexOf(c) >= 0) {
 				if (token != null)
 					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
 
@@ -108,7 +108,7 @@ public class Analyzer {
 					token += str.charAt(i + 1);
 					i++;
 					continue;
-				} else if (Arrays.asList(LangConstants.stringLiteral).indexOf(c) >= 0) {
+				} else if (Arrays.asList(LangConstants.string_literal).indexOf(c) >= 0) {
 					token += c;
 					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
 					token = tokenType = null;
@@ -122,9 +122,8 @@ public class Analyzer {
 			if (str.substring(i).startsWith(LangConstants.comment[0])) {
 				if (token != null)
 					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-				token = null;
 				tokenType = TokenType.COMMENT;
-				if (str.substring(i).indexOf("\n") >= 0) {
+				if (str.substring(i).contains("\n")) {
 					token = str.substring(i, i + str.substring(i).indexOf("\n"));
 					tokenIndex = i;
 
@@ -147,7 +146,6 @@ public class Analyzer {
 					column = cColumn;
 
 					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					token = tokenType = null;
 					return;
 				}
 			}
@@ -272,7 +270,7 @@ public class Analyzer {
 				column = cColumn;
 
 				continue;
-			} else if (isNumber && Arrays.asList(LangConstants.numberPunctuation).indexOf(c) >= 0) {
+			} else if (isNumber && Arrays.asList(LangConstants.number_punctuation).indexOf(c) >= 0) {
 				token += c;
 				continue;
 			} else if (isNumber && !Character.isJavaIdentifierPart(c.charAt(0))) {
@@ -297,9 +295,9 @@ public class Analyzer {
 
 				token = c;
 				tokenIndex = i;
-			} else if (alphanumeric == (Arrays.asList(LangConstants.alphanumeric).indexOf(c) >= 0) && (alphanumeric == true)) {
+			} else if (alphanumeric == (Arrays.asList(LangConstants.alphanumeric).indexOf(c) >= 0) && alphanumeric) {
 				token += c;
-			} else if (alphanumeric != (Arrays.asList(LangConstants.alphanumeric).indexOf(c) >= 0) || alphanumeric == false) {
+			} else if (alphanumeric != (Arrays.asList(LangConstants.alphanumeric).indexOf(c) >= 0) || !alphanumeric) {
 				flush(new Token(token, file, new StringLocation(tokenIndex, line, column)));
 				token = c;
 				tokenIndex = i;
@@ -315,7 +313,7 @@ public class Analyzer {
 		flush(new Token("", TokenType.END_OF_FILE, file, new StringLocation(tokenIndex, cLine, cColumn+1)));
 	}
 	
-	public void flush(Token token) {
+	private void flush(Token token) {
 		if (token == null)
 			return;
 		

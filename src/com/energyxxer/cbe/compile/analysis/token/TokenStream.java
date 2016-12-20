@@ -1,18 +1,16 @@
 package com.energyxxer.cbe.compile.analysis.token;
 
-import static com.energyxxer.cbe.compile.analysis.token.TokenAttributes.CLOSING_BRACE;
-import static com.energyxxer.cbe.compile.analysis.token.TokenAttributes.OPENING_BRACE;
-import static com.energyxxer.cbe.compile.analysis.token.TokenAttributes.PARENTHESES;
-import static com.energyxxer.cbe.compile.analysis.token.TokenType.*;
-import static com.energyxxer.cbe.util.StringUtil.FALSE;
-import static com.energyxxer.cbe.util.StringUtil.TRUE;
+import com.energyxxer.cbe.compile.analysis.LangConstants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.energyxxer.cbe.compile.analysis.LangConstants;
+import static com.energyxxer.cbe.compile.analysis.token.TokenAttributes.*;
+import static com.energyxxer.cbe.compile.analysis.token.TokenType.*;
+import static com.energyxxer.cbe.util.StringUtil.FALSE;
+import static com.energyxxer.cbe.util.StringUtil.TRUE;
 
 public class TokenStream implements Iterable<Token> {
 	
@@ -133,7 +131,7 @@ public class TokenStream implements Iterable<Token> {
 					String enumValue = token.value;
 
 					List<String> enums = LangConstants.enums;
-					List<List<String>> enumGroups = LangConstants.enumValues;
+					List<List<String>> enumGroups = LangConstants.enum_values;
 					
 					if(enums.contains(enumName)) {
 						if(enumGroups.get(enums.indexOf(enumName)).contains(enumValue)) {

@@ -13,8 +13,10 @@ public class OverlayScrollPaneLayout extends ScrollPaneLayout {
 
         super.layoutContainer(parent);
 
-        Rectangle availR = ((JScrollPane) parent).getBounds();
+        Rectangle availR = parent.getBounds();
+        this.rowHead.setSize(this.rowHead.getWidth(),availR.height);
         availR.x = availR.y = 0;
+
 
         // viewport
         Insets insets = parent.getInsets();

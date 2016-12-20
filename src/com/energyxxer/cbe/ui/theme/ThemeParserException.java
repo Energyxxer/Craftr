@@ -9,9 +9,9 @@ import com.energyxxer.cbe.util.ColorUtil;
 public class ThemeParserException extends Throwable {
 
     public ThemeParserException(String message) {
-        super("<span style=\"color:" + ColorUtil.toCSS(Commons.warningColor) + ";\">" + message);
+        super("<span style=\"color:" + ColorUtil.toCSS(Commons.warningColor) + ";\">" + message + "</span>");
     }
     public ThemeParserException(String message, int lineNumber, String line) {
-        super("<span style=\"color:" + ColorUtil.toCSS(Commons.warningColor) + ";\">" + message + "\n\tat line " + lineNumber + ":\n\t" + line);
+        super("<span style=\"color:" + ColorUtil.toCSS(Commons.warningColor) + ";\">" + message + "\n\tat line " + lineNumber + ":\n\t" + line + "</span>");
     }
 }

@@ -10,7 +10,7 @@ import com.energyxxer.cbe.compile.parsing.exceptions.CBEParserException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.energyxxer.cbe.compile.parsing.classes.units.CBEUnit.UnitModifiers.*;
+import static com.energyxxer.cbe.compile.parsing.classes.units.CBEUnit.UnitModifier.*;
 
 /**
  * Created by User on 12/2/2016.
@@ -21,20 +21,14 @@ public class CBEUnit {
 
     protected final TokenPattern declaration;
 
-    protected final ArrayList<UnitModifiers> modifiers;
+    protected final ArrayList<UnitModifier> modifiers;
 
     protected CBEPackage unitPackage;
 
-
-
-    public enum UnitType {
-        ENTITY, ITEM, FEATURE, CLASS;
+    public enum UnitModifier {
+        PACKAGE, PUBLIC, FINAL
     }
 
-
-    public enum UnitModifiers {
-        PACKAGE, PUBLIC, FINAL;
-    }
     public CBEUnit(CBEFile file, TokenPattern<?> unit) throws CBEParserException {
 
         this.file = file;
@@ -56,14 +50,12 @@ public class CBEUnit {
             if (token.value.equals("final")) {
                 if(!isFinal) {
                     isFinal = true;
-                    continue;
                 } else {
                     throw new CBEParserException("Duplicate modifier 'final'", token);
                 }
             } else if (token.value.equals("public")) {
                 if(!isPublic) {
                     isPublic = true;
-                    continue;
                 } else {
                     throw new CBEParserException("Duplicate modifier 'public'", token);
                 }

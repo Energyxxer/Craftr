@@ -12,4 +12,7 @@ public class CBECompilerException extends Throwable {
     public CBECompilerException(String message, Token faultyToken) {
         super("<span style=\"color:" + ColorUtil.toCSS(Commons.errorColor) + ";\">" + message + "\n\tat </span>" + faultyToken.getFormattedPath());
     }
+    public CBECompilerException(String message) {
+        super("<span style=\"color:" + ColorUtil.toCSS(Commons.errorColor) + ";\">" + message + "</span>");
+    }
 }

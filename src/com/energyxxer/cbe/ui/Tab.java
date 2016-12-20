@@ -5,6 +5,7 @@ import com.energyxxer.cbe.global.TabManager;
 import com.energyxxer.cbe.logic.Project;
 import com.energyxxer.cbe.ui.editor.CBEEditor;
 
+import javax.swing.text.BadLocationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -100,9 +101,20 @@ public class Tab {
 		try {
 			writer = new PrintWriter(path, "UTF-8");
 
-			writer.print(editor.editor.getText());
+			String text = editor.editor.getText();
+			if(!text.endsWith("\n")) {
+				text = text.concat("\n");
+				try {
+					editor.editor.getDocument().insertString(text.length()-1,"\n",null);
+				} catch(BadLocationException e) {
+					e.printStackTrace();
+				}
+			}
+			text = text.intern();
+
+			writer.print(text);
 			writer.close();
-			savedString = editor.editor.getText().intern();
+			savedString = text;
 			linkedTabComponent.setSaved(true);
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();

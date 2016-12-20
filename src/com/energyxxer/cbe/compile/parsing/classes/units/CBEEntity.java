@@ -1,20 +1,20 @@
 package com.energyxxer.cbe.compile.parsing.classes.units;
 
-import java.util.ArrayList;
-
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
+import com.energyxxer.cbe.compile.parsing.classes.fields.CBEField;
 import com.energyxxer.cbe.compile.parsing.classes.files.CBEFile;
-import com.energyxxer.cbe.compile.parsing.classes.fields.Field;
 import com.energyxxer.cbe.compile.parsing.exceptions.CBEParserException;
 import com.energyxxer.cbe.minecraft.util.Selector;
 import com.energyxxer.cbe.util.Range;
 import com.energyxxer.cbe.util.vprimitives.VInteger;
 
+import java.util.ArrayList;
+
 public class CBEEntity extends CBEUnit {
 	
 	public int id;
 	protected ArrayList<String> promises = new ArrayList<String>();
-	protected ArrayList<Field> fields = new ArrayList<Field>();
+	protected ArrayList<CBEField> fields = new ArrayList<CBEField>();
 	public ArrayList<CBEEntity> subEntities = new ArrayList<CBEEntity>();
 	public String entityExtends = null;
 	public String entityType = "armor_stand";
@@ -22,7 +22,7 @@ public class CBEEntity extends CBEUnit {
 	public CBEEntity(CBEFile file, TokenPattern unit) throws CBEParserException {
 		super(file, unit);
 	}
-	public CBEEntity newField(Field f) {
+	public CBEEntity newField(CBEField f) {
 		this.fields.add(f);
 		return this;
 	}
