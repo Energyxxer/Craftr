@@ -7,6 +7,7 @@ import com.energyxxer.cbe.global.TabManager;
 import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.syntax.Syntax;
 import com.energyxxer.cbe.ui.Tab;
+import com.energyxxer.cbe.ui.editor.inspector.Inspector;
 import com.energyxxer.cbe.ui.explorer.ExplorerItemLabel;
 import com.energyxxer.cbe.ui.scrollbar.OverlayScrollPaneLayout;
 import com.energyxxer.cbe.ui.scrollbar.ScrollbarUI;
@@ -18,7 +19,6 @@ import com.energyxxer.cbe.util.linepainter.LinePainter;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.event.DocumentEvent.EventType;
@@ -27,7 +27,6 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -59,14 +58,14 @@ import java.util.Set;
  * Main text editor of the program. Has support for syntax highlighting, undo,
  * and is linked to abstract tabs.
  */
-public class CBEEditor extends JScrollPane implements UndoableEditListener, ActionListener, MouseListener, ThemeChangeListener {
+public class Editor extends JScrollPane implements UndoableEditListener, ActionListener, MouseListener, ThemeChangeListener {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -8584609859858654496L;
 
-	public JTextPane editor;
+	public EditorComponent editor;
 	private TextLineNumber tln;
 	private Tab associatedTab;
 	private StyledDocument sd;
@@ -78,14 +77,17 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 	public long lastToolTip = new Date().getTime();
 	private Timer timer;
 
-	public CBEEditor(Tab tab) {
+    Inspector inspector;
+
+	public Editor(Tab tab) {
 		super();
 
-		editor = new JTextPane(new DefaultStyledDocument());
-		editor.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
-		super.setViewportView(editor);
+        editor = new EditorComponent(this);
+        editor.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
+        super.setViewportView(editor);
 
-		linePainter = new LinePainter(editor);
+        linePainter = new LinePainter(editor);
+        this.inspector = new Inspector(tab, editor);
 
 		tln = new TextLineNumber(editor, this);
 		tln.setPadding(10);
@@ -285,6 +287,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Acti
 				} catch(BadLocationException e) {
 					e.printStackTrace();
 				}
+				this.inspector.inspect();
 			},"Text Highlighter").start();
 			lastEdit = -1;
 		}

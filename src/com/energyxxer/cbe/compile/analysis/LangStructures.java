@@ -13,33 +13,36 @@ import com.energyxxer.cbe.compile.analysis.token.matching.TokenStructureMatch;
  * tokens.
  * */
 public class LangStructures {
+    public static final TokenStructureMatch FILE;
 
-    public final static TokenStructureMatch FILE;
+	public static final TokenStructureMatch PACKAGE;
+	public static final TokenStructureMatch IMPORT;
 
-	public final static TokenStructureMatch PACKAGE;
-	public final static TokenStructureMatch IMPORT;
+	public static final TokenStructureMatch UNIT;
+    public static final TokenStructureMatch UNIT_DECLARATION;
+    public static final TokenStructureMatch UNIT_BODY;
+    public static final TokenStructureMatch UNIT_COMPONENT;
 
-	public final static TokenStructureMatch UNIT;
-    public final static TokenStructureMatch UNIT_DECLARATION;
-    public final static TokenStructureMatch UNIT_BODY;
-    public final static TokenStructureMatch UNIT_COMPONENT;
+    public static final TokenStructureMatch FIELD;
+    public static final TokenStructureMatch METHOD;
 
-    public final static TokenStructureMatch FIELD;
-    public final static TokenStructureMatch METHOD;
+    public static final TokenStructureMatch VARIABLE_DECLARATION;
 
-    public final static TokenStructureMatch VARIABLE_DECLARATION;
+	public static final TokenStructureMatch IDENTIFIER;
 
-	public final static TokenStructureMatch IDENTIFIER;
+    public static final TokenStructureMatch DATA_TYPE;
+	public static final TokenStructureMatch METHOD_CALL;
+	public static final TokenStructureMatch VALUE;
+	public static final TokenStructureMatch EXPRESSION;
+	public static final TokenStructureMatch STATEMENT;
+	public static final TokenStructureMatch CODE_BLOCK;
+	public static final TokenStructureMatch ANNOTATION;
 
-    public final static TokenStructureMatch DATA_TYPE;
-	public final static TokenStructureMatch METHOD_CALL;
-	public final static TokenStructureMatch VALUE;
-	public final static TokenStructureMatch EXPRESSION;
-	public final static TokenStructureMatch STATEMENT;
-	public final static TokenStructureMatch CODE_BLOCK;
-	public final static TokenStructureMatch ANNOTATION;
-
-	public final static TokenGroupMatch IF_STATEMENT;
+	public static final TokenGroupMatch IF_STATEMENT;
+	public static final TokenGroupMatch FOR_STATEMENT;
+	public static final TokenGroupMatch WHILE_STATEMENT;
+	public static final TokenGroupMatch SWITCH_STATEMENT;
+	public static final TokenGroupMatch RETURN_STATEMENT;
 
 	static {
 
@@ -264,7 +267,7 @@ public class LangStructures {
 		{
 			// <ANNOTATION> <IDENTIFIER> <BRACE: (> [-VALUE-...] <BRACE: )>
 			TokenGroupMatch g = new TokenGroupMatch();
-			g.append(new TokenItemMatch(TokenType.ANNOTATION_MARKER));;
+			g.append(new TokenItemMatch(TokenType.ANNOTATION_MARKER));
 			g.append(METHOD_CALL);
 			ANNOTATION.add(g);
 		}
@@ -462,7 +465,7 @@ public class LangStructures {
 		STATEMENT.add(IF_STATEMENT);
 
         {
-            TokenGroupMatch RETURN_STATEMENT = new TokenGroupMatch();
+            RETURN_STATEMENT = new TokenGroupMatch();
             RETURN_STATEMENT.append(new TokenItemMatch(TokenType.ACTION_KEYWORD,"return"));
             RETURN_STATEMENT.append(VALUE);
             RETURN_STATEMENT.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
@@ -470,7 +473,7 @@ public class LangStructures {
             STATEMENT.add(RETURN_STATEMENT);
         }
 		
-		TokenGroupMatch FOR_STATEMENT = new TokenGroupMatch();
+		FOR_STATEMENT = new TokenGroupMatch();
 		{
 			//for
 			FOR_STATEMENT.append(new TokenItemMatch(TokenType.KEYWORD,"for"));
@@ -493,7 +496,7 @@ public class LangStructures {
 			STATEMENT.add(FOR_STATEMENT);
 		}
 		
-		TokenGroupMatch WHILE_STATEMENT = new TokenGroupMatch();
+		WHILE_STATEMENT = new TokenGroupMatch();
 		{
 			WHILE_STATEMENT.append(new TokenItemMatch(TokenType.KEYWORD,"while"));
 			WHILE_STATEMENT.append(new TokenItemMatch(TokenType.BRACE,"("));
@@ -503,7 +506,7 @@ public class LangStructures {
 		}
 		STATEMENT.add(WHILE_STATEMENT);
 		
-		TokenGroupMatch SWITCH_STATEMENT = new TokenGroupMatch();
+		SWITCH_STATEMENT = new TokenGroupMatch();
 		{
 			SWITCH_STATEMENT.append(new TokenItemMatch(TokenType.KEYWORD,"switch"));
 			SWITCH_STATEMENT.append(new TokenItemMatch(TokenType.BRACE,"("));

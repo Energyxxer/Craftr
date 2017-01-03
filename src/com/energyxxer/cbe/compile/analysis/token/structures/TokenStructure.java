@@ -1,11 +1,12 @@
 package com.energyxxer.cbe.compile.analysis.token.structures;
 
+import com.energyxxer.cbe.compile.analysis.token.Token;
+import com.energyxxer.cbe.util.StringBounds;
+import com.energyxxer.cbe.util.StringLocation;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.energyxxer.cbe.compile.analysis.token.Token;
-import com.energyxxer.cbe.util.StringLocation;
 
 public class TokenStructure extends TokenPattern<TokenPattern<?>> {
 	private TokenPattern<?> group;
@@ -38,7 +39,7 @@ public class TokenStructure extends TokenPattern<TokenPattern<?>> {
 
 	@Override
 	public List<TokenPattern<?>> searchByName(String name) {
-		ArrayList<TokenPattern<?>> list = new ArrayList<TokenPattern<?>>();
+		ArrayList<TokenPattern<?>> list = new ArrayList<>();
 		if(this.name.equals(name)) list.add(this);
 		list.addAll(group.searchByName(name));
 		return list;
@@ -55,13 +56,20 @@ public class TokenStructure extends TokenPattern<TokenPattern<?>> {
 	}
 
 	@Override
-	protected StringLocation getStringLocation() {
+	public StringLocation getStringLocation() {
 		return group.getStringLocation();
 	}
 
 	@Override
-	protected int getCharLength() {
+	public StringBounds getStringBounds() { return group.getStringBounds(); }
+
+	@Override
+	public int getCharLength() {
 		return group.getCharLength();
 	}
 
+    @Override
+    public ArrayList<Token> flattenTokens() {
+        return group.flattenTokens();
+    }
 }

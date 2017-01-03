@@ -1,6 +1,8 @@
 package com.energyxxer.cbe.compile.analysis.token;
 
 import com.energyxxer.cbe.compile.analysis.LangConstants;
+import com.energyxxer.cbe.compile.analysis.token.matching.TokenPatternMatch;
+import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -187,4 +189,19 @@ public class TokenStream implements Iterable<Token> {
 	public Iterator<Token> iterator() {
 		return tokens.iterator();
 	}
+
+	public ArrayList<TokenPattern<?>> search(TokenPatternMatch m) {
+
+	    ArrayList<TokenPattern<?>> matches = new ArrayList<>();
+
+	    for(int i = 0; i < tokens.size(); i++) {
+	        TokenMatchResponse response = m.match(tokens.subList(i,tokens.size()));
+	        if(response.matched) {
+	            matches.add(response.pattern);
+	            i += response.length-1;
+            }
+        }
+
+        return matches;
+    }
 }

@@ -99,4 +99,15 @@ public class TokenStructureMatch extends TokenPatternMatch {
 	public String toTrimmedString() {
 		return name;
 	}
+
+	public TokenStructureMatch exclude(TokenPatternMatch entryToExclude) {
+	    TokenStructureMatch newStruct = new TokenStructureMatch(name, optional);
+	    for(TokenPatternMatch entry : entries) {
+	        if(entry != entryToExclude) {
+                System.out.println("Including " + entry);
+                newStruct.add(entry);
+            } else System.out.println("Excluding " + entry);
+        }
+        return newStruct;
+    }
 }

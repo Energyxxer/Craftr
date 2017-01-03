@@ -1,11 +1,12 @@
 package com.energyxxer.cbe.compile.analysis.token.structures;
 
-import java.io.File;
-import java.util.List;
-
 import com.energyxxer.cbe.compile.analysis.token.Token;
-import com.energyxxer.cbe.util.Range;
+import com.energyxxer.cbe.util.StringBounds;
 import com.energyxxer.cbe.util.StringLocation;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class TokenPattern<T> {
 
@@ -20,16 +21,19 @@ public abstract class TokenPattern<T> {
 
 	public abstract File getFile();
 
-	private String getLocation() {
-		return new StringBuilder().append(getFile()).append(':').append(getStringLocation()).toString();
+	public String getLocation() {
+		return getFile().toString() + ':' + getStringLocation();
 	}
 
-	protected abstract StringLocation getStringLocation();
-	protected abstract int getCharLength();
+	public abstract StringLocation getStringLocation();
+	public abstract StringBounds getStringBounds();
+	public abstract int getCharLength();
 
 	public String getFormattedPath() {
 		StringLocation loc = getStringLocation();
 		return "<a href=\"file:" + File.separator + File.separator + getFile() + "?" + loc.line + ":" + loc.column + "&" + getCharLength() + "\">"
 				+ getLocation() + "</a>";
 	}
+
+	public abstract ArrayList<Token> flattenTokens();
 }

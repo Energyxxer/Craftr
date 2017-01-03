@@ -14,6 +14,6 @@ public class StringLocation {
 
 	@Override
 	public String toString() {
-		return new StringBuilder().append(line).append(':').append(column).append('#').append(index).toString();
+		return "" + line + ':' + column + '#' + index;
 	}
 }

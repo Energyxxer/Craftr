@@ -20,17 +20,17 @@ import java.util.List;
 
 public class Parser {
 	
-	private ArrayList<ArrayList<Token>> tokens = new ArrayList<ArrayList<Token>>();
+	private ArrayList<ArrayList<Token>> tokens = new ArrayList<>();
 	private UnitRegistry reg = new UnitRegistry();
 
 	public CBEPackageManager packageManager = new CBEPackageManager(new CBEPackage("src"));
 
 	public Parser(TokenStream ts, Project project) {
-		ArrayList<Token> currentList = new ArrayList<Token>();
+		ArrayList<Token> currentList = new ArrayList<>();
 		for(Token t : ts.tokens) {
 			currentList.add(t);
 			if(t.type == TokenType.END_OF_FILE) {
-				ArrayList<Token> f = new ArrayList<Token>();
+				ArrayList<Token> f = new ArrayList<>();
 				for(Token t2 : currentList) {
 					f.add(t2);
 				}

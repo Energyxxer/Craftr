@@ -3,7 +3,7 @@ package com.energyxxer.cbe.ui;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.global.TabManager;
 import com.energyxxer.cbe.logic.Project;
-import com.energyxxer.cbe.ui.editor.CBEEditor;
+import com.energyxxer.cbe.ui.editor.Editor;
 
 import javax.swing.text.BadLocationException;
 import java.io.File;
@@ -23,7 +23,7 @@ public class Tab {
 	private TabComponent linkedTabComponent;
 	private Project linkedProject;
 	public String path;
-	public CBEEditor editor;
+	public Editor editor;
 	public String savedString;
 	public boolean visible = true;
 
@@ -37,7 +37,7 @@ public class Tab {
 	public Tab(String path) {
 		this.path = path;
 		this.linkedProject = ProjectManager.getAssociatedProject(new File(path));
-		editor = new CBEEditor(this);
+		editor = new Editor(this);
 		byte[] encoded;
 		try {
 			encoded = Files.readAllBytes(Paths.get(path));

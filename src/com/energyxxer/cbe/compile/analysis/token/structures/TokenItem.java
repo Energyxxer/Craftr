@@ -1,11 +1,12 @@
 package com.energyxxer.cbe.compile.analysis.token.structures;
 
+import com.energyxxer.cbe.compile.analysis.token.Token;
+import com.energyxxer.cbe.util.StringBounds;
+import com.energyxxer.cbe.util.StringLocation;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.energyxxer.cbe.compile.analysis.token.Token;
-import com.energyxxer.cbe.util.StringLocation;
 
 public class TokenItem extends TokenPattern<Token> {
 	private Token token;
@@ -55,12 +56,27 @@ public class TokenItem extends TokenPattern<Token> {
 	}
 
 	@Override
-	protected StringLocation getStringLocation() {
+	public StringLocation getStringLocation() {
 		return new StringLocation(token.loc.index, token.loc.line, token.loc.column);
 	}
 
 	@Override
-	protected int getCharLength() {
+	public StringBounds getStringBounds() {
+		return new StringBounds(
+				new StringLocation(token.loc.index, token.loc.line, token.loc.column),
+				new StringLocation(token.loc.index + token.value.length(), token.loc.line, token.loc.column + token.value.length())
+		);
+	}
+
+	@Override
+	public int getCharLength() {
 		return token.value.length();
 	}
+
+    @Override
+    public ArrayList<Token> flattenTokens() {
+	    ArrayList<Token> list = new ArrayList<>();
+	    list.add(token);
+        return list;
+    }
 }

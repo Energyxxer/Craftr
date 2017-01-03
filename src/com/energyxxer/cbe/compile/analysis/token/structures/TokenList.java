@@ -1,11 +1,12 @@
 package com.energyxxer.cbe.compile.analysis.token.structures;
 
+import com.energyxxer.cbe.compile.analysis.token.Token;
+import com.energyxxer.cbe.util.StringBounds;
+import com.energyxxer.cbe.util.StringLocation;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.energyxxer.cbe.compile.analysis.token.Token;
-import com.energyxxer.cbe.util.StringLocation;
 
 public class TokenList extends TokenPattern<TokenPattern<?>[]> {
 	private ArrayList<TokenPattern<?>> patterns = new ArrayList<TokenPattern<?>>();
@@ -77,7 +78,7 @@ public class TokenList extends TokenPattern<TokenPattern<?>[]> {
 	}
 
 	@Override
-	protected StringLocation getStringLocation() {
+	public StringLocation getStringLocation() {
 		if (patterns == null || patterns.size() <= 0) return null;
 		StringLocation l = null;
 		for (TokenPattern<?> pattern : patterns) {
@@ -88,19 +89,59 @@ public class TokenList extends TokenPattern<TokenPattern<?>[]> {
 			}
 			if(loc.index < l.index) {
 				l = loc;
-				continue;
 			}
 		}
 		return l;
 	}
 
 	@Override
-	protected int getCharLength() {
+	public StringBounds getStringBounds() {
+		if (patterns == null || patterns.size() <= 0) return null;
+		StringLocation start = null;
+		StringLocation end = null;
+
+		//Find start
+		for (TokenPattern<?> pattern : patterns) {
+			StringLocation loc = pattern.getStringLocation();
+			if(start == null) {
+				start = loc;
+				continue;
+			}
+			if(loc.index < start.index) {
+				start = loc;
+			}
+		}
+
+		//Find end
+		for (TokenPattern<?> pattern : patterns) {
+			StringLocation loc = pattern.getStringBounds().end;
+			if(end == null) {
+				end = loc;
+				continue;
+			}
+			if(loc.index > end.index) {
+				end = loc;
+			}
+		}
+		return new StringBounds(start, end);
+	}
+
+	@Override
+	public int getCharLength() {
 		int l = 0;
 		for(TokenPattern<?> pattern : patterns) {
 			l += pattern.getCharLength();
 		}
 		return l;
 	}
+
+    @Override
+    public ArrayList<Token> flattenTokens() {
+        ArrayList<Token> list = new ArrayList<>();
+        for(TokenPattern<?> pattern : patterns) {
+            list.addAll(pattern.flattenTokens());
+        }
+        return list;
+    }
 
 }
