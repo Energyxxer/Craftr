@@ -7,6 +7,7 @@ import com.energyxxer.cbe.ui.theme.Theme;
 import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
@@ -23,21 +24,27 @@ public class StatusBar extends JPanel {
 
     private Status currentStatus = null;
 
+    private ExtendedStatusBar extension = new ExtendedStatusBar();
+
     {
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(1, 25));
 
-        ThemeChangeListener.addThemeChangeListener(t -> {
-            this.setBackground(t.getColor("Status.background",new Color(235, 235, 235)));
-            this.setBorder(
-                new CompoundBorder(
-                    new MatteBorder(1, 0, 0, 0, t.getColor("Status.border",new Color(200, 200, 200))),
-                    new EmptyBorder(0,5,0,5)
-            ));
-        });
-        statusLabel = new StyledLabel("This is the status bar.");
+        ThemeChangeListener.addThemeChangeListener(t ->
+            SwingUtilities.invokeLater(() -> {
+                this.setBackground(t.getColor("Status.background",new Color(235, 235, 235)));
+                this.setBorder(
+                    new CompoundBorder(
+                        new MatteBorder(1, 0, 0, 0, t.getColor("Status.border",new Color(200, 200, 200))),
+                        new EmptyBorder(0,5,0,5)
+                ));}
+            )
+        );
+        statusLabel = new StyledLabel("");
         statusLabel.setIconName("info");
-        this.add(statusLabel);
+        this.add(statusLabel,BorderLayout.CENTER);
+
+        this.add(extension,BorderLayout.EAST);
     }
 
     public void setStatus(String text) {
@@ -59,5 +66,9 @@ public class StatusBar extends JPanel {
             statusLabel.setText("");
             statusLabel.setBackground(new Color(0,0,0,0));
         }
+    }
+
+    public void setCaretInfo(String text) {
+        extension.setCaretInfo(text);
     }
 }

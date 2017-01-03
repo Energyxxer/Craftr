@@ -387,6 +387,10 @@ public class Editor extends JScrollPane implements UndoableEditListener, ActionL
 		}
 	}
 
+    public void displayCaretInfo() {
+        editor.displayCaretInfo();
+    }
+
 	/*@Override
 	public int getNumberLines() {
 		return getText().split("\n").length;

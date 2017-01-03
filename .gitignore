@@ -50,3 +50,4 @@ Temporary Items
 /bin/
 *.eml___jb_tmp___
 *.MF
+tests/Test

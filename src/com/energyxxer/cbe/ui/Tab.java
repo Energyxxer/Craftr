@@ -71,6 +71,7 @@ public class Tab {
 
 	public void onSelect() {
 		openedTimeStamp = new Date().getTime();
+		editor.displayCaretInfo();
 	}
 
 	public void onEdit() {

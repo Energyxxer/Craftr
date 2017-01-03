@@ -8,6 +8,7 @@ import com.energyxxer.cbe.util.ImageManager;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
@@ -120,19 +121,22 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
     }
 
     @Override
-    public void themeChanged(Theme t) {
-        this.theme = t;
-        if(this.namespace != null) {
-            setForeground(t.getColor(this.namespace + ".label.foreground", t.getColor("General.label.foreground", t.getColor("General.foreground", Color.BLACK))));
-            setFont(new Font(t.getString(this.namespace + "label.font",t.getString("General.label.font",t.getString("General.font","Tahoma"))),1,12));
-        } else {
-            setForeground(t.getColor("General.label.foreground", t.getColor("General.foreground", Color.BLACK)));
-            setFont(new Font(t.getString("General.label.font",t.getString("General.font","Tahoma")),style,size));
-        }
-        if(icon != null) {
-            this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + icon + ".png").getScaledInstance(16,16, Image.SCALE_SMOOTH)));
-        } else {
-            this.setIcon(null);
-        }
+    public void themeChanged(Theme t0) {
+        this.theme = t0;
+        SwingUtilities.invokeLater(() -> {
+            Theme t = this.theme;
+            if (this.namespace != null) {
+                setForeground(t.getColor(this.namespace + ".label.foreground", t.getColor("General.label.foreground", t.getColor("General.foreground", Color.BLACK))));
+                setFont(new Font(t.getString(this.namespace + "label.font", t.getString("General.label.font", t.getString("General.font", "Tahoma"))), 1, 12));
+            } else {
+                setForeground(t.getColor("General.label.foreground", t.getColor("General.foreground", Color.BLACK)));
+                setFont(new Font(t.getString("General.label.font", t.getString("General.font", "Tahoma")), style, size));
+            }
+            if (icon != null) {
+                this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + icon + ".png").getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
+            } else {
+                this.setIcon(null);
+            }
+        });
     }
 }

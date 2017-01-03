@@ -21,7 +21,7 @@ import java.util.ArrayList;
  */
 public class TabManager {
 
-	public static ArrayList<Tab> openTabs = new ArrayList<Tab>();
+	public static ArrayList<Tab> openTabs = new ArrayList<>();
 
 	private static TabComponent selectedTab = null;
 	
@@ -162,6 +162,8 @@ public class TabManager {
 			
 			tab.onSelect();
 			Window.editArea.add(tab.editor, BorderLayout.CENTER);
+		} else {
+            Window.statusBar.setCaretInfo(Commons.DEFAULT_CARET_DISPLAY_TEXT);
 		}
 
 		Window.editArea.revalidate();

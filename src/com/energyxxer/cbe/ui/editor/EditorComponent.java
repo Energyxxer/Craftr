@@ -1,5 +1,6 @@
 package com.energyxxer.cbe.ui.editor;
 
+import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.util.StringLocation;
 
 import javax.swing.JTextPane;
@@ -33,6 +34,10 @@ public class EditorComponent extends JTextPane implements KeyListener, CaretList
     @Override
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
+        if(c == '`') {
+            e.consume();
+            this.setCaretPosition(0);
+        }
         /*try {
             if(c == 'a') {
                 System.out.println("Consuming");
@@ -77,16 +82,28 @@ public class EditorComponent extends JTextPane implements KeyListener, CaretList
             try {
                 int offset = index;
                 while(offset > 0) {
-                    offset = Utilities.getRowStart(this, offset) - 1;
+                    int rs = Utilities.getRowStart(this, offset);
+                    if(rs < 0) {
+                        line = 1;
+                        break;
+                    }
+                    offset = rs - 1;
                     line++;
                 }
             } catch(BadLocationException ble) {
                 ble.printStackTrace();
             }
-            int column = index - Utilities.getRowStart(this, index) + 1;
+            int column;
+            int rs = Utilities.getRowStart(this, index);
+            column = (rs >= 0) ? index - rs + 1 : 1;
             this.caretLocation = new StringLocation(index, line, column);
+            displayCaretInfo();
         } catch(BadLocationException ble) {
             ble.printStackTrace();
         }
+    }
+
+    public void displayCaretInfo() {
+        Window.statusBar.setCaretInfo(caretLocation.line + ":" + caretLocation.column);
     }
 }

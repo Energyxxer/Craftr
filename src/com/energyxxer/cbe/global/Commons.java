@@ -5,6 +5,9 @@ import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
 import java.awt.*;
 
 public class Commons {
+
+    public static String DEFAULT_CARET_DISPLAY_TEXT = "-:-";
+
     public static String themeAssetsPath = "light_theme/";
     public static Color warningColor = new Color(255, 140, 0);
     public static Color errorColor = new Color(200,50,50);
