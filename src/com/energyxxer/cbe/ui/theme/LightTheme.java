@@ -31,7 +31,7 @@ public class LightTheme extends Theme {
 		s2 = null;
 		s3 = null;
 		s4 = null;
-		//Editor Colors
+		//CBEEditor Colors
 		e1 = new Color(255, 255, 255);
 		e2 = new Color(235, 235, 235);
 		e3 = new Color(255, 255, 255);

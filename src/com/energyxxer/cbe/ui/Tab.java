@@ -3,7 +3,7 @@ package com.energyxxer.cbe.ui;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.global.TabManager;
 import com.energyxxer.cbe.logic.Project;
-import com.energyxxer.cbe.ui.editor.Editor;
+import com.energyxxer.cbe.ui.editor.CBEEditor;
 
 import javax.swing.text.BadLocationException;
 import java.io.File;
@@ -23,7 +23,7 @@ public class Tab {
 	private TabComponent linkedTabComponent;
 	private Project linkedProject;
 	public String path;
-	public Editor editor;
+	public CBEEditor editor;
 	public String savedString;
 	public boolean visible = true;
 
@@ -37,13 +37,13 @@ public class Tab {
 	public Tab(String path) {
 		this.path = path;
 		this.linkedProject = ProjectManager.getAssociatedProject(new File(path));
-		editor = new Editor(this);
+		editor = new CBEEditor(this);
 		byte[] encoded;
 		try {
 			encoded = Files.readAllBytes(Paths.get(path));
 			String s = new String(encoded);
 			editor.setText(s);
-			editor.editor.setCaretPosition(0);
+			editor.editorComponent.setCaretPosition(0);
 			editor.startEditListeners();
 			savedString = s.intern();
 		} catch (IOException e) {
@@ -76,7 +76,7 @@ public class Tab {
 
 	public void onEdit() {
 		if (linkedTabComponent != null) {
-			boolean newIsSaved = editor.editor.getText().intern() == savedString || savedString == null;
+			boolean newIsSaved = editor.editorComponent.getText().intern() == savedString || savedString == null;
 			linkedTabComponent.setSaved(newIsSaved);
 		}
 	}
@@ -102,11 +102,11 @@ public class Tab {
 		try {
 			writer = new PrintWriter(path, "UTF-8");
 
-			String text = editor.editor.getText();
+			String text = editor.editorComponent.getText();
 			if(!text.endsWith("\n")) {
 				text = text.concat("\n");
 				try {
-					editor.editor.getDocument().insertString(text.length()-1,"\n",null);
+					editor.editorComponent.getDocument().insertString(text.length()-1,"\n",null);
 				} catch(BadLocationException e) {
 					e.printStackTrace();
 				}

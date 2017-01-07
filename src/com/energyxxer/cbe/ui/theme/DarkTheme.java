@@ -132,7 +132,7 @@ public class DarkTheme extends Theme {
 		s2 = null;
 		s3 = null;
 		s4 = null;
-		//Editor Colors
+		//CBEEditor Colors
 		e1 = new Color(47, 48, 50);
 		e2 = new Color(57, 58, 60);
 		e3 = new Color(47, 48, 50);

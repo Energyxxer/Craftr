@@ -54,12 +54,12 @@ public class TabManager {
 		int c = 1;
 		for (int i = 0; i < tab.editor.getText().length(); i++) {
 			if (l == line && c == column) {
-				tab.editor.editor.requestFocus();
+				tab.editor.editorComponent.requestFocus();
 				if(length == 0) {
-					tab.editor.editor.setCaretPosition(i);
+					tab.editor.editorComponent.setCaretPosition(i);
 				} else {
-					tab.editor.editor.setSelectionStart(i);
-					tab.editor.editor.setSelectionEnd(i+length);
+					//tab.editor.editorComponent.setSelectionStart(i);
+					//tab.editor.editorComponent.setSelectionEnd(i+length);
 				}
 				return;
 			}

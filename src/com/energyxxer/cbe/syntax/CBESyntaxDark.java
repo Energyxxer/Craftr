@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 /**
  * Defines what and how character sequences should be highlighted in a text
- * editor.
+ * editorComponent.
  */
 public class CBESyntaxDark extends Syntax {
 	public static final CBESyntaxDark INSTANCE = new CBESyntaxDark();

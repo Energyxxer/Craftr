@@ -44,7 +44,7 @@ public class ProjectProperties {
 			ComponentResizer sidebarResizer = new ComponentResizer(sidebar);
 			sidebarResizer.setResizable(false, false, false, true);
 
-			String[] sections = new String[] { "General", "Compiler", "Editor", "Code Style", "Resources" };
+			String[] sections = new String[] { "General", "Compiler", "CBEEditor", "Code Style", "Resources" };
 
 			StyledList<String> navigator = new StyledList<>(sections, "ProjectProperties");
 			sidebar.setBackground(navigator.getBackground());

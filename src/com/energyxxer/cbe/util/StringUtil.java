@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Things for strings.
@@ -72,6 +71,14 @@ public class StringUtil {
 			}
 		}
 		return s.trim();
+	}
+
+	public static String repeat(String str, int amount) {
+		String o = "";
+		for(int i = 0; i < amount; i++) {
+			o += str;
+		}
+		return o;
 	}
 	
 	public static String getInitials(String s) {

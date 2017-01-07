@@ -19,4 +19,8 @@ public class Commons {
             errorColor = t.getColor("Console.error", new Color(200,50,50));
         }, true);
     }
+
+    public static boolean isSpecialCharacter(char ch) {
+        return "\b\r\n\t\f".contains("" + ch);
+    }
 }

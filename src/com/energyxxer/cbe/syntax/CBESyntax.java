@@ -6,7 +6,7 @@ import com.energyxxer.cbe.syntax.style.Style;
 
 /**
  * Defines what and how character sequences should be highlighted in a text
- * editor.
+ * editorComponent.
  */
 public class CBESyntax extends Syntax {
 	public static HashMap<String, HashMap<String, Object>> styles = new HashMap<String, HashMap<String, Object>>();

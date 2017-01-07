@@ -40,7 +40,7 @@ public class Settings {
 			ComponentResizer sidebarResizer = new ComponentResizer(sidebar);
 			sidebarResizer.setResizable(false, false, false, true);
 
-			String[] sections = new String[] { "Appearance", "Editor", "Resources", "In-game Compiler" };
+			String[] sections = new String[] { "Appearance", "CBEEditor", "Resources", "In-game Compiler" };
 
 			StyledList<String> navigator = new StyledList<>(sections, "Settings");
 			sidebar.setBackground(navigator.getBackground());
