@@ -1,11 +1,9 @@
 package com.energyxxer.cbe.ui.theme;
 
 import com.energyxxer.cbe.global.Preferences;
+import com.energyxxer.cbe.global.Resources;
 import com.energyxxer.cbe.main.window.Window;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,24 +21,14 @@ public class ThemeManager {
     public static void loadAll() {
         themes.clear();
 
-        URL url = Class.class.getResource(themeDirectory);
-
-        try {
-            File directory = new File(url.toURI());
-
-            File[] themeFiles = directory.listFiles();
-            ThemeReader tr = new ThemeReader();
-            if(themeFiles == null) return;
-            for(File file : themeFiles) {
-                try {
-                    Theme theme = tr.read(file);
-                    themes.put(theme.getName(),theme);
-                } catch(ThemeParserException e) {
-                    System.out.println(e);
-                }
+        ThemeReader tr = new ThemeReader();
+        for(String file : Resources.indexes.get("Themes")) {
+            try {
+                Theme theme = tr.read(file);
+                themes.put(theme.getName(),theme);
+            } catch(ThemeParserException e) {
+                System.out.println(e.getMessage());
             }
-        } catch(URISyntaxException e) {
-            e.printStackTrace();
         }
     }
 

@@ -1,13 +1,13 @@
 package com.energyxxer.cbe.main;
 
 import com.energyxxer.cbe.global.ProjectManager;
+import com.energyxxer.cbe.global.Resources;
 import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.minecraft.schematic.block.nbt.TagCompound;
 import com.energyxxer.cbe.minecraft.schematic.block.nbt.TagInt;
 import com.energyxxer.cbe.minecraft.schematic.block.nbt.TagList;
 import com.energyxxer.cbe.minecraft.schematic.block.nbt.TagString;
 import com.energyxxer.cbe.ui.theme.LightTheme;
-import com.energyxxer.cbe.ui.theme.ThemeManager;
 
 public class CBE {
 	public static CBE generator;
@@ -20,8 +20,7 @@ public class CBE {
 
 	public static void main(String[] args) {
 		LightTheme.getInstance();
-
-		ThemeManager.loadAll();
+		Resources.load();
 
 		generator = new CBE();
 		

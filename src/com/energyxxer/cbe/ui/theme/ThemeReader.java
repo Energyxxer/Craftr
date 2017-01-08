@@ -1,13 +1,11 @@
 package com.energyxxer.cbe.ui.theme;
 
+import com.energyxxer.cbe.util.LineReader;
 import com.energyxxer.cbe.util.Range;
-import com.energyxxer.cbe.util.StringUtil;
 
 import java.awt.Color;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -20,32 +18,31 @@ public class ThemeReader {
     private int currentLine = 0;
     private String line;
 
-    public Theme read(File file) throws ThemeParserException {
+    public Theme read(String name) throws ThemeParserException {
         themeValues = new HashMap<>();
         try {
-            try(BufferedReader br = new BufferedReader(new FileReader(file))) {
-                for(;(line = br.readLine()) != null; ) {
-                    currentLine++;
-                    line = line.trim();
-                    if(line.length() == 0) continue;
-                    if(line.startsWith("#")) continue;
-                    if(!line.contains("=")) throw new ThemeParserException("Couldn't find key/value separator.",currentLine,line);
+            ArrayList<String> lines = LineReader.read("/resources/themes/" + name + ".properties");
+            for(String line : lines) {
+                currentLine++;
+                line = line.trim();
+                if(line.length() == 0) continue;
+                if(line.startsWith("#")) continue;
+                if(!line.contains("=")) throw new ThemeParserException("Couldn't find key/value separator.",currentLine,line);
 
-                    String key = line.substring(0,line.indexOf("=")).trim();
-                    String valueString = line.substring(line.indexOf("=")+1).trim();
+                String key = line.substring(0,line.indexOf("=")).trim();
+                String valueString = line.substring(line.indexOf("=")+1).trim();
 
-                    if(key.length() == 0) throw new ThemeParserException("Couldn't find key.",currentLine,line);
-                    if(valueString.length() == 0) throw new ThemeParserException("Couldn't find value.",currentLine,line);
+                if(key.length() == 0) throw new ThemeParserException("Couldn't find key.",currentLine,line);
+                if(valueString.length() == 0) throw new ThemeParserException("Couldn't find value.",currentLine,line);
 
-                    Object value = parseValue(valueString);
-                    themeValues.put(key,value);
-                }
+                Object value = parseValue(valueString);
+                themeValues.put(key,value);
             }
         } catch(IOException e) {
             e.printStackTrace();
             return null;
         }
-        return new Theme(StringUtil.stripExtension(file.getName()),themeValues);
+        return new Theme(name,themeValues);
     }
 
     private Object parseValue(String value) throws ThemeParserException {
