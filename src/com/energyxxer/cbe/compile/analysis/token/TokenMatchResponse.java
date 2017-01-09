@@ -2,8 +2,6 @@ package com.energyxxer.cbe.compile.analysis.token;
 
 import com.energyxxer.cbe.compile.analysis.token.matching.TokenPatternMatch;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
-import com.energyxxer.cbe.global.Commons;
-import com.energyxxer.cbe.util.ColorUtil;
 import com.energyxxer.cbe.util.StringUtil;
 
 public class TokenMatchResponse {
@@ -65,22 +63,22 @@ public class TokenMatchResponse {
 	public String getFormattedErrorMessage() {
 		if (!matched) {
 			if(faultyToken == null) {
-				return "<span style=\"color:" + ColorUtil.toCSS(Commons.errorColor) + ";\">Uncaught Syntax Error: Unexpected end of input. Expected "
-						+ expected + ".\n</span>";
+				return "Uncaught Syntax Error: Unexpected end of input. Expected "
+						+ expected + ".\n";
 			}
 			if(expected == null) {
-				return "<span style=\"color:" + ColorUtil.toCSS(Commons.errorColor) + ";\">Uncaught Syntax Error: Unexpected token " + faultyToken.value
-						+ ".\n\tat </span>"
+				return "Uncaught Syntax Error: Unexpected token " + faultyToken.value
+						+ ".\n\tat "
 						+ faultyToken.getFormattedPath() + "";
 			}
-			if(faultyToken != null && faultyToken.type == TokenType.END_OF_FILE) {
-				return "<span style=\"color:" + ColorUtil.toCSS(Commons.errorColor) + ";\">Uncaught Syntax Error: Unexpected end of input. Expected "
-						+ StringUtil.escapeHTML(expected.toTrimmedString()) + ".\n\tat </span>"
+			if(faultyToken.type == TokenType.END_OF_FILE) {
+				return "Uncaught Syntax Error: Unexpected end of input. Expected "
+						+ StringUtil.escapeHTML(expected.toTrimmedString()) + ".\n\tat "
 						+ faultyToken.getFormattedPath() + "";
 			}
-			return "<span style=\"color:" + ColorUtil.toCSS(Commons.errorColor) + ";\">Uncaught Syntax Error: Unexpected token " + faultyToken.value
+			return "Uncaught Syntax Error: Unexpected token " + faultyToken.value
 					+ ". Expected " + StringUtil.escapeHTML(expected.toTrimmedString())
-					+ ", instead got " + faultyToken.type + "\n\tat </span>"
+					+ ", instead got " + faultyToken.type + "\n\tat "
 					+ faultyToken.getFormattedPath() + "";
 		}
 		return null;

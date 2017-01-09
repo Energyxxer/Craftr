@@ -1,6 +1,6 @@
 package com.energyxxer.cbe.util;
 
-import com.energyxxer.cbe.global.Commons;
+import com.energyxxer.cbe.global.Console;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
@@ -38,10 +38,10 @@ public class ImageManager {
 					loadedImages.put(path, ImageIO.read(is));
 					is.close();
 				} else {
-					System.err.println("<span color=\"" + ColorUtil.toCSS(Commons.warningColor) + "\">[WARN] File \"" + path + "\" not found.</span>");
+					Console.warn.println("[WARN]  Image \"" + path + "\" not found.");
 				}
 			} catch (IOException e) {
-				System.err.println("<span color=\"" + ColorUtil.toCSS(Commons.warningColor) + "\">[WARN] File \"" + path + "\" not found.</span>");
+				Console.warn.println("[WARN]  Image \"" + path + "\" not found.");
 			}
 		}
 		if (loadedImages.get(path) != null) {

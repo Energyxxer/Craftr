@@ -1,5 +1,7 @@
 package com.energyxxer.cbe.util;
 
+import com.energyxxer.cbe.global.Console;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +20,7 @@ public class LineReader {
             }
             return lines;
         } catch(NullPointerException npe) {
-            System.out.println("File not found: " + file);
+            Console.err.println("[ERROR] File not found: " + file);
             return new ArrayList<>();
         }
     }

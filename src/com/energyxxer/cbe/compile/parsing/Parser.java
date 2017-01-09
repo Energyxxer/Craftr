@@ -12,6 +12,7 @@ import com.energyxxer.cbe.compile.parsing.classes.files.CBEPackageManager;
 import com.energyxxer.cbe.compile.parsing.classes.registries.UnitRegistry;
 import com.energyxxer.cbe.compile.parsing.classes.units.CBEUnit;
 import com.energyxxer.cbe.compile.parsing.exceptions.CBEParserException;
+import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.logic.Project;
 
 import java.io.File;
@@ -44,7 +45,7 @@ public class Parser {
 			TokenMatchResponse match = LangStructures.FILE.match(f);
 
 			if(!match.matched) {
-				System.err.println(match.getFormattedErrorMessage());
+				Console.err.println(match.getFormattedErrorMessage());
 				return;
 			}
 
@@ -54,7 +55,7 @@ public class Parser {
 			try {
 				file = new CBEFile(this, new File(f.get(0).file), pattern);
 			} catch(CBEParserException e) {
-				System.err.println(e.getMessage());
+				Console.err.println(e.getMessage());
 				return;
 			}
 
@@ -64,7 +65,7 @@ public class Parser {
 				try {
 					reg.add(new CBEUnit(file, unit));
 				} catch (CBEParserException e) {
-					System.err.println(e.getMessage());
+					Console.err.println(e.getMessage());
 				}
 				/*String type = unit.search(TokenType.UNIT_TYPE).get(0).value;
 				Token nameToken = ((TokenItem) pattern.searchByName("UNIT_NAME").get(0)).getContents();

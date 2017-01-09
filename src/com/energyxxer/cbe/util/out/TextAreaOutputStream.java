@@ -1,12 +1,12 @@
 package com.energyxxer.cbe.util.out;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import com.energyxxer.cbe.html.HTMLFile;
 
 import javax.swing.JEditorPane;
 import javax.swing.SwingUtilities;
-
-import com.energyxxer.cbe.html.HTMLFile;
+import javax.swing.text.BadLocationException;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * An output stream. Used in the java console visible in the window.
@@ -50,7 +50,11 @@ public class TextAreaOutputStream extends OutputStream {
 			final String text = sb.toString() + "\n";
 
 			html.append(text);
-			SwingUtilities.invokeLater(() -> textArea.setText(html.getText()));
+			SwingUtilities.invokeLater(() -> {
+				try {
+					textArea.getDocument().insertString(0,html.getText(), null);
+				} catch(BadLocationException e) {}
+			});
 			sb.setLength(0);
 			sb.append("");
 			return;

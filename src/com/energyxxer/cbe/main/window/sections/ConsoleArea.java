@@ -1,24 +1,29 @@
 package com.energyxxer.cbe.main.window.sections;
 
+import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.global.TabManager;
 import com.energyxxer.cbe.ui.ToolbarButton;
 import com.energyxxer.cbe.ui.scrollbar.ScrollbarUI;
 import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.cbe.util.out.MultiOutputStream;
-import com.energyxxer.cbe.util.out.TextAreaOutputStream;
+import com.energyxxer.cbe.util.out.ConsoleOutputStream;
 
 import javax.swing.BorderFactory;
-import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.event.HyperlinkEvent;
+import javax.swing.JTextPane;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.io.PrintStream;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by User on 12/15/2016.
@@ -26,8 +31,8 @@ import java.io.PrintStream;
 public class ConsoleArea extends JPanel {
 
     private static final int CONSOLE_HEIGHT = 200;
-    public PrintStream consoleOut = new PrintStream(System.out);
-    private TextAreaOutputStream textConsoleOut = null;
+    //public PrintStream consoleOut = new PrintStream(System.out);
+    //private TextAreaOutputStream textConsoleOut = null;
 
     {
         this.setLayout(new BorderLayout());
@@ -68,7 +73,6 @@ public class ConsoleArea extends JPanel {
         clear.setToolTipText("Clear Console");
         clear.setPreferredSize(new Dimension(20,20));
 
-        clear.addActionListener(e -> textConsoleOut.clear());
 
         consoleActionPanel.add(clear);
         consoleActionPanel.add(toggle);
@@ -76,36 +80,64 @@ public class ConsoleArea extends JPanel {
 
         this.add(consoleHeader, BorderLayout.NORTH);
 
-        JEditorPane console = new JEditorPane();
+        JTextPane console = new JTextPane();
         ThemeChangeListener.addThemeChangeListener(t -> {
             console.setBackground(t.getColor("Console.background",Color.WHITE));
             console.setSelectionColor(t.getColor("Console.selection.background",t.getColor("General.textfield.selection.background",new Color(50, 100, 175))));
             console.setSelectedTextColor(t.getColor("Console.selection.foreground",t.getColor("General.textfield.selection.foreground",t.getColor("Console.foreground",t.getColor("General.foreground",Color.BLACK)))));
             console.setFont(new Font(t.getString("Console.font",t.getString("Editor.font","monospaced")), 0, 12));
+            console.setForeground(t.getColor("Console.foreground",Color.BLACK));
+
+            if(console.getStyle("warning") != null) console.removeStyle("warning");
+            if(console.getStyle("error") != null) console.removeStyle("error");
+
+            Style warningStyle = console.addStyle("warning", null);
+            StyleConstants.setForeground(warningStyle, t.getColor("Console.warning", new Color(255, 140, 0)));
+
+            Style errorStyle = console.addStyle("error", null);
+            StyleConstants.setForeground(errorStyle, t.getColor("Console.error", new Color(200,50,50)));
+        });
+        clear.addActionListener(e -> {
+            try {
+                console.getDocument().remove(0,console.getDocument().getLength());
+            } catch(BadLocationException ble) {}
+        });
+        console.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                AttributeSet hyperlink = console.getStyledDocument().getCharacterElement(console.viewToModel(e.getPoint())).getAttributes();
+                if(hyperlink.containsAttribute("IS_HYPERLINK",true)) {
+                    String path = (String) hyperlink.getAttribute("PATH");
+                    int location = Integer.parseInt((String) hyperlink.getAttribute("LOCATION"));
+                    int length = Integer.parseInt((String) hyperlink.getAttribute("LENGTH"));
+
+                    TabManager.openTab(path, location, length);
+                }
+            }
+        });
+        console.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                AttributeSet hyperlink = console.getStyledDocument().getCharacterElement(console.viewToModel(e.getPoint())).getAttributes();
+
+                console.setCursor((hyperlink.containsAttribute("IS_HYPERLINK",true))
+                        ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
+            }
         });
         console.setEditable(false);
         console.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        console.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
+        //console.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
 
-        console.addHyperlinkListener(e -> {
-            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                String path = e.getURL().toString().substring(7, e.getURL().toString().lastIndexOf('?'));
-                String location = e.getURL().toString().substring(e.getURL().toString().lastIndexOf('?') + 1);
-                String length = location.substring(location.indexOf('&')+1);
-                location = location.substring(0,location.indexOf('&'));
-                TabManager.openTab(path, Integer.parseInt(location.split(":")[0]),
-                        Integer.parseInt(location.split(":")[1]), Integer.parseInt(length));
-            }
-        });
+        //ThemeChangeListener.addThemeChangeListener(t -> textConsoleOut.update());
 
-        textConsoleOut = new TextAreaOutputStream(console);
+        Console.addInfoStream(new ConsoleOutputStream(console));
+        Console.addWarnStream(new ConsoleOutputStream(console,"warning"));
+        Console.addErrStream(new ConsoleOutputStream(console,"error"));
 
-        ThemeChangeListener.addThemeChangeListener(t -> textConsoleOut.update());
-
-        consoleOut = new PrintStream(textConsoleOut);
+        /*consoleOut = new PrintStream(textConsoleOut);
         System.setOut(new PrintStream(new MultiOutputStream(consoleOut, System.out)));
-        System.setErr(new PrintStream(new MultiOutputStream(consoleOut, System.err)));
+        System.setErr(new PrintStream(new MultiOutputStream(consoleOut, System.err)));*/
 
         JScrollPane consoleScrollPane = new JScrollPane(console);
 

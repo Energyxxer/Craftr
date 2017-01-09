@@ -27,14 +27,14 @@ public class TabManager {
 	
 	private static JPopupMenu menu = new JPopupMenu();
 
-	public static void openTab(String path, int line, int column) {
+	public static void openTab(String path, int index) {
 		openTab(path);
-		selectLocation(selectedTab.getLinkedTab(), line, column, 0);
+		selectLocation(selectedTab.getLinkedTab(), index, 0);
 	}
 
-	public static void openTab(String path, int line, int column, int length) {
+	public static void openTab(String path, int index, int length) {
 		openTab(path);
-		selectLocation(selectedTab.getLinkedTab(), line, column, length);
+		selectLocation(selectedTab.getLinkedTab(), index, length);
 	}
 
 	public static void openTab(String path) {
@@ -49,27 +49,9 @@ public class TabManager {
 		
 	}
 
-	public static void selectLocation(Tab tab, int line, int column, int length) {
-		int l = 1;
-		int c = 1;
-		for (int i = 0; i < tab.editor.getText().length(); i++) {
-			if (l == line && c == column) {
-				tab.editor.editorComponent.requestFocus();
-				if(length == 0) {
-					tab.editor.editorComponent.setCaretPosition(i);
-				} else {
-					//tab.editor.editorComponent.setSelectionStart(i);
-					//tab.editor.editorComponent.setSelectionEnd(i+length);
-				}
-				return;
-			}
-			if (tab.editor.getText().charAt(i) == '\n') {
-				l++;
-				c = 1;
-			} else {
-				c++;
-			}
-		}
+	public static void selectLocation(Tab tab, int index, int length) {
+		tab.editor.editorComponent.requestFocus();
+		tab.editor.editorComponent.setCaretPosition(index);
 	}
 
 	public static void closeTab(Tab tab) {

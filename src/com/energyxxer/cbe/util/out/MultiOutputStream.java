@@ -2,12 +2,14 @@ package com.energyxxer.cbe.util.out;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MultiOutputStream extends OutputStream {
-	OutputStream[] outputStreams;
+	private ArrayList<OutputStream> outputStreams;
 
 	public MultiOutputStream(OutputStream... outputStreams) {
-		this.outputStreams = outputStreams;
+		this.outputStreams = new ArrayList<>(Arrays.asList(outputStreams));
 	}
 
 	@Override
@@ -38,5 +40,9 @@ public class MultiOutputStream extends OutputStream {
 	public void close() throws IOException {
 		for (OutputStream out : outputStreams)
 			out.close();
+	}
+
+	public void addStream(OutputStream stream) {
+		outputStreams.add(stream);
 	}
 }

@@ -39,7 +39,7 @@ public class ThemeReader {
                 themeValues.put(key,value);
             }
         } catch(IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
             return null;
         }
         return new Theme(name,themeValues);

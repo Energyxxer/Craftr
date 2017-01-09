@@ -1,10 +1,10 @@
 package com.energyxxer.cbe.compile.analysis.token;
 
-import java.io.File;
-import java.util.HashMap;
-
 import com.energyxxer.cbe.util.StringLocation;
 import com.energyxxer.cbe.util.StringUtil;
+
+import java.io.File;
+import java.util.HashMap;
 
 /**
  * Class containing a value, or token, its type, source file and location within
@@ -24,7 +24,7 @@ public class Token {
 		this.file = file.getAbsolutePath();
 		this.filename = file.getName();
 		this.loc = loc;
-		this.attributes = new HashMap<String, Object>();
+		this.attributes = new HashMap<>();
 	}
 
 	public Token(String value, String tokenType, File file, StringLocation loc) {
@@ -33,7 +33,7 @@ public class Token {
 		this.file = file.getAbsolutePath();
 		this.filename = file.getName();
 		this.loc = loc;
-		this.attributes = new HashMap<String, Object>();
+		this.attributes = new HashMap<>();
 	}
 
 	public boolean isSignificant() {
@@ -45,8 +45,8 @@ public class Token {
 	}
 
 	public String getFormattedPath() {
-		return "<a href=\"file:" + File.separator + File.separator + file + "?" + loc.line + ":" + loc.column + "&" + value.length() + "\">"
-				+ getLocation() + "</a>";
+		return "\b" + file + "\b" + loc.index + "\b" + value.length() + "\b"
+				+ getLocation() + "\b";
 	}
 
 	@Override

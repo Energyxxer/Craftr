@@ -25,7 +25,7 @@ public class ThemeManager {
         for(String file : Resources.indexes.get("Themes")) {
             try {
                 Theme theme = tr.read(file);
-                themes.put(theme.getName(),theme);
+                if(theme != null) themes.put(theme.getName(),theme);
             } catch(ThemeParserException e) {
                 System.out.println(e.getMessage());
             }

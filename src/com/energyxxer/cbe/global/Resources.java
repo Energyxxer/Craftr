@@ -27,7 +27,7 @@ public class Resources {
                     key = line.substring(0,line.lastIndexOf(":"));
                 } else if(line.startsWith("-")) {
                     if(key != null) {
-                        currentValues.add(line.substring(1));
+                        currentValues.add(line.substring(1).trim());
                     }
                 }
             }
