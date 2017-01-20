@@ -8,8 +8,13 @@ public class StringBounds {
     public StringLocation end;
 
     public StringBounds(StringLocation start, StringLocation end) {
-        this.start = start;
-        this.end = end;
+        if(end.index < start.index) {
+            this.start = end;
+            this.end = start;
+        } else {
+            this.start = start;
+            this.end = end;
+        }
     }
 
     @Override

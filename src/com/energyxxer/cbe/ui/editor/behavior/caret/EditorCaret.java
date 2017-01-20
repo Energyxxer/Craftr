@@ -6,6 +6,7 @@ import com.energyxxer.cbe.util.StringLocation;
 import javax.swing.plaf.TextUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
+import javax.swing.text.Highlighter;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
@@ -13,8 +14,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Created by User on 1/3/2017.
@@ -23,6 +22,8 @@ public class EditorCaret extends DefaultCaret {
 
     private ArrayList<Dot> dots = new ArrayList<>();
     private AdvancedEditor textComponent;
+
+    private static Highlighter.HighlightPainter nullHighlighter = (g,p0,p1,bounds,c) -> {};
 
     public EditorCaret(AdvancedEditor c) {
         this.textComponent = c;
@@ -60,20 +61,7 @@ public class EditorCaret extends DefaultCaret {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                int key = e.getKeyCode();
-                if(key == KeyEvent.VK_LEFT) {
-                    e.consume();
-                    move(Dot.LEFT);
-                } else if(key == KeyEvent.VK_RIGHT) {
-                    e.consume();
-                    move(Dot.RIGHT);
-                } else if(key == KeyEvent.VK_UP) {
-                    e.consume();
-                    move(Dot.UP);
-                } else if(key == KeyEvent.VK_DOWN) {
-                    e.consume();
-                    move(Dot.DOWN);
-                }
+                handleEvent(e);
             }
 
             @Override
@@ -82,12 +70,23 @@ public class EditorCaret extends DefaultCaret {
         });
 
         dots.add(new Dot(0,textComponent));
+
+        try {
+            c.getHighlighter().addHighlight(0,0,new EditorSelectionPainter(this));
+        } catch(BadLocationException e) {
+            //
+        }
     }
 
-    private void move(int dir) {
+    private void handleEvent(KeyEvent e) {
+        boolean actionPerformed = false;
         for(Dot dot : dots) {
-            dot.move(dir);
+            if(dot.handleEvent(e)) actionPerformed = true;
         }
+        if(actionPerformed) update();
+    }
+
+    private void update() {
         removeDuplicates();
         textComponent.repaint();
         this.setVisible(true);
@@ -105,7 +104,8 @@ public class EditorCaret extends DefaultCaret {
 
     public void addDot(int... pos) {
         for(int dot : pos) {
-            if(!dots.contains(dot)) dots.add(new Dot(dot, textComponent));
+            Dot newDot = new Dot(dot,textComponent);
+            if(!dots.contains(newDot)) dots.add(newDot);
         }
         readjustRect();
         textComponent.repaint();
@@ -185,7 +185,8 @@ public class EditorCaret extends DefaultCaret {
             return dots.size() + " carets";
         } else {
             StringLocation loc = textComponent.getLocationForOffset(dots.get(0).index);
-            return loc.line + ":" + loc.column;
+            StringLocation loc2 = textComponent.getLocationForOffset(dots.get(0).mark);
+            return loc.line + ":" + loc.column + " - " + loc2.line + ":" + loc2.column;
         }
     }
 
@@ -198,7 +199,12 @@ public class EditorCaret extends DefaultCaret {
         int docLength = textComponent.getDocument().getLength();
 
         for(Dot dot : dots) {
-            if(dot.index >= pos) dot.index = Math.min(docLength, Math.max(0, dot.index + offset));
+            if(dot.index >= pos) {
+                dot.index = Math.min(docLength, Math.max(0, dot.index + offset));
+            }
+            if(dot.mark >= pos) {
+                dot.mark = Math.min(docLength, Math.max(0, dot.mark + offset));
+            }
         }
 
         readjustRect();
@@ -206,14 +212,38 @@ public class EditorCaret extends DefaultCaret {
         this.fireStateChanged();
     }
 
-    public List<Integer> getFlatLocations() {
-        ArrayList<Integer> locations = new ArrayList<>();
+    public void deselect() {
         for(Dot dot : dots) {
-            locations.add(dot.index);
-            locations.add(dot.index);
+            dot.deselect();
         }
-        locations.sort(Comparator.comparingInt(Integer::intValue));
-        //System.out.println(locations);
-        return locations;
+    }
+
+    @Override
+    public int getDot() {
+        return dots.get(dots.size()-1).index;
+    }
+
+    public ArrayList<Dot> getDots() {
+        return new ArrayList<>(this.dots);
+    }
+
+    public CaretProfile getProfile() {
+        CaretProfile profile = new CaretProfile();
+        profile.addAllDots(dots);
+        profile.sort();
+        return profile;
+    }
+
+    @Override
+    protected Highlighter.HighlightPainter getSelectionPainter() {
+        return nullHighlighter;
+    }
+
+    public void adopt(CaretProfile profile) {
+        this.dots.clear();
+        for(int i = 0; i < profile.size(); i += 2) {
+            dots.add(new Dot(profile.get(i),profile.get(i+1), textComponent));
+        }
+        update();
     }
 }

@@ -98,11 +98,4 @@ public class Inspector implements Highlighter.HighlightPainter {
         } catch(ConcurrentModificationException e) {}
     }
 
-    public void drawInspections(Graphics g) {
-
-
-        //fields.get(0).getStringLocation();
-
-        //g.drawString(ts.toString(),0,200);
-    }
 }

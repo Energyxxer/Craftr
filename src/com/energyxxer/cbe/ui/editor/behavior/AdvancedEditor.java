@@ -1,12 +1,17 @@
 package com.energyxxer.cbe.ui.editor.behavior;
 
 import com.energyxxer.cbe.global.Commons;
+import com.energyxxer.cbe.main.window.Window;
+import com.energyxxer.cbe.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.cbe.ui.editor.behavior.caret.EditorCaret;
-import com.energyxxer.cbe.ui.editor.behavior.editmanager.CompoundEdit;
-import com.energyxxer.cbe.ui.editor.behavior.editmanager.Edit;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.EditManager;
+import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.CompoundEdit;
+import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.DeletionEdit;
+import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.InsertionEdit;
+import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.SimpleEdit;
 import com.energyxxer.cbe.util.StringLocation;
 import com.energyxxer.cbe.util.StringUtil;
+import com.energyxxer.cbe.util.linepainter.LinePainter;
 
 import javax.swing.AbstractAction;
 import javax.swing.InputMap;
@@ -18,12 +23,12 @@ import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.Utilities;
+import java.awt.Color;
 import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by User on 1/5/2017.
@@ -33,11 +38,13 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     private EditorCaret caret;
 
     private EditManager editManager = new EditManager(this);
+    protected LinePainter linePainter;
 
     {
         this.addKeyListener(this);
         this.addCaretListener(this);
 
+        linePainter = new LinePainter(this);
         this.setCaret(this.caret = new EditorCaret(this));
 
         //this.getInputMap().setParent(null);
@@ -58,6 +65,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
                 editManager.redo();
             }
         });
+
     }
 
     public AdvancedEditor() {
@@ -71,10 +79,10 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     public void keyTyped(KeyEvent e) {
         e.consume();
         if(e.getKeyChar() == '`') {
-            caret.pushFrom(0,-1);
+            Window.statusBar.setStatus(caret.getDots().toString());
         } else
         if(!e.isControlDown() && !Commons.isSpecialCharacter(e.getKeyChar())) {
-            editManager.insertEdit(new Edit("" + e.getKeyChar(), caret.getFlatLocations()));
+            editManager.insertEdit(new InsertionEdit("" + e.getKeyChar(), this));
         }
     }
 
@@ -83,7 +91,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
         if(e.getKeyCode() == KeyEvent.VK_TAB) {
             e.consume();
 
-            ArrayList<Integer> locations = new ArrayList<>(caret.getFlatLocations());
+            List<Integer> locations = caret.getProfile().asList();
             int characterDrift = 0;
 
             CompoundEdit insertTabulation = new CompoundEdit();
@@ -94,12 +102,14 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
                 spaces = (spaces > 0) ? spaces : 4;
                 characterDrift += spaces;
                 String str = StringUtil.repeat(" ", spaces);
-                insertTabulation.appendEdit(new Edit(str, Arrays.asList(d,d)));
+                insertTabulation.appendEdit(new SimpleEdit(str, new CaretProfile(d,d)));
             }
             editManager.insertEdit(insertTabulation);
+            caret.deselect();
         } else if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
             e.consume();
-
+            editManager.insertEdit(new DeletionEdit(this));
+            /*
             String text = "";
             try {
                 text = getDocument().getText(0,getDocument().getLength());
@@ -107,7 +117,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
                 ble.printStackTrace();
             }
 
-            ArrayList<Integer> locations = new ArrayList<>(caret.getFlatLocations());
+            List<Integer> locations = caret.getProfile().asList();
 
             for(int i = 0; i < locations.size()-1; i += 2) {
                 StringLocation loc = getLocationForOffset(locations.get(i));
@@ -118,11 +128,12 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
                 String currentLine = text.substring(loc.index-(loc.column-1),end);
                 if(currentLine.trim().length() == 0 && currentLine.length()%4 == 0) {
                     locations.set(i, Math.max(0,locations.get(i)-loc.column));
-                } else {
+                } else if(locations.get(i).equals(locations.get(i+1))) {
                     locations.set(i, Math.max(0,locations.get(i)-1));
                 }
             }
-            editManager.insertEdit(new Edit("",locations));
+            editManager.insertEdit(new SimpleEdit("",new CaretProfile(locations)));
+            caret.deselect();*/
         } else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
             e.consume();
 
@@ -133,7 +144,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
                 ble.printStackTrace();
             }
 
-            ArrayList<Integer> locations = new ArrayList<>(caret.getFlatLocations());
+            List<Integer> locations = caret.getProfile().asList();
             int characterDrift = 0;
 
             CompoundEdit insertNewline = new CompoundEdit();
@@ -153,10 +164,11 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
 
                 str += StringUtil.repeat("    ", tabs + ((currentLine.trim().endsWith("{")) ? 1 : 0));
 
-                insertNewline.appendEdit(new Edit(str, Arrays.asList(d, locations.get(i+1)+characterDrift)));
+                insertNewline.appendEdit(new SimpleEdit(str, new CaretProfile(d, locations.get(i+1)+characterDrift)));
             }
 
             editManager.insertEdit(insertNewline);
+            caret.deselect();
         }
     }
 
@@ -205,7 +217,21 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
         return caret;
     }
 
+    public void setCurrentLineColor(Color c) {
+        linePainter.setColor(c);
+    }
+
     //Delegates and deprecated methods
+
+    @Override
+    public void setCaretPosition(int position) {
+        caret.setPosition(position);
+    }
+
+    @Override
+    public int getCaretPosition() {
+        return super.getCaretPosition();
+    }
 
     @Deprecated
     public void replaceSelection(String content) {
@@ -215,16 +241,6 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     @Deprecated
     public void moveCaretPosition(int pos) {
         super.moveCaretPosition(pos);
-    }
-
-    @Override
-    public void setCaretPosition(int position) {
-        caret.setPosition(position);
-    }
-
-    @Deprecated
-    public int getCaretPosition() {
-        return super.getCaretPosition();
     }
 
     @Deprecated

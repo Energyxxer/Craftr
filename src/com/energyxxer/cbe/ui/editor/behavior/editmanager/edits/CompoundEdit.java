@@ -1,13 +1,14 @@
-package com.energyxxer.cbe.ui.editor.behavior.editmanager;
+package com.energyxxer.cbe.ui.editor.behavior.editmanager.edits;
 
 import com.energyxxer.cbe.ui.editor.behavior.AdvancedEditor;
+import com.energyxxer.cbe.ui.editor.behavior.editmanager.Edit;
 
 import java.util.ArrayList;
 
 /**
  * Created by User on 1/6/2017.
  */
-public class CompoundEdit extends Edit {
+public class CompoundEdit implements Edit {
     private ArrayList<Edit> edits = new ArrayList<>();
 
     public CompoundEdit() {

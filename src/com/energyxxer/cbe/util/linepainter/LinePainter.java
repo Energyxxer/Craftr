@@ -117,9 +117,7 @@ public class LinePainter
         //  Use invokeLater to make sure updates to the Document are completed,
         //  otherwise Undo processing causes the modelToView method to loop.
 
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            public void run()
+        SwingUtilities.invokeLater(() ->
             {
                 try
                 {
@@ -136,7 +134,7 @@ public class LinePainter
                 }
                 catch(BadLocationException ble) {}
             }
-        });
+        );
     }
 
     public void addPaintListener(LinePaintListener l) {

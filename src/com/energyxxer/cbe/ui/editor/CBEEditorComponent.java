@@ -6,7 +6,6 @@ import com.energyxxer.cbe.compile.analysis.token.TokenStream;
 import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.ui.editor.behavior.AdvancedEditor;
 import com.energyxxer.cbe.ui.editor.inspector.Inspector;
-import com.energyxxer.cbe.util.linepainter.LinePainter;
 
 import javax.swing.Timer;
 import javax.swing.event.CaretEvent;
@@ -34,7 +33,6 @@ public class CBEEditorComponent extends AdvancedEditor implements KeyListener, C
 
     private StyledDocument sd;
 
-    LinePainter linePainter;
     Inspector inspector;
 
     private long lastEdit;
@@ -46,7 +44,6 @@ public class CBEEditorComponent extends AdvancedEditor implements KeyListener, C
 
         sd = this.getStyledDocument();
 
-        linePainter = new LinePainter(this);
         this.inspector = new Inspector(parent.associatedTab, this);
 
         this.addCaretListener(this);

@@ -200,7 +200,7 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Mous
 		editorComponent.setCaretColor(editorComponent.getForeground());
 		editorComponent.setSelectionColor(t.getColor("Editor.selection.background",new Color(50, 100, 175)));
 		editorComponent.setSelectedTextColor(t.getColor("Editor.selection.foreground", editorComponent.getForeground()));
-		editorComponent.linePainter.setColor(t.getColor("Editor.currentLine.background",new Color(235, 235, 235)));
+		editorComponent.setCurrentLineColor(t.getColor("Editor.currentLine.background",new Color(235, 235, 235)));
 		editorComponent.setFont(new Font(t.getString("Editor.font","monospaced"), 0, 12));
 		tln.setBackground(t.getColor("Editor.lineNumber.background",new Color(235, 235, 235)));
 		tln.setForeground(t.getColor("Editor.lineNumber.foreground",new Color(150, 150, 150)));
