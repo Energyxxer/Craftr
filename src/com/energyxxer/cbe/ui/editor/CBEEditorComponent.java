@@ -21,7 +21,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -77,7 +76,6 @@ public class CBEEditorComponent extends AdvancedEditor implements KeyListener, C
                     sd.setCharacterAttributes(token.loc.index, token.value.length(), style, true);
 
                 Set<String> set = token.attributes.keySet();
-                Iterator<String> setI = set.iterator();
                 for(String key : set) {
                     if(!token.attributes.get(key).equals(true)) continue;
                     Style attrStyle = CBEEditorComponent.this.getStyle("#" + key.toLowerCase());

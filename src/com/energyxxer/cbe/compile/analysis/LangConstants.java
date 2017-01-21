@@ -20,15 +20,15 @@ public class LangConstants {
 	public static final String[] number_punctuation = { "." };
 	public static final String[] end_of_statement = { ";" };
 
-	public static final String[] modifiers = { "public", "static", "final", "protected", "private", "synchronized" };
+	public static final String[] modifiers = { "public", "static", "typestatic", "abstract", "final", "protected", "private", "synchronized" };
 	public static final String[] unit_types = { "entity", "item", "feature", "class" };
 	public static final String[] unit_actions = { "extends", "implements", "requires" };
 	public static final String[] braces = { "(", ")", "[", "]", "{", "}" };
-	public static final String[] data_types = { "int", "String", "float", "boolean", "Point", "Dimensions", "Region", "void" };
+	public static final String[] data_types = { "int", "String", "float", "boolean", "type", "void" };
 	public static final String[] operators = { "+=", "+", "-=", "-", "*=", "*", "/=", "/", "%=", "%", "<=", ">=", "==", "=", "<", ">", "^=", "^" };
 	public static final String[] identifier_operators = { "++", "--" };
 	public static final String[] logical_negation_operators = { "!" };
-	public static final String[] keywords = { "if", "else", "while", "for", "switch", "case", "default", "new", "event", "package", "import" };
+	public static final String[] keywords = { "if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import" };
 	public static final String[] action_keywords = { "break", "continue", "return" };
 	public static final String[] dots = { "." };
 	public static final String[] commas = { "," };

@@ -42,7 +42,7 @@ public class CBEFile {
             throw new CBEParserException("Package name '" + packageStatement + "' does not correspond to the file path '" + realPackage + "'", packagePattern);
         }
 
-        this.filePackage = parser.packageManager.create(realPackage);
+        this.filePackage = parser.packageManager.create(realPackage, packagePattern);
 
         this.pattern = pattern;
 

@@ -127,15 +127,6 @@ public class TokenGroup extends TokenPattern<TokenPattern<?>[]> {
 	}
 
 	@Override
-	public int getCharLength() {
-		int l = 0;
-		for(TokenPattern<?> pattern : patterns) {
-			l += pattern.getCharLength();
-		}
-		return l;
-	}
-
-	@Override
 	public ArrayList<Token> flattenTokens() {
 		ArrayList<Token> list = new ArrayList<>();
 		for(TokenPattern<?> pattern : patterns) {

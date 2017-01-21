@@ -126,15 +126,6 @@ public class TokenList extends TokenPattern<TokenPattern<?>[]> {
 		return new StringBounds(start, end);
 	}
 
-	@Override
-	public int getCharLength() {
-		int l = 0;
-		for(TokenPattern<?> pattern : patterns) {
-			l += pattern.getCharLength();
-		}
-		return l;
-	}
-
     @Override
     public ArrayList<Token> flattenTokens() {
         ArrayList<Token> list = new ArrayList<>();

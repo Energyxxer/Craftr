@@ -3,10 +3,12 @@ package com.energyxxer.cbe.global;
 import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.ui.Tab;
 import com.energyxxer.cbe.ui.TabComponent;
+import com.energyxxer.cbe.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.cbe.util.ImageManager;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -51,10 +53,41 @@ public class TabManager {
 
 	public static void selectLocation(Tab tab, int index, int length) {
 		tab.editor.editorComponent.requestFocus();
-		tab.editor.editorComponent.setCaretPosition(index);
+		tab.editor.editorComponent.getCaret().setProfile(new CaretProfile(index + length, index));
+	}
+
+	public static void closeSelectedTab() {
+		closeSelectedTab(false);
+	}
+
+	public static void closeSelectedTab(boolean force) {
+		closeTab(getSelectedTab(), force);
 	}
 
 	public static void closeTab(Tab tab) {
+		closeTab(tab, false);
+	}
+
+	public static void closeTab(Tab tab, boolean force) {
+		if(tab == null) return;
+		if(!force) {
+			if(!tab.getLinkedTabComponent().isSaved()) {
+				int confirmation = JOptionPane.showOptionDialog(
+						null,
+						"'" + tab.getLinkedTabComponent().getName() + "' has changes; do you want to save them?",
+						"Unsaved changes",
+						JOptionPane.DEFAULT_OPTION,
+						JOptionPane.WARNING_MESSAGE,
+						null,
+						new String[] {"Save", "Don't Save", "Cancel"},
+						"Cancel"
+				);
+				if (confirmation == 0) {
+					tab.save();
+				}
+				if(confirmation == 2 || confirmation == -1) return;
+			}
+		}
 		for (int i = 0; i < openTabs.size(); i++) {
 			if (openTabs.get(i) == tab) {
 				boolean closedActive = false;

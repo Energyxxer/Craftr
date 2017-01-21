@@ -3,6 +3,7 @@ package com.energyxxer.cbe.ui.editor.behavior.editmanager.edits;
 import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.ui.editor.behavior.AdvancedEditor;
 import com.energyxxer.cbe.ui.editor.behavior.caret.CaretProfile;
+import com.energyxxer.cbe.ui.editor.behavior.caret.Dot;
 import com.energyxxer.cbe.ui.editor.behavior.caret.EditorCaret;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.Edit;
 
@@ -20,7 +21,11 @@ public class DeletionEdit implements Edit {
     private CaretProfile nextProfile = null;
 
     public DeletionEdit(AdvancedEditor editor) {
+        this(editor, false);
+    }
+    public DeletionEdit(AdvancedEditor editor, boolean wholeWord) {
         previousProfile = editor.getCaret().getProfile();
+        this.wholeWord = wholeWord;
     }
 
     @Override
@@ -43,7 +48,13 @@ public class DeletionEdit implements Edit {
                     start = end;
                     end = temp;
                 }
-                if(start == end) start = Math.max(start-1,0);
+                if(start == end) {
+                    if(wholeWord) {
+                        start = new Dot(start, end, editor).getPositionBeforeWord();
+                    } else {
+                        start = Math.max(start-1,0);
+                    }
+                }
 
                 previousValues.add(result.substring(start, end));
                 result = result.substring(0, start) + result.substring(end);
@@ -54,7 +65,7 @@ public class DeletionEdit implements Edit {
                 characterDrift += start - end;
             }
 
-            caret.adopt(nextProfile);
+            caret.setProfile(nextProfile);
 
         } catch(BadLocationException e) {
             e.printStackTrace();
@@ -71,8 +82,8 @@ public class DeletionEdit implements Edit {
             Window.statusBar.setStatus(previousProfile.toString());
 
             for (int i = 0; i < previousProfile.size() - 1; i += 2) {
-                int start = previousProfile.get(i);
-                if(start == previousProfile.get(i+1)) start--;
+                int start = nextProfile.get(i);
+                //if(start == previousProfile.get(i+1)) start--;
                 String previousValue = previousValues.get(i / 2);
 
                 str = str.substring(0, start)
@@ -82,7 +93,7 @@ public class DeletionEdit implements Edit {
                 doc.insertString(start, previousValue, null);
             }
 
-            caret.adopt(previousProfile);
+            caret.setProfile(previousProfile);
 
         } catch(BadLocationException e) {
             e.printStackTrace();

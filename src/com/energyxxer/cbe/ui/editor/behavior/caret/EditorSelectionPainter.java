@@ -24,15 +24,12 @@ public class EditorSelectionPainter implements Highlighter.HighlightPainter {
     @Override
     public void paint(Graphics g, int p0, int p1, Shape graphicBounds, JTextComponent c) {
         g.setColor(c.getSelectionColor());
-        System.out.println("PAINTING");
 
         ArrayList<Dot> dots = caret.getDots();
 
         for(Dot dot : dots) {
-            System.out.println("DOT");
             try {
                 StringBounds bounds = dot.getBounds();
-                System.out.println(bounds);
 
                 for (int l = bounds.start.line; l <= bounds.end.line; l++) {
                     Rectangle rectangle;
@@ -57,13 +54,8 @@ public class EditorSelectionPainter implements Highlighter.HighlightPainter {
                     if(rectangle.width < 0) {
                         rectangle.x += rectangle.width;
                         rectangle.width *= -1;
-                    }/*
-                    if(rectangle.height < 0) {
-                        rectangle.y += rectangle.height;
-                        rectangle.height *= -1;
-                    }*/
+                    }
                     rectangle.width = Math.abs(rectangle.width);
-                    System.out.println(rectangle);
                     g.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
             } catch (BadLocationException e) {

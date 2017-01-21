@@ -74,6 +74,18 @@ public class CBEEditor extends JScrollPane implements UndoableEditListener, Mous
 		editorComponent.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(closeKeystroke, "closeKeystroke");
 		editorComponent.getInputMap().put(saveKeystroke, "saveKeystroke");
 
+		editorComponent.getActionMap().put("closeKeystroke", new AbstractAction() {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 2L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TabManager.closeSelectedTab();
+			}
+		});
+
 		editorComponent.getActionMap().put("saveKeystroke", new AbstractAction() {
 			/**
 			 *

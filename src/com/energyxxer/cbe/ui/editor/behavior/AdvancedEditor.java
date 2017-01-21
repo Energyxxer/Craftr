@@ -108,32 +108,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             caret.deselect();
         } else if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
             e.consume();
-            editManager.insertEdit(new DeletionEdit(this));
-            /*
-            String text = "";
-            try {
-                text = getDocument().getText(0,getDocument().getLength());
-            } catch(BadLocationException ble) {
-                ble.printStackTrace();
-            }
-
-            List<Integer> locations = caret.getProfile().asList();
-
-            for(int i = 0; i < locations.size()-1; i += 2) {
-                StringLocation loc = getLocationForOffset(locations.get(i));
-                int end = loc.index;
-                try {
-                    end = Utilities.getRowEnd(this, loc.index);
-                } catch(BadLocationException ble) {}
-                String currentLine = text.substring(loc.index-(loc.column-1),end);
-                if(currentLine.trim().length() == 0 && currentLine.length()%4 == 0) {
-                    locations.set(i, Math.max(0,locations.get(i)-loc.column));
-                } else if(locations.get(i).equals(locations.get(i+1))) {
-                    locations.set(i, Math.max(0,locations.get(i)-1));
-                }
-            }
-            editManager.insertEdit(new SimpleEdit("",new CaretProfile(locations)));
-            caret.deselect();*/
+            editManager.insertEdit(new DeletionEdit(this, e.isControlDown()));
         } else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
             e.consume();
 

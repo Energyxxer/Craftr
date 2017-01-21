@@ -22,17 +22,25 @@ public abstract class TokenPattern<T> {
 	public abstract File getFile();
 
 	public String getLocation() {
-		return getFile().toString() + ':' + getStringLocation();
+		StringLocation loc = getStringLocation();
+		return getFile().getName() + ":" + loc.line + ":" + loc.column + "#" + loc.index;
 	}
 
 	public abstract StringLocation getStringLocation();
 	public abstract StringBounds getStringBounds();
-	public abstract int getCharLength();
+	public int getCharLength() {
+		ArrayList<Token> tokens = flattenTokens();
+		if(tokens.size() == 0) return 0;
+		int start = tokens.get(0).loc.index;
+		Token lastToken = tokens.get(tokens.size()-1);
+		int end = lastToken.loc.index + lastToken.value.length();
+		return end - start;
+	}
 
 	public String getFormattedPath() {
 		StringLocation loc = getStringLocation();
-		return "<a href=\"file:" + File.separator + File.separator + getFile() + "?" + loc.line + ":" + loc.column + "&" + getCharLength() + "\">"
-				+ getLocation() + "</a>";
+		return "\b" + getFile() + "\b" + loc.index + "\b" + getCharLength() + "\b"
+				+ getLocation() + "\b";
 	}
 
 	public abstract ArrayList<Token> flattenTokens();

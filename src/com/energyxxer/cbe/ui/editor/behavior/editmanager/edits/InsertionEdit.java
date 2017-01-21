@@ -54,7 +54,7 @@ public class InsertionEdit implements Edit {
                 characterDrift += value.length() - (end - start);
             }
 
-            caret.adopt(nextProfile);
+            caret.setProfile(nextProfile);
 
         } catch(BadLocationException e) {
             e.printStackTrace();
@@ -84,7 +84,7 @@ public class InsertionEdit implements Edit {
                 ((AbstractDocument) doc).replace(start, resultEnd - start, previousValue, null);
             }
 
-            caret.adopt(previousProfile);
+            caret.setProfile(previousProfile);
 
         } catch(BadLocationException e) {
             e.printStackTrace();

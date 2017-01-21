@@ -1,5 +1,8 @@
 package com.energyxxer.cbe.compile.parsing.classes.files;
 
+import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
+import com.energyxxer.cbe.compile.parsing.exceptions.CBEParserException;
+
 /**
  * Created by User on 12/7/2016.
  */
@@ -10,8 +13,8 @@ public class CBEPackageManager {
         this.root = root;
     }
 
-    public CBEPackage create(String path) {
-        if(!path.startsWith(root.getName() + '.')) throw new IllegalArgumentException(String.format("%s cannot be a subpackage of %s!",path,root.toString()));
+    public CBEPackage create(String path, TokenPattern<?> packagePattern) throws CBEParserException {
+        if(!path.startsWith(root.getName() + '.')) throw new CBEParserException(String.format("%s cannot be a subpackage of %s!",path,root.toString()), packagePattern);
 
         String[] packageNames = path.split("\\.");
         CBEPackage currentPackage = root;

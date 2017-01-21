@@ -11,7 +11,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -29,43 +28,10 @@ public class EditorCaret extends DefaultCaret {
         this.textComponent = c;
         this.setBlinkRate(500);
         this.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
-        MouseAdapter mouseAdapter = new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if(!e.isAltDown() || !e.isShiftDown()) {
-                    dots.clear();
-                }
-                addDot(c.viewToModel(e.getPoint()));
-                e.consume();
-            }
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if(e.isShiftDown()) {
-                    e.consume();
-                }
-            }
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if(e.isShiftDown()) {
-                    e.consume();
-                }
-            }
-        };
-        c.addMouseListener(mouseAdapter);
-        c.addMouseMotionListener(mouseAdapter);
         c.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-
-            }
-
             @Override
             public void keyPressed(KeyEvent e) {
                 handleEvent(e);
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
             }
         });
 
@@ -106,6 +72,15 @@ public class EditorCaret extends DefaultCaret {
         for(int dot : pos) {
             Dot newDot = new Dot(dot,textComponent);
             if(!dots.contains(newDot)) dots.add(newDot);
+        }
+        readjustRect();
+        textComponent.repaint();
+        this.fireStateChanged();
+    }
+
+    public void addDot(Dot... newDots) {
+        for(Dot dot : newDots) {
+            if(!dots.contains(dot)) dots.add(dot);
         }
         readjustRect();
         textComponent.repaint();
@@ -195,7 +170,6 @@ public class EditorCaret extends DefaultCaret {
     }
 
     public void pushFrom(int pos, int offset) {
-        //System.out.println("Pushing " + offset + " from " + pos);
         int docLength = textComponent.getDocument().getLength();
 
         for(Dot dot : dots) {
@@ -239,11 +213,74 @@ public class EditorCaret extends DefaultCaret {
         return nullHighlighter;
     }
 
-    public void adopt(CaretProfile profile) {
+    public void setProfile(CaretProfile profile) {
         this.dots.clear();
         for(int i = 0; i < profile.size(); i += 2) {
             dots.add(new Dot(profile.get(i),profile.get(i+1), textComponent));
         }
         update();
+    }
+
+    public Dot getDotBy(int index, int mark) {
+        for(Dot dot : dots) {
+            if(dot.index == index && dot.mark == mark) return dot;
+        }
+        return null;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        super.mouseClicked(e);
+    }
+
+    //Handle mouse selection
+
+    private Dot bufferedDot = null;
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if(!e.isAltDown() || !e.isShiftDown()) {
+            dots.clear();
+        }
+        int index = textComponent.viewToModel(e.getPoint());
+        bufferedDot = new Dot(index, index, textComponent);
+        dots.add(bufferedDot);
+        e.consume();
+        super.mousePressed(e);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        bufferedDot.index = textComponent.viewToModel(e.getPoint());
+        textComponent.repaint();
+        this.setVisible(true);
+        readjustRect();
+        this.fireStateChanged();
+        super.mouseReleased(e);
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        super.mouseEntered(e);
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        super.mouseExited(e);
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        bufferedDot.index = textComponent.viewToModel(e.getPoint());
+        textComponent.repaint();
+        this.setVisible(true);
+        readjustRect();
+        this.fireStateChanged();
+        super.mouseDragged(e);
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        super.mouseMoved(e);
     }
 }
