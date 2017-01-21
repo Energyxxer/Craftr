@@ -47,7 +47,7 @@ public class InsertionEdit implements Edit {
                 previousValues.add(result.substring(start, end));
                 result = result.substring(0, start) + value + result.substring(end);
 
-                nextProfile.add(start+1,start+1);
+                nextProfile.add(start+value.length(),start+value.length());
 
                 ((AbstractDocument) doc).replace(start, end - start, value, null);
 

@@ -25,6 +25,7 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.Utilities;
 import java.awt.Color;
 import java.awt.Event;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -144,6 +145,15 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
 
             editManager.insertEdit(insertNewline);
             caret.deselect();
+        } else if(e.getKeyCode() == KeyEvent.VK_V && e.isControlDown()) {
+            try {
+                Object rawContents = this.getToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+                if(rawContents == null) return;
+                String contents = ((String) rawContents).replace("\t", "    ");
+                editManager.insertEdit(new InsertionEdit(contents, this));
+            } catch(Exception x) {
+                x.printStackTrace();
+            }
         }
     }
 
