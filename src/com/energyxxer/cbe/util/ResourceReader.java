@@ -5,25 +5,27 @@ import com.energyxxer.cbe.global.Console;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 
 /**
- * Created by User on 1/8/2017.
+ * Created by User on 1/21/2017.
  */
-public class LineReader {
-    public static ArrayList<String> read(String file) throws IOException {
-        ArrayList<String> lines = new ArrayList<>();
+public class ResourceReader {
+    public static String read(String file) {
         try(BufferedReader br = new BufferedReader(new InputStreamReader(Class.class.getResourceAsStream(file)))) {
+            StringBuilder sb = new StringBuilder();
             String line;
             for (; (line = br.readLine()) != null; ) {
-                if(line.length() > 0 && !line.startsWith("#")) lines.add(line.trim());
+                sb.append(line);
+                sb.append("\n");
             }
-            return lines;
-        } catch(NullPointerException npe) {
+            return sb.toString();
+        } catch(NullPointerException x) {
             Console.err.println("[ERROR] File not found: " + file);
-            return new ArrayList<>();
+        } catch(IOException x) {
+            Console.err.println("[ERROR] Unable to access file: " + file);
         }
+        return "";
     }
     
-    private LineReader() {}
+    private ResourceReader() {}
 }

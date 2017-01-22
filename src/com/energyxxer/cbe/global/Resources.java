@@ -1,5 +1,6 @@
 package com.energyxxer.cbe.global;
 
+import com.energyxxer.cbe.files.FileDefaults;
 import com.energyxxer.cbe.ui.theme.ThemeManager;
 import com.energyxxer.cbe.util.LineReader;
 
@@ -37,5 +38,6 @@ public class Resources {
         }
 
         ThemeManager.loadAll();
+        FileDefaults.loadAll();
     }
 }

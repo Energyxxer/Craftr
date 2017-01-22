@@ -111,4 +111,6 @@ public class StringUtil {
 		}
 		return s;
 	}
+	
+	private StringUtil() {}
 }

@@ -43,4 +43,6 @@ public class FileUtil {
 	public static String getRelativePath(File file, File root) {
 		return file.getAbsolutePath().replaceFirst(Matcher.quoteReplacement(root.getAbsolutePath() + File.separator),"");
 	}
+
+	private FileUtil() {}
 }

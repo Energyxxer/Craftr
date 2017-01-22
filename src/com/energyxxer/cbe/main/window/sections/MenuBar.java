@@ -4,7 +4,7 @@ import com.energyxxer.cbe.global.Preferences;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.ui.common.MenuItems;
-import com.energyxxer.cbe.ui.dialogs.Settings;
+import com.energyxxer.cbe.ui.dialogs.settings.Settings;
 import com.energyxxer.cbe.ui.styledcomponents.StyledMenu;
 import com.energyxxer.cbe.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.cbe.ui.theme.change.ThemeChangeListener;

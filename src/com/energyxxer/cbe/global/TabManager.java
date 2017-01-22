@@ -176,9 +176,11 @@ public class TabManager {
 			tab.getLinkedTabComponent().selected = true;
 			
 			tab.onSelect();
+			Window.setTitle(tab.getLinkedTabComponent().getName() + " - " + tab.getLinkedProject().getName());
 			Window.editArea.add(tab.editor, BorderLayout.CENTER);
 		} else {
             Window.statusBar.setCaretInfo(Commons.DEFAULT_CARET_DISPLAY_TEXT);
+            Window.clearTitle();
 		}
 
 		Window.editArea.revalidate();

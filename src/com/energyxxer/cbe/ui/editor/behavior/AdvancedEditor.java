@@ -1,7 +1,6 @@
 package com.energyxxer.cbe.ui.editor.behavior;
 
 import com.energyxxer.cbe.global.Commons;
-import com.energyxxer.cbe.main.window.Window;
 import com.energyxxer.cbe.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.cbe.ui.editor.behavior.caret.EditorCaret;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.EditManager;
@@ -25,6 +24,8 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.Utilities;
 import java.awt.Color;
 import java.awt.Event;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -40,6 +41,8 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
 
     private EditManager editManager = new EditManager(this);
     protected LinePainter linePainter;
+
+    public static final float BIAS_POINT = 0.4f;
 
     {
         this.addKeyListener(this);
@@ -67,6 +70,8 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             }
         });
 
+
+
     }
 
     public AdvancedEditor() {
@@ -80,9 +85,8 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     public void keyTyped(KeyEvent e) {
         e.consume();
         if(e.getKeyChar() == '`') {
-            Window.statusBar.setStatus(caret.getDots().toString());
-        } else
-        if(!e.isControlDown() && !Commons.isSpecialCharacter(e.getKeyChar())) {
+            editManager.insertEdit(new InsertionEdit("\t", this));
+        } else if(!e.isControlDown() && !Commons.isSpecialCharacter(e.getKeyChar())) {
             editManager.insertEdit(new InsertionEdit("" + e.getKeyChar(), this));
         }
     }
@@ -154,6 +158,8 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             } catch(Exception x) {
                 x.printStackTrace();
             }
+        } else if(e.getKeyCode() == KeyEvent.VK_A && e.isControlDown()) {
+            caret.setProfile(new CaretProfile(0, getDocument().getLength()));
         }
     }
 
@@ -165,6 +171,20 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     @Override
     public void caretUpdate(CaretEvent e) {
 
+    }
+
+    @Override
+    public int viewToModel(Point pt) {
+        int superResult = super.viewToModel(pt);
+        try {
+            Rectangle backward = this.modelToView(superResult);
+            Rectangle forward = this.modelToView(superResult+1);
+
+            float offset = (float) (pt.x - backward.x) / (forward.x - backward.x);
+            return (offset >= BIAS_POINT) ? superResult+1 : superResult;
+        } catch(BadLocationException x) {
+            return superResult;
+        }
     }
 
     public StringLocation getLocationForOffset(int index) {
@@ -207,6 +227,12 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     }
 
     //Delegates and deprecated methods
+
+    @Override
+    public boolean getScrollableTracksViewportWidth() {
+        return getUI().getPreferredSize(this).width + 5
+                <= getParent().getSize().width;
+    }
 
     @Override
     public void setCaretPosition(int position) {

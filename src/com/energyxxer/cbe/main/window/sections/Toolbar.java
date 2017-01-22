@@ -57,6 +57,14 @@ public class Toolbar extends JPanel {
         this.add(new ToolbarSeparator());
 
         {
+            ToolbarButton button = new ToolbarButton("world");
+            button.setToolTipText("New Global File");
+            this.add(button);
+        }
+
+        this.add(new ToolbarSeparator());
+
+        {
             ToolbarButton button = new ToolbarButton("entity_new");
             button.setToolTipText("New Entity");
             this.add(button);
@@ -65,6 +73,18 @@ public class Toolbar extends JPanel {
         {
             ToolbarButton button = new ToolbarButton("item_new");
             button.setToolTipText("New Item");
+            this.add(button);
+        }
+
+        {
+            ToolbarButton button = new ToolbarButton("feature_new");
+            button.setToolTipText("New Feature");
+            this.add(button);
+        }
+
+        {
+            ToolbarButton button = new ToolbarButton("class_new");
+            button.setToolTipText("New Class");
             this.add(button);
         }
 

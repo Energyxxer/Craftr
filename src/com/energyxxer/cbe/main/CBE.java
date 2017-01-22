@@ -8,9 +8,12 @@ import com.energyxxer.cbe.minecraft.schematic.block.nbt.TagInt;
 import com.energyxxer.cbe.minecraft.schematic.block.nbt.TagList;
 import com.energyxxer.cbe.minecraft.schematic.block.nbt.TagString;
 import com.energyxxer.cbe.ui.theme.LightTheme;
+import com.energyxxer.cbe.util.Version;
 
 public class CBE {
-	public static CBE generator;
+	public static CBE cbe;
+	public static final Version VERSION = new Version(0,0,0);
+	public static final boolean DEV = true;
 
 	public static Window window;
 
@@ -22,7 +25,7 @@ public class CBE {
 		LightTheme.getInstance();
 		Resources.load();
 
-		generator = new CBE();
+		cbe = new CBE();
 		
 		ProjectManager.loadWorkspace();
 		Window.explorer.generateProjectList();

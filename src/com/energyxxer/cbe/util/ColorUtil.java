@@ -28,4 +28,6 @@ public class ColorUtil {
 			return "rgba(" + r + "," + g + "," + b + "," + ((float) a /255) + ")";
 		}
 	}
+
+	private ColorUtil() {}
 }

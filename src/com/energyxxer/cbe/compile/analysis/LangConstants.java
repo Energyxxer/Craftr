@@ -2,12 +2,13 @@ package com.energyxxer.cbe.compile.analysis;
 
 import com.energyxxer.cbe.minecraft.MinecraftConstants;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Contains most of the language's token patterns.
+ * Contains most of the language's keywords.
  */
 public class LangConstants {
 	public static final String[] alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_".split("");
@@ -28,7 +29,7 @@ public class LangConstants {
 	public static final String[] operators = { "+=", "+", "-=", "-", "*=", "*", "/=", "/", "%=", "%", "<=", ">=", "==", "=", "<", ">", "^=", "^" };
 	public static final String[] identifier_operators = { "++", "--" };
 	public static final String[] logical_negation_operators = { "!" };
-	public static final String[] keywords = { "if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import" };
+	public static final String[] keywords = { "if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import", "operator"};
 	public static final String[] action_keywords = { "break", "continue", "return" };
 	public static final String[] dots = { "." };
 	public static final String[] commas = { "," };
@@ -45,5 +46,10 @@ public class LangConstants {
 	
 	public static final List<List<String>> enum_values = Arrays.asList(MinecraftConstants.block_enums,MinecraftConstants.block_enums,MinecraftConstants.gamemode_enums,MinecraftConstants.block_enums,MinecraftConstants.block_enums,MinecraftConstants.effect_enums,MinecraftConstants.particle_enums,MinecraftConstants.enchantment_enums,MinecraftConstants.dimension_enums);
 	
-	public static final List<String> entities = MinecraftConstants.entities;
+	public static final List<String> entities = new ArrayList<>(MinecraftConstants.entities);
+	public static final List<String> abstract_entities = Arrays.asList("entity_base", "living_base");
+
+	static {
+		entities.addAll(abstract_entities);
+	}
 }

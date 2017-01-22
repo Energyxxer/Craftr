@@ -16,6 +16,7 @@ public class Preferences {
         if (prefs.get("workspace_dir", null) == null) {
             prefs.put("workspace_dir", WorkspaceSelector.prompt());
         }
+        if(prefs.get("username",null) == null) prefs.put("username", "User");
     }
 
     public static void reset() {

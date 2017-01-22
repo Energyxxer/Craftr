@@ -1,20 +1,19 @@
 package com.energyxxer.cbe.ui.common;
 
-import java.awt.event.ActionEvent;
-import java.io.File;
-import java.util.ArrayList;
+import com.energyxxer.cbe.files.FileFactory;
+import com.energyxxer.cbe.main.window.Window;
+import com.energyxxer.cbe.ui.explorer.Explorer;
+import com.energyxxer.cbe.ui.styledcomponents.StyledMenu;
+import com.energyxxer.cbe.ui.styledcomponents.StyledMenuItem;
+import com.energyxxer.cbe.util.FileUtil;
+import com.energyxxer.cbe.util.ImageManager;
 
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-
-import com.energyxxer.cbe.files.FileFactory;
-import com.energyxxer.cbe.main.window.Window;
-import com.energyxxer.cbe.ui.styledcomponents.StyledMenu;
-import com.energyxxer.cbe.ui.styledcomponents.StyledMenuItem;
-import com.energyxxer.cbe.ui.explorer.Explorer;
-import com.energyxxer.cbe.util.FileUtil;
-import com.energyxxer.cbe.util.ImageManager;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Provides methods that create menu components for file and project management.
@@ -69,37 +68,42 @@ public class MenuItems {
 
 		// --------------------------------------------------
 
-		StyledMenuItem entityItem = new StyledMenuItem("Entity", "entity_new");
-		entityItem.addActionListener(new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1211067464491607872L;
+		StyledMenuItem worldItem = new StyledMenuItem("World", "world");
+		worldItem.addActionListener(e -> FileFactory.newUnit("World"));
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				FileFactory.newEntity();
-			}
-		});
+		newMenu.add(worldItem);
+
+		// --------------------------------------------------
+
+		newMenu.addSeparator();
+
+		// --------------------------------------------------
+
+		StyledMenuItem entityItem = new StyledMenuItem("Entity", "entity_new");
+		entityItem.addActionListener(e -> FileFactory.newUnit("entity"));
 		
 		newMenu.add(entityItem);
 
 		// --------------------------------------------------
 
 		StyledMenuItem itemItem = new StyledMenuItem("Item", "item_new");
-		itemItem.addActionListener(new AbstractAction() {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1211067464491607872L;
+		itemItem.addActionListener(e -> FileFactory.newUnit("item"));
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				FileFactory.newItem();
-			}
-		});
-		
 		newMenu.add(itemItem);
+
+		// --------------------------------------------------
+
+		StyledMenuItem featureItem = new StyledMenuItem("Feature", "feature_new");
+		featureItem.addActionListener(e -> FileFactory.newUnit("feature"));
+
+		newMenu.add(featureItem);
+
+		// --------------------------------------------------
+
+		StyledMenuItem classItem = new StyledMenuItem("Class", "class_new");
+		classItem.addActionListener(e -> FileFactory.newUnit("class"));
+
+		newMenu.add(classItem);
 		return newMenu;
 	}
 

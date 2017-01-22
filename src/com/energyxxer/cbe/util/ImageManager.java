@@ -50,4 +50,6 @@ public class ImageManager {
 			return loadedImages.get("null");
 		}
 	}
+	
+	private ImageManager() {}
 }

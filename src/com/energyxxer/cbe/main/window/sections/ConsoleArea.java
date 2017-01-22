@@ -96,6 +96,9 @@ public class ConsoleArea extends JPanel {
 
             Style errorStyle = console.addStyle("error", null);
             StyleConstants.setForeground(errorStyle, t.getColor("Console.error", new Color(200,50,50)));
+
+            Style debugStyle = console.addStyle("debug", null);
+            StyleConstants.setForeground(debugStyle, new Color(104,151,187));
         });
         clear.addActionListener(e -> {
             try {
@@ -134,6 +137,7 @@ public class ConsoleArea extends JPanel {
         Console.addInfoStream(new ConsoleOutputStream(console));
         Console.addWarnStream(new ConsoleOutputStream(console,"warning"));
         Console.addErrStream(new ConsoleOutputStream(console,"error"));
+        Console.addDebugStream(new ConsoleOutputStream(console,"debug"));
 
         /*consoleOut = new PrintStream(textConsoleOut);
         System.setOut(new PrintStream(new MultiOutputStream(consoleOut, System.out)));

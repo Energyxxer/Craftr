@@ -132,4 +132,6 @@ public class StringPrompt {
 		}
 		return pane;
 	}
+	
+	private StringPrompt() {}
 }

@@ -14,7 +14,6 @@ import java.util.List;
 public class ThemeManager {
 
     private static HashMap<String, Theme> themes = new HashMap<>();
-    private static String themeDirectory = "/resources/themes/";
 
     private static Theme nullTheme = new Theme("null");
 

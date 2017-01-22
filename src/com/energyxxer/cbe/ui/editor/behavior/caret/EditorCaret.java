@@ -20,12 +20,12 @@ import java.util.ArrayList;
 public class EditorCaret extends DefaultCaret {
 
     private ArrayList<Dot> dots = new ArrayList<>();
-    private AdvancedEditor textComponent;
+    private AdvancedEditor editor;
 
     private static Highlighter.HighlightPainter nullHighlighter = (g,p0,p1,bounds,c) -> {};
 
     public EditorCaret(AdvancedEditor c) {
-        this.textComponent = c;
+        this.editor = c;
         this.setBlinkRate(500);
         this.setUpdatePolicy(DefaultCaret.NEVER_UPDATE);
         c.addKeyListener(new KeyAdapter() {
@@ -35,11 +35,11 @@ public class EditorCaret extends DefaultCaret {
             }
         });
 
-        dots.add(new Dot(0,textComponent));
+        addDot(new Dot(0, 0, editor));
 
         try {
             c.getHighlighter().addHighlight(0,0,new EditorSelectionPainter(this));
-        } catch(BadLocationException e) {
+        } catch(BadLocationException x) {
             //
         }
     }
@@ -54,7 +54,7 @@ public class EditorCaret extends DefaultCaret {
 
     private void update() {
         removeDuplicates();
-        textComponent.repaint();
+        editor.repaint();
         this.setVisible(true);
         readjustRect();
         this.fireStateChanged();
@@ -62,19 +62,19 @@ public class EditorCaret extends DefaultCaret {
 
     public void setPosition(int pos) {
         dots.clear();
-        dots.add(new Dot(pos, textComponent));
-        readjustRect();
+        addDot(new Dot(pos, editor));
+        /*readjustRect();
         repaint();
-        this.fireStateChanged();
+        this.fireStateChanged();*/
     }
 
     public void addDot(int... pos) {
         for(int dot : pos) {
-            Dot newDot = new Dot(dot,textComponent);
+            Dot newDot = new Dot(dot, editor);
             if(!dots.contains(newDot)) dots.add(newDot);
         }
         readjustRect();
-        textComponent.repaint();
+        editor.repaint();
         this.fireStateChanged();
     }
 
@@ -83,7 +83,7 @@ public class EditorCaret extends DefaultCaret {
             if(!dots.contains(dot)) dots.add(dot);
         }
         readjustRect();
-        textComponent.repaint();
+        editor.repaint();
         this.fireStateChanged();
     }
 
@@ -127,14 +127,12 @@ public class EditorCaret extends DefaultCaret {
 
     private void readjustRect() {
         try {
-            TextUI mapper = getComponent().getUI();
-
             ArrayList<Dot> allDots = new ArrayList<>(dots);
 
             Rectangle unionRect = null;
 
             for (Dot dot : allDots) {
-                Rectangle r = mapper.modelToView(getComponent(), dot.index, getDotBias());
+                Rectangle r = editor.modelToView(dot.index);
                 if(unionRect == null) unionRect = r; else unionRect = unionRect.union(r);
             }
 
@@ -159,8 +157,8 @@ public class EditorCaret extends DefaultCaret {
         if(dots.size() > 1) {
             return dots.size() + " carets";
         } else {
-            StringLocation loc = textComponent.getLocationForOffset(dots.get(0).index);
-            StringLocation loc2 = textComponent.getLocationForOffset(dots.get(0).mark);
+            StringLocation loc = editor.getLocationForOffset(dots.get(0).index);
+            StringLocation loc2 = editor.getLocationForOffset(dots.get(0).mark);
             return loc.line + ":" + loc.column + " - " + loc2.line + ":" + loc2.column;
         }
     }
@@ -170,7 +168,7 @@ public class EditorCaret extends DefaultCaret {
     }
 
     public void pushFrom(int pos, int offset) {
-        int docLength = textComponent.getDocument().getLength();
+        int docLength = editor.getDocument().getLength();
 
         for(Dot dot : dots) {
             if(dot.index >= pos) {
@@ -216,22 +214,13 @@ public class EditorCaret extends DefaultCaret {
     public void setProfile(CaretProfile profile) {
         this.dots.clear();
         for(int i = 0; i < profile.size(); i += 2) {
-            dots.add(new Dot(profile.get(i),profile.get(i+1), textComponent));
+            addDot(new Dot(profile.get(i),profile.get(i+1), editor));
         }
         update();
     }
 
-    public Dot getDotBy(int index, int mark) {
-        for(Dot dot : dots) {
-            if(dot.index == index && dot.mark == mark) return dot;
-        }
-        return null;
-    }
-
     @Override
-    public void mouseClicked(MouseEvent e) {
-        super.mouseClicked(e);
-    }
+    public void mouseClicked(MouseEvent e) {}
 
     //Handle mouse selection
 
@@ -242,21 +231,37 @@ public class EditorCaret extends DefaultCaret {
         if(!e.isAltDown() || !e.isShiftDown()) {
             dots.clear();
         }
-        int index = textComponent.viewToModel(e.getPoint());
-        bufferedDot = new Dot(index, index, textComponent);
-        dots.add(bufferedDot);
+        int index = editor.viewToModel(e.getPoint());
+
+        bufferedDot = new Dot(index, index, editor);
+        if (e.getClickCount() == 2 && !e.isConsumed() && e.getButton() == MouseEvent.BUTTON1) {
+            bufferedDot.mark = bufferedDot.getPositionBeforeWord();
+            bufferedDot.index = bufferedDot.getPositionAfterWord();
+        } else if(e.getClickCount() >= 3 && !e.isConsumed() && e.getButton() == MouseEvent.BUTTON1) {
+            bufferedDot.mark = bufferedDot.getRowStart();
+            bufferedDot.index = bufferedDot.getRowEnd();
+        }
+        addDot(bufferedDot);
         e.consume();
-        super.mousePressed(e);
+        //super.mousePressed(e);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        bufferedDot.index = textComponent.viewToModel(e.getPoint());
-        textComponent.repaint();
+        //bufferedDot.index = editor.viewToModel(e.getPoint());
+        editor.repaint();
         this.setVisible(true);
         readjustRect();
         this.fireStateChanged();
-        super.mouseReleased(e);
+        adjustFocus();
+        e.consume();
+    }
+
+    private void adjustFocus() {
+        if ((editor != null) && editor.isEnabled() &&
+                editor.isRequestFocusEnabled()) {
+            editor.requestFocus();
+        }
     }
 
     @Override
@@ -271,12 +276,12 @@ public class EditorCaret extends DefaultCaret {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        bufferedDot.index = textComponent.viewToModel(e.getPoint());
-        textComponent.repaint();
+        bufferedDot.index = editor.viewToModel(e.getPoint());
+        editor.repaint();
         this.setVisible(true);
         readjustRect();
         this.fireStateChanged();
-        super.mouseDragged(e);
+        //super.mouseDragged(e);
     }
 
     @Override

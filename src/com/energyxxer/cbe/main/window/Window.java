@@ -2,6 +2,7 @@ package com.energyxxer.cbe.main.window;
 
 import com.energyxxer.cbe.global.Preferences;
 import com.energyxxer.cbe.global.Status;
+import com.energyxxer.cbe.main.CBE;
 import com.energyxxer.cbe.main.window.sections.EditArea;
 import com.energyxxer.cbe.main.window.sections.MenuBar;
 import com.energyxxer.cbe.main.window.sections.Sidebar;
@@ -56,7 +57,8 @@ public class Window {
 		ThemeManager.loadAll();
 		ThemeManager.setTheme(Preferences.get("theme"));
 
-		jframe = new JFrame("Command Block Engine");
+		jframe = new JFrame();
+		setTitle("");
 		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
 		ThemeChangeListener.addThemeChangeListener(t -> jframe.getContentPane().setBackground(t.getColor("Window.background",new Color(215, 215, 215))));
@@ -142,6 +144,14 @@ public class Window {
 
 	public static void setStatus(Status status) {
 		statusBar.setStatus(status);
+	}
+
+	public static void setTitle(String title) {
+		jframe.setTitle(title + ((title.length() > 0) ? " - " : "") + "Command Block Engine " + CBE.VERSION + ((CBE.DEV) ? " DEV" : ""));
+	}
+
+	public static void clearTitle() {
+		setTitle("");
 	}
 
 	public static void dismissStatus(Status status) {

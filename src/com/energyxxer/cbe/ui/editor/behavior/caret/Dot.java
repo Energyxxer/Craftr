@@ -1,5 +1,6 @@
 package com.energyxxer.cbe.ui.editor.behavior.caret;
 
+import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.ui.editor.behavior.AdvancedEditor;
 import com.energyxxer.cbe.util.StringBounds;
 
