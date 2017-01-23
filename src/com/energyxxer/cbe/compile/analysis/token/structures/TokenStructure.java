@@ -29,7 +29,7 @@ public class TokenStructure extends TokenPattern<TokenPattern<?>> {
 
 	@Override
 	public String toString() {
-		return group.toString();
+		return name + ": {" + group.toString() + "}";
 	}
 
 	@Override

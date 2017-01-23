@@ -1,6 +1,5 @@
 package com.energyxxer.cbe.syntax;
 
-import com.energyxxer.cbe.compile.analysis.token.TokenType;
 import com.energyxxer.cbe.syntax.style.Style;
 
 import java.util.HashMap;
@@ -30,6 +29,8 @@ public class CBESyntaxDark extends Syntax {
 		styles.put("null", new Style().setColor("#FF4444").setBold().getMap());
 		styles.put("annotation_marker", new Style().setColor("#999999").setItalic().getMap());
 		styles.put("blockstate", new Style().setColor("#66FFAA").setBold().setItalic().getMap());
+
+		styles.put("lambda_arrow", new Style().setColor("#6897BB").setBold().setItalic().getMap());
 
 		styles.put("#is_keyword", new Style().setColor("#1290c3").setBold().getMap());
 

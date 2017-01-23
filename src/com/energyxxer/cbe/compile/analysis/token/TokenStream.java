@@ -93,7 +93,7 @@ public class TokenStream implements Iterable<Token> {
 				tokenBuffer.add(token);
 				bufferData.put("BLOCKSTATE_PHASE", "KEY");
 				cancel = true;
-			} else if(token.type == END_OF_STATEMENT) {
+			} else if(token.value.equals(LangConstants.blockstate_end[0])) {
 				tokenBuffer.add(token);
 				write(Token.merge(BLOCKSTATE, tokenBuffer.toArray(new Token[0])),true);
 				tokenBuffer.clear();

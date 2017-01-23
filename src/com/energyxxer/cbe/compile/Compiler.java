@@ -2,9 +2,10 @@ package com.energyxxer.cbe.compile;
 
 import com.energyxxer.cbe.compile.analysis.Analyzer;
 import com.energyxxer.cbe.compile.analysis.token.TokenStream;
+import com.energyxxer.cbe.compile.exceptions.IllegalOperandsException;
 import com.energyxxer.cbe.compile.parsing.Parser;
 import com.energyxxer.cbe.compile.parsing.classes.values.CBEIntegerValue;
-import com.energyxxer.cbe.compile.parsing.exceptions.IllegalOperandsException;
+import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.logic.Project;
 
@@ -24,7 +25,7 @@ public class Compiler {
 		new Parser(ts, project);
 
 		try {
-			System.out.println(new CBEIntegerValue(256).division(new CBEIntegerValue(16)));
+			Console.info.println(new CBEIntegerValue(256).division(new CBEIntegerValue(16)));
 		} catch(IllegalOperandsException e) {
 			e.printStackTrace();
 		}

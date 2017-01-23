@@ -38,12 +38,14 @@ public class TokenMatchResponse {
 
 	@Override
 	public String toString() {
-		String ft = null;
-		if(faultyToken != null) ft = StringUtil.escapeHTML(faultyToken.value);
-		String e = null;
-		if(expected != null) e = StringUtil.escapeHTML(expected.toTrimmedString());
-		return "TokenMatchResponse [matched=" + matched + ", faultyToken=" + ft + ", length=" + length
-				+ ", expected=" + e + "]";
+		return "TokenMatchResponse{" +
+				"matched=" + matched +
+				", faultyToken=" + faultyToken +
+				", length=" + length +
+				", expected=" + expected +
+				", pattern=" + pattern +
+				", matchType=" + getMatchType() +
+				'}';
 	}
 
 	public String getErrorMessage() {

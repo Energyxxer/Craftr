@@ -1,9 +1,9 @@
-package com.energyxxer.cbe.compile.parsing.exceptions;
+package com.energyxxer.cbe.compile.exceptions;
 
 /**
  * Created by User on 12/20/2016.
  */
-public class IllegalOperandsException extends Exception {
+public class IllegalOperandsException extends CBEException {
     public IllegalOperandsException() {
     }
 

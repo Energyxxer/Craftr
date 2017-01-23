@@ -1,9 +1,10 @@
 package com.energyxxer.cbe.compile.parsing.classes.files;
 
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
+import com.energyxxer.cbe.compile.exceptions.CBEParserException;
 import com.energyxxer.cbe.compile.parsing.Parser;
 import com.energyxxer.cbe.compile.parsing.classes.units.CBEUnit;
-import com.energyxxer.cbe.compile.parsing.exceptions.CBEParserException;
+import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.logic.Project;
 import com.energyxxer.cbe.util.FileUtil;
@@ -46,7 +47,7 @@ public class CBEFile {
 
         this.pattern = pattern;
 
-        System.out.println(filePackage + " : " + packageStatement + "... at file " + name);
+        Console.debug.println(filePackage + " : " + packageStatement + "... at file " + name);
     }
 
     public String getName() {

@@ -5,7 +5,7 @@ import com.energyxxer.cbe.compile.analysis.token.TokenType;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
 import com.energyxxer.cbe.compile.parsing.classes.files.CBEFile;
 import com.energyxxer.cbe.compile.parsing.classes.files.CBEPackage;
-import com.energyxxer.cbe.compile.parsing.exceptions.CBEParserException;
+import com.energyxxer.cbe.compile.exceptions.CBEParserException;
 
 import java.util.ArrayList;
 import java.util.List;

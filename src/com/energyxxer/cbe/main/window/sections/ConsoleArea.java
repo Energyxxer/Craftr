@@ -31,8 +31,6 @@ import java.awt.event.MouseEvent;
 public class ConsoleArea extends JPanel {
 
     private static final int CONSOLE_HEIGHT = 200;
-    //public PrintStream consoleOut = new PrintStream(System.out);
-    //private TextAreaOutputStream textConsoleOut = null;
 
     {
         this.setLayout(new BorderLayout());
@@ -44,7 +42,7 @@ public class ConsoleArea extends JPanel {
         consoleHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         consoleHeader.setPreferredSize(new Dimension(0, 25));
 
-        JLabel consoleLabel = new JLabel("Java Console");
+        JLabel consoleLabel = new JLabel("Console");
         ThemeChangeListener.addThemeChangeListener(t -> {
             consoleLabel.setForeground(t.getColor("Console.header.foreground",Color.BLACK));
             consoleLabel.setFont(new Font(t.getString("Console.header.font",t.getString("General.font","Tahoma")), 0, 12));
@@ -55,7 +53,7 @@ public class ConsoleArea extends JPanel {
         consoleActionPanel.setOpaque(false);
 
         ToolbarButton toggle = new ToolbarButton("toggle", true);
-        toggle.setToolTipText("Toggle Java Console");
+        toggle.setToolTipText("Toggle Console");
         toggle.setPreferredSize(new Dimension(20,20));
 
         toggle.addActionListener(e -> {

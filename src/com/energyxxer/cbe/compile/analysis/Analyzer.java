@@ -173,6 +173,60 @@ public class Analyzer {
 				}
 				continue;
 			}
+			if (Character.isDigit(c.charAt(0)) && !Character.isJavaIdentifierPart(lastChar)) {
+				if (!isNumber && token != null) {
+					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
+					token = tokenType = null;
+				}
+				isNumber = true;
+				tokenType = TokenType.NUMBER;
+				if(token == null) tokenIndex = i;
+				token = (token != null) ? token + c : c;
+
+				line = cLine;
+				column = cColumn;
+
+				continue;
+			} else if (isNumber && Arrays.asList(LangConstants.number_punctuation).indexOf(c) >= 0) {
+				token += c;
+				continue;
+			} else if (isNumber && !Character.isDigit(c.charAt(0))) {
+				if (token != null) {
+					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
+				}
+				token = tokenType = null;
+				isNumber = false;
+			}
+			for (int j = 0; j < LangConstants.lambda.length; j++) {
+				if (str.substring(i).startsWith(LangConstants.lambda[j])) {
+					if (token != null)
+						flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
+					tokenType = TokenType.LAMBDA_ARROW;
+
+					line = cLine;
+					column = cColumn;
+
+					flush(new Token(LangConstants.lambda[j], tokenType, file, new StringLocation(i, line, column)));
+					token = tokenType = null;
+					i += LangConstants.lambda[j].length() - 1;
+					continue mainLoop;
+				}
+			}
+			for (int j = 0; j < LangConstants.operators.length; j++) {
+				if (str.substring(i).startsWith(LangConstants.operators[j])) {
+					if (token != null)
+						flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
+					tokenType = TokenType.OPERATOR;
+
+					line = cLine;
+					column = cColumn;
+
+					flush(new Token(LangConstants.operators[j], tokenType, file, new StringLocation(i, line, column)));
+					token = tokenType = null;
+					i += LangConstants.operators[j].length() - 1;
+					continue mainLoop;
+				}
+			}
 			for (int j = 0; j < LangConstants.identifier_operators.length; j++) {
 				if (str.substring(i).startsWith(LangConstants.identifier_operators[j])) {
 					if (token != null)
@@ -218,21 +272,6 @@ public class Analyzer {
 					continue mainLoop;
 				}
 			}
-			for (int j = 0; j < LangConstants.operators.length; j++) {
-				if (str.substring(i).startsWith(LangConstants.operators[j])) {
-					if (token != null)
-						flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					tokenType = TokenType.OPERATOR;
-
-					line = cLine;
-					column = cColumn;
-
-					flush(new Token(LangConstants.operators[j], tokenType, file, new StringLocation(i, line, column)));
-					token = tokenType = null;
-					i += LangConstants.operators[j].length() - 1;
-					continue mainLoop;
-				}
-			}
 			if(Arrays.asList(LangConstants.annotations).indexOf(c) >= 0) {
 				if (token != null)
 					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
@@ -255,30 +294,6 @@ public class Analyzer {
 				flush(new Token(c, tokenType, file, new StringLocation(i, line, column)));
 				token = tokenType = null;
 				continue;
-			}
-			if (Character.isDigit(c.charAt(0)) && !Character.isJavaIdentifierPart(lastChar)) {
-				if (!isNumber && token != null) {
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					token = tokenType = null;
-				}
-				isNumber = true;
-				tokenType = TokenType.NUMBER;
-				if(token == null) tokenIndex = i;
-				token = (token != null) ? token + c : c;
-
-				line = cLine;
-				column = cColumn;
-
-				continue;
-			} else if (isNumber && Arrays.asList(LangConstants.number_punctuation).indexOf(c) >= 0) {
-				token += c;
-				continue;
-			} else if (isNumber && !Character.isJavaIdentifierPart(c.charAt(0))) {
-				if (token != null) {
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-				}
-				token = tokenType = null;
-				isNumber = false;
 			}
 			
 			// CONTINUE CHECKING

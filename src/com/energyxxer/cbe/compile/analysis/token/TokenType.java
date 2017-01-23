@@ -26,6 +26,7 @@ public class TokenType {
 	public static final String DOT = "DOT"; // this[.]field...
 	public static final String COMMA = "COMMA"; // {1[,] 2[,]...}
 	public static final String COLON = "COLON"; // case 8[:]
+	public static final String LAMBDA_ARROW = "LAMBDA_ARROW"; // case 8[:]
 	public static final String NUMBER = "NUMBER"; // 0.1
 	public static final String STRING_LITERAL = "STRING_LITERAL"; // "STRING
 																	// LITERAL"

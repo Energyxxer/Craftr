@@ -1,12 +1,6 @@
 package com.energyxxer.cbe.util;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import com.energyxxer.cbe.main.window.Window;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -17,8 +11,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import com.energyxxer.cbe.main.window.Window;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * Asks the player to input a string. Has support for validation.
@@ -29,7 +28,7 @@ public class StringPrompt {
 	static JPanel input = new JPanel(new BorderLayout());
 	static JTextField textfield = new JTextField("");
 
-	static StringValidator validator = new StringValidator();
+	static StringValidator validator = str -> true;
 
 	static JLabel label = new JLabel(
 			"<html>Specify the desired workspace directory.<br>This is where all your projects are going to be saved.</html>");
@@ -96,17 +95,14 @@ public class StringPrompt {
 
 		cancel.setFocusPainted(false);
 		cancel.setPreferredSize(new Dimension(75, 25));
-		cancel.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
+		cancel.addActionListener(e -> {
 				JOptionPane pane = getOptionPane((JComponent) e.getSource());
 				pane.setValue(cancel);
-			}
 		});
 	}
 
 	public static String prompt(String title, String prompt, String defaultText) {
-		return prompt(title, prompt, defaultText, new StringValidator());
+		return prompt(title, prompt, defaultText, str -> true);
 	}
 
 	public static String prompt(String title, String prompt, String defaultText, StringValidator v) {

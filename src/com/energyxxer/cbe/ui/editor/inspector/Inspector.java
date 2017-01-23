@@ -39,7 +39,7 @@ public class Inspector implements Highlighter.HighlightPainter {
 
     public void inspect() {
         items.clear();
-        TokenStream ts = new TokenStream();
+        TokenStream ts = new TokenStream(true);
         new Analyzer(new File(tab.path), tab.editor.getText(), ts);
 
         for(InspectionStructureMatch inspect : InspectionStructures.getAll()) {

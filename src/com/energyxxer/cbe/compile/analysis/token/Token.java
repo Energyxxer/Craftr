@@ -18,6 +18,8 @@ public class Token {
 	public StringLocation loc;
 	public HashMap<String, Object> attributes;
 
+	private static final boolean VERBOSE = false;
+
 	public Token(String value, File file, StringLocation loc) {
 		this.value = value;
 		this.type = TokenType.getTypeOf(value);
@@ -51,7 +53,7 @@ public class Token {
 
 	@Override
 	public String toString() {
-		return StringUtil.escapeHTML(value);
+		return (!VERBOSE) ? value : getFullString();
 	}
 
 	public String getFullString() {
@@ -72,7 +74,7 @@ public class Token {
 			attr = "\t#" + attr;
 		}
 		
-		return getLocation() + o + type + o2 + StringUtil.escapeHTML(value) + attr;
+		return getLocation() + o + type + o2 + value + attr + "\n";
 	}
 	
 	public static Token merge(String type, Token... tokens) {
@@ -81,5 +83,29 @@ public class Token {
 			s += t.value;
 		}
 		return new Token(s,type,new File(tokens[0].file),tokens[0].loc);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		Token token = (Token) o;
+
+		if (value != null ? !value.equals(token.value) : token.value != null) return false;
+		if (type != null ? !type.equals(token.type) : token.type != null) return false;
+		if (file != null ? !file.equals(token.file) : token.file != null) return false;
+		if (loc != null ? !loc.equals(token.loc) : token.loc != null) return false;
+		return attributes != null ? attributes.equals(token.attributes) : token.attributes == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = value != null ? value.hashCode() : 0;
+		result = 31 * result + (type != null ? type.hashCode() : 0);
+		result = 31 * result + (file != null ? file.hashCode() : 0);
+		result = 31 * result + (loc != null ? loc.hashCode() : 0);
+		result = 31 * result + (attributes != null ? attributes.hashCode() : 0);
+		return result;
 	}
 }

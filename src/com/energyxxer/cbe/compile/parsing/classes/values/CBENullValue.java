@@ -1,6 +1,6 @@
 package com.energyxxer.cbe.compile.parsing.classes.values;
 
-import com.energyxxer.cbe.compile.parsing.exceptions.IllegalOperandsException;
+import com.energyxxer.cbe.compile.exceptions.IllegalOperandsException;
 import com.sun.istack.internal.NotNull;
 
 /**

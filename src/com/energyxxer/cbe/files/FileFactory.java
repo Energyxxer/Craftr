@@ -1,5 +1,6 @@
 package com.energyxxer.cbe.files;
 
+import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.global.Preferences;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.global.TabManager;
@@ -9,13 +10,12 @@ import com.energyxxer.cbe.ui.explorer.Explorer;
 import com.energyxxer.cbe.util.FileUtil;
 import com.energyxxer.cbe.util.StringPrompt;
 import com.energyxxer.cbe.util.StringUtil;
-import com.energyxxer.cbe.util.StringValidator;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  */
 public class FileFactory {
 
-	private static final List<String> NO_PROMPT_TYPES = Arrays.asList("World");
+	private static final List<String> NO_PROMPT_TYPES = Collections.singletonList("World");
 
 	private static String filter(String template, HashMap<String, String> variables) {
 		for(Map.Entry<String, String> variable : variables.entrySet()) {
@@ -54,34 +54,24 @@ public class FileFactory {
 
 	public static void newProject() {
 		String projectName = StringPrompt.prompt("Create New Project", "Enter the name of your new project:", "",
-			new StringValidator() {
-				@Override
-				public boolean validate(String str) {
-					return FileUtil.validateFilename(str) && !new File(Preferences.get("workspace_dir") + File.separator + str).exists();
-				}
-			}
+			str -> FileUtil.validateFilename(str) && !new File(Preferences.get("workspace_dir") + File.separator + str).exists()
 		);
 		if (projectName != null) {
 			ProjectManager.create(projectName);
 			Window.explorer.generateProjectList();
 		}
-		System.out.println(projectName);
 	}
 	
 	public static void newFolder() {
 		if(Explorer.selectedLabels.size() != 1) return;
 		if(!new File(Explorer.selectedLabels.get(0).parent.path).isDirectory()) return;
 		String folderName = StringPrompt.prompt("Create New Folder", "Enter the name of your new folder:", "",
-			new StringValidator() {
-				@Override
-				public boolean validate(String str) {
-					return FileUtil.validateFilename(str) && !new File(Explorer.selectedLabels.get(0).parent.path + File.separator + str).exists();
-				}
-			}
+			str -> FileUtil.validateFilename(str) && !new File(Explorer.selectedLabels.get(0).parent.path + File.separator + str).exists()
 		);
 		if (folderName != null) {
 			if(Explorer.selectedLabels.size() != 1) return;
-			new File(Explorer.selectedLabels.get(0).parent.path + File.separator + folderName).mkdirs();
+			if(!new File(Explorer.selectedLabels.get(0).parent.path + File.separator + folderName).mkdirs())
+				Console.err.println("Couldn't create folder '" + folderName + "'");
 			Window.explorer.generateProjectList();
 		}
 	}
@@ -92,44 +82,44 @@ public class FileFactory {
 		String unitName;
 		if(!NO_PROMPT_TYPES.contains(type)) {
 			unitName = StringPrompt.prompt("Create New Entity", "Enter the name of your new entity:", "",
-					new StringValidator() {
-						@Override
-						public boolean validate(String str) {
-							return FileUtil.validateFilename(str) && !new File(Explorer.selectedLabels.get(0).parent.path + File.separator + str + ".mcbe").exists();
-						}
-					}
+					str -> FileUtil.validateFilename(str) && !new File(Explorer.selectedLabels.get(0).parent.path + File.separator + str + ".mcbe").exists()
 			);
 		} else unitName = type;
 		if(unitName != null) {
 			try {
 				String path = Explorer.selectedLabels.get(0).parent.path + File.separator + unitName + ".mcbe";
 				File newFile = new File(path);
-				newFile.createNewFile();
-				ProjectManager.setIconFor(newFile, type.toLowerCase());
-				PrintWriter writer = new PrintWriter(path, "UTF-8");
+				boolean successful = newFile.createNewFile();
 
-				Date date = new Date();
+				int pos = 0;
 
-				HashMap<String, String> variables = new HashMap<>();
-				variables.put("package", getPackage(newFile));
-				variables.put("name", unitName);
-				variables.put("user", Preferences.get("username","User"));
+				if(successful) {
+					ProjectManager.setIconFor(newFile, type.toLowerCase());
+					PrintWriter writer = new PrintWriter(path, "UTF-8");
 
-				variables.put("day", Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG_FORMAT, Locale.getDefault()));
-				variables.put("date", Integer.toString(Calendar.getInstance().get(Calendar.DAY_OF_MONTH)));
-				variables.put("week", Integer.toString(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)));
-				variables.put("month", Integer.toString(Calendar.getInstance().get(Calendar.MONTH)+1));
-				variables.put("year", Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
-				variables.put("timestamp", date.toString());
+					Date date = new Date();
 
-				String text = filter(FileDefaults.defaults.get(type.toLowerCase()), variables);
-				int pos = Math.max(0,text.indexOf("$END$"));
-				text = text.replace("$END$","");
+					HashMap<String, String> variables = new HashMap<>();
+					variables.put("package", getPackage(newFile));
+					variables.put("name", unitName);
+					variables.put("user", Preferences.get("username", "User"));
 
-				writer.print(text);
-				writer.close();
+					variables.put("day", Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG_FORMAT, Locale.getDefault()));
+					variables.put("date", Integer.toString(Calendar.getInstance().get(Calendar.DAY_OF_MONTH)));
+					variables.put("week", Integer.toString(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)));
+					variables.put("month", Integer.toString(Calendar.getInstance().get(Calendar.MONTH) + 1));
+					variables.put("year", Integer.toString(Calendar.getInstance().get(Calendar.YEAR)));
+					variables.put("timestamp", date.toString());
 
-				TabManager.openTab(path,pos);
+					String text = filter(FileDefaults.defaults.get(type.toLowerCase()), variables);
+					pos = Math.max(0, text.indexOf("$END$"));
+					text = text.replace("$END$", "");
+
+					writer.print(text);
+					writer.close();
+				}
+
+				if(newFile.exists()) TabManager.openTab(path,pos);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

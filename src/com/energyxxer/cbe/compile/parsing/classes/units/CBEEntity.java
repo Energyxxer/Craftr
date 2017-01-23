@@ -3,7 +3,7 @@ package com.energyxxer.cbe.compile.parsing.classes.units;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
 import com.energyxxer.cbe.compile.parsing.classes.fields.CBEField;
 import com.energyxxer.cbe.compile.parsing.classes.files.CBEFile;
-import com.energyxxer.cbe.compile.parsing.exceptions.CBEParserException;
+import com.energyxxer.cbe.compile.exceptions.CBEParserException;
 import com.energyxxer.cbe.minecraft.util.Selector;
 import com.energyxxer.cbe.util.Range;
 import com.energyxxer.cbe.util.vprimitives.VInteger;

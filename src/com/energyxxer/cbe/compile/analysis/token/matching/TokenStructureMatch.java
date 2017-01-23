@@ -14,7 +14,7 @@ import java.util.List;
  * could match with this structure.
  */
 public class TokenStructureMatch extends TokenPatternMatch {
-	public ArrayList<TokenPatternMatch> entries = new ArrayList<TokenPatternMatch>();
+	private ArrayList<TokenPatternMatch> entries = new ArrayList<>();
 	
 	public TokenStructureMatch(String name) {
 		this.name = name;
@@ -44,16 +44,15 @@ public class TokenStructureMatch extends TokenPatternMatch {
 	@Override
 	public TokenMatchResponse match(List<Token> tokens, Stack st) {
 		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[]{"List<Token>"}, new Object[]{tokens});
-		if (st.find(thisInvoc)) {
-			//System.out.println("Breaking infinite loop...");
-			return new TokenMatchResponse(false, tokens.get(0), 0, this, null);
-		}
 		st.push(thisInvoc);
 
 		TokenMatchResponse longestMatch = null;
 
 		for (TokenPatternMatch entry : entries) {
-			TokenMatchResponse itemMatch = entry.match(tokens.subList(0,tokens.size()),st);
+			List<Token> subList = tokens.subList(0,tokens.size());
+			MethodInvocation newInvoc = new MethodInvocation(entry, "match", new String[]{"List<Token>"}, new Object[]{subList});
+			if(st.find(newInvoc)) continue;
+			TokenMatchResponse itemMatch = entry.match(subList,st);
 
 			if (longestMatch == null) {
 				longestMatch = itemMatch;
@@ -64,6 +63,7 @@ public class TokenStructureMatch extends TokenPatternMatch {
 			}
 
 		}
+
 		st.pop();
 
 		if (longestMatch == null || longestMatch.matched) {
@@ -104,9 +104,8 @@ public class TokenStructureMatch extends TokenPatternMatch {
 	    TokenStructureMatch newStruct = new TokenStructureMatch(name, optional);
 	    for(TokenPatternMatch entry : entries) {
 	        if(entry != entryToExclude) {
-                System.out.println("Including " + entry);
                 newStruct.add(entry);
-            } else System.out.println("Excluding " + entry);
+            }
         }
         return newStruct;
     }

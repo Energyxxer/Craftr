@@ -22,12 +22,12 @@ public class InspectionStructures {
 
         {
             TokenGroupMatch g = new TokenGroupMatch();
-            g.append(LangStructures.RETURN_STATEMENT);
+            g.append(LangStructures.RETURN_EXPRESSION);
             g.append(new TokenListMatch(LangStructures.STATEMENT));
 
             UNREACHABLE_CODE.add(g);
             UNREACHABLE_CODE.setHighlight(LangStructures.STATEMENT);
-            UNREACHABLE_CODE.setExclude(LangStructures.RETURN_STATEMENT);
+            UNREACHABLE_CODE.setExclude(LangStructures.RETURN_EXPRESSION);
         }
 
         all.add(UNREACHABLE_CODE);
