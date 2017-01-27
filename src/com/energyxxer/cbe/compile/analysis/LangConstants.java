@@ -21,9 +21,9 @@ public class LangConstants {
 	public static final String[] number_punctuation = { "." };
 	public static final String[] end_of_statement = { ";" };
 
-	public static final String[] modifiers = { "public", "static", "typestatic", "abstract", "final", "protected", "private", "synchronized" };
+	public static final String[] modifiers = { "public", "static", "typestatic", "abstract", "final", "protected", "private", "synchronized", "compilation", "ingame" };
 	public static final String[] unit_types = { "entity", "item", "feature", "class" };
-	public static final String[] unit_actions = { "extends", "implements", "requires" };
+	public static final String[] unit_actions = { "extends", "implements" };
 	public static final String[] braces = { "(", ")", "[", "]", "{", "}" };
 	public static final String[] data_types = { "int", "String", "float", "boolean", "type", "void", "Thread" };
 	public static final String[] operators = { "+=", "+", "-=", "-", "*=", "*", "/=", "/", "%=", "%", "<=", ">=", "!=", "==", "=", "<", ">", "^=", "^" };

@@ -3,7 +3,6 @@ package com.energyxxer.cbe.ui.editor.behavior.caret;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -66,7 +65,7 @@ public class CaretProfile implements Iterable<Integer> {
     }
 
     public void sort() {
-        list.sort(Comparator.comparingInt(Integer::intValue));
+        this.bSort();
     }
 
     public Iterator<Integer> iterator() {
@@ -80,5 +79,25 @@ public class CaretProfile implements Iterable<Integer> {
     @Override
     public String toString() {
         return list.toString();
+    }
+
+    private void bSort() {
+        int changes = 1;
+        while(changes > 0) {
+            changes = 0;
+            for (int i = 0; i < list.size() - 2; i += 2) {
+                if (list.get(i) > list.get(i + 2)) {
+                    int d1 = list.get(i),
+                            m1 = list.get(i + 1),
+                            d2 = list.get(i + 2),
+                            m2 = list.get(i + 3);
+                    list.set(i, d2);
+                    list.set(i + 1, m2);
+                    list.set(i + 2, d1);
+                    list.set(i + 3, m1);
+                    changes++;
+                }
+            }
+        }
     }
 }

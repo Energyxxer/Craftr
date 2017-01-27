@@ -21,6 +21,6 @@ public class Commons {
     }
 
     public static boolean isSpecialCharacter(char ch) {
-        return "\b\r\n\t\f".contains("" + ch);
+        return "\b\r\n\t\f\u007F".contains("" + ch);
     }
 }

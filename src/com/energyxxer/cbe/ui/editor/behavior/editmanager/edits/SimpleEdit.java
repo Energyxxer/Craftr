@@ -25,7 +25,10 @@ public class SimpleEdit implements Edit {
         this.locations = new ArrayList<>(locations.asList());
     }
 
-    public void redo(AdvancedEditor editor) {
+    public boolean redo(AdvancedEditor editor) {
+
+        if(value.length() <= 0) return false;
+
         Document doc = editor.getDocument();
         EditorCaret caret = editor.getCaret();
         try {
@@ -61,9 +64,13 @@ public class SimpleEdit implements Edit {
         } catch(BadLocationException e) {
             e.printStackTrace();
         }
+        return true;
     }
 
-    public void undo(AdvancedEditor editor) {
+    public boolean undo(AdvancedEditor editor) {
+
+        if(value.length() <= 0) return false;
+
         Document doc = editor.getDocument();
         EditorCaret caret = editor.getCaret();
         try {
@@ -95,5 +102,6 @@ public class SimpleEdit implements Edit {
         } catch(BadLocationException e) {
             e.printStackTrace();
         }
+        return true;
     }
 }

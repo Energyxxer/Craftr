@@ -1,6 +1,5 @@
 package com.energyxxer.cbe.ui.editor.behavior.caret;
 
-import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.ui.editor.behavior.AdvancedEditor;
 import com.energyxxer.cbe.util.StringBounds;
 
@@ -13,7 +12,7 @@ import java.awt.event.KeyEvent;
  * Created by User on 1/7/2017.
  */
 public class Dot {
-    AdvancedEditor component;
+    private AdvancedEditor component;
     int index = 0;
     int mark = 0;
     int x = 0;
@@ -39,6 +38,7 @@ public class Dot {
             Rectangle view = component.modelToView(index);
             if(view != null) this.x = view.x;
         } catch (BadLocationException ble) {
+            //
         }
     }
 

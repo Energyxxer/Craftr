@@ -17,7 +17,7 @@ public class InsertionEdit implements Edit {
     private String value;
     private ArrayList<String> previousValues = new ArrayList<>();
     private CaretProfile previousProfile = new CaretProfile();
-    private CaretProfile nextProfile = null;
+    //private CaretProfile nextProfile = null;
 
     public InsertionEdit(String value, AdvancedEditor editor) {
         this.value = value;
@@ -25,7 +25,10 @@ public class InsertionEdit implements Edit {
     }
 
     @Override
-    public void redo(AdvancedEditor editor) {
+    public boolean redo(AdvancedEditor editor) {
+
+        if(value.length() <= 0) return false;
+
         Document doc = editor.getDocument();
         EditorCaret caret = editor.getCaret();
         try {
@@ -34,7 +37,7 @@ public class InsertionEdit implements Edit {
             int characterDrift = 0;
 
             previousValues.clear();
-            nextProfile = new CaretProfile();
+            CaretProfile nextProfile = new CaretProfile();
 
             for (int i = 0; i < previousProfile.size() - 1; i += 2) {
                 int start = previousProfile.get(i) + characterDrift;
@@ -59,10 +62,14 @@ public class InsertionEdit implements Edit {
         } catch(BadLocationException e) {
             e.printStackTrace();
         }
+        return true;
     }
 
     @Override
-    public void undo(AdvancedEditor editor) {
+    public boolean undo(AdvancedEditor editor) {
+
+        if(value.length() <= 0) return false;
+
         Document doc = editor.getDocument();
         EditorCaret caret = editor.getCaret();
         try {
@@ -89,5 +96,6 @@ public class InsertionEdit implements Edit {
         } catch(BadLocationException e) {
             e.printStackTrace();
         }
+        return true;
     }
 }

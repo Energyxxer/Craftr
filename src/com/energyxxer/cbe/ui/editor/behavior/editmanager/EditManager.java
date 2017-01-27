@@ -26,10 +26,12 @@ public class EditManager {
     }
 
     public void insertEdit(Edit edit) {
-        while(edits.size() > currentEdit) {
-            edits.remove(currentEdit);
+        if(edit.redo(component)) {
+            while(edits.size() > currentEdit) {
+                edits.remove(currentEdit);
+            }
+            edits.add(edit);
+            currentEdit++;
         }
-        edits.add(edit);
-        redo();
     }
 }

@@ -23,17 +23,21 @@ public class CompoundEdit implements Edit {
     }
 
     @Override
-    public void redo(AdvancedEditor editor) {
+    public boolean redo(AdvancedEditor editor) {
+        boolean actionPerformed = false;
         for(Edit e : edits) {
-            e.redo(editor);
+            if(e.redo(editor)) actionPerformed = true;
         }
+        return actionPerformed;
     }
 
     @Override
-    public void undo(AdvancedEditor editor) {
+    public boolean undo(AdvancedEditor editor) {
+        boolean actionPerformed = false;
         for(int i = edits.size()-1; i >= 0; i--) {
             Edit e = edits.get(i);
-            e.undo(editor);
+            if(e.undo(editor)) actionPerformed = true;
         }
+        return actionPerformed;
     }
 }

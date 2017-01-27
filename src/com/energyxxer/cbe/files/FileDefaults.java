@@ -1,6 +1,5 @@
 package com.energyxxer.cbe.files;
 
-import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.util.ResourceReader;
 
 import java.util.HashMap;
@@ -18,7 +17,6 @@ public class FileDefaults {
 
         for(String name : indexes) {
             defaults.put(name, ResourceReader.read("/resources/defaults/" + name + ".txt").replace("\t","    "));
-            Console.debug.println(String.format("%s:\n%s",name,defaults.get(name)));
         }
     }
 }

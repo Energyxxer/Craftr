@@ -45,6 +45,7 @@ public class EditorCaret extends DefaultCaret {
     }
 
     private void handleEvent(KeyEvent e) {
+        if(e.isConsumed()) return;
         boolean actionPerformed = false;
         for(Dot dot : dots) {
             if(dot.handleEvent(e)) actionPerformed = true;
@@ -159,7 +160,7 @@ public class EditorCaret extends DefaultCaret {
         } else {
             StringLocation loc = editor.getLocationForOffset(dots.get(0).index);
             StringLocation loc2 = editor.getLocationForOffset(dots.get(0).mark);
-            return loc.line + ":" + loc.column + " - " + loc2.line + ":" + loc2.column;
+            return loc.line + ":" + loc.column + "#" + loc.index + " - " + loc2.line + ":" + loc2.column + "#" + loc2.index;
         }
     }
 

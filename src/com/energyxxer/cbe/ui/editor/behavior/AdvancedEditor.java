@@ -2,11 +2,13 @@ package com.energyxxer.cbe.ui.editor.behavior;
 
 import com.energyxxer.cbe.global.Commons;
 import com.energyxxer.cbe.ui.editor.behavior.caret.CaretProfile;
+import com.energyxxer.cbe.ui.editor.behavior.caret.Dot;
 import com.energyxxer.cbe.ui.editor.behavior.caret.EditorCaret;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.EditManager;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.CompoundEdit;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.DeletionEdit;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.InsertionEdit;
+import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.LineMoveEdit;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.SimpleEdit;
 import com.energyxxer.cbe.util.StringLocation;
 import com.energyxxer.cbe.util.StringUtil;
@@ -93,7 +95,8 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_TAB) {
+        int keyCode = e.getKeyCode();
+        if(keyCode == KeyEvent.VK_TAB) {
             e.consume();
 
             List<Integer> locations = caret.getProfile().asList();
@@ -111,10 +114,12 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             }
             editManager.insertEdit(insertTabulation);
             caret.deselect();
-        } else if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
             e.consume();
-            editManager.insertEdit(new DeletionEdit(this, e.isControlDown()));
-        } else if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+        } else if(keyCode == KeyEvent.VK_BACK_SPACE || keyCode == KeyEvent.VK_DELETE) {
+            e.consume();
+            editManager.insertEdit(new DeletionEdit(this, e.isControlDown(), keyCode == KeyEvent.VK_DELETE));
+            e.consume();
+        } else if(keyCode == KeyEvent.VK_ENTER) {
             e.consume();
 
             String text = "";
@@ -149,7 +154,8 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
 
             editManager.insertEdit(insertNewline);
             caret.deselect();
-        } else if(e.getKeyCode() == KeyEvent.VK_V && e.isControlDown()) {
+            e.consume();
+        } else if(keyCode == KeyEvent.VK_V && e.isControlDown()) {
             try {
                 Object rawContents = this.getToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
                 if(rawContents == null) return;
@@ -158,8 +164,16 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             } catch(Exception x) {
                 x.printStackTrace();
             }
-        } else if(e.getKeyCode() == KeyEvent.VK_A && e.isControlDown()) {
+            e.consume();
+        } else if(keyCode == KeyEvent.VK_A && e.isControlDown()) {
             caret.setProfile(new CaretProfile(0, getDocument().getLength()));
+            e.consume();
+        } else if(keyCode >= KeyEvent.VK_LEFT && keyCode <= KeyEvent.VK_DOWN && e.isAltDown()) {
+            if(keyCode == KeyEvent.VK_UP)
+                editManager.insertEdit(new LineMoveEdit(this, Dot.UP));
+            else if(keyCode == KeyEvent.VK_DOWN)
+                editManager.insertEdit(new LineMoveEdit(this, Dot.DOWN));
+            e.consume();
         }
     }
 
