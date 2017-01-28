@@ -111,6 +111,23 @@ public class StringUtil {
 		}
 		return s;
 	}
+
+	public static int getSequenceCount(String str, String pattern) {
+		return getSequenceCount(str, pattern, 0);
+	}
+
+	public static int getSequenceCount(String str, String pattern, int start) {
+		int count = 0;
+
+		for(int i = start; i < str.length();) {
+			if(str.substring(i).startsWith(pattern)) {
+				count++;
+				i += pattern.length();
+			} else break;
+		}
+
+		return count;
+	}
 	
 	private StringUtil() {}
 }

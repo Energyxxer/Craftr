@@ -1,12 +1,14 @@
 package com.energyxxer.cbe.ui.editor.behavior;
 
 import com.energyxxer.cbe.global.Commons;
+import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.cbe.ui.editor.behavior.caret.Dot;
 import com.energyxxer.cbe.ui.editor.behavior.caret.EditorCaret;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.EditManager;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.CompoundEdit;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.DeletionEdit;
+import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.IndentEdit;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.InsertionEdit;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.LineMoveEdit;
 import com.energyxxer.cbe.ui.editor.behavior.editmanager.edits.SimpleEdit;
@@ -87,7 +89,18 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     public void keyTyped(KeyEvent e) {
         e.consume();
         if(e.getKeyChar() == '`') {
-            editManager.insertEdit(new InsertionEdit("\t", this));
+            try {
+                Object rawContents = this.getToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+                if(rawContents == null) return;
+                String contents = ((String) rawContents);
+                String log = "";
+                for(byte c : contents.getBytes()) {
+                    log += "" + c + ": \"" + (char) c + "\" (" + Character.getName(c) + ")\n";
+                }
+                Console.debug.println(log);
+            } catch(Exception x) {
+                x.printStackTrace();
+            }
         } else if(!e.isControlDown() && !Commons.isSpecialCharacter(e.getKeyChar())) {
             editManager.insertEdit(new InsertionEdit("" + e.getKeyChar(), this));
         }
@@ -99,21 +112,26 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
         if(keyCode == KeyEvent.VK_TAB) {
             e.consume();
 
-            List<Integer> locations = caret.getProfile().asList();
-            int characterDrift = 0;
+            CaretProfile profile = caret.getProfile();
+            if(profile.getSelectedCharCount() == 0) {
+                List<Integer> locations = profile.asList();
+                int characterDrift = 0;
 
-            CompoundEdit insertTabulation = new CompoundEdit();
+                CompoundEdit insertTabulation = new CompoundEdit();
 
-            for(int i = 0; i < locations.size()-1; i += 2) {
-                int d = locations.get(i) + characterDrift;
-                int spaces = 4 - ((getLocationForOffset(d).column-1) % 4);
-                spaces = (spaces > 0) ? spaces : 4;
-                characterDrift += spaces;
-                String str = StringUtil.repeat(" ", spaces);
-                insertTabulation.appendEdit(new SimpleEdit(str, new CaretProfile(d,d)));
+                for (int i = 0; i < locations.size() - 1; i += 2) {
+                    int d = locations.get(i) + characterDrift;
+                    int spaces = 4 - ((getLocationForOffset(d).column - 1) % 4);
+                    spaces = (spaces > 0) ? spaces : 4;
+                    characterDrift += spaces;
+                    String str = StringUtil.repeat(" ", spaces);
+                    insertTabulation.appendEdit(new SimpleEdit(str, new CaretProfile(d, d)));
+                }
+                editManager.insertEdit(insertTabulation);
+                caret.deselect();
+            } else {
+                editManager.insertEdit(new IndentEdit(this, e.isShiftDown()));
             }
-            editManager.insertEdit(insertTabulation);
-            caret.deselect();
             e.consume();
         } else if(keyCode == KeyEvent.VK_BACK_SPACE || keyCode == KeyEvent.VK_DELETE) {
             e.consume();
@@ -191,11 +209,12 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     public int viewToModel(Point pt) {
         int superResult = super.viewToModel(pt);
         try {
+            char ch = this.getDocument().getText(superResult,1).charAt(0);
             Rectangle backward = this.modelToView(superResult);
             Rectangle forward = this.modelToView(superResult+1);
 
             float offset = (float) (pt.x - backward.x) / (forward.x - backward.x);
-            return (offset >= BIAS_POINT) ? superResult+1 : superResult;
+            return (offset >= BIAS_POINT && ch != '\n') ? superResult+1 : superResult;
         } catch(BadLocationException x) {
             return superResult;
         }

@@ -15,6 +15,10 @@ public class CaretProfile implements Iterable<Integer> {
 
     public CaretProfile() {}
 
+    public CaretProfile(CaretProfile profile) {
+        this.list.addAll(profile.list);
+    }
+
     public CaretProfile(Collection<? extends Integer> dots) {
         list.addAll(dots);
     }
@@ -99,5 +103,30 @@ public class CaretProfile implements Iterable<Integer> {
                 }
             }
         }
+    }
+
+    public int getSelectedCharCount() {
+        int chars = 0;
+        for(int i = 0; i < list.size()-1; i += 2) {
+            chars += Math.abs(list.get(i+1) - list.get(i));
+        }
+        return chars;
+    }
+
+    public void pushFrom(int pos, int offset) {
+        for(int i = 0; i < list.size(); i++) {
+            if(list.get(i) >= pos)
+                list.set(i,list.get(i)+offset);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CaretProfile integers = (CaretProfile) o;
+
+        return list.equals(integers.list);
     }
 }

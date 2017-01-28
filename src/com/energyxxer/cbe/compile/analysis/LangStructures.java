@@ -30,8 +30,6 @@ public class LangStructures {
 
 	public static final TokenStructureMatch IDENTIFIER;
 
-	public static final TokenStructureMatch RANGE_LITERAL;
-
     public static final TokenStructureMatch DATA_TYPE;
 	public static final TokenStructureMatch METHOD_CALL;
 	public static final TokenStructureMatch VALUE;
@@ -70,8 +68,6 @@ public class LangStructures {
 		IDENTIFIER = new TokenStructureMatch("IDENTIFIER");
 
 		VARIABLE_DECLARATION = new TokenStructureMatch("VARIABLE_DECLARATION");
-
-		RANGE_LITERAL = new TokenStructureMatch("RANGE_LITERAL");
 
 		DATA_TYPE = new TokenStructureMatch("DATA_TYPE");
 		EXPRESSION = new TokenStructureMatch("EXPRESSION");
@@ -302,7 +298,6 @@ public class LangStructures {
 		{
 			TokenGroupMatch g = new TokenGroupMatch();
 			g.append(new TokenItemMatch(TokenType.DATA_TYPE));
-			g.append(new TokenGroupMatch(true).append(RANGE_LITERAL));
 			{
 				TokenGroupMatch g2 = new TokenGroupMatch();
 				g2.append(new TokenItemMatch(TokenType.BRACE,"["));
@@ -325,16 +320,6 @@ public class LangStructures {
 			g.append(new TokenItemMatch(TokenType.ANNOTATION_MARKER));
 			g.append(METHOD_CALL);
 			ANNOTATION.add(g);
-		}
-
-		{
-			TokenGroupMatch g = new TokenGroupMatch();
-			g.append(new TokenItemMatch(TokenType.BRACE,"{"));
-			g.append(VALUE);
-			g.append(new TokenItemMatch(TokenType.COMMA));
-			g.append(VALUE);
-			g.append(new TokenItemMatch(TokenType.BRACE,"}"));
-			RANGE_LITERAL.add(g);
 		}
 
 		{

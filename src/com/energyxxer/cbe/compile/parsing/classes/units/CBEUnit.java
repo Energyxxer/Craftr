@@ -26,7 +26,7 @@ public class CBEUnit {
     protected CBEPackage unitPackage;
 
     public enum UnitModifier {
-        PACKAGE, PUBLIC, FINAL
+        PACKAGE, PUBLIC, FINAL, ABSTRACT, COMPILATION, INGAME
     }
 
     public CBEUnit(CBEFile file, TokenPattern<?> unit) throws CBEParserException {
@@ -44,6 +44,9 @@ public class CBEUnit {
 
         boolean isPublic = false;
         boolean isFinal = false;
+        boolean isAbstract = false;
+        boolean isCompilation = false;
+        boolean isIngame = false;
 
         for (TokenPattern<?> t : modifierTokens) {
             Token token = (Token) t.getContents();
@@ -59,6 +62,24 @@ public class CBEUnit {
                 } else {
                     throw new CBEParserException("Duplicate modifier 'public'", token);
                 }
+            } else if (token.value.equals("abstract")) {
+                if(!isAbstract) {
+                    isAbstract = true;
+                } else {
+                    throw new CBEParserException("Duplicate modifier 'abstract'", token);
+                }
+            } else if (token.value.equals("compilation")) {
+                if(!isCompilation) {
+                    isCompilation = true;
+                } else {
+                    throw new CBEParserException("Duplicate modifier 'compilation'", token);
+                }
+            } else if (token.value.equals("ingame")) {
+                if(!isIngame) {
+                    isIngame = true;
+                } else {
+                    throw new CBEParserException("Duplicate modifier 'ingame'", token);
+                }
             } else {
                 throw new CBEParserException("Modifier '" + token.value + "' is not allowed here", token);
             }
@@ -67,6 +88,9 @@ public class CBEUnit {
         modifiers = new ArrayList<>();
         modifiers.add((isPublic) ? PUBLIC : PACKAGE);
         if(isFinal) modifiers.add(FINAL);
+        if(isAbstract) modifiers.add(ABSTRACT);
+        if(isCompilation) modifiers.add(COMPILATION);
+        if(isIngame) modifiers.add(INGAME);
 
         this.declaration = unit;
     }

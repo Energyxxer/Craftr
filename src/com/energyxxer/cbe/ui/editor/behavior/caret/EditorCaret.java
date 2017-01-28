@@ -1,6 +1,7 @@
 package com.energyxxer.cbe.ui.editor.behavior.caret;
 
 import com.energyxxer.cbe.ui.editor.behavior.AdvancedEditor;
+import com.energyxxer.cbe.util.Range;
 import com.energyxxer.cbe.util.StringLocation;
 
 import javax.swing.plaf.TextUI;
@@ -214,8 +215,9 @@ public class EditorCaret extends DefaultCaret {
 
     public void setProfile(CaretProfile profile) {
         this.dots.clear();
+        Range r = new Range(0,editor.getDocument().getLength());
         for(int i = 0; i < profile.size(); i += 2) {
-            addDot(new Dot(profile.get(i),profile.get(i+1), editor));
+            addDot(new Dot(r.clamp(profile.get(i)),r.clamp(profile.get(i+1)), editor));
         }
         update();
     }
