@@ -231,7 +231,7 @@ public class MinecraftConstants {
 			workingDirectory = System.getProperty("user.home");
 			// if we are on a Mac, we are not done, we look for "Application
 			// Support"
-			workingDirectory += "/Library/Application Support";
+			if(OS.contains("MAC")) workingDirectory += "/Library/Application Support";
 		}
 
 		workingDirectory += File.separator + ".minecraft";
