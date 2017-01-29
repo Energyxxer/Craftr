@@ -155,13 +155,28 @@ public class EditorCaret extends DefaultCaret {
         repaint();
     }
 
+    public String getSelectionInfo() {
+        StringBuilder s = new StringBuilder(" ");
+
+        CaretProfile profile = this.getProfile();
+        int selectedCharCount = profile.getSelectedCharCount();
+        if(selectedCharCount > 0) {
+            s.append(selectedCharCount).append(" chars");
+
+            int selectedLineCount = profile.getSelectedLineCount(editor);
+            if(selectedLineCount > 1) {
+                s.append(", ").append(selectedLineCount).append(" lines");
+            }
+        }
+        return s.toString();
+    }
+
     public String getCaretInfo() {
         if(dots.size() > 1) {
             return dots.size() + " carets";
         } else {
             StringLocation loc = editor.getLocationForOffset(dots.get(0).index);
-            StringLocation loc2 = editor.getLocationForOffset(dots.get(0).mark);
-            return loc.line + ":" + loc.column + "#" + loc.index + " - " + loc2.line + ":" + loc2.column + "#" + loc2.index;
+            return loc.line + ":" + loc.column;
         }
     }
 

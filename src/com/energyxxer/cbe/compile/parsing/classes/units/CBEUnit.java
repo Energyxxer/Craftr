@@ -3,14 +3,16 @@ package com.energyxxer.cbe.compile.parsing.classes.units;
 import com.energyxxer.cbe.compile.analysis.token.Token;
 import com.energyxxer.cbe.compile.analysis.token.TokenType;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
+import com.energyxxer.cbe.compile.exceptions.CBEParserException;
 import com.energyxxer.cbe.compile.parsing.classes.files.CBEFile;
 import com.energyxxer.cbe.compile.parsing.classes.files.CBEPackage;
-import com.energyxxer.cbe.compile.exceptions.CBEParserException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import static com.energyxxer.cbe.compile.parsing.classes.units.CBEUnit.UnitModifier.*;
+import static com.energyxxer.cbe.compile.parsing.classes.units.CBEUnit.UnitModifier.PACKAGE;
+import static com.energyxxer.cbe.compile.parsing.classes.units.CBEUnit.UnitModifier.PUBLIC;
 
 /**
  * Created by User on 12/2/2016.
@@ -42,55 +44,33 @@ public class CBEUnit {
 
         List<TokenPattern<?>> modifierTokens = unit.searchByName("UNIT_MODIFIER");
 
-        boolean isPublic = false;
-        boolean isFinal = false;
-        boolean isAbstract = false;
-        boolean isCompilation = false;
-        boolean isIngame = false;
+        ArrayList<String> modifierStrings = new ArrayList<>();
 
         for (TokenPattern<?> t : modifierTokens) {
             Token token = (Token) t.getContents();
-            if (token.value.equals("final")) {
-                if(!isFinal) {
-                    isFinal = true;
-                } else {
-                    throw new CBEParserException("Duplicate modifier 'final'", token);
-                }
-            } else if (token.value.equals("public")) {
-                if(!isPublic) {
-                    isPublic = true;
-                } else {
-                    throw new CBEParserException("Duplicate modifier 'public'", token);
-                }
-            } else if (token.value.equals("abstract")) {
-                if(!isAbstract) {
-                    isAbstract = true;
-                } else {
-                    throw new CBEParserException("Duplicate modifier 'abstract'", token);
-                }
-            } else if (token.value.equals("compilation")) {
-                if(!isCompilation) {
-                    isCompilation = true;
-                } else {
-                    throw new CBEParserException("Duplicate modifier 'compilation'", token);
-                }
-            } else if (token.value.equals("ingame")) {
-                if(!isIngame) {
-                    isIngame = true;
-                } else {
-                    throw new CBEParserException("Duplicate modifier 'ingame'", token);
-                }
-            } else {
-                throw new CBEParserException("Modifier '" + token.value + "' is not allowed here", token);
+            if(modifierStrings.contains(token.value)) {
+                throw new CBEParserException("Duplicate modifier '" + token.value + "'", token);
             }
+            for(String[] rawCombination : UnitConstants.INVALID_UNIT_MODIFIERS) {
+                List<String> combination = Arrays.asList(rawCombination);
+                if(!combination.contains(token.value)) continue;
+
+                for(String str : combination) {
+                    if(str.equals(token.value)) continue;
+                    if(modifierStrings.contains(str)) {
+                        throw new CBEParserException("Illegal combination of modifiers: '" + str + "' and '" + token.value + "'.", token);
+                    }
+                }
+            }
+            modifierStrings.add(token.value);
         }
 
         modifiers = new ArrayList<>();
-        modifiers.add((isPublic) ? PUBLIC : PACKAGE);
-        if(isFinal) modifiers.add(FINAL);
-        if(isAbstract) modifiers.add(ABSTRACT);
-        if(isCompilation) modifiers.add(COMPILATION);
-        if(isIngame) modifiers.add(INGAME);
+
+        for(String m : modifierStrings) {
+            modifiers.add(UnitModifier.valueOf(m.toUpperCase()));
+        }
+        if(!modifiers.contains(PUBLIC)) modifiers.add(PACKAGE);
 
         this.declaration = unit;
     }

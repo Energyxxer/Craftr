@@ -71,4 +71,8 @@ public class StatusBar extends JPanel {
     public void setCaretInfo(String text) {
         extension.setCaretInfo(text);
     }
+
+    public void setSelectionInfo(String text) {
+        extension.setSelectionInfo(text);
+    }
 }

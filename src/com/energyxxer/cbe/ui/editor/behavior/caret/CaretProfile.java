@@ -1,5 +1,8 @@
 package com.energyxxer.cbe.ui.editor.behavior.caret;
 
+import com.energyxxer.cbe.ui.editor.behavior.AdvancedEditor;
+import com.energyxxer.cbe.util.StringLocation;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -111,6 +114,16 @@ public class CaretProfile implements Iterable<Integer> {
             chars += Math.abs(list.get(i+1) - list.get(i));
         }
         return chars;
+    }
+
+    public int getSelectedLineCount(AdvancedEditor editor) {
+        int lines = 0;
+        for (int i = 0; i < list.size() - 1; i += 2) {
+            StringLocation loc1 = editor.getLocationForOffset(list.get(i));
+            StringLocation loc2 = editor.getLocationForOffset(list.get(i+1));
+            lines += Math.abs(loc2.line-loc1.line)+1;
+        }
+        return lines;
     }
 
     public void pushFrom(int pos, int offset) {

@@ -107,5 +107,6 @@ public class CBEEditorComponent extends AdvancedEditor implements KeyListener, C
 
     public void displayCaretInfo() {
         Window.statusBar.setCaretInfo(getCaretInfo());
+        Window.statusBar.setSelectionInfo(getSelectionInfo());
     }
 }

@@ -14,25 +14,26 @@ import java.awt.FlowLayout;
 public class ExtendedStatusBar extends JPanel {
 
     StyledLabel caretInfo;
+    StyledLabel selectionInfo;
 
     {
-        //this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        this.setLayout(new FlowLayout(FlowLayout.RIGHT));
-        //this.setAlignmentX(RIGHT_ALIGNMENT);
-        //this.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        this.setLayout(new FlowLayout(FlowLayout.RIGHT, 20,5));
         this.setPreferredSize(new Dimension(300, 25));
 
         this.setOpaque(false);
         this.setBackground(new Color(0,0,0,0));
 
         caretInfo = new StyledLabel(Commons.DEFAULT_CARET_DISPLAY_TEXT);
-        //caretInfo.setPreferredSize(new Dimension(20,25));
-        //caretInfo.setMinimumSize(new Dimension(20,25));
-        //caretInfo.setMaximumSize(new Dimension(20,25));
+        selectionInfo = new StyledLabel(" ");
+
+        this.add(selectionInfo);
         this.add(caretInfo);
     }
 
     public void setCaretInfo(String text) {
         caretInfo.setText(text);
+    }
+    public void setSelectionInfo(String text) {
+        selectionInfo.setText(text);
     }
 }

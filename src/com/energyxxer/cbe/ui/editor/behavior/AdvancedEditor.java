@@ -246,8 +246,12 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
         }
     }
 
-    protected String getCaretInfo() {
+    public String getCaretInfo() {
         return caret.getCaretInfo();
+    }
+
+    public String getSelectionInfo() {
+        return caret.getSelectionInfo();
     }
 
     @Override
