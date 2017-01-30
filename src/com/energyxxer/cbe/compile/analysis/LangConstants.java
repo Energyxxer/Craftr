@@ -1,5 +1,6 @@
 package com.energyxxer.cbe.compile.analysis;
 
+import com.energyxxer.cbe.compile.analysis.token.TokenType;
 import com.energyxxer.cbe.minecraft.MinecraftConstants;
 
 import java.util.ArrayList;
@@ -11,14 +12,16 @@ import java.util.List;
  * Contains most of the language's keywords.
  */
 public class LangConstants {
-	public static final String[] alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_".split("");
+	public static final String alphanumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
 
-	public static final String[] string_literal = { "\"" };
+	public static final String[] string_literal = { "\"", "'", "`" };
+	public static final String[] multi_line_string_literal = { "`" };
 	public static final String[] comment = { "//" };
-	public static final String[] multilinecomment = { "/*", "*/" };
+	public static final String[] multi_line_comment = { "/*", "*/" };
 	public static final String[] annotations = { "@" };
 
 	public static final String[] number_punctuation = { "." };
+	public static final String[] number_type_suffix = { "b", "d", "f", "s", "L" };
 	public static final String[] end_of_statement = { ";" };
 
 	public static final String[] modifiers = { "public", "static", "typestatic", "abstract", "final", "protected", "private", "synchronized", "compilation", "ingame" };
@@ -51,7 +54,20 @@ public class LangConstants {
 	public static final List<String> entities = new ArrayList<>(MinecraftConstants.entities);
 	public static final List<String> abstract_entities = Arrays.asList("entity_base", "living_base");
 
+	public static final List<SpecialTokenConstant> specialConstants;
+
 	static {
 		entities.addAll(abstract_entities);
+
+		ArrayList<SpecialTokenConstant> specials = new ArrayList<>();
+		specials.add(new SpecialTokenConstant(lambda, TokenType.LAMBDA_ARROW));
+		specials.add(new SpecialTokenConstant(operators, TokenType.OPERATOR));
+		specials.add(new SpecialTokenConstant(identifier_operators, TokenType.IDENTIFIER_OPERATOR));
+		specials.add(new SpecialTokenConstant(logical_negation_operators, TokenType.LOGICAL_NEGATION_OPERATOR));
+		specials.add(new SpecialTokenConstant(braces, TokenType.BRACE));
+		specials.add(new SpecialTokenConstant(annotations, TokenType.ANNOTATION_MARKER));
+		specials.add(new SpecialTokenConstant(end_of_statement, TokenType.END_OF_STATEMENT));
+
+		specialConstants = specials;
 	}
 }

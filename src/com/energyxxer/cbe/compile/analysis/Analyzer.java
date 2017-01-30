@@ -4,6 +4,7 @@ import com.energyxxer.cbe.compile.analysis.token.Token;
 import com.energyxxer.cbe.compile.analysis.token.TokenAttributes;
 import com.energyxxer.cbe.compile.analysis.token.TokenStream;
 import com.energyxxer.cbe.compile.analysis.token.TokenType;
+import com.energyxxer.cbe.global.Commons;
 import com.energyxxer.cbe.global.Preferences;
 import com.energyxxer.cbe.util.StringLocation;
 
@@ -12,6 +13,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+
+import static com.energyxxer.cbe.compile.analysis.Analyzer.Context.COMMENT;
+import static com.energyxxer.cbe.compile.analysis.Analyzer.Context.DEFAULT;
+import static com.energyxxer.cbe.compile.analysis.Analyzer.Context.MULTI_LINE_COMMENT;
+import static com.energyxxer.cbe.compile.analysis.Analyzer.Context.NUMBER;
+import static com.energyxxer.cbe.compile.analysis.Analyzer.Context.STRING;
 
 /**
  * For tokenizing CBE files. At the moment, all tokens go through the static
@@ -25,29 +32,28 @@ public class Analyzer {
 	public Analyzer(File project, TokenStream stream) {
 		this.stream = stream;
 		parse(project);
-	};
+	}
 
 	public Analyzer(File file, String str, TokenStream stream) {
 		this.stream = stream;
 		tokenize(file, str);
-	};
+	}
 	
-	public void parse(File project) {
+	private void parse(File project) {
 		if (!project.exists())
 			return;
 		File[] files = project.listFiles();
 		if(files == null) return;
-		for (int i = 0; i < files.length; i++) {
-			String name = files[i].getName();
-			if (files[i].isDirectory()) {
-				if(files[i].getName().equals("resources") && files[i].getParentFile().getParent().equals(Preferences.get("workspace_dir"))) {
-					//This is the resource pack directory.
-				} else {					
-					parse(files[i]);
+		for (File file : files) {
+			String name = file.getName();
+			if (file.isDirectory()) {
+				if(!file.getName().equals("resources") || !file.getParentFile().getParent().equals(Preferences.get("workspace_dir"))) {
+					//This is not the resource pack directory.
+					parse(file);
 				}
 			} else if(name.endsWith(".mcbe")) {
 				try {
-					tokenize(files[i], new String(Files.readAllBytes(Paths.get(files[i].getPath()))));
+					tokenize(file, new String(Files.readAllBytes(Paths.get(file.getPath()))));
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -55,291 +61,274 @@ public class Analyzer {
 		}
 	}
 
-	public void tokenize(File file, String str) {
+	enum Context {
+		DEFAULT, STRING, NUMBER, COMMENT, MULTI_LINE_COMMENT
+	}
 
-		String token = null;
-		int line = 0;
-		int column = 0;
-		String tokenType = null;
-		char lastChar = '\u0000';
-		boolean alphanumeric = false;
-		boolean isComment = false;
-		boolean isString = false;
-		boolean isNumber = false;
+	private File file;
 
-		int cLine = 1;
-		int cColumn = 0;
-		
-		int tokenIndex = 0;
-		
-		String c = "";
+	private StringBuilder token = new StringBuilder("");
+	private int line = 0;
+	private int column = 0;
+	private int index = 0;
 
-		mainLoop: for (int i = 0; i < str.length(); 
-				alphanumeric = Arrays.asList(LangConstants.alphanumeric).indexOf(c) >= 0,
-				lastChar = c.charAt(0),
-				
-				i++
-			) {
-			c = "" + str.charAt(i);
+	private String tokenType = null;
+
+	private int tokenLine = 0;
+	private int tokenColumn = 0;
+	private int tokenIndex = 0;
+
+	private char lastChar = '\u0000';
+	private Context context = DEFAULT;
+	private String contextData = "";
+
+	private void tokenize(File file, String str) {
+		this.file = file;
+
+		mainLoop: for(int i = 0; i <= str.length(); i++) {
+			this.index = i;
+			String c = "";
+
+			boolean isClosingIteration = true;
+
+			if(i < str.length()) {
+				c = Character.toString(str.charAt(i));
+				isClosingIteration = false;
+			}
+
+			String sub = str.substring(i);
+
 
 			if (c.equals("\n")) {
-				cLine++;
-				cColumn = 0;
+				line++;
+				column = 0;
 			} else {
-				cColumn++;
+				column++;
 			}
 
-			// CHECK FOR SPECIAL CASES FIRST
-			if (!isString && Arrays.asList(LangConstants.string_literal).indexOf(c) >= 0) {
-				if (token != null)
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
+			if(context == STRING) {
+				//Is inside a string.
 
-				line = cLine;
-				column = cColumn;
-
-				token = c;
-				tokenIndex = i;
-				tokenType = TokenType.STRING_LITERAL;
-				isString = true;
-				continue;
-			} else if (isString) {
-				if (c.equals("" + '\\')) {
-					token += c;
-					token += str.charAt(i + 1);
+				if(c.equals("\n")) {
+					//Is a line end.
+					if(contextData.equals(LangConstants.multi_line_string_literal[0])) {
+						//Is a multiline string.
+						token.append("\n");
+						continue;
+					} else {
+						//Invalid end of string. Flush anyways.
+						//TODO: Add a way to tell the caller a syntax error occurs here
+						flush();
+						continue;
+					}
+				} else if(c.equals("\\")) {
+					//Is an escaped character.
+					//Add backslash.
+					token.append("\\");
+					if(!isClosingIteration && !Commons.isSpecialCharacter(str.charAt(i+1)))
+						//Add escaped character.
+						token.append(str.charAt(i+1));
+					//Skip scanning next character.
 					i++;
 					continue;
-				} else if (Arrays.asList(LangConstants.string_literal).indexOf(c) >= 0) {
-					token += c;
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					token = tokenType = null;
-					isString = false;
+				} else if(sub.startsWith(contextData)) {
+					//Found same delimiter that started the string literal. Close the string.
+					token.append(c);
+					flush();
+					i += contextData.length()-1;
 					continue;
 				} else {
-					token += c;
+					//Is a character inside the string.
+					token.append(c);
+					continue;
+				}
+			} else if(context == COMMENT) {
+				//Is inside a single-line comment.
+
+				if(c.equals("\n")) {
+					//Found the end of the comment.
+					flush();
+					continue;
+				} else {
+					//Is a character inside the comment.
+					token.append(c);
+					continue;
+				}
+			} else if(context == MULTI_LINE_COMMENT) {
+				//Is inside a multi-line comment.
+
+				if(!isClosingIteration && sub.startsWith(LangConstants.multi_line_comment[1])) {
+					//Found the end of the multi-line comment.
+					token.append(LangConstants.multi_line_comment[1]);
+					flush();
+					i += LangConstants.multi_line_comment[1].length()-1;
+					continue;
+				} else {
+					//Is a character inside the comment.
+					token.append(c);
+					continue;
+				}
+			} else if(context == NUMBER) {
+				//Is inside a number.
+
+				if(isClosingIteration) {
+					//Found the end of the file.
+					flush();
+					continue;
+				} else if(Character.isDigit(c.charAt(0))) {
+					//Is a digit.
+					token.append(c);
+				} else if(sub.startsWith(LangConstants.number_punctuation[0])) {
+					//Is a dot.
+					if(contextData.equals("false")) {
+						//Valid dot. Accounts for a floating point literal.
+						token.append(LangConstants.number_punctuation[0]);
+						i += LangConstants.number_punctuation[0].length() - 1;
+						contextData = "true";
+						continue;
+					} else {
+						//Dot is not part of the number, and treated as a normal dot token.
+						flush();
+						//Do not go to the next iteration; let the fallback handle this.
+					}
+				} else {
+					//Is a letter or symbol.
+					for(String suffix : LangConstants.number_type_suffix) {
+						if(sub.startsWith(suffix)) {
+							//Is a valid numerical suffix.
+							token.append(suffix);
+							flush();
+							i += suffix.length()-1;
+							continue mainLoop;
+						}
+					}
+					//Is not a valid suffix.
+					flush();
+					//Do not go to the next iteration; let the fallback handle this.
+				}
+			}
+
+			//--------------------
+			//  FALLBACK CONTEXT
+			//--------------------
+
+			//Check for context changes.
+
+			//String literals.
+			for(String delimiter : LangConstants.string_literal) {
+				if(sub.startsWith(delimiter)) {
+					token.append(delimiter);
+					context = STRING;
+					contextData = delimiter;
+					tokenType = TokenType.STRING_LITERAL;
+					updateTokenPos();
+					i += delimiter.length()-1;
+					continue mainLoop;
+				}
+			}
+			//Comments.
+			for(String delimiter : LangConstants.comment) {
+				if(sub.startsWith(delimiter)) {
+					token.append(delimiter);
+					context = COMMENT;
+					contextData = "";
+					tokenType = TokenType.COMMENT;
+					updateTokenPos();
+					i += delimiter.length()-1;
+					continue mainLoop;
+				}
+			}
+			//Multi-line comments.
+			{
+				String start = LangConstants.multi_line_comment[0];
+				if(sub.startsWith(start)) {
+					token.append(start);
+					context = MULTI_LINE_COMMENT;
+					contextData = "";
+					tokenType = TokenType.COMMENT;
+					updateTokenPos();
+					i += start.length() - 1;
 					continue;
 				}
 			}
-			if (str.substring(i).startsWith(LangConstants.comment[0])) {
-				if (token != null)
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-				tokenType = TokenType.COMMENT;
-				if (str.substring(i).contains("\n")) {
-					token = str.substring(i, i + str.substring(i).indexOf("\n"));
-					tokenIndex = i;
 
-					line = cLine;
-					column = cColumn;
+			//Check for special case tokens.
 
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					token = tokenType = null;
+			for(SpecialTokenConstant special : LangConstants.specialConstants) {
+				for(String pattern : special.patterns) {
+					if(sub.startsWith(pattern)) {
+						//Is pattern.
 
-					cLine++;
-					cColumn = 0;
+						//Flush any previous tokens.
+						flush();
 
-					i += str.substring(i).indexOf("\n");
-					continue;
-				} else {
-					token = str.substring(i);
-					tokenIndex = i;
+						//Flush new pattern.
+						token.append(pattern);
+						tokenType = special.type;
+						updateTokenPos();
+						flush();
 
-					line = cLine;
-					column = cColumn;
-
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					return;
+						//Continue main loop.
+						i += pattern.length()-1;
+						continue mainLoop;
+					}
 				}
 			}
-			if (!isComment && str.substring(i).startsWith(LangConstants.multilinecomment[0])) {
-				isComment = true;
-				if (token != null)
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
 
-				line = cLine;
-				column = cColumn;
+			if(isClosingIteration) {
+				flush();
+				break;
+			}
 
-				token = c;
-				tokenIndex = i;
-				tokenType = TokenType.COMMENT;
+			if(Character.isWhitespace(c.charAt(0))) {
+				//Is whitespace.
+				flush();
 				continue;
-			} else if (isComment) {
-				if (str.substring(i).startsWith(LangConstants.multilinecomment[1])) {
-					isComment = false;
-					token += LangConstants.multilinecomment[1];
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					i += LangConstants.multilinecomment[1].length() - 1;
-					token = tokenType = null;
-				} else {
-					token += c;
-				}
-				continue;
+			} else if(token.length() == 0) {
+				//Is start of a new token.
+				updateTokenPos();
+				tokenType = null;
 			}
-			if (Character.isDigit(c.charAt(0)) && !Character.isJavaIdentifierPart(lastChar)) {
-				if (!isNumber && token != null) {
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					token = tokenType = null;
+
+			if(i > 0) lastChar = str.charAt(i-1);
+
+			if(Character.isJavaIdentifierPart(c.charAt(0))) {
+				if(!Character.isJavaIdentifierPart(lastChar)) {
+					flush();
+					updateTokenPos();
 				}
-				isNumber = true;
-				tokenType = TokenType.NUMBER;
-				if(token == null) tokenIndex = i;
-				token = (token != null) ? token + c : c;
+				token.append(c);
+			} else {
+				flush();
 
-				line = cLine;
-				column = cColumn;
-
-				continue;
-			} else if (isNumber && Arrays.asList(LangConstants.number_punctuation).indexOf(c) >= 0) {
-				token += c;
-				continue;
-			} else if (isNumber && !Character.isDigit(c.charAt(0))) {
-				if (token != null) {
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-				}
-				token = tokenType = null;
-				isNumber = false;
-			}
-			for (int j = 0; j < LangConstants.lambda.length; j++) {
-				if (str.substring(i).startsWith(LangConstants.lambda[j])) {
-					if (token != null)
-						flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					tokenType = TokenType.LAMBDA_ARROW;
-
-					line = cLine;
-					column = cColumn;
-
-					flush(new Token(LangConstants.lambda[j], tokenType, file, new StringLocation(i, line, column)));
-					token = tokenType = null;
-					i += LangConstants.lambda[j].length() - 1;
-					continue mainLoop;
-				}
-			}
-			for (int j = 0; j < LangConstants.operators.length; j++) {
-				if (str.substring(i).startsWith(LangConstants.operators[j])) {
-					if (token != null)
-						flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					tokenType = TokenType.OPERATOR;
-
-					line = cLine;
-					column = cColumn;
-
-					flush(new Token(LangConstants.operators[j], tokenType, file, new StringLocation(i, line, column)));
-					token = tokenType = null;
-					i += LangConstants.operators[j].length() - 1;
-					continue mainLoop;
-				}
-			}
-			for (int j = 0; j < LangConstants.identifier_operators.length; j++) {
-				if (str.substring(i).startsWith(LangConstants.identifier_operators[j])) {
-					if (token != null)
-						flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					tokenType = TokenType.IDENTIFIER_OPERATOR;
-
-					line = cLine;
-					column = cColumn;
-
-					flush(new Token(LangConstants.identifier_operators[j], tokenType, file, new StringLocation(i, line, column)));
-					token = tokenType = null;
-					i += LangConstants.identifier_operators[j].length() - 1;
-					continue mainLoop;
-				}
-			}
-			for (int j = 0; j < LangConstants.logical_negation_operators.length; j++) {
-				if (str.substring(i).startsWith(LangConstants.logical_negation_operators[j])) {
-					if (token != null)
-						flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					tokenType = TokenType.LOGICAL_NEGATION_OPERATOR;
-
-					line = cLine;
-					column = cColumn;
-
-					flush(new Token(LangConstants.logical_negation_operators[j], tokenType, file, new StringLocation(i, line, column)));
-					token = tokenType = null;
-					i += LangConstants.logical_negation_operators[j].length() - 1;
-					continue mainLoop;
-				}
-			}
-			for (int j = 0; j < LangConstants.braces.length; j++) {
-				if (str.substring(i).startsWith(LangConstants.braces[j])) {
-					if (token != null)
-						flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-					tokenType = TokenType.BRACE;
-
-					line = cLine;
-					column = cColumn;
-
-					flush(new Token(LangConstants.braces[j], tokenType, file, new StringLocation(i, line, column)));
-					token = tokenType = null;
-					i += LangConstants.braces[j].length() - 1;
-					continue mainLoop;
-				}
-			}
-			if(Arrays.asList(LangConstants.annotations).indexOf(c) >= 0) {
-				if (token != null)
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-				tokenType = TokenType.ANNOTATION_MARKER;
-
-				line = cLine;
-				column = cColumn;
-
-				flush(new Token(c, tokenType, file, new StringLocation(i, line, column)));
-				token = tokenType = null;
-				continue;
-			} else if (Arrays.asList(LangConstants.end_of_statement).indexOf(c) >= 0) {
-				if (token != null)
-					flush(new Token(token, tokenType, file, new StringLocation(tokenIndex, line, column)));
-				tokenType = TokenType.END_OF_STATEMENT;
-
-				line = cLine;
-				column = cColumn;
-
-				flush(new Token(c, tokenType, file, new StringLocation(i, line, column)));
-				token = tokenType = null;
-				continue;
-			}
-			
-			// CONTINUE CHECKING
-
-			if (Character.isWhitespace(c.charAt(0))) {
-				if (token != null) {
-					flush(new Token(token, file, new StringLocation(tokenIndex, line, column)));
-				}
-				token = tokenType = null;
-			} else if (token == null) {
-
-				line = cLine;
-				column = cColumn;
-
-				token = c;
-				tokenIndex = i;
-			} else if (alphanumeric == (Arrays.asList(LangConstants.alphanumeric).indexOf(c) >= 0) && alphanumeric) {
-				token += c;
-			} else if (alphanumeric != (Arrays.asList(LangConstants.alphanumeric).indexOf(c) >= 0) || !alphanumeric) {
-				flush(new Token(token, file, new StringLocation(tokenIndex, line, column)));
-				token = c;
-				tokenIndex = i;
-
-				line = cLine;
-				column = cColumn;
-
+				updateTokenPos();
+				token.append(c);
+				flush();
 			}
 		}
-		if(token != null) {
-			flush(new Token(token, file, new StringLocation(tokenIndex, line, column)));
-		}
-		flush(new Token("", TokenType.END_OF_FILE, file, new StringLocation(tokenIndex, cLine, cColumn+1)));
+
+	}
+
+	private void updateTokenPos() {
+		tokenLine = line;
+		tokenColumn = column;
+		tokenIndex = index;
+	}
+
+	private void flush() {
+		if(token.length() > 0)
+			flush(new Token(token.toString(), tokenType, file, new StringLocation(tokenIndex, tokenLine, tokenColumn)));
+
+		context = DEFAULT;
+		contextData = "";
+		token.setLength(0);
+		tokenType = null;
 	}
 	
 	private void flush(Token token) {
 		if (token == null)
 			return;
-		
-		
-		if(token.type == TokenType.NUMBER) {
-			try {
-				Double.parseDouble(token.value);
-			} catch(NumberFormatException e) {
-				token.type = TokenType.getTypeOf(token.value);
-			}
-		}
+
 		if(stream.tokens.size() >= 1) {
 			if(token.type == TokenType.IDENTIFIER && Arrays.asList(LangConstants.unit_types).indexOf(token.value) >= 0 && stream.tokens.get(stream.tokens.size()-1).type == TokenType.MODIFIER)
 				token.type = TokenType.UNIT_TYPE;

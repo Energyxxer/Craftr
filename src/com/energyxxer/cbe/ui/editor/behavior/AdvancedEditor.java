@@ -1,7 +1,6 @@
 package com.energyxxer.cbe.ui.editor.behavior;
 
 import com.energyxxer.cbe.global.Commons;
-import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.cbe.ui.editor.behavior.caret.Dot;
 import com.energyxxer.cbe.ui.editor.behavior.caret.EditorCaret;
@@ -88,7 +87,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     @Override
     public void keyTyped(KeyEvent e) {
         e.consume();
-        if(e.getKeyChar() == '`') {
+        /*if(e.getKeyChar() == '`') {
             try {
                 Object rawContents = this.getToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
                 if(rawContents == null) return;
@@ -101,7 +100,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             } catch(Exception x) {
                 x.printStackTrace();
             }
-        } else if(!e.isControlDown() && !Commons.isSpecialCharacter(e.getKeyChar())) {
+        } else */if(!e.isControlDown() && !Commons.isSpecialCharacter(e.getKeyChar())) {
             editManager.insertEdit(new InsertionEdit("" + e.getKeyChar(), this));
         }
     }

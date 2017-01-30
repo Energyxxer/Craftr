@@ -17,7 +17,7 @@ public class CBESyntax extends Syntax {
 
 	static {
 		styles.put("comment", new Style().setColor("#777777").setItalic().getMap());
-		styles.put("multilinecomment", new Style().setColor("#777777").setItalic().getMap());
+		styles.put("multi_line_comment", new Style().setColor("#777777").setItalic().getMap());
 		styles.put("number", new Style().setColor("#E89089").getMap());
 		styles.put("modifier", new Style().setColor("#6655CC").setBold().getMap());
 		styles.put("unit_type", new Style().setColor("#6655CC").setBold().getMap());
