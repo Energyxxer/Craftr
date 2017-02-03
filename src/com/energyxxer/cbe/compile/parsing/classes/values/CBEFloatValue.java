@@ -1,6 +1,9 @@
 package com.energyxxer.cbe.compile.parsing.classes.values;
 
+import com.energyxxer.cbe.compile.analysis.token.structures.TokenItem;
 import com.energyxxer.cbe.compile.exceptions.IllegalOperandsException;
+import com.energyxxer.cbe.compile.parsing.classes.evaluation.Evaluator;
+import com.energyxxer.cbe.global.Console;
 import com.sun.istack.internal.NotNull;
 
 /**
@@ -146,5 +149,28 @@ public class CBEFloatValue extends CBENumericValue {
         CBENumericValue numericOperand = (CBENumericValue) operand;
         this.value = numericOperand.getRawValue();
         return this;
+    }
+
+    public static void init() {
+        Evaluator.addEvaluator("NUMBER", p -> {
+            if(p.getType().equals("ITEM")) {
+                TokenItem item = (TokenItem) p;
+                String str = item.getContents().value;
+                float value = 0f;
+
+                if(str.matches("\\d+(\\.\\d+)?(f)?")) {
+                    if(str.endsWith("f")) {
+                        str = str.substring(0,str.length()-1);
+                    }
+                    value = Float.valueOf(str);
+                } else return null;
+
+                return new CBEFloatValue(value);
+
+            } else {
+                Console.err.println("[ERROR] Number pattern with type " + p.getType() + ": " + p);
+                return null;
+            }
+        });
     }
 }

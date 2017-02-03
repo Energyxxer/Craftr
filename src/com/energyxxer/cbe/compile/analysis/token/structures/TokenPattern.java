@@ -15,8 +15,10 @@ public abstract class TokenPattern<T> {
 	public abstract TokenPattern<T> setName(String name);
 
 	public abstract List<Token> search(String type);
-
+	public abstract List<Token> deepSearch(String type);
 	public abstract List<TokenPattern<?>> searchByName(String name);
+	public abstract List<TokenPattern<?>> deepSearchByName(String name);
+
 	public abstract String flatten(boolean separate);
 
 	public abstract File getFile();
@@ -44,4 +46,6 @@ public abstract class TokenPattern<T> {
 	}
 
 	public abstract ArrayList<Token> flattenTokens();
+
+	public abstract String getType();
 }

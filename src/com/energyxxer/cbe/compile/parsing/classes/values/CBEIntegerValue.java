@@ -155,4 +155,6 @@ public class CBEIntegerValue extends CBENumericValue {
         this.value = (int) numericOperand.getRawValue();
         return this;
     }
+
+    public static void init() {}
 }

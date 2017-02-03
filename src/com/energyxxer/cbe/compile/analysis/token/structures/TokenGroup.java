@@ -45,19 +45,39 @@ public class TokenGroup extends TokenPattern<TokenPattern<?>[]> {
 
 	@Override
 	public List<Token> search(String type) {
-		ArrayList<Token> list = new ArrayList<Token>();
+		ArrayList<Token> list = new ArrayList<>();
 		for(TokenPattern<?> p : patterns) {
-			list.addAll(p.search(type));
+			if(p.getContents() instanceof Token) {
+				if(((Token) p.getContents()).type.equals(type)) list.add((Token) p.getContents());
+			}
+		}
+		return list;
+	}
+
+	@Override
+	public List<Token> deepSearch(String type) {
+		ArrayList<Token> list = new ArrayList<>();
+		for(TokenPattern<?> p : patterns) {
+			list.addAll(p.deepSearch(type));
 		}
 		return list;
 	}
 
 	@Override
 	public List<TokenPattern<?>> searchByName(String name) {
-		ArrayList<TokenPattern<?>> list = new ArrayList<TokenPattern<?>>();
-		if(this.name.equals(name)) list.add(this);
+		ArrayList<TokenPattern<?>> list = new ArrayList<>();
 		for(TokenPattern<?> p : patterns) {
-			list.addAll(p.searchByName(name));
+			if(p.name.equals(name)) list.add(p);
+		}
+		return list;
+	}
+
+	@Override
+	public List<TokenPattern<?>> deepSearchByName(String name) {
+		ArrayList<TokenPattern<?>> list = new ArrayList<>();
+		for(TokenPattern<?> p : patterns) {
+			if(p.name.equals(name)) list.add(p);
+			list.addAll(p.deepSearchByName(name));
 		}
 		return list;
 	}
@@ -133,5 +153,10 @@ public class TokenGroup extends TokenPattern<TokenPattern<?>[]> {
 		    list.addAll(pattern.flattenTokens());
         }
         return list;
+	}
+
+	@Override
+	public String getType() {
+		return "GROUP";
 	}
 }

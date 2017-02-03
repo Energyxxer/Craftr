@@ -5,6 +5,7 @@ import com.energyxxer.cbe.compile.analysis.token.TokenStream;
 import com.energyxxer.cbe.compile.exceptions.IllegalOperandsException;
 import com.energyxxer.cbe.compile.parsing.Parser;
 import com.energyxxer.cbe.compile.parsing.classes.values.CBEIntegerValue;
+import com.energyxxer.cbe.compile.parsing.classes.values.CBEValue;
 import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.global.ProjectManager;
 import com.energyxxer.cbe.logic.Project;
@@ -40,5 +41,11 @@ public class Compiler {
 		if(project != null) {
 			new Thread(() -> new Compiler(project),"Compiler").start();
 		}
+	}
+
+	static {
+		Console.warn.println("Compiler loaded.");
+		//Initialize:
+		CBEValue.init();
 	}
 }

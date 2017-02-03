@@ -33,16 +33,24 @@ public class TokenItem extends TokenPattern<Token> {
 
 	@Override
 	public List<Token> search(String type) {
-		ArrayList<Token> list = new ArrayList<Token>();
+		ArrayList<Token> list = new ArrayList<>();
 		if(token.type == type) list.add(token);
 		return list;
 	}
 
 	@Override
+	public List<Token> deepSearch(String type) {
+		return search(type);
+	}
+
+	@Override
 	public List<TokenPattern<?>> searchByName(String name) {
-		ArrayList<TokenPattern<?>> list = new ArrayList<TokenPattern<?>>();
-		if(this.name.equals(name)) list.add(this);
-		return list;
+		return new ArrayList<>();
+	}
+
+	@Override
+	public List<TokenPattern<?>> deepSearchByName(String name) {
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -74,4 +82,9 @@ public class TokenItem extends TokenPattern<Token> {
 	    list.add(token);
         return list;
     }
+
+	@Override
+	public String getType() {
+		return "ITEM";
+	}
 }

@@ -2,3 +2,6 @@ Themes:
 -CBE Light
 -CBE Dark
 -Sans Dark
+
+Syntax Themes:
+-CBE Light

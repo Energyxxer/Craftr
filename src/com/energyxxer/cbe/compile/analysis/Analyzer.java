@@ -53,7 +53,8 @@ public class Analyzer {
 				}
 			} else if(name.endsWith(".mcbe")) {
 				try {
-					tokenize(file, new String(Files.readAllBytes(Paths.get(file.getPath()))));
+					String str = new String(Files.readAllBytes(Paths.get(file.getPath())));
+					tokenize(file, str);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -78,12 +79,12 @@ public class Analyzer {
 	private int tokenColumn = 0;
 	private int tokenIndex = 0;
 
-	private char lastChar = '\u0000';
 	private Context context = DEFAULT;
 	private String contextData = "";
 
 	private void tokenize(File file, String str) {
 		this.file = file;
+		line = column = index = tokenLine = tokenColumn = tokenIndex = 0;
 
 		mainLoop: for(int i = 0; i <= str.length(); i++) {
 			this.index = i;
@@ -97,7 +98,6 @@ public class Analyzer {
 			}
 
 			String sub = str.substring(i);
-
 
 			if (c.equals("\n")) {
 				line++;
@@ -125,17 +125,18 @@ public class Analyzer {
 					//Is an escaped character.
 					//Add backslash.
 					token.append("\\");
-					if(!isClosingIteration && !Commons.isSpecialCharacter(str.charAt(i+1)))
+					if(!isClosingIteration && !Commons.isSpecialCharacter(str.charAt(i+1))) {
 						//Add escaped character.
 						token.append(str.charAt(i+1));
-					//Skip scanning next character.
-					i++;
+						//Skip scanning next character.
+						i++;
+					}
 					continue;
 				} else if(sub.startsWith(contextData)) {
 					//Found same delimiter that started the string literal. Close the string.
 					token.append(c);
-					flush();
 					i += contextData.length()-1;
+					flush();
 					continue;
 				} else {
 					//Is a character inside the string.
@@ -160,8 +161,8 @@ public class Analyzer {
 				if(!isClosingIteration && sub.startsWith(LangConstants.multi_line_comment[1])) {
 					//Found the end of the multi-line comment.
 					token.append(LangConstants.multi_line_comment[1]);
-					flush();
 					i += LangConstants.multi_line_comment[1].length()-1;
+					flush();
 					continue;
 				} else {
 					//Is a character inside the comment.
@@ -290,6 +291,8 @@ public class Analyzer {
 				tokenType = null;
 			}
 
+			char lastChar = '\u0000';
+
 			if(i > 0) lastChar = str.charAt(i-1);
 
 			if(Character.isJavaIdentifierPart(c.charAt(0))) {
@@ -306,6 +309,14 @@ public class Analyzer {
 				flush();
 			}
 		}
+		flush();
+
+		updateTokenPos();
+		token.setLength(0);
+		tokenType = TokenType.END_OF_FILE;
+		flush();
+
+		//stream.write(new Token("", TokenType.END_OF_FILE, file, new StringLocation(index, line, column)));
 
 	}
 
@@ -316,7 +327,7 @@ public class Analyzer {
 	}
 
 	private void flush() {
-		if(token.length() > 0)
+		if(token.length() > 0 || tokenType == TokenType.END_OF_FILE)
 			flush(new Token(token.toString(), tokenType, file, new StringLocation(tokenIndex, tokenLine, tokenColumn)));
 
 		context = DEFAULT;
@@ -326,9 +337,6 @@ public class Analyzer {
 	}
 	
 	private void flush(Token token) {
-		if (token == null)
-			return;
-
 		if(stream.tokens.size() >= 1) {
 			if(token.type == TokenType.IDENTIFIER && Arrays.asList(LangConstants.unit_types).indexOf(token.value) >= 0 && stream.tokens.get(stream.tokens.size()-1).type == TokenType.MODIFIER)
 				token.type = TokenType.UNIT_TYPE;

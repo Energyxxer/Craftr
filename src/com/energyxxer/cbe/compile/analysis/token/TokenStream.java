@@ -204,4 +204,12 @@ public class TokenStream implements Iterable<Token> {
 
         return matches;
     }
+
+	@Override
+	public String toString() {
+		return "TokenStream{" +
+				"tokens=" + tokens +
+				", includeInsignificantTokens=" + includeInsignificantTokens +
+				'}';
+	}
 }

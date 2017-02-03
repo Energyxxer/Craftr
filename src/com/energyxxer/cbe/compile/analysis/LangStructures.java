@@ -388,11 +388,11 @@ public class LangStructures {
 			// [IDENTIFIER]
 			VALUE.add(new TokenItemMatch(TokenType.IDENTIFIER));
 			// [NUMBER]
-			VALUE.add(new TokenItemMatch(TokenType.NUMBER));
+			VALUE.add(new TokenItemMatch(TokenType.NUMBER).setName("NUMBER"));
 			// [BOOLEAN]
-			VALUE.add(new TokenItemMatch(TokenType.BOOLEAN));
+			VALUE.add(new TokenItemMatch(TokenType.BOOLEAN).setName("BOOLEAN"));
 			// [STRING_LITERAL]
-			VALUE.add(new TokenItemMatch(TokenType.STRING_LITERAL));
+			VALUE.add(new TokenItemMatch(TokenType.STRING_LITERAL).setName("STRING"));
 			{
 				// [NEGATION_OPERATOR][-VALUE-]
 				TokenGroupMatch g = new TokenGroupMatch();

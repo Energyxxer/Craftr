@@ -94,4 +94,6 @@ public class CBENullValue extends CBEValue {
     public CBEValue assignTo(@NotNull CBEValue operand) throws IllegalOperandsException {
         throw new IllegalOperandsException();
     }
+
+    public static void init() {}
 }

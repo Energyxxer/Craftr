@@ -38,10 +38,21 @@ public class TokenStructure extends TokenPattern<TokenPattern<?>> {
 	}
 
 	@Override
+	public List<Token> deepSearch(String type) {
+		return group.deepSearch(type);
+	}
+
+	@Override
 	public List<TokenPattern<?>> searchByName(String name) {
+		return group.searchByName(name);
+	}
+
+	@Override
+	public List<TokenPattern<?>> deepSearchByName(String name) {
 		ArrayList<TokenPattern<?>> list = new ArrayList<>();
-		if(this.name.equals(name)) list.add(this);
-		list.addAll(group.searchByName(name));
+		if(group.name.equals(name)) list.add(group);
+		//if(this.name.equals(name)) list.add(this);
+		list.addAll(group.deepSearchByName(name));
 		return list;
 	}
 
@@ -67,4 +78,9 @@ public class TokenStructure extends TokenPattern<TokenPattern<?>> {
     public ArrayList<Token> flattenTokens() {
         return group.flattenTokens();
     }
+
+	@Override
+	public String getType() {
+		return "STRUCTURE";
+	}
 }

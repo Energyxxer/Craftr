@@ -34,7 +34,7 @@ public class CBEFile {
         this.project = ProjectManager.getAssociatedProject(file);
         this.file = file;
 
-        TokenPattern<?> packagePattern = pattern.searchByName("PACKAGE_PATH").get(0);
+        TokenPattern<?> packagePattern = pattern.deepSearchByName("PACKAGE_PATH").get(0);
 
         String realPackage = StringUtil.stripExtension(FileUtil.getRelativePath(file, project.directory).replace(File.separator,"."));
         realPackage = realPackage.substring(0,realPackage.lastIndexOf('.'));

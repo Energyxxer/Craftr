@@ -1,6 +1,9 @@
 package com.energyxxer.cbe.compile.parsing.classes.values;
 
+import com.energyxxer.cbe.compile.analysis.token.structures.TokenItem;
 import com.energyxxer.cbe.compile.exceptions.IllegalOperandsException;
+import com.energyxxer.cbe.compile.parsing.classes.evaluation.Evaluator;
+import com.energyxxer.cbe.global.Console;
 import com.sun.istack.internal.NotNull;
 
 /**
@@ -102,5 +105,28 @@ public class CBEBooleanValue extends CBEValue {
         CBEBooleanValue booleanOperand = (CBEBooleanValue) operand;
         this.value = ((Boolean) booleanOperand.getValue());
         return this;
+    }
+
+    public static void init() {
+        Evaluator.addEvaluator("BOOLEAN", p -> {
+            if(p.getType().equals("ITEM")) {
+                TokenItem item = (TokenItem) p;
+                switch(item.getContents().value) {
+                    case "true": {
+                        return new CBEBooleanValue(true);
+                    }
+                    case "false": {
+                        return new CBEBooleanValue(false);
+                    }
+                    default: {
+                        Console.err.println("[ERROR] Boolean token with value \"" + item.getContents().value + "\"");
+                        return null;
+                    }
+                }
+            } else {
+                Console.err.println("[ERROR] Boolean pattern with type " + p.getType() + ": " + p);
+                return null;
+            }
+        });
     }
 }

@@ -40,4 +40,11 @@ public abstract class CBEValue {
     public String toString() {
         return getValue().toString();
     }
+
+    public static void init() {
+        CBEBooleanValue.init();
+        CBEFloatValue.init();
+        CBEIntegerValue.init();
+        CBENullValue.init();
+    }
 }

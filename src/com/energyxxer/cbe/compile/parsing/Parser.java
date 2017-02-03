@@ -8,6 +8,7 @@ import com.energyxxer.cbe.compile.analysis.token.TokenType;
 import com.energyxxer.cbe.compile.analysis.token.structures.TokenPattern;
 import com.energyxxer.cbe.compile.exceptions.CBEException;
 import com.energyxxer.cbe.compile.exceptions.CBEParserException;
+import com.energyxxer.cbe.compile.parsing.classes.evaluation.Evaluator;
 import com.energyxxer.cbe.compile.parsing.classes.files.CBEFile;
 import com.energyxxer.cbe.compile.parsing.classes.files.CBEPackage;
 import com.energyxxer.cbe.compile.parsing.classes.files.CBEPackageManager;
@@ -15,7 +16,6 @@ import com.energyxxer.cbe.compile.parsing.classes.registries.UnitRegistry;
 import com.energyxxer.cbe.compile.parsing.classes.units.CBEUnit;
 import com.energyxxer.cbe.global.Console;
 import com.energyxxer.cbe.logic.Project;
-import com.energyxxer.cbe.util.StringUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,9 +47,6 @@ public class Parser {
 			TokenMatchResponse match = LangStructures.FILE.match(f);
 
 			if(!match.matched) {
-				Console.debug.println(f);
-				Console.err.println(StringUtil.repeat("-",32));
-				Console.debug.println(match);
 				Console.err.println(match.getFormattedErrorMessage());
 				return;
 			}
@@ -62,6 +59,11 @@ public class Parser {
 			} catch(CBEParserException e) {
 				Console.err.println(e.getMessage());
 				return;
+			}
+
+			List<TokenPattern<?>> values = pattern.deepSearchByName("VALUE");
+			for(TokenPattern<?> p : values) {
+				Evaluator.eval(p);
 			}
 
 			List<TokenPattern<?>> units = pattern.searchByName("UNIT");
