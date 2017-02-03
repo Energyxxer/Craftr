@@ -1,7 +1,7 @@
 Themes:
--CBE Light
--CBE Dark
+-Craftr Light
+-Craftr Dark
 -Sans Dark
 
 Syntax Themes:
--CBE Light
+-Craftr Light
