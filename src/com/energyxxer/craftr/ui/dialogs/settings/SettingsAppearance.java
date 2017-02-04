@@ -82,12 +82,12 @@ class SettingsAppearance extends JPanel {
                 content.add(label);
             }
             {
-                XDropdownMenu<Theme> themeDropdown = new XDropdownMenu<>(ThemeManager.getThemesAsArray());
+                XDropdownMenu<Theme> themeDropdown = new XDropdownMenu<>(ThemeManager.getGUIThemesAsArray());
                 themeDropdown.setPopupFactory(StyledPopupMenu::new);
                 themeDropdown.setPopupItemFactory(StyledMenuItem::new);
                 themeDropdown.setValue(Window.getTheme());
                 Settings.addOpenEvent(ThemeManager::loadAll);
-                Settings.addApplyEvent(() -> ThemeManager.setTheme(themeDropdown.getValue().getName()));
+                Settings.addApplyEvent(() -> ThemeManager.setGUITheme(themeDropdown.getValue().getName()));
                 content.add(themeDropdown);
             }
 

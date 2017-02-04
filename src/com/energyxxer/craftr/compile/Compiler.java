@@ -22,7 +22,7 @@ public class Compiler {
 		
 		this.project = project;
 		TokenStream ts = new TokenStream();
-		new Analyzer(project.directory,ts);
+		new Analyzer(project.getDirectory(),ts);
 		new Parser(ts, project);
 
 		try {

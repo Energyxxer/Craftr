@@ -1,7 +1,7 @@
-Themes:
+GUI Themes:
 -Craftr Light
 -Craftr Dark
 -Sans Dark
 
 Syntax Themes:
--Craftr Light
+-Craftr Syntax Light

@@ -20,14 +20,14 @@ import java.util.List;
 
 public class Project {
 
-	public File directory;
-	public File source;
+	private File directory;
+	private File source;
 	private String name = null;
 
 	private String prefix = null;
 	private String world = null;
 	
-	public HashMap<String, String> icons = new HashMap<String, String>();
+	public HashMap<String, String> icons = new HashMap<>();
 	
 	public Project(String name) {
 		this.directory = new File(Preferences.get("workspace_dir") + File.separator + name);
@@ -41,7 +41,7 @@ public class Project {
 		this.directory = directory;
 		this.source = new File(directory.getAbsolutePath() + File.separator + "src");
 		File config = new File(directory.getAbsolutePath() + File.separator + ".project");
-		if(config != null && config.exists() && config.isFile() && config.getName().equals(".project")) {
+		if(config.exists() && config.isFile() && config.getName().equals(".project")) {
 			byte[] encoded;
 			try {
 				encoded = Files.readAllBytes(config.toPath());
@@ -63,23 +63,33 @@ public class Project {
 					String value = line.substring(line.indexOf("=")+1);
 
 					if(value.length() <= 0) continue;
-					
-					if(key.equals("name")) {
-						this.name = value;
-					} else if(key.equals("prefix")) {
-						this.prefix = value;
-					} else if(key.equals("out")) {
-						this.world = value;
-					} else if(key.equals("icons")) {
-						String[] files = value.split("\\|");
-						for(String file : files) {
-							String[] segments = file.split("\\?");
-							if(segments.length < 2) continue;
-							icons.put(segments[0].intern(), segments[1]);
+
+					switch(key) {
+						case "name": {
+							this.name = value;
+							break;
+						}
+						case "prefix": {
+							this.prefix = value;
+							break;
+						}
+						case "out": {
+							this.world = value;
+							break;
+						}
+						case "icons": {
+							String[] files = value.split("\\|");
+							for(String file : files) {
+								String[] segments = file.split("\\?");
+								if(segments.length < 2) continue;
+								icons.put(segments[0].intern(), segments[1]);
+							}
+							break;
 						}
 					}
 				}
 			}
+			this.fixIfCorrupted();
 			return;
 		}
 		this.directory = null;
@@ -87,17 +97,16 @@ public class Project {
 		throw new RuntimeException("Invalid configuration file.");
 	}
 	
-	public Project rename(String name) throws IOException {
+	public void rename(String name) throws IOException {
 		File newFile = new File(Preferences.get("workspace_dir") + File.separator + name);
 		if(newFile.exists()) {
 			throw new IOException("A project by that name already exists!");
 		}
 		this.name = name;
 		updateConfig();
-		return this;
 	}
 	
-	public Project updateConfig() {
+	public void updateConfig() {
 		File config = new File(directory.getAbsolutePath() + File.separator + ".project");
 		PrintWriter writer;
 		try {
@@ -109,16 +118,14 @@ public class Project {
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		return this;
 	}
 	
-	public boolean exists() {
+	private boolean exists() {
 		return directory != null && directory.exists();
 	}
 	
-	public Project createNew() {
+	public void createNew() {
 		if(!exists()) {
-			this.directory.mkdirs();
 			this.source.mkdirs();
 			File config = new File(directory.getAbsolutePath() + File.separator + ".project");
 			try {
@@ -128,21 +135,18 @@ public class Project {
 				e.printStackTrace();
 			}
 		}
-		return this;
 	}
 	
-	private Project createFromName(String name) {
+	private void createFromName(String name) {
 		this.name = name;
 		this.prefix = StringUtil.getInitials(name).toLowerCase();
-		return this;
 	}
 	
-	public Project fixIfCorrupted() {
+	private void fixIfCorrupted() {
 		if((this.name == null || this.prefix == null) && this.directory != null) {
 			createFromName(directory.getName());
 			updateConfig();
 		}
-		return this;
 	}
 	
 	public void promptOutput() {
@@ -153,7 +157,7 @@ public class Project {
 		}
 	}
 	
-	public String getRawConfig() {
+	private String getRawConfig() {
 		String s = "";
 		s += "name=" + name + "\n";
 		s += "prefix=" + prefix + "\n";
@@ -179,13 +183,12 @@ public class Project {
 		return file.getAbsolutePath().substring((directory.getAbsolutePath()+File.separator).length());
 	}
 	
-	public Project setIconFor(File file, String value) {
+	public void setIconFor(File file, String value) {
 		String path = getRelativePath(file);
 		if(path != null) {
 			icons.put(path.intern(), value);
 			updateConfig();
 		}
-		return this;
 	}
 	
 	public String getIconFor(File file) {
@@ -197,11 +200,14 @@ public class Project {
 		}
 		return null;
 	}
-	
-	public enum ProjectFrom {
-		NAME,
-		CONFIG
-	};
+
+	public File getDirectory() {
+		return directory;
+	}
+
+	public File getSource() {
+		return source;
+	}
 	
 	public String getName() {
 		return name;

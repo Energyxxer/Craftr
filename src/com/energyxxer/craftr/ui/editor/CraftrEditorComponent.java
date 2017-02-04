@@ -78,7 +78,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
                 Set<String> set = token.attributes.keySet();
                 for(String key : set) {
                     if(!token.attributes.get(key).equals(true)) continue;
-                    Style attrStyle = CraftrEditorComponent.this.getStyle("#" + key.toLowerCase());
+                    Style attrStyle = CraftrEditorComponent.this.getStyle("~" + key.toLowerCase());
                     if(attrStyle == null) continue;
                     sd.setCharacterAttributes(token.loc.index, token.value.length(), attrStyle, false);
                 }

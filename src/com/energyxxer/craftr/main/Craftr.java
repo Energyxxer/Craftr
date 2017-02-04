@@ -7,7 +7,6 @@ import com.energyxxer.craftr.minecraft.schematic.block.nbt.TagCompound;
 import com.energyxxer.craftr.minecraft.schematic.block.nbt.TagInt;
 import com.energyxxer.craftr.minecraft.schematic.block.nbt.TagList;
 import com.energyxxer.craftr.minecraft.schematic.block.nbt.TagString;
-import com.energyxxer.craftr.ui.theme.LightTheme;
 import com.energyxxer.craftr.util.Version;
 
 public class Craftr {
@@ -22,7 +21,6 @@ public class Craftr {
 	}
 
 	public static void main(String[] args) {
-		LightTheme.getInstance();
 		Resources.load();
 
 		craftr = new Craftr();

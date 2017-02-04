@@ -8,9 +8,6 @@ import com.energyxxer.craftr.main.window.sections.MenuBar;
 import com.energyxxer.craftr.main.window.sections.Sidebar;
 import com.energyxxer.craftr.main.window.sections.StatusBar;
 import com.energyxxer.craftr.main.window.sections.Toolbar;
-import com.energyxxer.craftr.syntax.CraftrSyntax;
-import com.energyxxer.craftr.syntax.CraftrSyntaxDark;
-import com.energyxxer.craftr.syntax.Syntax;
 import com.energyxxer.craftr.ui.explorer.Explorer;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
@@ -47,15 +44,13 @@ public class Window {
 	public static Sidebar sidebar;
 	public static EditArea editArea;
 	public static StatusBar statusBar;
-	
-	private static Theme theme = new Theme("null");
 
 	private static final Dimension defaultSize = new Dimension(1200, 800);
 
 
 	public Window() {
 		ThemeManager.loadAll();
-		ThemeManager.setTheme(Preferences.get("theme"));
+		ThemeManager.setGUITheme(Preferences.get("theme"));
 
 		jframe = new JFrame();
 		setTitle("");
@@ -107,18 +102,9 @@ public class Window {
 		});
 
 	}
-	
-	public static Syntax getSyntaxForTheme() {
-		if(theme == null) return CraftrSyntax.INSTANCE;
-		switch(theme.getString("Syntax", "Light")) {
-			case "Dark": return CraftrSyntaxDark.INSTANCE;
-			case "Light": return CraftrSyntax.INSTANCE;
-			default: return CraftrSyntax.INSTANCE;
-		}
-	}
 
 	public static void setTheme(Theme t) {
-		if(statusBar != null && !t.equals(theme)) {
+		if(statusBar != null && !t.equals(ThemeManager.currentGUITheme)) {
 			Status themeSetStatus = new Status("Theme set to: " + t.getName());
 
 			setStatus(themeSetStatus);
@@ -130,12 +116,11 @@ public class Window {
 			}, 5000);
 		}
 
-		theme = t;
 		ThemeChangeListener.dispatchThemeChange(t);
 	}
 
     public static Theme getTheme() {
-        return theme;
+        return ThemeManager.currentGUITheme;
     }
 
 	public static void setStatus(String text) {

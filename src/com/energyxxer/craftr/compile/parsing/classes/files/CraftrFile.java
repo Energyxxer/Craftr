@@ -32,11 +32,12 @@ public class CraftrFile {
 
         this.name = StringUtil.stripExtension(file.getName());
         this.project = ProjectManager.getAssociatedProject(file);
+        if(project == null) throw new CraftrParserException("What the heck? A file not in the project?\n\tat file " + file);
         this.file = file;
 
         TokenPattern<?> packagePattern = pattern.deepSearchByName("PACKAGE_PATH").get(0);
 
-        String realPackage = StringUtil.stripExtension(FileUtil.getRelativePath(file, project.directory).replace(File.separator,"."));
+        String realPackage = StringUtil.stripExtension(FileUtil.getRelativePath(file, project.getDirectory()).replace(File.separator,"."));
         realPackage = realPackage.substring(0,realPackage.lastIndexOf('.'));
         String packageStatement = packagePattern.flatten(false);
         if(!realPackage.equals(packageStatement)) {

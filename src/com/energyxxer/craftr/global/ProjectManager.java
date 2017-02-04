@@ -1,19 +1,17 @@
 package com.energyxxer.craftr.global;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-
 import com.energyxxer.craftr.logic.Project;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.explorer.Explorer;
 import com.energyxxer.craftr.util.StringUtil;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+
 public class ProjectManager {
-	public static ArrayList<Project> loadedProjects = new ArrayList<Project>();
-	
-	public static Project selectedProject = null;
-	
+	private static ArrayList<Project> loadedProjects = new ArrayList<Project>();
+
 	public static void loadWorkspace() {
 		
 		loadedProjects.clear();
@@ -25,12 +23,11 @@ public class ProjectManager {
 			return;
 		}
 
-		ArrayList<File> files = new ArrayList<File>();
-		for (int i = 0; i < fileList.length; i++) {
-			File file = fileList[i];
+		//ArrayList<File> files = new ArrayList<>();
+		for(File file : fileList) {
 			if (file.isDirectory() && new File(file.getAbsolutePath() + File.separator + ".project").exists()) {
-				files.add(file);
-				loadedProjects.add(new Project(new File(file.getAbsolutePath())).fixIfCorrupted());
+				//files.add(file);
+				loadedProjects.add(new Project(new File(file.getAbsolutePath())));
 			}
 		}
 	}
@@ -73,7 +70,9 @@ public class ProjectManager {
 	}
 	
 	public static void create(String name) {
-		loadedProjects.add(new Project(name).createNew());
+		Project p = new Project(name);
+		p.createNew();
+		loadedProjects.add(p);
 	}
 	
 	public static boolean renameFile(File file, String newName) {

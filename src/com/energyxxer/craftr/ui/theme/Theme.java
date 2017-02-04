@@ -1,18 +1,39 @@
 package com.energyxxer.craftr.ui.theme;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.HashMap;
 
+import static com.energyxxer.craftr.ui.theme.Theme.ThemeType.GUI_THEME;
+
 public class Theme {
-	private String name;
-	private HashMap<String, Object> values = new HashMap<>();
+	private final String name;
+	private final ThemeType themeType;
+	private final HashMap<String, Object> values;
+
+	public enum ThemeType {
+		GUI_THEME("gui"), SYNTAX_THEME("syntax");
+
+		public String subdirectory;
+
+		ThemeType(String subdirectory) {
+			this.subdirectory = subdirectory;
+		}
+	}
+
+	public enum Lang {
+		CRAFTR, JSON
+	}
 
 	public Theme(String name) {
-		this.name = name;
+		this(name, new HashMap<>());
 	}
 	public Theme(String name, HashMap<String, Object> values) {
+		this(GUI_THEME, name, values);
+	}
+	public Theme(ThemeType type, String name, HashMap<String, Object> values) {
 		this.name = name;
 		this.values = values;
+		this.themeType = type;
 	}
 
 	protected void put(String key, Object value) {
@@ -61,6 +82,14 @@ public class Theme {
 	public int getInteger(String key) { return getInteger(key, 0); }
 
 	public String getName() {return name;}
+
+	public ThemeType getThemeType() {
+		return themeType;
+	}
+
+	public HashMap<String, Object> getValues() {
+		return values;
+	}
 
 	@Override
 	public String toString() {return name;}

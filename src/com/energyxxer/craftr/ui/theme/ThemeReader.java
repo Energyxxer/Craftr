@@ -4,8 +4,10 @@ import com.energyxxer.craftr.util.LineReader;
 import com.energyxxer.craftr.util.Range;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -18,10 +20,10 @@ public class ThemeReader {
     private int currentLine = 0;
     private String line;
 
-    public Theme read(String name) throws ThemeParserException {
+    public Theme read(Theme.ThemeType type, String name) throws ThemeParserException {
         themeValues = new HashMap<>();
         try {
-            ArrayList<String> lines = LineReader.read("/resources/themes/" + name + ".properties");
+            ArrayList<String> lines = LineReader.read("/resources/themes/" + type.subdirectory + File.separator + name + ".properties");
             for(String line : lines) {
                 currentLine++;
                 line = line.trim();
@@ -42,7 +44,7 @@ public class ThemeReader {
             System.out.println(e.getMessage());
             return null;
         }
-        return new Theme(name,themeValues);
+        return new Theme(type, name,themeValues);
     }
 
     private Object parseValue(String value) throws ThemeParserException {
@@ -83,6 +85,8 @@ public class ThemeReader {
             Object obj = themeValues.get(value.substring(1));
             if(obj == null) throw new ThemeParserException("Invalid key reference. \"" + value.substring(1) + "\" hasn't been defined at this point in the file",currentLine,line);
             return obj;
+        } else if(Arrays.asList("true","false").contains(value)) {
+            return Boolean.valueOf(value);
         } else {
             return value;
         }

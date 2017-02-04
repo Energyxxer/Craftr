@@ -1,13 +1,13 @@
 package com.energyxxer.craftr.ui.editor;
 
+import com.energyxxer.craftr.global.Console;
 import com.energyxxer.craftr.global.TabManager;
-import com.energyxxer.craftr.main.window.Window;
-import com.energyxxer.craftr.syntax.Syntax;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.explorer.ExplorerItemLabel;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollPaneLayout;
 import com.energyxxer.craftr.ui.scrollbar.ScrollbarUI;
 import com.energyxxer.craftr.ui.theme.Theme;
+import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftr.util.linenumber.TextLineNumber;
 
@@ -27,8 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * Main text editorComponent of the program. Has support for syntax highlighting, undo,
@@ -45,7 +44,9 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 
     public CraftrEditorComponent editorComponent;
     private TextLineNumber tln;
-	private Syntax syntax;
+	private Theme syntax;
+
+	private ArrayList<String> styles = new ArrayList<>();
 
     //public long lastToolTip = new Date().getTime();
 
@@ -61,9 +62,6 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
         tln.setPadding(10);
 
 		this.setBorder(BorderFactory.createEmptyBorder());
-
-		KeyStroke undoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.CTRL_MASK);
-		KeyStroke redoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.CTRL_MASK);
 
 		KeyStroke closeKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK);
 
@@ -129,27 +127,47 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 		editorComponent.getDocument().addUndoableEditListener(this);
 	}
 
-	public void setSyntax(Syntax newSyntax) {
-		if (syntax != null) {
-			for(Map.Entry pair : syntax.getStyles().entrySet()) {
-				//System.out.println(pair.getKey() + " = " + pair.getValue());
-				editorComponent.removeStyle((String) pair.getKey());
-				//it.remove();
+	public void setSyntax(Theme newSyntax) {
+		if(newSyntax == null) {
+			for(String key : this.styles) {
+				editorComponent.removeStyle(key);
 			}
+			return;
+		}
+		if(newSyntax.getThemeType() != Theme.ThemeType.SYNTAX_THEME) {
+			Console.err.println("Theme \"" + newSyntax + "\" is not a syntax theme!");
+			return;
 		}
 
+		this.styles.clear();
 		syntax = newSyntax;
+		for(String value : syntax.getValues().keySet()) {
+			if(!value.contains(".")) continue;
+			String[] sections = value.split("\\.");
+			if(sections.length > 2) continue;
 
-		for (Map.Entry<String, HashMap<String, Object>> pair : newSyntax.getStyles().entrySet()) {
-			Style style = editorComponent.addStyle(pair.getKey(), null);
-
-			for (Map.Entry pair2 : pair.getValue().entrySet()) {
-				if (pair2.getKey() == "color") {
-					StyleConstants.setForeground(style, (Color) pair2.getValue());
-				} else if (pair2.getKey() == "bold") {
-					StyleConstants.setBold(style, (boolean) pair2.getValue());
-				} else if (pair2.getKey() == "italic") {
-					StyleConstants.setItalic(style, (boolean) pair2.getValue());
+			String name = sections[0];
+			Style style = editorComponent.getStyle(name);
+			if(style == null) {
+				style = editorComponent.addStyle(name, null);
+				this.styles.add(name);
+			}
+			switch(sections[1]) {
+				case "foreground": {
+					StyleConstants.setForeground(style, syntax.getColor(value));
+					break;
+				}
+				case "background": {
+					StyleConstants.setBackground(style, syntax.getColor(value));
+					break;
+				}
+				case "italic": {
+					StyleConstants.setItalic(style, syntax.getBoolean(value));
+					break;
+				}
+				case "bold": {
+					StyleConstants.setBold(style, syntax.getBoolean(value));
+					break;
 				}
 			}
 		}
@@ -175,7 +193,6 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 		if (!e.getEdit().getPresentationName().equals("style change")) {
 			editorComponent.highlight();
 			associatedTab.onEdit();
-			//undoManager.undoableEditHappened(e);
 		}
 	}
 
@@ -243,9 +260,12 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 		);
 		tln.setFont(new Font(t.getString("CraftrEditor.lineNumber.font","monospaced"),0,12));
 
-		if (associatedTab.path.endsWith(".craftr")) {
-			setSyntax(Window.getSyntaxForTheme());
-			editorComponent.highlight();
+		for(Theme.Lang lang : Theme.Lang.values()) {
+			if(associatedTab.path.endsWith("." + lang.toString().toLowerCase())) {
+				setSyntax(ThemeManager.getSyntaxForGUITheme(lang, t));
+				editorComponent.highlight();
+				break;
+			}
 		}
 	}
 

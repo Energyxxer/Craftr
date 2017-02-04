@@ -46,7 +46,7 @@ public class FileFactory {
 				StringUtil.stripExtension(
 					FileUtil.getRelativePath(
 						file.getParentFile(),
-						associatedProject.directory
+						associatedProject.getDirectory()
 					)
 				) : "src"
 		).replace(File.separator,".");
