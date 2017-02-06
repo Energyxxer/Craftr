@@ -76,7 +76,14 @@ public class ThemeReader {
             } else throw new ThemeParserException("Couldn't find end of color literal.",currentLine,line);
         } else if(value.startsWith("#")) {
             try {
-                return new Color(Integer.parseInt(value.substring(1),16));
+                if(value.substring(1).length() == 3) {
+                    String fullColor = "" + value.charAt(1) + value.charAt(1) + value.charAt(2) + value.charAt(2) + value.charAt(3) + value.charAt(3);
+                    return new Color(Integer.parseInt(fullColor,16));
+                } else if(value.substring(1).length() == 6) {
+                    return new Color(Integer.parseInt(value.substring(1),16));
+                } else {
+                    throw new ThemeParserException("Expected a hexadecimal color, instead got \"" + value.substring(1) + "\"",currentLine,line);
+                }
             } catch(NumberFormatException e) {
                 throw new ThemeParserException("Expected a hexadecimal color, instead got \"" + value.substring(1) + "\"",currentLine,line);
             }

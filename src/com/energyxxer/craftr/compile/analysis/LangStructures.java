@@ -46,7 +46,7 @@ public class LangStructures {
 	public static final TokenGroupMatch SWITCH_STATEMENT;
 	public static final TokenGroupMatch RETURN_EXPRESSION;
 
-	public static final TokenStructureMatch SINGLE_POINTER;
+	public static final TokenStructureMatch NESTED_POINTER;
 	public static final TokenStructureMatch POINTER;
 
 	static {
@@ -79,7 +79,7 @@ public class LangStructures {
 
 		LAMBDA = new TokenStructureMatch("LAMBDA");
 
-		SINGLE_POINTER = new TokenStructureMatch("SINGLE_POINTER");
+		NESTED_POINTER = new TokenStructureMatch("NESTED_POINTER");
 		POINTER = new TokenStructureMatch("POINTER");
 
 		{
@@ -414,12 +414,6 @@ public class LangStructures {
 				g.append(VALUE);
 				VALUE.add(g);
 			}
-			{
-				TokenGroupMatch g = new TokenGroupMatch();
-				g.append(IDENTIFIER);
-				g.append(new TokenItemMatch(TokenType.BLOCKSTATE));
-				//VALUE.add(g);
-			}
 			// [-EXPRESSION-]
 			VALUE.add(EXPRESSION);
 			// [IDENTIFIER DOT...]
@@ -432,22 +426,39 @@ public class LangStructures {
 		}
 
 		{
-
-			SINGLE_POINTER.add(METHOD_CALL);
-			SINGLE_POINTER.add(new TokenItemMatch(TokenType.IDENTIFIER));
+			{
+				TokenGroupMatch g = new TokenGroupMatch();
+				{
+					TokenStructureMatch s = new TokenStructureMatch("POINTER_SEGMENT");
+					{
+						TokenGroupMatch g2 = new TokenGroupMatch();
+						g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
+						g2.append(new TokenItemMatch(TokenType.BLOCKSTATE,true));
+						s.add(g2);
+					}
+					s.add(METHOD_CALL);
+					g.append(s);
+				}
+				{
+					//MAYBE TODO: ALSO, FIX THE WAY TOKEN STRUCTURE MATCHES HANDLE PARTIAL MATCHES
+					TokenGroupMatch g2 = new TokenGroupMatch(true);
+					g2.append(new TokenItemMatch(TokenType.DOT));
+					g2.append(NESTED_POINTER);
+					g.append(g2);
+				}
+				NESTED_POINTER.add(g);
+			}
 		}
 
 		{
 			TokenGroupMatch g = new TokenGroupMatch();
 			g.append(VALUE);
-			{
-				TokenGroupMatch g2 = new TokenGroupMatch();
-				g2.append(new TokenItemMatch(TokenType.DOT));
-				g2.append(SINGLE_POINTER);
-				g.append(new TokenListMatch(g2, true));
-			}
+			g.append(new TokenItemMatch(TokenType.DOT));
+			g.append(NESTED_POINTER);
 			POINTER.add(g);
 		}
+
+
 
 		{
 			TokenGroupMatch g = new TokenGroupMatch();

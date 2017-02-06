@@ -5,3 +5,6 @@ GUI Themes:
 
 Syntax Themes:
 -Craftr Syntax Light
+-Craftr Syntax Dark
+-JSON Syntax Light
+-JSON Syntax Dark

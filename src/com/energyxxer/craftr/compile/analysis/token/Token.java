@@ -1,7 +1,6 @@
 package com.energyxxer.craftr.compile.analysis.token;
 
 import com.energyxxer.craftr.util.StringLocation;
-import com.energyxxer.craftr.util.StringUtil;
 
 import java.io.File;
 import java.util.HashMap;
@@ -18,11 +17,11 @@ public class Token {
 	public StringLocation loc;
 	public HashMap<String, Object> attributes;
 
-	private static final boolean VERBOSE = false;
+	private static final boolean VERBOSE = true;
 
 	public Token(String value, File file, StringLocation loc) {
 		this.value = value;
-		this.type = TokenType.getTypeOf(value);
+		this.type = TokenType.IDENTIFIER;
 		this.file = file.getAbsolutePath();
 		this.filename = file.getName();
 		this.loc = loc;
@@ -31,7 +30,7 @@ public class Token {
 
 	public Token(String value, String tokenType, File file, StringLocation loc) {
 		this.value = value;
-		this.type = (tokenType != null) ? tokenType : TokenType.getTypeOf(value);
+		this.type = (tokenType != null) ? tokenType : TokenType.IDENTIFIER;
 		this.file = file.getAbsolutePath();
 		this.filename = file.getName();
 		this.loc = loc;
@@ -69,7 +68,9 @@ public class Token {
 		}
 		// return "Token#" + type + ": " + o + value;
 		
-		String attr = StringUtil.stringFromBoolMap(attributes);
+		String attr = attributes.toString();
+		attr = attr.substring(1,attr.length()-1).replace("=true","").replaceAll("\\w+=false","").replaceAll(", ,",",").trim();
+		if(attr.length() <= 1) attr = "";
 		if(attr.length() > 0) {
 			attr = "\t#" + attr;
 		}
@@ -78,11 +79,11 @@ public class Token {
 	}
 	
 	public static Token merge(String type, Token... tokens) {
-		String s = "";
+		StringBuilder s = new StringBuilder();
 		for(Token t : tokens) {
-			s += t.value;
+			s.append(t.value);
 		}
-		return new Token(s,type,new File(tokens[0].file),tokens[0].loc);
+		return new Token(s.toString(),type,new File(tokens[0].file),tokens[0].loc);
 	}
 
 	@Override

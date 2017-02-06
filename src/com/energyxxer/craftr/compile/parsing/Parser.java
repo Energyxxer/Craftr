@@ -43,6 +43,9 @@ public class Parser {
 		}
 		
 		for(ArrayList<Token> f : tokens) {
+			Token fileHeader = f.get(0);
+			if(!fileHeader.attributes.get("TYPE").equals("craftr")) continue;
+			f.remove(0);
 
 			TokenMatchResponse match = LangStructures.FILE.match(f);
 

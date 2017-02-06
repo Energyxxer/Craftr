@@ -1,10 +1,13 @@
 package com.energyxxer.craftr.compile.analysis;
 
+import com.energyxxer.craftr.compile.analysis.presets.CraftrAnalysisProfile;
+import com.energyxxer.craftr.compile.analysis.presets.JSONAnalysisProfile;
+import com.energyxxer.craftr.compile.analysis.profiles.AnalysisContext;
+import com.energyxxer.craftr.compile.analysis.profiles.AnalysisContextResponse;
+import com.energyxxer.craftr.compile.analysis.profiles.AnalysisProfile;
 import com.energyxxer.craftr.compile.analysis.token.Token;
-import com.energyxxer.craftr.compile.analysis.token.TokenAttributes;
 import com.energyxxer.craftr.compile.analysis.token.TokenStream;
 import com.energyxxer.craftr.compile.analysis.token.TokenType;
-import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.util.StringLocation;
 
@@ -12,13 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-
-import static com.energyxxer.craftr.compile.analysis.Analyzer.Context.COMMENT;
-import static com.energyxxer.craftr.compile.analysis.Analyzer.Context.DEFAULT;
-import static com.energyxxer.craftr.compile.analysis.Analyzer.Context.MULTI_LINE_COMMENT;
-import static com.energyxxer.craftr.compile.analysis.Analyzer.Context.NUMBER;
-import static com.energyxxer.craftr.compile.analysis.Analyzer.Context.STRING;
 
 /**
  * For tokenizing Craftr files. At the moment, all tokens go through the static
@@ -36,7 +32,10 @@ public class Analyzer {
 
 	public Analyzer(File file, String str, TokenStream stream) {
 		this.stream = stream;
-		tokenize(file, str);
+		AnalysisProfile profile = null;
+		if(file.getName().endsWith(".craftr")) profile = new CraftrAnalysisProfile();
+		else if(file.getName().endsWith(".json")) profile = new JSONAnalysisProfile();
+		tokenize(file, str, profile);
 	}
 	
 	private void parse(File project) {
@@ -49,21 +48,24 @@ public class Analyzer {
 			if (file.isDirectory()) {
 				if(!file.getName().equals("resources") || !file.getParentFile().getParent().equals(Preferences.get("workspace_dir"))) {
 					//This is not the resource pack directory.
-					parse(file);
 				}
+				parse(file);
 			} else if(name.endsWith(".craftr")) {
 				try {
 					String str = new String(Files.readAllBytes(Paths.get(file.getPath())));
-					tokenize(file, str);
+					tokenize(file, str, new CraftrAnalysisProfile());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else if(name.endsWith(".json")) {
+				try {
+					String str = new String(Files.readAllBytes(Paths.get(file.getPath())));
+					tokenize(file, str, new JSONAnalysisProfile());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-	}
-
-	enum Context {
-		DEFAULT, STRING, NUMBER, COMMENT, MULTI_LINE_COMMENT
 	}
 
 	private File file;
@@ -79,12 +81,18 @@ public class Analyzer {
 	private int tokenColumn = 0;
 	private int tokenIndex = 0;
 
-	private Context context = DEFAULT;
-	private String contextData = "";
-
-	private void tokenize(File file, String str) {
+	private void tokenize(File file, String str, AnalysisProfile profile) {
 		this.file = file;
+		stream.setProfile(profile);
+		profile.setStream(stream);
 		line = column = index = tokenLine = tokenColumn = tokenIndex = 0;
+		token.setLength(0);
+
+		{
+			Token header = new Token("", TokenType.FILE_HEADER, file, new StringLocation(0, 0, 0));
+			profile.putHeaderInfo(header);
+			flush(header);
+		}
 
 		mainLoop: for(int i = 0; i <= str.length(); i++) {
 			this.index = i;
@@ -106,173 +114,18 @@ public class Analyzer {
 				column++;
 			}
 
-			if(context == STRING) {
-				//Is inside a string.
-
-				if(c.equals("\n")) {
-					//Is a line end.
-					if(contextData.equals(LangConstants.multi_line_string_literal[0])) {
-						//Is a multiline string.
-						token.append("\n");
-						continue;
-					} else {
-						//Invalid end of string. Flush anyways.
-						//TODO: Add a way to tell the caller a syntax error occurs here
-						flush();
-						continue;
-					}
-				} else if(c.equals("\\")) {
-					//Is an escaped character.
-					//Add backslash.
-					token.append("\\");
-					if(!isClosingIteration && !Commons.isSpecialCharacter(str.charAt(i+1))) {
-						//Add escaped character.
-						token.append(str.charAt(i+1));
-						//Skip scanning next character.
-						i++;
-					}
-					continue;
-				} else if(sub.startsWith(contextData)) {
-					//Found same delimiter that started the string literal. Close the string.
-					token.append(c);
-					i += contextData.length()-1;
+			for(AnalysisContext ctx : profile.contexts) {
+				AnalysisContextResponse response = ctx.analyze(sub);
+				if(response.success) {
 					flush();
-					continue;
-				} else {
-					//Is a character inside the string.
-					token.append(c);
-					continue;
-				}
-			} else if(context == COMMENT) {
-				//Is inside a single-line comment.
-
-				if(c.equals("\n")) {
-					//Found the end of the comment.
-					flush();
-					continue;
-				} else {
-					//Is a character inside the comment.
-					token.append(c);
-					continue;
-				}
-			} else if(context == MULTI_LINE_COMMENT) {
-				//Is inside a multi-line comment.
-
-				if(!isClosingIteration && sub.startsWith(LangConstants.multi_line_comment[1])) {
-					//Found the end of the multi-line comment.
-					token.append(LangConstants.multi_line_comment[1]);
-					i += LangConstants.multi_line_comment[1].length()-1;
-					flush();
-					continue;
-				} else {
-					//Is a character inside the comment.
-					token.append(c);
-					continue;
-				}
-			} else if(context == NUMBER) {
-				//Is inside a number.
-
-				if(isClosingIteration) {
-					//Found the end of the file.
-					flush();
-					continue;
-				} else if(Character.isDigit(c.charAt(0))) {
-					//Is a digit.
-					token.append(c);
-				} else if(sub.startsWith(LangConstants.number_punctuation[0])) {
-					//Is a dot.
-					if(contextData.equals("false")) {
-						//Valid dot. Accounts for a floating point literal.
-						token.append(LangConstants.number_punctuation[0]);
-						i += LangConstants.number_punctuation[0].length() - 1;
-						contextData = "true";
-						continue;
-					} else {
-						//Dot is not part of the number, and treated as a normal dot token.
-						flush();
-						//Do not go to the next iteration; let the fallback handle this.
-					}
-				} else {
-					//Is a letter or symbol.
-					for(String suffix : LangConstants.number_type_suffix) {
-						if(sub.startsWith(suffix)) {
-							//Is a valid numerical suffix.
-							token.append(suffix);
-							flush();
-							i += suffix.length()-1;
-							continue mainLoop;
-						}
-					}
-					//Is not a valid suffix.
-					flush();
-					//Do not go to the next iteration; let the fallback handle this.
-				}
-			}
-
-			//--------------------
-			//  FALLBACK CONTEXT
-			//--------------------
-
-			//Check for context changes.
-
-			//String literals.
-			for(String delimiter : LangConstants.string_literal) {
-				if(sub.startsWith(delimiter)) {
-					token.append(delimiter);
-					context = STRING;
-					contextData = delimiter;
-					tokenType = TokenType.STRING_LITERAL;
 					updateTokenPos();
-					i += delimiter.length()-1;
+					line += response.endLocation.line;
+					column += response.endLocation.column;
+					i += response.value.length()-1;
+					token.append(response.value);
+					tokenType = response.tokenType;
+					flush();
 					continue mainLoop;
-				}
-			}
-			//Comments.
-			for(String delimiter : LangConstants.comment) {
-				if(sub.startsWith(delimiter)) {
-					token.append(delimiter);
-					context = COMMENT;
-					contextData = "";
-					tokenType = TokenType.COMMENT;
-					updateTokenPos();
-					i += delimiter.length()-1;
-					continue mainLoop;
-				}
-			}
-			//Multi-line comments.
-			{
-				String start = LangConstants.multi_line_comment[0];
-				if(sub.startsWith(start)) {
-					token.append(start);
-					context = MULTI_LINE_COMMENT;
-					contextData = "";
-					tokenType = TokenType.COMMENT;
-					updateTokenPos();
-					i += start.length() - 1;
-					continue;
-				}
-			}
-
-			//Check for special case tokens.
-
-			for(SpecialTokenConstant special : LangConstants.specialConstants) {
-				for(String pattern : special.patterns) {
-					if(sub.startsWith(pattern)) {
-						//Is pattern.
-
-						//Flush any previous tokens.
-						flush();
-
-						//Flush new pattern.
-						token.append(pattern);
-						tokenType = special.type;
-						updateTokenPos();
-						flush();
-
-						//Continue main loop.
-						i += pattern.length()-1;
-						continue mainLoop;
-					}
 				}
 			}
 
@@ -295,19 +148,11 @@ public class Analyzer {
 
 			if(i > 0) lastChar = str.charAt(i-1);
 
-			if(Character.isJavaIdentifierPart(c.charAt(0))) {
-				if(!Character.isJavaIdentifierPart(lastChar)) {
-					flush();
-					updateTokenPos();
-				}
-				token.append(c);
-			} else {
+			if(lastChar != '\u0000' && !profile.canMerge(lastChar,c.charAt(0))) {
 				flush();
-
 				updateTokenPos();
-				token.append(c);
-				flush();
 			}
+			token.append(c);
 		}
 		flush();
 
@@ -315,9 +160,6 @@ public class Analyzer {
 		token.setLength(0);
 		tokenType = TokenType.END_OF_FILE;
 		flush();
-
-		//stream.write(new Token("", TokenType.END_OF_FILE, file, new StringLocation(index, line, column)));
-
 	}
 
 	private void updateTokenPos() {
@@ -327,25 +169,14 @@ public class Analyzer {
 	}
 
 	private void flush() {
-		if(token.length() > 0 || tokenType == TokenType.END_OF_FILE)
+		if(token.length() > 0 || (tokenType == TokenType.FILE_HEADER || tokenType == TokenType.END_OF_FILE))
 			flush(new Token(token.toString(), tokenType, file, new StringLocation(tokenIndex, tokenLine, tokenColumn)));
 
-		context = DEFAULT;
-		contextData = "";
 		token.setLength(0);
 		tokenType = null;
 	}
 	
 	private void flush(Token token) {
-		if(stream.tokens.size() >= 1) {
-			if(token.type == TokenType.IDENTIFIER && Arrays.asList(LangConstants.unit_types).indexOf(token.value) >= 0 && stream.tokens.get(stream.tokens.size()-1).type == TokenType.MODIFIER)
-				token.type = TokenType.UNIT_TYPE;
-		} else {
-			if(token.type == TokenType.IDENTIFIER && Arrays.asList(LangConstants.unit_types).indexOf(token.value) >= 0)
-				token.type = TokenType.UNIT_TYPE;
-		}
-		
-		TokenAttributes.giveAttributes(token);
 		stream.write(token);
 	}
 }

@@ -23,6 +23,7 @@ public class Compiler {
 		this.project = project;
 		TokenStream ts = new TokenStream();
 		new Analyzer(project.getDirectory(),ts);
+		Console.warn.println(ts.tokens);
 		new Parser(ts, project);
 
 		try {
