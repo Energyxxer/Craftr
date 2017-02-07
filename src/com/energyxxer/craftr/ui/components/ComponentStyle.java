@@ -1,13 +1,12 @@
 package com.energyxxer.craftr.ui.components;
 
-import java.awt.Color;
-import java.awt.Font;
+import com.energyxxer.craftr.global.SystemDefaults;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.border.Border;
-
-import com.energyxxer.craftr.global.SystemDefaults;
+import java.awt.Color;
+import java.awt.Font;
 
 public class ComponentStyle {
 	public Color background = SystemDefaults.BACKGROUND;
@@ -35,7 +34,7 @@ public class ComponentStyle {
 		if(background != null) c.setBackground(background);
 		if(foreground != null) c.setForeground(foreground);
 		if(font != null) c.setFont(font);
-		if(border != null) {c.setBorder(border);} else {c.setBorder(BorderFactory.createEmptyBorder(1,0,1,0));};
+		if(border != null) {c.setBorder(border);} else {c.setBorder(BorderFactory.createEmptyBorder(0,0,1,0));}
 	}
 	
 	public Color getBackground() {

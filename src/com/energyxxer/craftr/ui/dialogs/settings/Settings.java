@@ -80,6 +80,10 @@ public class Settings {
 		SettingsAppearance contentAppearance = new SettingsAppearance();
 		sectionPanes.put("Appearance", contentAppearance);
 
+		sectionPanes.put("Editor", new JPanel());
+		sectionPanes.put("Resources", new JPanel());
+		sectionPanes.put("In-game Compiler", new JPanel());
+
 		contentPane.add(contentGeneral, BorderLayout.CENTER);
 		currentSection = contentGeneral;
 

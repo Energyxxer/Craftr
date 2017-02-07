@@ -17,9 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * For tokenizing Craftr files. At the moment, all tokens go through the static
- * method tokenStream, though it will later be replaced with a variable argument
- * to which to send tokens.
+ * For tokenizing any file by rules given by Analyzer Profiles
  */
 public class Analyzer {
 	
@@ -35,7 +33,7 @@ public class Analyzer {
 		AnalysisProfile profile = null;
 		if(file.getName().endsWith(".craftr")) profile = new CraftrAnalysisProfile();
 		else if(file.getName().endsWith(".json")) profile = new JSONAnalysisProfile();
-		tokenize(file, str, profile);
+		if(profile != null) tokenize(file, str, profile);
 	}
 	
 	private void parse(File project) {

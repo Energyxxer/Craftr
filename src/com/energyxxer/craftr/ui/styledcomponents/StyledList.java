@@ -35,14 +35,14 @@ public class StyledList<T> extends XList<T> {
                 setSelectedCellBackground(  t.getColor(this.namespace + ".list.cell.selected.background",   t.getColor("General.list.cell.selected.background", new Color(235, 235, 235))));
                 setSelectedCellBorder(
                         BorderFactory.createMatteBorder(
-                        1, 0, 1, 0,
-                                            t.getColor(this.namespace + ".list.cell.selected.border",       t.getColor("General.list.cell.selected.border",     new Color(200, 200, 200)))));
+                        0, 0, 1, 0,
+                                            t.getColor(this.namespace + ".list.cell.selected.border",       t.getColor("General.list.cell.selected.border",     new Color(0, 0, 0, 0)))));
 
                 setRolloverCellBackground(  t.getColor(this.namespace + ".list.cell.hover.background",      t.getColor("General.list.cell.hover.background",    new Color(235, 235, 235))));
                 setRolloverCellBorder(
                         BorderFactory.createMatteBorder(
-                        1, 0, 1, 0,
-                                            t.getColor(this.namespace + ".list.cell.hover.border",          t.getColor("General.list.cell.hover.border",        new Color(200, 200, 200)))));
+                        0, 0, 1, 0,
+                                            t.getColor(this.namespace + ".list.cell.hover.border",          t.getColor("General.list.cell.hover.border",        new Color(0, 0, 0, 0)))));
 
                 setFont(new Font(          t.getString(this.namespace + ".list.font",                      t.getString("General.list.font", t.getString("General.font","Tahoma"))),0,14));
             } else {
@@ -54,14 +54,14 @@ public class StyledList<T> extends XList<T> {
                 setSelectedCellBackground(  t.getColor("General.list.cell.selected.background", new Color(235, 235, 235)));
                 setSelectedCellBorder(
                         BorderFactory.createMatteBorder(
-                        1, 0, 1, 0,
-                                t.getColor("General.list.cell.selected.border",     new Color(200, 200, 200))));
+                        0, 0, 1, 0,
+                                t.getColor("General.list.cell.selected.border",     new Color(0, 0, 0, 0))));
 
                 setRolloverCellBackground(  t.getColor("General.list.cell.hover.background",    new Color(235, 235, 235)));
                 setRolloverCellBorder(
                         BorderFactory.createMatteBorder(
-                        1, 0, 1, 0,
-                                t.getColor("General.list.cell.hover.border",        new Color(200, 200, 200))));
+                        0, 0, 1, 0,
+                                t.getColor("General.list.cell.hover.border",        new Color(0, 0, 0, 0))));
 
                 setFont(new Font(          t.getString("General.list.font", t.getString("General.font","Tahoma")),0,14));
             }

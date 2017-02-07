@@ -59,6 +59,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
     }
 
     private void highlightSyntax() throws BadLocationException {
+        if(!parent.associatedTab.path.endsWith(".craftr") && !parent.associatedTab.path.endsWith(".json")) return;
 
         sd.putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
 
