@@ -2,6 +2,7 @@ package com.energyxxer.craftr.ui.dialogs.settings;
 
 import com.energyxxer.craftr.main.window.Window;
 import com.energyxxer.craftr.ui.components.ComponentResizer;
+import com.energyxxer.craftr.ui.components.Padding;
 import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
 import com.energyxxer.craftr.ui.styledcomponents.StyledList;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
@@ -31,8 +32,6 @@ public class Settings {
 	private static JPanel currentSection;
 
 	static {
-		//ThemeChangeListener.addThemeChangeListener(th -> t = th);
-
 		JPanel pane = new JPanel(new BorderLayout());
 		pane.setPreferredSize(new Dimension(900,600));
 		ThemeChangeListener.addThemeChangeListener(t ->
@@ -92,12 +91,7 @@ public class Settings {
 			buttons.setPreferredSize(new Dimension(0,50));
 			ThemeChangeListener.addThemeChangeListener(t -> buttons.setBackground(contentPane.getBackground()));
 
-			{
-				JPanel padding = new JPanel();
-				padding.setOpaque(false);
-				padding.setPreferredSize(new Dimension(25,25));
-				buttons.add(padding);
-			}
+			buttons.add(new Padding(25));
 
 			{
 				StyledButton okay = new StyledButton("OK", "Settings");

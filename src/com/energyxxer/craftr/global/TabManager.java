@@ -1,8 +1,10 @@
 package com.energyxxer.craftr.global;
 
+import com.energyxxer.craftr.logic.Project;
 import com.energyxxer.craftr.main.window.Window;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.TabComponent;
+import com.energyxxer.craftr.ui.editor.CraftrEditor;
 import com.energyxxer.craftr.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.craftr.util.ImageManager;
 
@@ -48,12 +50,12 @@ public class TabManager {
 		}
 		openTabs.add(new Tab(path));
 		setSelectedTab(openTabs.get(openTabs.size() - 1));
-		
 	}
 
-	public static void selectLocation(Tab tab, int index, int length) {
-		tab.editor.editorComponent.requestFocus();
-		tab.editor.editorComponent.getCaret().setProfile(new CaretProfile(index + length, index));
+	private static void selectLocation(Tab tab, int index, int length) {
+		if(tab.module instanceof CraftrEditor) {
+			((CraftrEditor) tab.module).editorComponent.getCaret().setProfile(new CaretProfile(index + length, index));
+		}
 	}
 
 	public static void closeSelectedTab() {
@@ -121,7 +123,7 @@ public class TabManager {
 		}
 	}
 	
-	public static void updateMenu() {
+	private static void updateMenu() {
 		menu.removeAll();
 		if(TabManager.openTabs.size() <= 0) {
 			JMenuItem item = new JMenuItem("No tabs open!");
@@ -159,9 +161,9 @@ public class TabManager {
 	public static void setSelectedTab(Tab tab) {
 		if (selectedTab != null) {
 			selectedTab.selected = false;
-			Window.editArea.remove(selectedTab.getLinkedTab().editor);
+			Window.editArea.remove(selectedTab.getLinkedTab().getModuleComponent());
+			selectedTab = null;
 		}
-		selectedTab = null;
 		if (tab != null) {
 			selectedTab = tab.getLinkedTabComponent();
 			
@@ -175,9 +177,10 @@ public class TabManager {
 			}
 			tab.getLinkedTabComponent().selected = true;
 			
+			Project linkedProject = tab.getLinkedProject();
+			Window.setTitle(tab.getLinkedTabComponent().getName() + ((linkedProject != null) ? " - " + linkedProject.getName() : ""));
+			Window.editArea.add(tab.getModuleComponent(), BorderLayout.CENTER);
 			tab.onSelect();
-			Window.setTitle(tab.getLinkedTabComponent().getName() + " - " + tab.getLinkedProject().getName());
-			Window.editArea.add(tab.editor, BorderLayout.CENTER);
 		} else {
 			Window.statusBar.setCaretInfo(Commons.DEFAULT_CARET_DISPLAY_TEXT);
 			Window.statusBar.setSelectionInfo(" ");
@@ -195,8 +198,7 @@ public class TabManager {
 	}
 	
 	private static void updateTabVisibility() {
-		for(int i = 0; i < openTabs.size(); i++) {
-			Tab tab = openTabs.get(i);
+		for(Tab tab : openTabs) {
 			TabComponent tabComponent = tab.getLinkedTabComponent();
 			tab.visible = tabComponent.getY() <= 0;
 		}
@@ -211,17 +213,17 @@ public class TabManager {
 	public static void renameTab(String oldPath, String newPath) {
 		File newFile = new File(newPath);
 		if (newFile.isFile()) {
-			for (int i = 0; i < openTabs.size(); i++) {
-				if (openTabs.get(i).path.equals(oldPath)) {
-					openTabs.get(i).path = newPath;
-					openTabs.get(i).updateName();
+			for(Tab tab : openTabs) {
+				if (tab.path.equals(oldPath)) {
+					tab.path = newPath;
+					tab.updateName();
 				}
 			}
 		} else if (newFile.isDirectory()) {
-			for (int i = 0; i < openTabs.size(); i++) {
-				if (openTabs.get(i).path.startsWith(oldPath)) {
-					openTabs.get(i).path = newPath + openTabs.get(i).path.substring(oldPath.length());
-					openTabs.get(i).updateName();
+			for(Tab tab : openTabs) {
+				if (tab.path.startsWith(oldPath)) {
+					tab.path = newPath + tab.path.substring(oldPath.length());
+					tab.updateName();
 				}
 			}
 		}

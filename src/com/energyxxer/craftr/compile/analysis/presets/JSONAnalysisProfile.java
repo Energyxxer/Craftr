@@ -15,8 +15,14 @@ import java.util.regex.Pattern;
  */
 public class JSONAnalysisProfile extends AnalysisProfile {
 
+    /**
+     * Holds the previous token for multi-token analysis.
+     * */
     private Token tokenBuffer = null;
 
+    /**
+     * Creates a JSON Analysis Profile.
+     * */
     public JSONAnalysisProfile() {
         //String
         AnalysisContext stringContext = new AnalysisContext() {
@@ -54,7 +60,7 @@ public class JSONAnalysisProfile extends AnalysisProfile {
         //Numbers
         AnalysisContext numberContext = new AnalysisContext() {
 
-            private Pattern regex = Pattern.compile("(\\d+(\\.\\d+)?)");
+            private Pattern regex = Pattern.compile("(-?\\d+(\\.\\d+)?)");
 
             @Override
             public AnalysisContextResponse analyze(String str) {
@@ -108,6 +114,11 @@ public class JSONAnalysisProfile extends AnalysisProfile {
 
     @Override
     public boolean filter(Token token) {
+        if(token.type == TokenType.IDENTIFIER) {
+            if(token.value.equals("true") || token.value.equals("false")) {
+                token.type = TokenType.BOOLEAN;
+            }
+        }
         if(token.type == TokenType.STRING_LITERAL) {
             if(tokenBuffer != null) this.stream.write(tokenBuffer, true);
             tokenBuffer = token;

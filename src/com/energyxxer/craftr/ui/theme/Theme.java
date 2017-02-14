@@ -20,10 +20,6 @@ public class Theme {
 		}
 	}
 
-	public enum Lang {
-		CRAFTR, JSON
-	}
-
 	public Theme(String name) {
 		this(name, new HashMap<>());
 	}

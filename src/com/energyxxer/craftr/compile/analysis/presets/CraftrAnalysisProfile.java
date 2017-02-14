@@ -6,6 +6,7 @@ import com.energyxxer.craftr.compile.analysis.profiles.AnalysisContextResponse;
 import com.energyxxer.craftr.compile.analysis.profiles.AnalysisProfile;
 import com.energyxxer.craftr.compile.analysis.token.Token;
 import com.energyxxer.craftr.compile.analysis.token.TokenType;
+import com.energyxxer.craftr.global.CraftrUtil;
 import com.energyxxer.craftr.minecraft.MinecraftConstants;
 import com.energyxxer.craftr.util.StringLocation;
 
@@ -21,32 +22,48 @@ import static com.energyxxer.craftr.util.StringUtil.FALSE;
 import static com.energyxxer.craftr.util.StringUtil.TRUE;
 
 /**
- * Created by Energyxxer on 2/4/2017.
+ * Defines a profile for the analysis of Craftr files.
  */
 public class CraftrAnalysisProfile extends AnalysisProfile {
 
-    private static final List<String>
-            modifiers = Arrays.asList("public", "static", "typestatic", "abstract", "final", "protected", "private", "synchronized", "compilation", "ingame"),
-            unit_types = Arrays.asList("entity", "item", "feature", "class"),
-            unit_actions = Arrays.asList("extends", "implements"),
-            data_types = Arrays.asList("int", "String", "float", "boolean", "type", "void", "Thread"),
-            keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import", "operator"),
-            action_keywords = Arrays.asList("break", "continue", "return"),
-            booleans = Arrays.asList("true", "false"),
-            nulls = Collections.singletonList("null"),
-            enums = Arrays.asList("Block", "Item", "Gamemode", "Stat", "Achievement", "Effect", "Particle", "Enchantment", "Dimension"),
-            entities = new ArrayList<>(MinecraftConstants.entities),
-            abstract_entities = Arrays.asList("entity_base", "living_base"),
-            pseudo_keywords = Arrays.asList("this", "that"),
-            blockstate_specials = Collections.singletonList("default");
-    private String blockstate_end = "|";
+    /**
+     * Contains all the built-in enum headers.
+     * */
+    private static final List<String> enums = Arrays.asList("Block", "Item", "Gamemode", "Stat", "Achievement", "Effect", "Particle", "Enchantment", "Dimension"),
+    /**
+     * Contains all the built-in entity names.
+     * */
+        entities = new ArrayList<>(MinecraftConstants.entities),
+    /**
+     * Contains all the built-in abstract entity names.
+     * */
+        abstract_entities = Arrays.asList("entity_base", "living_base"),
+    /**
+     * Contains all pseudo-keywords.
+     * */
+        pseudo_keywords = Arrays.asList("this", "that"),
+    /**
+     * Contains special cases for blockstates.
+     * */
+        blockstate_specials = Collections.singletonList("default");
+
+    /**
+     * Character used to force-exit out of a blockstate (For use in parameter lists).
+     * */
+    private static final String blockstate_end = "|";
 
     static {
         entities.addAll(abstract_entities);
     }
 
+    /**
+     * Contains lists of all inner enum values. Warning: VERY long.
+     * */
     private static final List<List<String>> enum_values = Arrays.asList(MinecraftConstants.block_enums,MinecraftConstants.block_enums,MinecraftConstants.gamemode_enums,MinecraftConstants.block_enums,MinecraftConstants.block_enums,MinecraftConstants.effect_enums,MinecraftConstants.particle_enums,MinecraftConstants.enchantment_enums,MinecraftConstants.dimension_enums);
 
+    /**
+     * Creates a Craftr Analysis Profile.
+     * */
     public CraftrAnalysisProfile() {
 
         //String
@@ -217,7 +234,13 @@ public class CraftrAnalysisProfile extends AnalysisProfile {
         return analyzeBlockstate(token) | analyzeAnnotation(token);
     }
 
+    /**
+     * Holds information for multi-token analysis.
+     * */
     private HashMap<String, String> bufferData = new HashMap<>();
+    /**
+     * Holds previous tokens for multi-token analysis.
+     * */
     private ArrayList<Token> tokenBuffer = new ArrayList<>();
 
     {
@@ -228,6 +251,13 @@ public class CraftrAnalysisProfile extends AnalysisProfile {
         bufferData.put("BLOCKSTATE_PHASE", "NONE");
     }
 
+    /**
+     * Combines various tokens into one blockstate-type token.
+     *
+     * @param token The token to be analyzed.
+     *
+     * @return true if the token should be skipped, false otherwise.
+     * */
     private boolean analyzeBlockstate(Token token) {
 
         boolean cancel = false;
@@ -295,20 +325,27 @@ public class CraftrAnalysisProfile extends AnalysisProfile {
         return cancel;
     }
 
+    /**
+     * Analyzes tokens and gives them anotation attributes.
+     *
+     * @param token The token to be analyzed.
+     *
+     * @return true if the token should be skipped, false otherwise.
+     * */
     private boolean analyzeAnnotation(Token token) {
         if(token.type == TokenType.ANNOTATION_MARKER && bufferData.get("ANNOTATION_PHASE").equals("NONE")) {
             bufferData.put("IS_ANNOTATION", TRUE);
             bufferData.put("ANNOTATION_PHASE", "ANNOTATION");
         }
         if(bufferData.get("IS_ANNOTATION") == TRUE) {
-            token.attributes.put("IS_ANNOTATION", true);
+            token.attributes.put(CraftrTokenAttributes.IS_ANNOTATION, true);
             switch(bufferData.get("ANNOTATION_PHASE")) {
                 case "ANNOTATION": {
                     bufferData.put("ANNOTATION_PHASE", "IDENTIFIER");
                     break;
                 } case "IDENTIFIER": {
                     if(token.type == TokenType.IDENTIFIER) {
-                        token.attributes.put("IS_ANNOTATION_HEADER", true);
+                        token.attributes.put(CraftrTokenAttributes.IS_ANNOTATION_HEADER, true);
                         bufferData.put("ANNOTATION_PHASE", "BRACE_OPEN");
                     } else {
                         bufferData.put("IS_ANNOTATION", FALSE);
@@ -340,6 +377,11 @@ public class CraftrAnalysisProfile extends AnalysisProfile {
         return false;
     }
 
+    /**
+     * Analyzes the given token and gives it its relevant attributes.
+     *
+     * @param token The token to be analyzed.
+     * */
     private void giveAttributes(Token token) {
         token.attributes.put(CraftrTokenAttributes.IS_PSEUDO_KEYWORD, pseudo_keywords.contains(token.value));
 
@@ -381,56 +423,15 @@ public class CraftrAnalysisProfile extends AnalysisProfile {
         }
     }
 
-    private void classifyKeyword(Token t) {
-        if(t.type != TokenType.IDENTIFIER) return;
-        for(String p : modifiers) {
-            if(t.value.equals(p)) {
-                t.type = TokenType.MODIFIER;
-                return;
-            }
-        }
-        for(String p : unit_types) {
-            if(t.value.equals(p)) {
-                t.type = TokenType.UNIT_TYPE;
-                return;
-            }
-        }
-        for(String p : unit_actions) {
-            if(t.value.equals(p)) {
-                t.type = TokenType.UNIT_ACTION;
-                return;
-            }
-        }
-        for(String p : data_types) {
-            if(t.value.equals(p)) {
-                t.type = TokenType.DATA_TYPE;
-                return;
-            }
-        }
-        for(String p : keywords) {
-            if(t.value.equals(p)) {
-                t.type = TokenType.KEYWORD;
-                return;
-            }
-        }
-        for(String p : action_keywords) {
-            if(t.value.equals(p)) {
-                t.type = TokenType.ACTION_KEYWORD;
-                return;
-            }
-        }
-        for(String p : booleans) {
-            if(t.value.equals(p)) {
-                t.type = TokenType.BOOLEAN;
-                return;
-            }
-        }
-        for(String p : nulls) {
-            if(t.value.equals(p)) {
-                t.type = TokenType.NULL;
-                return;
-            }
-        }
+    /**
+     * Analyzes an identifier token and changes its type accordingly,
+     * based on its text value.
+     *
+     * @param token The token to be classified.
+     * */
+    private void classifyKeyword(Token token) {
+        if(token.type != TokenType.IDENTIFIER) return;
+        token.type = CraftrUtil.classify(token.value);
     }
 
     @Override

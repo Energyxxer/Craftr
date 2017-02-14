@@ -294,22 +294,21 @@ public class LangStructures {
 		}
 
 		//TODO: Clean up this mess vvv
-		
+
 		{
-			TokenGroupMatch g = new TokenGroupMatch();
-			g.append(new TokenItemMatch(TokenType.DATA_TYPE));
+			DATA_TYPE.add(new TokenItemMatch(TokenType.UNIT_TYPE));
+			DATA_TYPE.add(new TokenItemMatch(TokenType.DATA_TYPE));
+			DATA_TYPE.add(new TokenItemMatch(TokenType.IDENTIFIER));
 			{
+				TokenGroupMatch g = new TokenGroupMatch();
+				g.append(DATA_TYPE);
 				TokenGroupMatch g2 = new TokenGroupMatch();
 				g2.append(new TokenItemMatch(TokenType.BRACE,"["));
 				g2.append(new TokenItemMatch(TokenType.BRACE,"]"));
 				g.append(new TokenListMatch(g2,true));
-			}
-			DATA_TYPE.add(g);
-		}
 
-		{
-			DATA_TYPE.add(new TokenItemMatch(TokenType.UNIT_TYPE));
-			DATA_TYPE.add(new TokenItemMatch(TokenType.IDENTIFIER));
+				DATA_TYPE.add(g);
+			}
 		}
 
 		//TODO: Clean up that mess ^^^

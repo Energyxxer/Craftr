@@ -8,7 +8,7 @@ import com.energyxxer.craftr.main.window.sections.MenuBar;
 import com.energyxxer.craftr.main.window.sections.Sidebar;
 import com.energyxxer.craftr.main.window.sections.StatusBar;
 import com.energyxxer.craftr.main.window.sections.Toolbar;
-import com.energyxxer.craftr.ui.explorer.Explorer;
+import com.energyxxer.craftr.ui.explorer.ExplorerMaster;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
@@ -37,7 +37,7 @@ public class Window {
 
 	public static JFrame jframe;
 
-	public static Explorer explorer;
+	public static ExplorerMaster explorer;
 
 	public static MenuBar menuBar;
 	public static Toolbar toolbar;

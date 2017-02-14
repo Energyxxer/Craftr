@@ -1,12 +1,13 @@
 package com.energyxxer.craftr.global;
 
 import com.energyxxer.craftr.logic.Project;
+import com.energyxxer.craftr.main.window.Window;
 import com.energyxxer.craftr.ui.Tab;
-import com.energyxxer.craftr.ui.explorer.Explorer;
-import com.energyxxer.craftr.util.StringUtil;
+import com.energyxxer.craftr.util.FileUtil;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 
 public class ProjectManager {
@@ -53,6 +54,22 @@ public class ProjectManager {
 			String icon = project.getIconFor(file);
 			if(icon != null) return icon;
 		}
+		String filename = file.getName();
+		if(file.isFile()) {
+			if(filename.endsWith(".json")) {
+				if(filename.equals("sounds.json")) {
+					return "sound_config";
+				} else if(file.getParentFile().getName().equals("blockstates")) {
+					return "blockstate";
+				} else return "model";
+			} else if(filename.endsWith(".lang")) {
+				return "lang";
+			} else if(filename.endsWith(".mcmeta")) {
+				return "meta";
+			} else if(filename.endsWith(".ogg")) {
+				return "audio";
+			}
+		}
 		return null;
 	}
 	
@@ -61,8 +78,11 @@ public class ProjectManager {
 		Project selected = null;
 
 		Tab selectedTab = TabManager.getSelectedTab();
-		if(Explorer.selectedLabels.size() > 0) {
-			selected = getAssociatedProject(new File(Explorer.selectedLabels.get(0).parent.path));
+
+		List<String> selectedFiles = Window.explorer.getSelectedFiles();
+
+		if(selectedFiles.size() > 0) {
+			selected = getAssociatedProject(new File(selectedFiles.get(0)));
 		} else if(selectedTab != null) {
 			selected = selectedTab.getLinkedProject();
 		}
@@ -78,7 +98,7 @@ public class ProjectManager {
 	public static boolean renameFile(File file, String newName) {
 		String path = file.getAbsolutePath();
 		String name = file.getName();
-		String rawName = StringUtil.stripExtension(name);
+		String rawName = FileUtil.stripExtension(name);
 		String extension = name.replaceAll(rawName, "");
 		String pathToParent = path.substring(0, path.lastIndexOf(name));
 		

@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.dialogs.settings;
 
 import com.energyxxer.craftr.main.window.Window;
-import com.energyxxer.craftr.ui.components.XDropdownMenu;
+import com.energyxxer.craftr.ui.styledcomponents.StyledDropdownMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.ui.styledcomponents.StyledPopupMenu;
@@ -82,7 +82,7 @@ class SettingsAppearance extends JPanel {
                 content.add(label);
             }
             {
-                XDropdownMenu<Theme> themeDropdown = new XDropdownMenu<>(ThemeManager.getGUIThemesAsArray());
+                StyledDropdownMenu<Theme> themeDropdown = new StyledDropdownMenu<>(ThemeManager.getGUIThemesAsArray(), "Settings");
                 themeDropdown.setPopupFactory(StyledPopupMenu::new);
                 themeDropdown.setPopupItemFactory(StyledMenuItem::new);
                 themeDropdown.setValue(Window.getTheme());
@@ -94,7 +94,7 @@ class SettingsAppearance extends JPanel {
         }
     }
 
-    public SettingsAppearance() {
+    SettingsAppearance() {
         super(new BorderLayout());
     }
 }

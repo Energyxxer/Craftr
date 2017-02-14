@@ -46,7 +46,7 @@ public class ToolbarButton extends JButton {
 		this.setBorder(BorderFactory.createEmptyBorder());
 
 		ThemeChangeListener.addThemeChangeListener(t -> {
-			if(icon != null) this.setIcon(new ImageIcon(ImageManager.load(String.format("/assets/icons/%s%s.png", Commons.themeAssetsPath, icon)).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
+			if(icon != null) this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
 		});
 
 		this.setFocusPainted(false);

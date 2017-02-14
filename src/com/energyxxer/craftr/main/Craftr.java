@@ -16,7 +16,7 @@ public class Craftr {
 
 	public static Window window;
 
-	Craftr() {
+	private Craftr() {
 		window = new Window();
 	}
 
@@ -26,7 +26,6 @@ public class Craftr {
 		craftr = new Craftr();
 		
 		ProjectManager.loadWorkspace();
-		Window.explorer.generateProjectList();
 		
 		/*String s = "name=Test\n";
 		s += "prefix=t";

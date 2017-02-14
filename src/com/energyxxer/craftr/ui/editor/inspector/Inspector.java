@@ -25,10 +25,12 @@ public class Inspector implements Highlighter.HighlightPainter {
 
     volatile protected ArrayList<InspectionItem> items = new ArrayList<>();
 
-    protected Tab tab;
+    private Tab tab;
+    private CraftrEditorComponent editor;
 
     public Inspector(Tab tab, CraftrEditorComponent editor) {
         this.tab = tab;
+        this.editor = editor;
 
         try
         {
@@ -40,7 +42,7 @@ public class Inspector implements Highlighter.HighlightPainter {
     public void inspect() {
         items.clear();
         TokenStream ts = new TokenStream(true);
-        new Analyzer(new File(tab.path), tab.editor.getText(), ts);
+        new Analyzer(new File(tab.path), editor.getText(), ts);
 
         for(InspectionStructureMatch inspect : InspectionStructures.getAll()) {
             ArrayList<TokenPattern<?>> matches = ts.search(inspect);
@@ -48,7 +50,7 @@ public class Inspector implements Highlighter.HighlightPainter {
                 items.add(new InspectionItem(match, inspect.type));
             }
         }
-        tab.editor.editorComponent.repaint();
+        editor.repaint();
     }
 
     @Override
@@ -65,18 +67,18 @@ public class Inspector implements Highlighter.HighlightPainter {
                     for (int l = bounds.start.line; l <= bounds.end.line; l++) {
                         Rectangle rectangle;
                         if (l == bounds.start.line) {
-                            rectangle = tab.editor.editorComponent.modelToView(bounds.start.index);
+                            rectangle = editor.modelToView(bounds.start.index);
                             if (bounds.start.line == bounds.end.line) {
-                                rectangle.width = tab.editor.editorComponent.modelToView(bounds.end.index).x - rectangle.x;
+                                rectangle.width = editor.modelToView(bounds.end.index).x - rectangle.x;
                             } else {
                                 rectangle.width = c.getWidth() - rectangle.x;
                             }
                         } else if (l == bounds.end.line) {
-                            rectangle = tab.editor.editorComponent.modelToView(bounds.end.index);
+                            rectangle = editor.modelToView(bounds.end.index);
                             rectangle.width = rectangle.x;
                             rectangle.x = 0;
                         } else {
-                            rectangle = tab.editor.editorComponent.modelToView(bounds.start.index);
+                            rectangle = editor.modelToView(bounds.start.index);
                             rectangle.x = 0;
                             rectangle.y += rectangle.height * (l - bounds.start.line);
                             rectangle.width = c.getWidth();

@@ -3,16 +3,22 @@ package com.energyxxer.craftr.ui.components;
 import com.energyxxer.craftr.ui.components.factory.Factory;
 import com.sun.istack.internal.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingConstants;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @SuppressWarnings("unused")
-public class XDropdownMenu<T> extends XButton implements ActionListener {
+public class XDropdownMenu<T> extends XButton {
 
     private ArrayList<T> options = new ArrayList<>();
+    private HashMap<T, ImageIcon> icons = new HashMap<>();
 
     protected int selected = -1;
 
@@ -31,8 +37,17 @@ public class XDropdownMenu<T> extends XButton implements ActionListener {
     }
 
     {
-        this.addActionListener(this);
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                XDropdownMenu.this.mouseClicked(e);
+            }
+        });
         setHorizontalAlignment(SwingConstants.LEFT);
+    }
+
+    public ArrayList<T> getOptions() {
+        return options;
     }
 
     public void setOptions(T[] options) {
@@ -51,12 +66,14 @@ public class XDropdownMenu<T> extends XButton implements ActionListener {
         }
     }
 
-    protected void updateOptions() {
+    private void updateOptions() {
         if(selected == -1 && options.size() > 0) {
             selected = 0;
             this.setText(options.get(0).toString());
+            this.setIcon(icons.get(options.get(0)));
         } else {
             this.setText(options.get(selected).toString());
+            this.setIcon(icons.get(options.get(selected)));
         }
     }
 
@@ -83,24 +100,35 @@ public class XDropdownMenu<T> extends XButton implements ActionListener {
         return options.get(selected);
     }
 
+    public int getValueIndex() {
+        return selected;
+    }
+
     public void setValue(T value) {
         int index = options.indexOf(value);
         if(index >= 0) {
-            selected = index;
-            updateOptions();
+            registerChoice(index);
         }
+    }
+
+    public void setValueIndex(int index) {
+        if(index >= 0 && index < options.size()) registerChoice(index);
+    }
+
+    public void setIcon(T option, Image img) {
+        this.icons.put(option, new ImageIcon(img.getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
+        updateOptions();
     }
 
     public void clear() {
         selected = -1;
         options.clear();
+        icons.clear();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    public void mouseClicked(MouseEvent e) {
 
         JPopupMenu pm = popupFactory.createInstance();
-        //pm.setMaximumSize(new Dimension(this.getWidth(),Integer.MAX_VALUE));
 
         int height = 2;
 
@@ -108,6 +136,7 @@ public class XDropdownMenu<T> extends XButton implements ActionListener {
             T option = options.get(i);
             JMenuItem item = itemFactory.createInstance();
             item.setText(option.toString());
+            item.setIcon(icons.get(option));
             int choice = i;
             item.addActionListener(arg0 -> registerChoice(choice));
             pm.add(item);
@@ -115,6 +144,6 @@ public class XDropdownMenu<T> extends XButton implements ActionListener {
         }
 
         pm.setPreferredSize(new Dimension(this.getWidth(),height));
-        pm.show(this,this.getX(),this.getY()-9);
+        pm.show(this,0 ,this.getHeight()-1);
     }
 }

@@ -23,7 +23,7 @@ public class Toolbar extends JPanel {
         this.add(new ToolbarSeparator());
 
         {
-            ToolbarButton button = new ToolbarButton("project_new");
+            ToolbarButton button = new ToolbarButton("project");
             button.setToolTipText("New Project");
             this.add(button);
         }
@@ -65,25 +65,25 @@ public class Toolbar extends JPanel {
         this.add(new ToolbarSeparator());
 
         {
-            ToolbarButton button = new ToolbarButton("entity_new");
+            ToolbarButton button = new ToolbarButton("entity");
             button.setToolTipText("New Entity");
             this.add(button);
         }
 
         {
-            ToolbarButton button = new ToolbarButton("item_new");
+            ToolbarButton button = new ToolbarButton("item");
             button.setToolTipText("New Item");
             this.add(button);
         }
 
         {
-            ToolbarButton button = new ToolbarButton("feature_new");
+            ToolbarButton button = new ToolbarButton("feature");
             button.setToolTipText("New Feature");
             this.add(button);
         }
 
         {
-            ToolbarButton button = new ToolbarButton("class_new");
+            ToolbarButton button = new ToolbarButton("class");
             button.setToolTipText("New Class");
             this.add(button);
         }

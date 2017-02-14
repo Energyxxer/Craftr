@@ -35,19 +35,6 @@ public class StringUtil {
 		return str.substring(i1, i2);
 	}
 
-	public static String stripExtension(String str) {
-
-		if (str == null)
-			return null;
-
-		int pos = str.lastIndexOf(".");
-
-		if (pos == -1)
-			return str;
-
-		return str.substring(0, pos);
-	}
-
 	public static String escapeHTML(String str) {
 		return str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	}
@@ -127,6 +114,12 @@ public class StringUtil {
 		}
 
 		return count;
+	}
+
+	public static String stripDecimals(double n) {
+		if(n % 1 == 0) {
+			return Integer.toString((int) n);
+		} else return Double.toString(n);
 	}
 	
 	private StringUtil() {}

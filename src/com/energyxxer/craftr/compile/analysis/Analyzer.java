@@ -1,13 +1,12 @@
 package com.energyxxer.craftr.compile.analysis;
 
-import com.energyxxer.craftr.compile.analysis.presets.CraftrAnalysisProfile;
-import com.energyxxer.craftr.compile.analysis.presets.JSONAnalysisProfile;
 import com.energyxxer.craftr.compile.analysis.profiles.AnalysisContext;
 import com.energyxxer.craftr.compile.analysis.profiles.AnalysisContextResponse;
 import com.energyxxer.craftr.compile.analysis.profiles.AnalysisProfile;
 import com.energyxxer.craftr.compile.analysis.token.Token;
 import com.energyxxer.craftr.compile.analysis.token.TokenStream;
 import com.energyxxer.craftr.compile.analysis.token.TokenType;
+import com.energyxxer.craftr.global.Lang;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.util.StringLocation;
 
@@ -30,9 +29,11 @@ public class Analyzer {
 
 	public Analyzer(File file, String str, TokenStream stream) {
 		this.stream = stream;
-		AnalysisProfile profile = null;
-		if(file.getName().endsWith(".craftr")) profile = new CraftrAnalysisProfile();
-		else if(file.getName().endsWith(".json")) profile = new JSONAnalysisProfile();
+		AnalysisProfile profile;
+
+		Lang fileLang = Lang.getLangForFile(file.getName());
+		if(fileLang == null) return;
+		profile = fileLang.createProfile();
 		if(profile != null) tokenize(file, str, profile);
 	}
 	
@@ -48,17 +49,13 @@ public class Analyzer {
 					//This is not the resource pack directory.
 				}
 				parse(file);
-			} else if(name.endsWith(".craftr")) {
+			} else {
+				Lang fileLang = Lang.getLangForFile(name);
+				if(fileLang == null) continue;
+
 				try {
 					String str = new String(Files.readAllBytes(Paths.get(file.getPath())));
-					tokenize(file, str, new CraftrAnalysisProfile());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else if(name.endsWith(".json")) {
-				try {
-					String str = new String(Files.readAllBytes(Paths.get(file.getPath())));
-					tokenize(file, str, new JSONAnalysisProfile());
+					tokenize(file, str, fileLang.createProfile());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

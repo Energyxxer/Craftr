@@ -1,12 +1,23 @@
 package com.energyxxer.craftr.main.window.sections;
 
+import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.main.window.Window;
 import com.energyxxer.craftr.ui.ToolbarButton;
-import com.energyxxer.craftr.ui.explorer.Explorer;
+import com.energyxxer.craftr.ui.explorer.ExplorerMaster;
+import com.energyxxer.craftr.ui.scrollbar.OverlayScrollBarUI;
+import com.energyxxer.craftr.ui.scrollbar.OverlayScrollPaneLayout;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.io.File;
 
 /**
  * Created by User on 12/15/2016.
@@ -35,19 +46,24 @@ public class Sidebar extends JPanel {
         ToolbarButton refresh = new ToolbarButton("reload");
         refresh.setToolTipText("Refresh Explorer");
 
-        refresh.addActionListener(e -> Window.explorer.generateProjectList());
+        refresh.addActionListener(e -> Window.explorer.refresh());
 
         header.add(refresh, BorderLayout.EAST);
         this.add(header, BorderLayout.NORTH);
 
-        JScrollPane sp = new JScrollPane();
-        sp.getViewport().setBackground(Color.BLACK);
+        JScrollPane sp = new JScrollPane(Window.explorer = new ExplorerMaster(new File(Preferences.get("workspace_dir"))));
+        sp.setBorder(new EmptyBorder(0,0,0,0));
+        sp.getVerticalScrollBar().setUI(new OverlayScrollBarUI(sp, 20));
+        sp.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(sp, 20));
+        sp.getVerticalScrollBar().setUnitIncrement(20);
+        sp.getHorizontalScrollBar().setUnitIncrement(20);
+        sp.getVerticalScrollBar().setOpaque(false);
+        sp.getHorizontalScrollBar().setOpaque(false);
+        sp.setLayout(new OverlayScrollPaneLayout());
 
-        sp.getViewport().add(Window.explorer = new Explorer());
-        ThemeChangeListener.addThemeChangeListener(t -> {
-            sp.setBackground(t.getColor("Explorer.background",Color.WHITE));
-            sp.setBorder(BorderFactory.createEmptyBorder());
-        });
+        sp.setComponentZOrder(sp.getVerticalScrollBar(), 0);
+        sp.setComponentZOrder(sp.getHorizontalScrollBar(), 1);
+        sp.setComponentZOrder(sp.getViewport(), 2);
 
         this.add(sp, BorderLayout.CENTER);
     }

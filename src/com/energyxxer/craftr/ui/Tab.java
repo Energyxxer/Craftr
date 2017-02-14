@@ -3,16 +3,16 @@ package com.energyxxer.craftr.ui;
 import com.energyxxer.craftr.global.ProjectManager;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.logic.Project;
+import com.energyxxer.craftr.ui.display.DisplayModule;
 import com.energyxxer.craftr.ui.editor.CraftrEditor;
+import com.energyxxer.craftr.ui.image_viewer.ImageViewer;
 
+import javax.swing.JComponent;
 import javax.swing.text.BadLocationException;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Date;
 
 /**
@@ -23,8 +23,8 @@ public class Tab {
 	private TabComponent linkedTabComponent;
 	private Project linkedProject;
 	public String path;
-	public CraftrEditor editor;
-	public String savedString;
+	public DisplayModule module;
+	public Object savedValue;
 	public boolean visible = true;
 
 	public long openedTimeStamp;
@@ -37,18 +37,12 @@ public class Tab {
 	public Tab(String path) {
 		this.path = path;
 		this.linkedProject = ProjectManager.getAssociatedProject(new File(path));
-		editor = new CraftrEditor(this);
-		byte[] encoded;
-		try {
-			encoded = Files.readAllBytes(Paths.get(path));
-			String s = new String(encoded);
-			editor.setText(s);
-			editor.editorComponent.setCaretPosition(0);
-			editor.startEditListeners();
-			savedString = s.intern();
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(path.endsWith(".png")) {
+			module = new ImageViewer(this);
+		} else {
+			module = new CraftrEditor(this);
 		}
+		savedValue = module.getValue();
 
 		associate(new TabComponent(this));
 
@@ -71,12 +65,13 @@ public class Tab {
 
 	public void onSelect() {
 		openedTimeStamp = new Date().getTime();
-		editor.displayCaretInfo();
+		module.focus();
+		module.displayCaretInfo();
 	}
 
 	public void onEdit() {
 		if (linkedTabComponent != null) {
-			boolean newIsSaved = editor.editorComponent.getText().intern() == savedString || savedString == null;
+			boolean newIsSaved = savedValue == null || module.getValue() == savedValue;
 			linkedTabComponent.setSaved(newIsSaved);
 		}
 	}
@@ -98,15 +93,18 @@ public class Tab {
 	}
 
 	public void save() {
+		if(!module.canSave()) return;
 		PrintWriter writer;
 		try {
 			writer = new PrintWriter(path, "UTF-8");
 
-			String text = editor.editorComponent.getText();
+			String text = (String) module.getValue();
 			if(!text.endsWith("\n")) {
 				text = text.concat("\n");
 				try {
-					editor.editorComponent.getDocument().insertString(text.length()-1,"\n",null);
+					if(module instanceof CraftrEditor) {
+						((CraftrEditor) module).editorComponent.getDocument().insertString(text.length()-1,"\n",null);
+					}
 				} catch(BadLocationException e) {
 					e.printStackTrace();
 				}
@@ -115,7 +113,7 @@ public class Tab {
 
 			writer.print(text);
 			writer.close();
-			savedString = text;
+			savedValue = text;
 			linkedTabComponent.setSaved(true);
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -124,5 +122,9 @@ public class Tab {
 
 	public Project getLinkedProject() {
 		return linkedProject;
+	}
+
+	public JComponent getModuleComponent() {
+		return (JComponent) module;
 	}
 }

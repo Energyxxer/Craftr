@@ -3,6 +3,7 @@ package com.energyxxer.craftr.ui.editor;
 import com.energyxxer.craftr.compile.analysis.Analyzer;
 import com.energyxxer.craftr.compile.analysis.token.Token;
 import com.energyxxer.craftr.compile.analysis.token.TokenStream;
+import com.energyxxer.craftr.global.Lang;
 import com.energyxxer.craftr.main.window.Window;
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
 import com.energyxxer.craftr.ui.editor.inspector.Inspector;
@@ -32,18 +33,18 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
 
     private StyledDocument sd;
 
-    Inspector inspector;
+    private Inspector inspector = null;
 
     private long lastEdit;
 
 
-    public CraftrEditorComponent(CraftrEditor parent) {
+    CraftrEditorComponent(CraftrEditor parent) {
         super(new DefaultStyledDocument());
         this.parent = parent;
 
         sd = this.getStyledDocument();
 
-        this.inspector = new Inspector(parent.associatedTab, this);
+        if(Lang.getLangForFile(parent.associatedTab.path) == Lang.CRAFTR) this.inspector = new Inspector(parent.associatedTab, this);
 
         this.addCaretListener(this);
 
@@ -59,7 +60,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
     }
 
     private void highlightSyntax() throws BadLocationException {
-        if(!parent.associatedTab.path.endsWith(".craftr") && !parent.associatedTab.path.endsWith(".json")) return;
+        if(parent.syntax == null) return;
 
         sd.putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
 
@@ -100,14 +101,24 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
                 } catch(BadLocationException e) {
                     e.printStackTrace();
                 }
-                this.inspector.inspect();
+                if(this.inspector != null) this.inspector.inspect();
             },"Text Highlighter").start();
             lastEdit = -1;
         }
     }
 
-    public void displayCaretInfo() {
+    void displayCaretInfo() {
         Window.statusBar.setCaretInfo(getCaretInfo());
         Window.statusBar.setSelectionInfo(getSelectionInfo());
+    }
+
+    @Override
+    public String getText() {
+        try {
+            return getDocument().getText(0, getDocument().getLength());
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

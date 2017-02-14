@@ -48,6 +48,8 @@ public class StyledTextField extends XTextField {
                 setSelectedTextColor(t.getColor(this.namespace + ".textfield.selection.foreground", t.getColor("General.textfield.selection.foreground",getForeground())));
                 setBorderColor      (t.getColor(this.namespace + ".textfield.border",               t.getColor("General.textfield.border",              new Color(200, 200, 200))));
                 setFont(new Font   (t.getString(this.namespace + ".textfield.font",                t.getString("General.textfield.font",                t.getString("General.font","Tahoma"))),0,12));
+
+                setDisabledTextColor(t.getColor(this.namespace + ".textfield.disabled.foreground", t.getColor("General.textfield.disabled.foreground",getForeground())));
             } else {
                 setBackground       (t.getColor("General.textfield.background",          new Color(220, 220, 220)));
                 setForeground       (t.getColor("General.textfield.foreground",          t.getColor("General.foreground", Color.BLACK)));
@@ -55,6 +57,8 @@ public class StyledTextField extends XTextField {
                 setSelectedTextColor(t.getColor("General.textfield.selection.foreground",getForeground()));
                 setBorderColor      (t.getColor("General.textfield.border",              new Color(200, 200, 200)));
                 setFont(new Font   (t.getString("General.textfield.font",                t.getString("General.font","Tahoma")),0,12));
+
+                setDisabledTextColor(t.getColor("General.textfield.disabled.foreground",getForeground()));
             }
         });
     }

@@ -17,7 +17,7 @@ public class Token {
 	public StringLocation loc;
 	public HashMap<String, Object> attributes;
 
-	private static final boolean VERBOSE = true;
+	private static final boolean VERBOSE = false;
 
 	public Token(String value, File file, StringLocation loc) {
 		this.value = value;

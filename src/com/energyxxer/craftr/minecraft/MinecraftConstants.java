@@ -7,14 +7,14 @@ import java.util.ArrayList;
  * A long and painfully written list of all things Minecraft.
  */
 public class MinecraftConstants {
-	public static ArrayList<String> entities_old = new ArrayList<String>();
-	public static ArrayList<String> entities = new ArrayList<String>();
-	public static ArrayList<String> block_enums = new ArrayList<String>();
-	public static ArrayList<String> gamemode_enums = new ArrayList<String>();
-	public static ArrayList<String> effect_enums = new ArrayList<String>();
-	public static ArrayList<String> particle_enums = new ArrayList<String>();
-	public static ArrayList<String> enchantment_enums = new ArrayList<String>();
-	public static ArrayList<String> dimension_enums = new ArrayList<String>();
+	public static ArrayList<String> entities_old = new ArrayList<>();
+	public static ArrayList<String> entities = new ArrayList<>();
+	public static ArrayList<String> block_enums = new ArrayList<>();
+	public static ArrayList<String> gamemode_enums = new ArrayList<>();
+	public static ArrayList<String> effect_enums = new ArrayList<>();
+	public static ArrayList<String> particle_enums = new ArrayList<>();
+	public static ArrayList<String> enchantment_enums = new ArrayList<>();
+	public static ArrayList<String> dimension_enums = new ArrayList<>();
 
 	static {
 		entities_old.add("Player");

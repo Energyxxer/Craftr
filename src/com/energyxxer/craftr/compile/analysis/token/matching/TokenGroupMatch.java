@@ -22,17 +22,17 @@ public class TokenGroupMatch extends TokenPatternMatch {
 
 	public TokenGroupMatch() {
 		this.optional = false;
-		items = new ArrayList<TokenPatternMatch>();
+		items = new ArrayList<>();
 	}
 
 	public TokenGroupMatch(boolean optional) {
 		this.optional = optional;
-		items = new ArrayList<TokenPatternMatch>();
+		items = new ArrayList<>();
 	}
 
 	public TokenGroupMatch append(TokenPatternMatch i) {
 		items.add(i);
-		return this;
+		return this; //I'm so sorry for this
 	}
 	
 	public TokenMatchResponse match(List<Token> tokens) {

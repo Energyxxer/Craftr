@@ -10,6 +10,7 @@ import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftr.util.ImageManager;
 import com.energyxxer.craftr.util.StringUtil;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -29,6 +30,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.io.IOException;
 
 import static com.energyxxer.craftr.ui.Draggable.AXIS_X;
 
@@ -109,14 +111,25 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 	}
 
 	private void updateIcon() {
+
+		if(associatedTab.path.endsWith(".png")) {
+			try {
+				Image icon = ImageIO.read(new File(associatedTab.path));
+				this.setIcon(new ImageIcon(icon.getScaledInstance(16,16, Image.SCALE_SMOOTH)));
+			} catch(IOException x) {
+				this.setIcon(new ImageIcon(Commons.getIcon("file").getScaledInstance(16,16, Image.SCALE_SMOOTH)));
+			}
+			return;
+		}
+
 		String icon = ProjectManager.getIconFor(new File(associatedTab.path));
 		if(icon != null) {
-			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + icon + ".png").getScaledInstance(16,16, Image.SCALE_SMOOTH)));
+			this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
 		} else if (name.endsWith(".craftr")) {
-			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "entity.png").getScaledInstance(16, 16,
+			this.setIcon(new ImageIcon(Commons.getIcon("entity").getScaledInstance(16, 16,
 					java.awt.Image.SCALE_SMOOTH)));
 		} else {
-			this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + "file.png").getScaledInstance(16, 16,
+			this.setIcon(new ImageIcon(Commons.getIcon("file").getScaledInstance(16, 16,
 					java.awt.Image.SCALE_SMOOTH)));
 		}
 	}

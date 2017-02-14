@@ -1,6 +1,5 @@
 package com.energyxxer.craftr.logic;
 
-import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.main.FileSelector;
 import com.energyxxer.craftr.minecraft.MinecraftConstants;
@@ -194,9 +193,7 @@ public class Project {
 	public String getIconFor(File file) {
 		String path = getRelativePath(file);
 		if(path != null) {
-			String icon = icons.get(path);
-			if(icon == null) return null;
-			return (icon.startsWith("*") ? icon.substring(1) : Commons.themeAssetsPath + icon);
+			return icons.get(path);
 		}
 		return null;
 	}

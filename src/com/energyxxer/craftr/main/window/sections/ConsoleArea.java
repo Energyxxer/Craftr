@@ -3,7 +3,7 @@ package com.energyxxer.craftr.main.window.sections;
 import com.energyxxer.craftr.global.Console;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.ToolbarButton;
-import com.energyxxer.craftr.ui.scrollbar.ScrollbarUI;
+import com.energyxxer.craftr.ui.scrollbar.OverlayScrollBarUI;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftr.util.out.ConsoleOutputStream;
 
@@ -101,7 +101,7 @@ public class ConsoleArea extends JPanel {
         clear.addActionListener(e -> {
             try {
                 console.getDocument().remove(0,console.getDocument().getLength());
-            } catch(BadLocationException ble) {}
+            } catch(BadLocationException x) {}
         });
         console.addMouseListener(new MouseAdapter() {
             @Override
@@ -145,8 +145,8 @@ public class ConsoleArea extends JPanel {
 
         //consoleScrollPane.setLayout(new OverlayScrollPaneLayout());
 
-        consoleScrollPane.getVerticalScrollBar().setUI(new ScrollbarUI(consoleScrollPane, 20));
-        consoleScrollPane.getHorizontalScrollBar().setUI(new ScrollbarUI(consoleScrollPane, 20));
+        consoleScrollPane.getVerticalScrollBar().setUI(new OverlayScrollBarUI(consoleScrollPane, 20));
+        consoleScrollPane.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(consoleScrollPane, 20));
         consoleScrollPane.getVerticalScrollBar().setOpaque(false);
         consoleScrollPane.getHorizontalScrollBar().setOpaque(false);
 

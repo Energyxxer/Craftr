@@ -23,8 +23,8 @@ import javax.swing.KeyStroke;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.StyledDocument;
-import javax.swing.text.Utilities;
 import java.awt.Color;
 import java.awt.Event;
 import java.awt.Point;
@@ -33,6 +33,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -44,6 +45,9 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
 
     private EditManager editManager = new EditManager(this);
     protected LinePainter linePainter;
+
+    private HashMap<Integer, Integer> lineLocations = new HashMap<>();
+    //               (line)  (index)
 
     public static final float BIAS_POINT = 0.4f;
 
@@ -73,7 +77,10 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             }
         });
 
-
+        this.getDocument().addUndoableEditListener(e -> {
+            lineLocations.clear();
+            lineLocations.put(0,0);
+        });
 
     }
 
@@ -120,7 +127,9 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
 
                 for (int i = 0; i < locations.size() - 1; i += 2) {
                     int d = locations.get(i) + characterDrift;
-                    int spaces = 4 - ((getLocationForOffset(d).column - 1) % 4);
+                    StringLocation location = getLocationForOffset(d);
+                    if(location == null) continue;
+                    int spaces = 4 - ((location.column - 1) % 4);
                     spaces = (spaces > 0) ? spaces : 4;
                     characterDrift += spaces;
                     String str = StringUtil.repeat(" ", spaces);
@@ -220,6 +229,43 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     }
 
     public StringLocation getLocationForOffset(int index) {
+        int line = 0;
+        int lineStart = 0;
+        for(int l = 0; l < lineLocations.size(); l++) {
+            if(lineLocations.get(l) < index) {
+                line = l;
+                lineStart = lineLocations.get(l);
+            } else if(lineLocations.get(l) == index) {
+                return new StringLocation(index, l+1, 1);
+            } else {
+                break;
+            }
+        }
+        Document doc = this.getDocument();
+        try {
+            String str = doc.getText(lineStart, doc.getLength() - lineStart);
+
+            int column = 0;
+
+            for(int i = 0; i < str.length(); i++) {
+                if(lineStart + i == index) {
+                    return new StringLocation(index, line + 1, column + 1);
+                }
+                if(str.charAt(i) == '\n') {
+                    line++;
+                    column = 0;
+                    lineLocations.putIfAbsent(line, lineStart + i + 1);
+                } else {
+                    column++;
+                }
+            }
+            return new StringLocation(index, line + 1, column + 1);
+        } catch (BadLocationException x) {
+            x.printStackTrace();
+            return null;
+        }
+        /*
+        Console.debug.println("getting location for offset " + index);
         try {
             int line = (index == 0) ? 1 : 0;
             try {
@@ -242,7 +288,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             return new StringLocation(index, line, column);
         } catch(BadLocationException e) {
             return null;
-        }
+        }*/
     }
 
     public String getCaretInfo() {

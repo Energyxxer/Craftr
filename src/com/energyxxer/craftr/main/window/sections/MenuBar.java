@@ -3,7 +3,6 @@ package com.energyxxer.craftr.main.window.sections;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.global.ProjectManager;
 import com.energyxxer.craftr.main.window.Window;
-import com.energyxxer.craftr.ui.common.MenuItems;
 import com.energyxxer.craftr.ui.dialogs.settings.Settings;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
@@ -39,8 +38,8 @@ public class MenuBar extends JMenuBar {
             // --------------------------------------------------
 
 
-            StyledMenu newMenu = MenuItems.newMenu("New                    ");
-            menu.add(newMenu);
+            //StyledMenu newMenu = MenuItems.newMenu("New                    ");
+            //menu.add(newMenu);
 
             // --------------------------------------------------
 
@@ -113,7 +112,7 @@ public class MenuBar extends JMenuBar {
 
             {
                 StyledMenuItem item = new StyledMenuItem("Refresh", "reload");
-                item.addActionListener(e -> Window.explorer.generateProjectList());
+                item.addActionListener(e -> Window.explorer.refresh());
                 menu.add(item);
             }
 

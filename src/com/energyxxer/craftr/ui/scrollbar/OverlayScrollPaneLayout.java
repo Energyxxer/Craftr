@@ -14,15 +14,15 @@ public class OverlayScrollPaneLayout extends ScrollPaneLayout {
         super.layoutContainer(parent);
 
         Rectangle availR = parent.getBounds();
-        this.rowHead.setSize(this.rowHead.getWidth(),availR.height);
+        if(this.rowHead != null) this.rowHead.setSize(this.rowHead.getWidth(),availR.height);
         availR.x = availR.y = 0;
 
 
         // viewport
         Insets insets = parent.getInsets();
-        availR.x = insets.left + rowHead.getWidth();
+        availR.x = insets.left + ((rowHead != null) ? rowHead.getWidth() : 0);
         availR.y = insets.top;
-        availR.width -= insets.left + insets.right + rowHead.getWidth();
+        availR.width -= insets.left + insets.right + ((rowHead != null) ? rowHead.getWidth() : 0);
         availR.height -= insets.top + insets.bottom;
         if (viewport != null) {
             viewport.setBounds(availR);

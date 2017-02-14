@@ -1,11 +1,12 @@
 package com.energyxxer.craftr.ui.editor;
 
 import com.energyxxer.craftr.global.Console;
+import com.energyxxer.craftr.global.Lang;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.Tab;
-import com.energyxxer.craftr.ui.explorer.ExplorerItemLabel;
+import com.energyxxer.craftr.ui.display.DisplayModule;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollPaneLayout;
-import com.energyxxer.craftr.ui.scrollbar.ScrollbarUI;
+import com.energyxxer.craftr.ui.scrollbar.OverlayScrollBarUI;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
@@ -13,13 +14,14 @@ import com.energyxxer.craftr.util.linenumber.TextLineNumber;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Event;
 import java.awt.Font;
@@ -27,13 +29,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
  * Main text editorComponent of the program. Has support for syntax highlighting, undo,
  * and is linked to abstract tabs.
  */
-public class CraftrEditor extends JScrollPane implements UndoableEditListener, MouseListener, ThemeChangeListener {
+public class CraftrEditor extends JScrollPane implements DisplayModule, UndoableEditListener, MouseListener, ThemeChangeListener {
 
 	/**
 	 * 
@@ -44,7 +49,7 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 
     public CraftrEditorComponent editorComponent;
     private TextLineNumber tln;
-	private Theme syntax;
+	protected Theme syntax;
 
 	private ArrayList<String> styles = new ArrayList<>();
 
@@ -56,7 +61,13 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 
         editorComponent = new CraftrEditorComponent(this);
         editorComponent.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
-        super.setViewportView(editorComponent);
+
+		JPanel temp = new JPanel(new BorderLayout());
+		temp.add(editorComponent);
+
+        super.setViewportView(temp);
+
+
 
         tln = new TextLineNumber(editorComponent, this);
         tln.setPadding(10);
@@ -101,14 +112,16 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 		editorComponent.addMouseListener(this);
 
 		this.setRowHeaderView(tln);
-		//tln.setPreferredSize(new Dimension(10,0));
 
-		this.getVerticalScrollBar().setUI(new ScrollbarUI(this, 20));
-		this.getHorizontalScrollBar().setUI(new ScrollbarUI(this, 20));
+		this.getVerticalScrollBar().setUI(new OverlayScrollBarUI(this, 20));
+		this.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(this, 20));
 		this.getVerticalScrollBar().setOpaque(false);
 		this.getHorizontalScrollBar().setOpaque(false);
 
 		this.setLayout(new OverlayScrollPaneLayout());
+
+		this.getVerticalScrollBar().setUnitIncrement(25);
+		this.getHorizontalScrollBar().setUnitIncrement(25);
 
 		/*linePainter.addPaintListener(() -> {
 			this.getVerticalScrollBar().repaint();
@@ -119,15 +132,25 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 		setComponentZOrder(getHorizontalScrollBar(), 1);
 		setComponentZOrder(getViewport(), 2);
 
-
 		addThemeChangeListener();
+
+		byte[] encoded;
+		try {
+			encoded = Files.readAllBytes(Paths.get(tab.path));
+			String s = new String(encoded);
+			setText(s);
+			editorComponent.setCaretPosition(0);
+			startEditListeners();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void startEditListeners() {
+	private void startEditListeners() {
 		editorComponent.getDocument().addUndoableEditListener(this);
 	}
 
-	public void setSyntax(Theme newSyntax) {
+	private void setSyntax(Theme newSyntax) {
 		if(newSyntax == null) {
 			for(String key : this.styles) {
 				editorComponent.removeStyle(key);
@@ -180,12 +203,7 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 	}
 
 	public String getText() {
-		try {
-			return editorComponent.getDocument().getText(0, editorComponent.getDocument().getLength());
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-			return null;
-		}
+		return editorComponent.getText();
 	}
 
 	@Override
@@ -213,7 +231,6 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 
 	@Override
 	public void mousePressed(MouseEvent arg0) {
-		ExplorerItemLabel.setNewSelected(null, false);
 	}
 
 	@Override
@@ -260,17 +277,37 @@ public class CraftrEditor extends JScrollPane implements UndoableEditListener, M
 		);
 		tln.setFont(new Font(t.getString("CraftrEditor.lineNumber.font","monospaced"),0,12));
 
-		for(Theme.Lang lang : Theme.Lang.values()) {
-			if(associatedTab.path.endsWith("." + lang.toString().toLowerCase())) {
-				setSyntax(ThemeManager.getSyntaxForGUITheme(lang, t));
-				editorComponent.highlight();
-				break;
+		for(Lang lang : Lang.values()) {
+			for(String extension : lang.getExtensions()) {
+				if(associatedTab.path.endsWith("." + extension)) {
+					setSyntax(ThemeManager.getSyntaxForGUITheme(lang, t));
+					editorComponent.highlight();
+					return;
+				}
 			}
 		}
 	}
 
+	@Override
     public void displayCaretInfo() {
         editorComponent.displayCaretInfo();
     }
+
+	@Override
+	public Object getValue() {
+		String text = getText();
+		return (text != null) ? text.intern() : null;
+	}
+
+	@Override
+	public boolean canSave() {
+		return true;
+	}
+
+	@Override
+	public void focus() {
+		editorComponent.requestFocus();
+	}
+
 
 }

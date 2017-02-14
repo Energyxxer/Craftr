@@ -3,7 +3,6 @@ package com.energyxxer.craftr.ui.styledcomponents;
 import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.craftr.util.ImageManager;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -16,6 +15,7 @@ import java.awt.Image;
 /**
  * Created by User on 12/15/2016.
  */
+@SuppressWarnings("unused")
 public class StyledLabel extends JLabel implements ThemeChangeListener {
 
     private String namespace = null;
@@ -96,6 +96,8 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
     public void setStyle(int style) {
         this.style = style;
         this.setFont(this.getFont().deriveFont(style));
+        revalidate();
+        repaint();
     }
 
     public int getFontSize() {
@@ -127,13 +129,13 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
             Theme t = this.theme;
             if (this.namespace != null) {
                 setForeground(t.getColor(this.namespace + ".label.foreground", t.getColor("General.label.foreground", t.getColor("General.foreground", Color.BLACK))));
-                setFont(new Font(t.getString(this.namespace + "label.font", t.getString("General.label.font", t.getString("General.font", "Tahoma"))), 1, 12));
+                setFont(new Font(t.getString(this.namespace + "label.font", t.getString("General.label.font", t.getString("General.font", "Tahoma"))), style, 12));
             } else {
                 setForeground(t.getColor("General.label.foreground", t.getColor("General.foreground", Color.BLACK)));
                 setFont(new Font(t.getString("General.label.font", t.getString("General.font", "Tahoma")), style, size));
             }
             if (icon != null) {
-                this.setIcon(new ImageIcon(ImageManager.load("/assets/icons/" + Commons.themeAssetsPath + icon + ".png").getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
+                this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
             } else {
                 this.setIcon(null);
             }

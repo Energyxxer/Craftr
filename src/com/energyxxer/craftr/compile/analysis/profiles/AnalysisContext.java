@@ -1,34 +1,16 @@
 package com.energyxxer.craftr.compile.analysis.profiles;
 
 /**
- * Created by User on 2/4/2017.
+ * Defines sub-routines to analyzes special-case tokens.
  */
 public interface AnalysisContext {
-
     /**
-     * Used to check whether an analysis context should begin.
-     * It will not be called if such context is currently active.
+     * Analyzes the given substring, starting at the
+     * current position of the Analyzer, and returns information about the analysis.
      *
-     * @return AnalysisContextResponse: <br>
-     *     <ol>
-     *         <li><code>boolean</code> success: <code>true</code> if context should begin, false otherwise.</li>
-     *         <li><code>String</code> value: If applicable, the segment of the given string to skip analysis for.</li>
-     *     </ol>
-     * */
-    //AnalysisContextResponse checkStart(String str, AnalysisContextData data);
-
-    /**
-     * Used to check whether an analysis context should end.
-     * Other in-context calculations may also be done.
+     * @param str The substring to analyze.
      *
-     * @return AnalysisContextResponse: <br>
-     *     <ol>
-     *         <li><code>boolean</code> success: <code>true</code> if context should end, false otherwise.</li>
-     *         <li><code>String</code> value: If applicable, the segment of the given string to skip analysis for
-     *         and add to the end of the token.</li>
-     *     </ol>
+     * @return A context response object containing information about the analysis.
      * */
-    //AnalysisContextResponse checkInner(String str, AnalysisContextData data);
-
     AnalysisContextResponse analyze(String str);
 }

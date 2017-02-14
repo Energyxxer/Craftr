@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.ui.theme;
 
 import com.energyxxer.craftr.global.Console;
+import com.energyxxer.craftr.global.Lang;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.main.window.Window;
@@ -81,10 +82,9 @@ public class ThemeManager {
 
     }
 
-    public static Theme getSyntaxForGUITheme(Theme.Lang lang, Theme guiTheme) {
+    public static Theme getSyntaxForGUITheme(Lang lang, Theme guiTheme) {
         String s = guiTheme.getString("Syntax." + lang.toString().toLowerCase());
         Console.debug.println(s);
-        Theme syntaxTheme = getSyntaxTheme(s);
-        return syntaxTheme;
+        return getSyntaxTheme(s);
     }
 }

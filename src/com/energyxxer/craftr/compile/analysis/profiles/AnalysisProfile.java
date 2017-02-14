@@ -6,27 +6,68 @@ import com.energyxxer.craftr.compile.analysis.token.TokenStream;
 import java.util.List;
 
 /**
- * Created by User on 2/4/2017.
+ * Defines a profile for the lexical analysis of files.
  */
 public abstract class AnalysisProfile {
+    /**
+     * Contains a list of all custom analysis contexts.
+     * */
     public List<AnalysisContext> contexts;
+    /**
+     * Contains the token stream to which the tokens are being sent.
+     * */
     protected TokenStream stream = null;
 
+    /**
+     * Compares two adjacent characters and determines whether these
+     * characters can be placed in the same token.
+     *
+     * @param ch0 First character to be compared.
+     * @param ch1 Second character to be compared.
+     *
+     * @return true if characters can be merged, false otherwise.
+     * */
     public boolean canMerge(char ch0, char ch1) {
         return false;
     }
 
+    /**
+     * Method through which all tokens pass.
+     *
+     * @param token Token to be filtered.
+     *
+     * @return false if the token should not be added to the stream, true otherwise.
+     * */
     public boolean filter(Token token) {
         return true;
     }
 
+    /**
+     * Determines whether a token should be significant or not.
+     *
+     * @param token The token.
+     *
+     * @return true if significant, false otherwise.
+     * */
     public boolean isSignificant(Token token) {
         return true;
     }
 
+    /**
+     * Sets the current stream to the given value.
+     *
+     * @param stream The stream to assign to this profile.
+     * */
     public void setStream(TokenStream stream) {
         this.stream = stream;
     }
 
+    /**
+     * Puts information about the language in the given header token's
+     * attribute map.
+     *
+     * @param header Header token to put attributes onto.
+     *
+     * */
     public abstract void putHeaderInfo(Token header);
 }
