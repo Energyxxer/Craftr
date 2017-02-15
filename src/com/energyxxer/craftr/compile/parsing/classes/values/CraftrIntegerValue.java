@@ -1,6 +1,9 @@
 package com.energyxxer.craftr.compile.parsing.classes.values;
 
+import com.energyxxer.craftr.compile.analysis.token.structures.TokenItem;
 import com.energyxxer.craftr.compile.exceptions.IllegalOperandsException;
+import com.energyxxer.craftr.compile.parsing.classes.evaluation.Evaluator;
+import com.energyxxer.craftr.global.Console;
 import com.sun.istack.internal.NotNull;
 
 /**
@@ -156,5 +159,23 @@ public class CraftrIntegerValue extends CraftrNumericValue {
         return this;
     }
 
-    public static void init() {}
+    public static void init() {
+        Evaluator.addEvaluator("NUMBER", p -> {
+            if(p instanceof TokenItem) {
+                TokenItem item = (TokenItem) p;
+                String str = item.getContents().value;
+                int value;
+
+                if(str.matches("\\d+(\\.\\d+)?")) {
+                    value = Integer.valueOf(str);
+                    return new CraftrIntegerValue(value);
+                }
+
+                return null;
+            } else {
+                Console.err.println("[ERROR] Number pattern with type " + p.getType() + ": " + p);
+                return null;
+            }
+        });
+    }
 }

@@ -2,7 +2,6 @@ package com.energyxxer.craftr.compile.parsing.classes.evaluation;
 
 import com.energyxxer.craftr.compile.analysis.token.structures.TokenPattern;
 import com.energyxxer.craftr.compile.parsing.classes.values.CraftrValue;
-import com.energyxxer.craftr.global.Console;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,19 +20,19 @@ public class Evaluator {
         evaluators.get(name).add(p);
     }
 
-    public static void eval(TokenPattern<?> p) {
+    public static CraftrValue eval(TokenPattern<?> p) {
         for(String key : evaluators.keySet()) {
             if(p.name.equals(key)) {
                 ArrayList<PatternParser> entries = evaluators.get(key);
                 for(PatternParser entry : entries) {
                     CraftrValue val = entry.eval(p);
                     if(val != null) {
-                        Console.debug.println(val);
-                        break;
+                        return val;
                     }
                 }
-                Console.debug.println();
+                return null;
             }
         }
+        return null;
     }
 }

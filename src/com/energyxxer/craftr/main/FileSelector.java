@@ -1,12 +1,7 @@
 package com.energyxxer.craftr.main;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
+import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.util.Range;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -17,9 +12,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-
-import com.energyxxer.craftr.main.window.Window;
-import com.energyxxer.craftr.util.Range;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * Allows the user to choose a workspace location for their projects.
@@ -62,7 +61,7 @@ public class FileSelector {
         textfield.setPreferredSize(new Dimension(325, 30));
 
         textfield.getDocument().addDocumentListener(new DocumentListener() {
-            protected void update() {
+            void update() {
                 switch(operation) {
                     case OPEN_ALL: {
                         File file = new File(textfield.getText());

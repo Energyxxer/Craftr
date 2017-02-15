@@ -44,6 +44,8 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
     private boolean initialized = false;
     private boolean crosshairVisible = false;
 
+    private Color crosshairColor = new Color(0, 0, 0, 64);
+
     public ImageViewer(Tab tab) {
         try {
             this.img = ImageIO.read(new File(tab.path));
@@ -53,7 +55,10 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
         this.imgSize = new Dimension(img.getWidth(), img.getHeight());
         this.addMouseWheelListener(this);
         this.addMouseMotionListener(this);
-        ThemeChangeListener.addThemeChangeListener(t -> this.setBackground(t.getColor("ImageViewer.background",Color.WHITE)));
+        ThemeChangeListener.addThemeChangeListener(t -> {
+            this.setBackground(t.getColor("ImageViewer.background",Color.WHITE));
+            this.crosshairColor = t.getColor("ImageViewer.crosshair",new Color(0,0,0,64));
+        });
     }
 
     @Override
@@ -70,12 +75,12 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
         Rectangle rect = centerDimension();
         g.drawImage(img, rect.x, rect.y, rect.width, rect.height, null);
 
-        g.setColor(new Color(255, 255, 255, 64));
 
         if(crosshairVisible) {
+            g.setColor(this.crosshairColor);
             Point pixelOnCursor = this.getPositionOnScreen(new Point.Double(posOnImage.x, posOnImage.y));
-            g.fillRect(pixelOnCursor.x, 0, (int) scale, this.getHeight());
-            g.fillRect(0, pixelOnCursor.y, this.getWidth(), (int) scale);
+            g.fillRect(pixelOnCursor.x - 1, 0, 2, this.getHeight());
+            g.fillRect(0, pixelOnCursor.y - 1, this.getWidth(), 2);
         }
     }
 
@@ -111,7 +116,7 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
     public void mouseMoved(MouseEvent e) {
         this.cursorPoint = e.getPoint();
         Point.Double fullPosOnImage = this.getPositionOnImage();
-        this.posOnImage = new Point((int) Math.floor(fullPosOnImage.x), (int) Math.floor(fullPosOnImage.y));
+        this.posOnImage = new Point((int) Math.round(fullPosOnImage.x), (int) Math.round(fullPosOnImage.y));
         this.crosshairVisible = e.isControlDown();
         displayCaretInfo();
         repaint();

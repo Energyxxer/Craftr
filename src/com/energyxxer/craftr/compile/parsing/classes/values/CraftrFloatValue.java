@@ -153,20 +153,20 @@ public class CraftrFloatValue extends CraftrNumericValue {
 
     public static void init() {
         Evaluator.addEvaluator("NUMBER", p -> {
-            if(p.getType().equals("ITEM")) {
+            if(p instanceof TokenItem) {
                 TokenItem item = (TokenItem) p;
                 String str = item.getContents().value;
-                float value = 0f;
+                float value;
 
                 if(str.matches("\\d+(\\.\\d+)?(f)?")) {
                     if(str.endsWith("f")) {
                         str = str.substring(0,str.length()-1);
                     }
                     value = Float.valueOf(str);
-                } else return null;
+                    return new CraftrFloatValue(value);
+                }
 
-                return new CraftrFloatValue(value);
-
+                return null;
             } else {
                 Console.err.println("[ERROR] Number pattern with type " + p.getType() + ": " + p);
                 return null;

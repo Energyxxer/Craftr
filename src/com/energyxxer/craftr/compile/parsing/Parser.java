@@ -6,6 +6,7 @@ import com.energyxxer.craftr.compile.analysis.token.TokenMatchResponse;
 import com.energyxxer.craftr.compile.analysis.token.TokenStream;
 import com.energyxxer.craftr.compile.analysis.token.TokenType;
 import com.energyxxer.craftr.compile.analysis.token.structures.TokenPattern;
+import com.energyxxer.craftr.compile.analysis.token.structures.TokenStructure;
 import com.energyxxer.craftr.compile.exceptions.CraftrException;
 import com.energyxxer.craftr.compile.exceptions.CraftrParserException;
 import com.energyxxer.craftr.compile.parsing.classes.evaluation.Evaluator;
@@ -66,7 +67,11 @@ public class Parser {
 
 			List<TokenPattern<?>> values = pattern.deepSearchByName("VALUE");
 			for(TokenPattern<?> p : values) {
-				Evaluator.eval(p);
+				if(p instanceof TokenStructure) {
+					Console.debug.println(Evaluator.eval(p));
+				} else {
+					Console.warn.println("What.");
+				}
 			}
 
 			List<TokenPattern<?>> units = pattern.searchByName("UNIT");

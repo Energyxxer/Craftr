@@ -7,105 +7,126 @@ import com.energyxxer.craftr.global.Console;
 import com.sun.istack.internal.NotNull;
 
 /**
- * Created by User on 12/20/2016.
+ * Created by User on 2/14/2017.
  */
-public class CraftrNullValue extends CraftrValue {
-    public CraftrNullValue() {
+public class CraftrStringValue extends CraftrValue {
+
+    private String value = null;
+
+    public CraftrStringValue(String value) {
+        this.value = value;
     }
 
     @Override
     public String getType() {
-        return "null";
+        return "String";
     }
 
     @Override
     public String getInternalType() {
-        return "null";
+        return "String";
     }
 
     @Override
     public Object getValue() {
-        return null;
+        return value;
     }
 
     @Override
     public CraftrValue addition(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return null;
     }
 
     @Override
     public CraftrValue subtraction(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return null;
     }
 
     @Override
     public CraftrValue multiplication(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return null;
     }
 
     @Override
     public CraftrValue division(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return null;
     }
 
     @Override
     public CraftrValue modulo(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return null;
     }
 
     @Override
     public CraftrValue exponentiate(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return null;
     }
 
     @Override
     public CraftrValue increment() throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return null;
     }
 
     @Override
     public CraftrValue decrement() throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return null;
     }
 
     @Override
     public boolean isGreaterThan(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return false;
     }
 
     @Override
     public boolean isLessThan(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return false;
     }
 
     @Override
     public boolean isGreaterThanOrEqualTo(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return false;
     }
 
     @Override
     public boolean isLessThanOrEqualTo(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return false;
     }
 
     @Override
     public boolean isEqualTo(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        return operand.getInternalType().equals("null");
+        return false;
     }
 
     @Override
     public CraftrValue assignTo(@NotNull CraftrValue operand) throws IllegalOperandsException {
-        throw new IllegalOperandsException();
+        return null;
     }
 
     public static void init() {
-        Evaluator.addEvaluator("NULL", p -> {
+        Evaluator.addEvaluator("STRING", p -> {
             if(p instanceof TokenItem) {
                 TokenItem item = (TokenItem) p;
-                String str = item.getContents().value;
-                return (str.equals("null") ? new CraftrNullValue() : null);
+                String stringValue = item.getContents().value;
+                StringBuilder sb = new StringBuilder();
+                boolean escaped = false;
+                for(int i = 1; i < stringValue.length()-1; i++) {
+                    char c = stringValue.charAt(i);
+                    if(escaped) {
+                        if(c == 'n') {
+                            sb.append('\n');
+                        } else {
+                            sb.append(c);
+                        }
+                        escaped = false;
+                    } else if(c == '\\') {
+                        escaped = true;
+                    } else {
+                        sb.append(c);
+                    }
+                }
+                return new CraftrStringValue(sb.toString());
             } else {
-                Console.err.println("[ERROR] Number pattern with type " + p.getType() + ": " + p);
+                Console.warn.println("String pattern of non-item type: " + p);
                 return null;
             }
         });

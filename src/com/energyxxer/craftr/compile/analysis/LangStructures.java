@@ -293,8 +293,6 @@ public class LangStructures {
 			IMPORT.add(g);
 		}
 
-		//TODO: Clean up this mess vvv
-
 		{
 			DATA_TYPE.add(new TokenItemMatch(TokenType.UNIT_TYPE));
 			DATA_TYPE.add(new TokenItemMatch(TokenType.DATA_TYPE));
@@ -310,8 +308,6 @@ public class LangStructures {
 				DATA_TYPE.add(g);
 			}
 		}
-
-		//TODO: Clean up that mess ^^^
 		
 		{
 			// <ANNOTATION> <IDENTIFIER> <BRACE: (> [-VALUE-...] <BRACE: )>
@@ -385,13 +381,15 @@ public class LangStructures {
 
 		{
 			// [IDENTIFIER]
-			VALUE.add(new TokenItemMatch(TokenType.IDENTIFIER));
+			VALUE.add(new TokenItemMatch(TokenType.IDENTIFIER).setName("IDENTIFIER"));
 			// [NUMBER]
 			VALUE.add(new TokenItemMatch(TokenType.NUMBER).setName("NUMBER"));
 			// [BOOLEAN]
 			VALUE.add(new TokenItemMatch(TokenType.BOOLEAN).setName("BOOLEAN"));
 			// [STRING_LITERAL]
 			VALUE.add(new TokenItemMatch(TokenType.STRING_LITERAL).setName("STRING"));
+			// [NULL]
+			VALUE.add(new TokenItemMatch(TokenType.NULL).setName("NULL"));
 			{
 				// [NEGATION_OPERATOR][-VALUE-]
 				TokenGroupMatch g = new TokenGroupMatch();
@@ -402,20 +400,17 @@ public class LangStructures {
 			{
 				// [NEGATION_OPERATOR][-VALUE-]
 				TokenGroupMatch g = new TokenGroupMatch();
-				g.append(new TokenItemMatch(TokenType.OPERATOR,"+"));
-				g.append(VALUE);
-				VALUE.add(g);
-			}
-			{
-				// [NEGATION_OPERATOR][-VALUE-]
-				TokenGroupMatch g = new TokenGroupMatch();
-				g.append(new TokenItemMatch(TokenType.OPERATOR,"-"));
+				{
+					TokenStructureMatch s = new TokenStructureMatch("SIGN");
+					s.add(new TokenItemMatch(TokenType.OPERATOR,"+"));
+					s.add(new TokenItemMatch(TokenType.OPERATOR,"-"));
+					g.append(s);
+				}
 				g.append(VALUE);
 				VALUE.add(g);
 			}
 			// [-EXPRESSION-]
 			VALUE.add(EXPRESSION);
-			// [IDENTIFIER DOT...]
 			VALUE.add(POINTER);
 			VALUE.add(METHOD_CALL);
 			VALUE.add(DATA_TYPE);

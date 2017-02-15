@@ -2,10 +2,19 @@ package com.energyxxer.craftr.main;
 
 import com.energyxxer.craftr.global.Preferences;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -52,7 +61,7 @@ public class WorkspaceSelector {
                     valid = false;
                 }
 
-                okay.setEnabled(selected != null && selected.isAbsolute() && valid);
+                okay.setEnabled(selected.isAbsolute() && valid);
             }
 
             @Override

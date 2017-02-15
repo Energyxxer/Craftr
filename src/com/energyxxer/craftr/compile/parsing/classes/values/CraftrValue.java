@@ -1,12 +1,17 @@
 package com.energyxxer.craftr.compile.parsing.classes.values;
 
+import com.energyxxer.craftr.compile.analysis.token.structures.TokenStructure;
 import com.energyxxer.craftr.compile.exceptions.IllegalOperandsException;
+import com.energyxxer.craftr.compile.parsing.classes.evaluation.Evaluator;
 import com.sun.istack.internal.NotNull;
 
 /**
  * Created by User on 12/20/2016.
  */
 public abstract class CraftrValue {
+
+    private boolean implicit = false;
+
     public abstract String getType();
     public abstract String getInternalType();
     public abstract Object getValue();
@@ -36,9 +41,17 @@ public abstract class CraftrValue {
 
     public abstract CraftrValue assignTo                (@NotNull CraftrValue operand) throws IllegalOperandsException;
 
+    public boolean isImplicit() {
+        return implicit;
+    }
+
+    public void setImplicit(boolean implicit) {
+        this.implicit = implicit;
+    }
+
     @Override
     public String toString() {
-        return getValue().toString();
+        return getInternalType() + " >> " + getValue();
     }
 
     public static void init() {
@@ -46,5 +59,13 @@ public abstract class CraftrValue {
         CraftrFloatValue.init();
         CraftrIntegerValue.init();
         CraftrNullValue.init();
+        CraftrStringValue.init();
+
+        Evaluator.addEvaluator("VALUE", p -> {
+            if(p instanceof TokenStructure) {
+                return Evaluator.eval(((TokenStructure) p).getContents());
+            }
+            return null;
+        });
     }
 }

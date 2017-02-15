@@ -40,10 +40,10 @@ public class OverlayScrollBarUI extends BasicScrollBarUI {
         int y = thumbBounds.y;
 
         int width = orientation == JScrollBar.VERTICAL ? thumbSize : thumbBounds.width;
-        width = Math.max(width, thumbSize);
+        //width = Math.max(width, thumbSize);
 
         int height = orientation == JScrollBar.VERTICAL ? thumbBounds.height : thumbSize;
-        height = Math.max(height, thumbSize);
+        //height = Math.max(height, thumbSize);
 
         Graphics2D graphics2D = (Graphics2D) g.create();
         graphics2D.setColor(color);
