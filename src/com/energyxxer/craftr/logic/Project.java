@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -169,6 +170,7 @@ public class Project {
 		if(world != null) 
 			s += "out=" + world + "\n";
 		{
+			purgeIcons();
 			String entry = "";
 			Iterator<String> it = icons.keySet().iterator();
 			while(it.hasNext()) {
@@ -202,6 +204,20 @@ public class Project {
 			return icons.get(path);
 		}
 		return null;
+	}
+
+	public void purgeIcons() {
+		ArrayList<String> pathsToRemove = new ArrayList<>();
+		for(String path : icons.keySet()) {
+			String absPath = directory.getPath() + File.separator + path;
+			if(!new File(absPath).exists()) {
+				pathsToRemove.add(path);
+			}
+		}
+
+		for(String path : pathsToRemove) {
+			icons.remove(path);
+		}
 	}
 
 	public File getDirectory() {

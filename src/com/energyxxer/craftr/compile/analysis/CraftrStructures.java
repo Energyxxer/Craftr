@@ -30,6 +30,7 @@ public class CraftrStructures {
     public static final TokenStructureMatch VARIABLE_DECLARATION;
 
 	public static final TokenStructureMatch IDENTIFIER;
+	public static final TokenStructureMatch CONSTRUCTOR_KEYWORD;
 
     public static final TokenStructureMatch DATA_TYPE;
 	public static final TokenStructureMatch METHOD_CALL;
@@ -73,6 +74,7 @@ public class CraftrStructures {
         METHOD = new TokenStructureMatch("METHOD");
 
 		IDENTIFIER = new TokenStructureMatch("IDENTIFIER");
+		CONSTRUCTOR_KEYWORD = new TokenStructureMatch("CONSTRUCTOR_KEYWORD");
 
 		VARIABLE_DECLARATION = new TokenStructureMatch("VARIABLE_DECLARATION");
 
@@ -153,25 +155,29 @@ public class CraftrStructures {
         }
 
         {
-            TokenGroupMatch g = new TokenGroupMatch();
-            g.append(new TokenGroupMatch(true).append(ANNOTATION));
-            g.append(new TokenListMatch(TokenType.MODIFIER,true));
-            g.append(DATA_TYPE);
+            TokenGroupMatch g2 = new TokenGroupMatch();
+            g2.append(new TokenGroupMatch(true).append(ANNOTATION));
+            g2.append(new TokenListMatch(TokenType.MODIFIER,true));
+            g2.append(DATA_TYPE);
             {
-                TokenGroupMatch g2 = new TokenGroupMatch();
+                TokenGroupMatch g3 = new TokenGroupMatch();
 
-                g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
+                g3.append(new TokenItemMatch(TokenType.IDENTIFIER));
 
-                TokenGroupMatch g3 = new TokenGroupMatch(true);
-                g3.append(new TokenItemMatch(TokenType.OPERATOR,"="));
-                g3.append(VALUE);
-                g2.append(g3);
+                TokenGroupMatch g4 = new TokenGroupMatch(true);
+                g4.append(new TokenItemMatch(TokenType.OPERATOR,"="));
+                g4.append(VALUE);
+                g3.append(g4);
 
-                g.append(new TokenListMatch(g2,new TokenItemMatch(TokenType.COMMA),true));
+                g2.append(new TokenListMatch(g3,new TokenItemMatch(TokenType.COMMA),true));
             }
+
+            TokenGroupMatch g = new TokenGroupMatch();
+            g.append(g2);
             g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 
             FIELD.add(g);
+            EXPRESSION.add(g2);
         }
 
 		{
@@ -573,11 +579,17 @@ public class CraftrStructures {
 			STATEMENT.add(CODE_BLOCK);
 		}
 		{
+			CONSTRUCTOR_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "stack"));
+			CONSTRUCTOR_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "nbt"));
+			CONSTRUCTOR_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "equipment"));
+			CONSTRUCTOR_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "multipart"));
+		}
+		{
 			TokenStructureMatch CONSTRUCTOR_STATEMENT = new TokenStructureMatch("CONSTRUCTOR_STATEMENT");
 			CONSTRUCTOR_STATEMENT.add(STATEMENT);
 			{
 				TokenGroupMatch g = new TokenGroupMatch();
-				g.append(new TokenItemMatch(TokenType.CONSTRUCTOR_KEYWORD));
+				g.append(CONSTRUCTOR_KEYWORD);
 				g.append(JSON_OBJECT);
 				CONSTRUCTOR_STATEMENT.add(g);
 			}
@@ -695,11 +707,13 @@ public class CraftrStructures {
 
 
 		//JSON Structures
+		TokenStructureMatch JSON_VALUE = new TokenStructureMatch("JSON_VALUE");
+
 		TokenGroupMatch COMPOUND_ENTRY = new TokenGroupMatch();
 		{
 			COMPOUND_ENTRY.append(new TokenItemMatch(TokenType.IDENTIFIER));
 			COMPOUND_ENTRY.append(new TokenItemMatch(TokenType.COLON));
-			COMPOUND_ENTRY.append(VALUE);
+			COMPOUND_ENTRY.append(JSON_VALUE);
 		}
 
 		{
@@ -711,11 +725,12 @@ public class CraftrStructures {
 
 		{
 			LIST.append(new TokenItemMatch(TokenType.BRACE,"["));
-			LIST.append(new TokenListMatch(VALUE, new TokenItemMatch(TokenType.COMMA), true));
+			LIST.append(new TokenListMatch(JSON_VALUE, new TokenItemMatch(TokenType.COMMA), true));
 			LIST.append(new TokenItemMatch(TokenType.BRACE,"]"));
 			JSON_OBJECT.add(LIST);
 		}
 
-		VALUE.add(JSON_OBJECT);
+		JSON_VALUE.add(VALUE);
+		JSON_VALUE.add(JSON_OBJECT);
 	}
 }

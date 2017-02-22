@@ -277,6 +277,7 @@ public class UnitDialog {
 
     private static void validateInput() {
         String str = nameField.getText().trim();
+        if(typeDropdown.getValue() == FileType.WORLD) str = "World";
 
         if(str.length() <= 0) {
             valid = false;
@@ -284,8 +285,6 @@ public class UnitDialog {
             displayError(null);
             return;
         }
-
-        if(typeDropdown.getValue() == FileType.WORLD) str = "World";
 
         //Check if file exists
         valid = !new File(destination + File.separator + str + ".craftr").exists();

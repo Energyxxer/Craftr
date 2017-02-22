@@ -18,14 +18,13 @@ public class CraftrUtil {
         data_types = Arrays.asList("int", "String", "float", "boolean", "void"),
         keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import", "operator", "instanceof"),
         action_keywords = Arrays.asList("break", "continue", "return"),
-        constructor_keywords = Arrays.asList("stack", "initNBT", "equipment", "multipart"),
         booleans = Arrays.asList("true", "false"),
         nulls = Collections.singletonList("null");
 
     /**
      * Contains all pseudo-keywords.
      * */
-    public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "Thread", "compare" );
+    public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "Thread", "compare", "stack", "nbt", "equipment", "multipart");
 
     public static String classify(String token) {
         for(String p : modifiers) {
@@ -56,11 +55,6 @@ public class CraftrUtil {
         for(String p : action_keywords) {
             if(token.equals(p)) {
                 return TokenType.ACTION_KEYWORD;
-            }
-        }
-        for(String p : constructor_keywords) {
-            if(token.equals(p)) {
-                return TokenType.CONSTRUCTOR_KEYWORD;
             }
         }
         for(String p : booleans) {
