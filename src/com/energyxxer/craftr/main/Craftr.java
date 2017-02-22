@@ -100,9 +100,9 @@ public class Craftr {
 
 		 System.out.println(" ...matches...");
 
-		 System.out.println(StringUtil.escapeHTML(LangStructures.ARRAY_DECLARATION.toString()));
+		 System.out.println(StringUtil.escapeHTML(CraftrStructures.ARRAY_DECLARATION.toString()));
 
-		TokenMatchResponse match = LangStructures.ARRAY_DECLARATION.match(sampleStream);
+		TokenMatchResponse match = CraftrStructures.ARRAY_DECLARATION.match(sampleStream);
 
 		System.out.println(" > " + match);
 

@@ -39,10 +39,6 @@ public class CraftrAnalysisProfile extends AnalysisProfile {
      * */
         abstract_entities = Arrays.asList("entity_base", "living_base"),
     /**
-     * Contains all pseudo-keywords.
-     * */
-        pseudo_keywords = Arrays.asList("this", "that"),
-    /**
      * Contains special cases for blockstates.
      * */
         blockstate_specials = Collections.singletonList("default");
@@ -173,7 +169,7 @@ public class CraftrAnalysisProfile extends AnalysisProfile {
         //Operators
         AnalysisContext operatorContext = new AnalysisContext() {
             private List<String> identifier_operators = Arrays.asList("++", "--");
-            private List<String> operators = Arrays.asList("+=", "+", "-=", "-", "*=", "*", "/=", "/", "%=", "%", "<=", ">=", "!=", "==", "=", "<", ">");
+            private List<String> operators = Arrays.asList("+=", "+", "-=", "-", "*=", "*", "/=", "/", "%=", "%", "<=", ">=", "!=", "==", "=", "<", ">", "&&", "||", "&", "|");
             private String logical_negation_operator = "!";
 
             @Override
@@ -209,6 +205,11 @@ public class CraftrAnalysisProfile extends AnalysisProfile {
                     int length = matcher.end();
                     return new AnalysisContextResponse(true, str.substring(0,length), TokenType.NUMBER);
                 } else return new AnalysisContextResponse(false);
+            }
+
+            @Override
+            public ContextCondition getCondition() {
+                return ContextCondition.LEADING_WHITESPACE;
             }
         };
 
@@ -326,7 +327,7 @@ public class CraftrAnalysisProfile extends AnalysisProfile {
     }
 
     /**
-     * Analyzes tokens and gives them anotation attributes.
+     * Analyzes tokens and gives them annotation attributes.
      *
      * @param token The token to be analyzed.
      *
@@ -383,7 +384,7 @@ public class CraftrAnalysisProfile extends AnalysisProfile {
      * @param token The token to be analyzed.
      * */
     private void giveAttributes(Token token) {
-        token.attributes.put(CraftrTokenAttributes.IS_PSEUDO_KEYWORD, pseudo_keywords.contains(token.value));
+        token.attributes.put(CraftrTokenAttributes.IS_PSEUDO_KEYWORD, CraftrUtil.pseudo_keywords.contains(token.value));
 
         //Enum and entities
         boolean isEnum = enums.contains(token.value);

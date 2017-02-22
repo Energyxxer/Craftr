@@ -56,12 +56,11 @@ public class TokenStructureMatch extends TokenPatternMatch {
 
 			if (longestMatch == null) {
 				longestMatch = itemMatch;
-			} else if (itemMatch.length >= longestMatch.length) {
+			} else if(itemMatch.length >= longestMatch.length) {
 				if (!longestMatch.matched || itemMatch.matched) {
 					longestMatch = itemMatch;
 				}
 			}
-
 		}
 
 		st.pop();

@@ -31,7 +31,7 @@ public class ThemeManager {
                 Theme theme = tr.read(Theme.ThemeType.GUI_THEME, file);
                 if(theme != null) gui_themes.put(theme.getName(),theme);
             } catch(ThemeParserException e) {
-                System.out.println(e.getMessage());
+                Console.warn.println(e.getMessage());
             }
         }
 
@@ -40,7 +40,7 @@ public class ThemeManager {
                 Theme theme = tr.read(Theme.ThemeType.SYNTAX_THEME, file);
                 if(theme != null) syntax_themes.put(theme.getName(),theme);
             } catch(ThemeParserException e) {
-                System.out.println(e.getMessage());
+                Console.warn.println(e.getMessage());
             }
         }
     }

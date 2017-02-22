@@ -104,6 +104,12 @@ public class Project {
 		this.name = name;
 		updateConfig();
 	}
+
+	public boolean canFlatten(File file) {
+		if(getRelativePath(file) == null) return true;
+		if(!file.getParentFile().equals(this.getDirectory())) return true;
+		return !Arrays.asList("src","resources").contains(file.getName());
+	}
 	
 	public void updateConfig() {
 		File config = new File(directory.getAbsolutePath() + File.separator + ".project");

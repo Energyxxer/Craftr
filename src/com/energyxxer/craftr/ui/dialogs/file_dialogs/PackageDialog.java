@@ -169,7 +169,7 @@ public class PackageDialog {
 
         String path = destination + File.separator + name;
 
-        new File(path).mkdirs();
+        new File(path.replace('.',File.separatorChar)).mkdirs();
         Window.explorer.refresh();
 
         dialog.setVisible(false);
@@ -205,7 +205,7 @@ public class PackageDialog {
 
         //Check if package name is a valid identifier
         if(valid) {
-            valid = CraftrUtil.isValidIdentifier(str);
+            valid = CraftrUtil.isValidIdentifierPath(str);
             if(!valid) {
                 displayError("Error: Not a valid identifier");
             }

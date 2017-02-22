@@ -67,7 +67,9 @@ public class TokenGroupMatch extends TokenPatternMatch {
 				break;
 			}
 
-			TokenMatchResponse itemMatch = items.get(i).match(tokens.subList(currentToken, tokens.size()),st);
+			List<Token> subList = tokens.subList(currentToken, tokens.size());
+
+			TokenMatchResponse itemMatch = items.get(i).match(subList,st);
 			switch(itemMatch.getMatchType()) {
 				case NO_MATCH: {
 					if(!items.get(i).optional) {
@@ -79,11 +81,15 @@ public class TokenGroupMatch extends TokenPatternMatch {
 					break;
 				}
 				case PARTIAL_MATCH: {
-					hasMatched = false;
-					length += itemMatch.length;
-					faultyToken = itemMatch.faultyToken;
-					expected = itemMatch.expected;
-					break itemLoop;
+					if(!(items.get(i).optional && i+1 < items.size() && items.get(i+1).match(subList,st).matched)) {
+						hasMatched = false;
+						length += itemMatch.length;
+						faultyToken = itemMatch.faultyToken;
+						expected = itemMatch.expected;
+						break itemLoop;
+					} else {
+						continue itemLoop;
+					}
 				}
 				case COMPLETE_MATCH: {
 					group.add(itemMatch.pattern);

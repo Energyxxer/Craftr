@@ -12,14 +12,20 @@ import java.util.List;
 public class CraftrUtil {
 
     private static final List<String>
-            modifiers = Arrays.asList("public", "static", "typestatic", "abstract", "final", "protected", "private", "synchronized", "compilation", "ingame"),
-            unit_types = Arrays.asList("entity", "item", "feature", "class"),
-            unit_actions = Arrays.asList("extends", "implements"),
-            data_types = Arrays.asList("int", "String", "float", "boolean", "type", "void", "Thread"),
-            keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import", "operator"),
-            action_keywords = Arrays.asList("break", "continue", "return"),
-            booleans = Arrays.asList("true", "false"),
-            nulls = Collections.singletonList("null");
+        modifiers = Arrays.asList("public", "static", "typestatic", "abstract", "final", "protected", "private", "synchronized", "compilation", "ingame"),
+        unit_types = Arrays.asList("entity", "item", "feature", "class", "enum"),
+        unit_actions = Arrays.asList("extends", "implements", "requires"),
+        data_types = Arrays.asList("int", "String", "float", "boolean", "void"),
+        keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import", "operator", "instanceof"),
+        action_keywords = Arrays.asList("break", "continue", "return"),
+        constructor_keywords = Arrays.asList("stack", "initNBT", "equipment", "multipart"),
+        booleans = Arrays.asList("true", "false"),
+        nulls = Collections.singletonList("null");
+
+    /**
+     * Contains all pseudo-keywords.
+     * */
+    public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "Thread", "compare" );
 
     public static String classify(String token) {
         for(String p : modifiers) {
@@ -52,6 +58,11 @@ public class CraftrUtil {
                 return TokenType.ACTION_KEYWORD;
             }
         }
+        for(String p : constructor_keywords) {
+            if(token.equals(p)) {
+                return TokenType.CONSTRUCTOR_KEYWORD;
+            }
+        }
         for(String p : booleans) {
             if(token.equals(p)) {
                 return TokenType.BOOLEAN;
@@ -74,5 +85,14 @@ public class CraftrUtil {
             }
         }
         return classify(str) == TokenType.IDENTIFIER;
+    }
+
+    public static boolean isValidIdentifierPath(String str) {
+        String[] segments = str.split("\\.",-1);
+        if(segments.length <= 0) return false;
+        for(String segment : segments) {
+            if(!isValidIdentifier(segment)) return false;
+        }
+        return true;
     }
 }

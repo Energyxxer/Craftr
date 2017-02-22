@@ -8,10 +8,9 @@ import com.energyxxer.craftr.util.FileUtil;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 
 public class ProjectManager {
-	private static ArrayList<Project> loadedProjects = new ArrayList<Project>();
+	private static ArrayList<Project> loadedProjects = new ArrayList<>();
 
 	public static void loadWorkspace() {
 		
@@ -34,9 +33,8 @@ public class ProjectManager {
 	}
 	
 	public static Project getAssociatedProject(File file) {
-		String projectName = file.getAbsolutePath().replaceFirst(Matcher.quoteReplacement(Preferences.get("workspace_dir") + File.separator), "").split(Matcher.quoteReplacement(File.separator))[0];
 		for(Project project : loadedProjects) {
-			if(project.getName().equals(projectName)) {
+			if((file.getPath() + File.separator).startsWith((project.getDirectory().getPath() + File.separator))) {
 				return project;
 			}
 		}

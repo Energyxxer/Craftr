@@ -53,6 +53,10 @@ public class PropertiesReferences {
         s = "action_keyword.italic";
         s = "action_keyword.bold";
 
+        s = "constructor_keyword.foreground";
+        s = "constructor_keyword.italic";
+        s = "constructor_keyword.bold";
+
         s = "comment.foreground";
         s = "comment.italic";
         s = "comment.bold";

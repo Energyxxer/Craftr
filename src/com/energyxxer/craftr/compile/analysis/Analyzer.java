@@ -110,6 +110,7 @@ public class Analyzer {
 			}
 
 			for(AnalysisContext ctx : profile.contexts) {
+				if(ctx.getCondition() == AnalysisContext.ContextCondition.LEADING_WHITESPACE && token.length() > 0) continue;
 				AnalysisContextResponse response = ctx.analyze(sub);
 				if(response.success) {
 					flush();

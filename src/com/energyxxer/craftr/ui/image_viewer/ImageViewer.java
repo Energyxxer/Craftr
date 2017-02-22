@@ -34,6 +34,8 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
     private BufferedImage img;
     private double scale = 1;
 
+    private static final int CHECK_PATTERN_SIZE = 5;
+
     private int offsetX = 0;
     private int offsetY = 0;
     private Point cursorPoint = new Point(0,0);
@@ -45,6 +47,7 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
     private boolean crosshairVisible = false;
 
     private Color crosshairColor = new Color(0, 0, 0, 64);
+    private Color borderColor = new Color(32, 32, 32);
 
     public ImageViewer(Tab tab) {
         try {
@@ -73,11 +76,26 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
         }
 
         Rectangle rect = centerDimension();
+
+        g.setClip(rect);
+
+        g.setColor(Color.WHITE);
+        g.fillRect(rect.x, rect.y, rect.width, rect.height);
+        g.setColor(Color.GRAY);
+
+        for(int x = rect.x; x < rect.x + rect.width; x += CHECK_PATTERN_SIZE * 2) {
+            for(int y = rect.y; y < rect.y + rect.height; y += CHECK_PATTERN_SIZE * 2) {
+                g.fillRect(x + CHECK_PATTERN_SIZE, y, CHECK_PATTERN_SIZE, CHECK_PATTERN_SIZE);
+                g.fillRect(x, y + CHECK_PATTERN_SIZE, CHECK_PATTERN_SIZE, CHECK_PATTERN_SIZE);
+            }
+        }
+
         g.drawImage(img, rect.x, rect.y, rect.width, rect.height, null);
 
 
         if(crosshairVisible) {
             g.setColor(this.crosshairColor);
+
             Point pixelOnCursor = this.getPositionOnScreen(new Point.Double(posOnImage.x, posOnImage.y));
             g.fillRect(pixelOnCursor.x - 1, 0, 2, this.getHeight());
             g.fillRect(0, pixelOnCursor.y - 1, this.getWidth(), 2);

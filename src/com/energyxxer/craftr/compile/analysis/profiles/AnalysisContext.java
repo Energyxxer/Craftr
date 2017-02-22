@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.compile.analysis.profiles;
 
 /**
- * Defines sub-routines to analyzes special-case tokens.
+ * Defines sub-routines to analyze special-case tokens.
  */
 public interface AnalysisContext {
     /**
@@ -13,4 +13,12 @@ public interface AnalysisContext {
      * @return A context response object containing information about the analysis.
      * */
     AnalysisContextResponse analyze(String str);
+
+    default ContextCondition getCondition() {
+        return ContextCondition.NONE;
+    };
+
+    enum ContextCondition {
+        NONE, LEADING_WHITESPACE
+    }
 }

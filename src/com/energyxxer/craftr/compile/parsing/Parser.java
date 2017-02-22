@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.compile.parsing;
 
-import com.energyxxer.craftr.compile.analysis.LangStructures;
+import com.energyxxer.craftr.compile.analysis.CraftrStructures;
 import com.energyxxer.craftr.compile.analysis.token.Token;
 import com.energyxxer.craftr.compile.analysis.token.TokenMatchResponse;
 import com.energyxxer.craftr.compile.analysis.token.TokenStream;
@@ -48,10 +48,12 @@ public class Parser {
 			if(!fileHeader.attributes.get("TYPE").equals("craftr")) continue;
 			f.remove(0);
 
-			TokenMatchResponse match = LangStructures.FILE.match(f);
+			TokenMatchResponse match = CraftrStructures.FILE.match(f);
 
 			if(!match.matched) {
 				Console.err.println(match.getFormattedErrorMessage());
+				Console.warn.println(match.pattern);
+				Console.debug.println(match);
 				return;
 			}
 

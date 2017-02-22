@@ -67,7 +67,17 @@ public class ExplorerMaster extends JPanel implements MouseListener {
 
         File[] subfiles = root.listFiles();
         if(subfiles == null) return;
+
+        ArrayList<File> subfiles1 = new ArrayList<>();
+
         for(File f : subfiles) {
+            if(f.isDirectory()) {
+                this.children.add(new ExplorerItem(this, f, toOpen));
+            } else {
+                subfiles1.add(f);
+            }
+        }
+        for(File f : subfiles1) {
             this.children.add(new ExplorerItem(this, f, toOpen));
         }
         repaint();

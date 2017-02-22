@@ -12,7 +12,8 @@ import com.energyxxer.craftr.compile.analysis.token.matching.TokenStructureMatch
  * It holds certain token structure patterns to match against a list of
  * tokens.
  * */
-public class LangStructures {
+public class CraftrStructures {
+
     public static final TokenStructureMatch FILE;
 
 	public static final TokenStructureMatch PACKAGE;
@@ -36,6 +37,7 @@ public class LangStructures {
 	public static final TokenStructureMatch EXPRESSION;
 	public static final TokenStructureMatch STATEMENT;
 	public static final TokenStructureMatch CODE_BLOCK;
+	public static final TokenStructureMatch CONSTRUCTOR_BODY;
 	public static final TokenStructureMatch ANNOTATION;
 
 	public static final TokenStructureMatch LAMBDA;
@@ -48,6 +50,11 @@ public class LangStructures {
 
 	public static final TokenStructureMatch NESTED_POINTER;
 	public static final TokenStructureMatch POINTER;
+
+	public static final TokenStructureMatch JSON_OBJECT;
+
+	public static final TokenGroupMatch COMPOUND;
+	public static final TokenGroupMatch LIST;
 
 	static {
 
@@ -75,12 +82,20 @@ public class LangStructures {
 		METHOD_CALL = new TokenStructureMatch("METHOD_CALL");
 		STATEMENT = new TokenStructureMatch("STATEMENT");
 		CODE_BLOCK = new TokenStructureMatch("CODE_BLOCK");
+		CONSTRUCTOR_BODY = new TokenStructureMatch("CONSTRUCTOR_BODY");
 		ANNOTATION = new TokenStructureMatch("ANNOTATION");
 
 		LAMBDA = new TokenStructureMatch("LAMBDA");
 
 		NESTED_POINTER = new TokenStructureMatch("NESTED_POINTER");
 		POINTER = new TokenStructureMatch("POINTER");
+
+
+
+		JSON_OBJECT = new TokenStructureMatch("JSON_OBJECT");
+
+		COMPOUND = new TokenGroupMatch().setName("COMPOUND");
+		LIST = new TokenGroupMatch().setName("LIST");
 
 		{
 			PACKAGE.add(new TokenGroupMatch()
@@ -179,6 +194,14 @@ public class LangStructures {
 
 			g.append(new TokenItemMatch(TokenType.BRACE,")"));
 
+			{
+				TokenGroupMatch g2 = new TokenGroupMatch(true).setName("THREAD_MARKER");
+
+				g2.append(new TokenItemMatch(TokenType.COLON));
+				g2.append(VALUE);
+				g.append(g2);
+			}
+
 			g.append(CODE_BLOCK);
 
 			METHOD.add(g);
@@ -203,7 +226,7 @@ public class LangStructures {
 
             g.append(new TokenItemMatch(TokenType.BRACE,")"));
 
-            g.append(CODE_BLOCK);
+            g.append(CONSTRUCTOR_BODY);
 
             METHOD.add(g);
         }
@@ -218,7 +241,7 @@ public class LangStructures {
 				TokenStructureMatch s = new TokenStructureMatch("OPERATOR_REFERENCE");
 
 				s.add(new TokenItemMatch(TokenType.OPERATOR));
-				s.add(new TokenItemMatch(TokenType.IDENTIFIER, "comparison"));
+				s.add(new TokenItemMatch(TokenType.IDENTIFIER, "compare"));
 				g.append(s);
 			}
 
@@ -257,6 +280,14 @@ public class LangStructures {
 			}
 
 			g.append(new TokenItemMatch(TokenType.BRACE,")"));
+
+			{
+				TokenGroupMatch g2 = new TokenGroupMatch(true).setName("THREAD_MARKER");
+
+				g2.append(new TokenItemMatch(TokenType.COLON));
+				g2.append(VALUE);
+				g.append(g2);
+			}
 
 			g.append(CODE_BLOCK);
 
@@ -339,7 +370,17 @@ public class LangStructures {
 			TokenGroupMatch g = new TokenGroupMatch();
 			g.append(new TokenItemMatch(TokenType.IDENTIFIER));
 			g.append(new TokenItemMatch(TokenType.BRACE,"("));
-			g.append(new TokenListMatch(VALUE, new TokenItemMatch(TokenType.COMMA),true));
+			{
+				TokenGroupMatch g2 = new TokenGroupMatch().setName("PARAMETER");
+				{
+					TokenGroupMatch g3 = new TokenGroupMatch(true).setName("PARAMETER_LABEL");
+					g3.append(new TokenItemMatch(TokenType.IDENTIFIER));
+					g3.append(new TokenItemMatch(TokenType.COLON));
+					g2.append(g3);
+				}
+				g2.append(VALUE);
+				g.append(new TokenListMatch(g2, new TokenItemMatch(TokenType.COMMA),true));
+			}
 			g.append(new TokenItemMatch(TokenType.BRACE,")"));
 
 			METHOD_CALL.add(g);
@@ -412,7 +453,7 @@ public class LangStructures {
 			// [-EXPRESSION-]
 			VALUE.add(EXPRESSION);
 			VALUE.add(POINTER);
-			VALUE.add(METHOD_CALL);
+			VALUE.add(new TokenGroupMatch().append(new TokenItemMatch(TokenType.KEYWORD,"new")).append(METHOD_CALL));
 			VALUE.add(DATA_TYPE);
 
 			VALUE.add(LAMBDA);
@@ -434,7 +475,6 @@ public class LangStructures {
 					g.append(s);
 				}
 				{
-					//MAYBE TODO: ALSO, FIX THE WAY TOKEN STRUCTURE MATCHES HANDLE PARTIAL MATCHES
 					TokenGroupMatch g2 = new TokenGroupMatch(true);
 					g2.append(new TokenItemMatch(TokenType.DOT));
 					g2.append(NESTED_POINTER);
@@ -512,20 +552,13 @@ public class LangStructures {
 				STATEMENT.add(g);
 			}
 		}
-		
-		
+
+
 		{
 			{
 				TokenGroupMatch g = new TokenGroupMatch();
 				g.append(new TokenItemMatch(TokenType.BRACE,"{"));
 				g.append(new TokenListMatch(STATEMENT,true));
-				g.append(new TokenItemMatch(TokenType.BRACE,"}"));
-				
-				CODE_BLOCK.add(g);
-			}
-			{
-				TokenGroupMatch g = new TokenGroupMatch();
-				g.append(new TokenItemMatch(TokenType.BRACE,"{"));
 				g.append(new TokenItemMatch(TokenType.BRACE,"}"));
 
 				CODE_BLOCK.add(g);
@@ -533,11 +566,30 @@ public class LangStructures {
 			{
 				TokenGroupMatch g = new TokenGroupMatch();
 				g.append(STATEMENT);
-				
+
 				CODE_BLOCK.add(g);
 			}
 
 			STATEMENT.add(CODE_BLOCK);
+		}
+		{
+			TokenStructureMatch CONSTRUCTOR_STATEMENT = new TokenStructureMatch("CONSTRUCTOR_STATEMENT");
+			CONSTRUCTOR_STATEMENT.add(STATEMENT);
+			{
+				TokenGroupMatch g = new TokenGroupMatch();
+				g.append(new TokenItemMatch(TokenType.CONSTRUCTOR_KEYWORD));
+				g.append(JSON_OBJECT);
+				CONSTRUCTOR_STATEMENT.add(g);
+			}
+
+			{
+				TokenGroupMatch g = new TokenGroupMatch();
+				g.append(new TokenItemMatch(TokenType.BRACE,"{"));
+				g.append(new TokenListMatch(CONSTRUCTOR_STATEMENT,true));
+				g.append(new TokenItemMatch(TokenType.BRACE,"}"));
+
+				CONSTRUCTOR_BODY.add(g);
+			}
 		}
 		
 		IF_STATEMENT = new TokenGroupMatch();
@@ -640,5 +692,30 @@ public class LangStructures {
 			SWITCH_STATEMENT.append(new TokenItemMatch(TokenType.BRACE,"}"));
 		}
 		STATEMENT.add(SWITCH_STATEMENT);
+
+
+		//JSON Structures
+		TokenGroupMatch COMPOUND_ENTRY = new TokenGroupMatch();
+		{
+			COMPOUND_ENTRY.append(new TokenItemMatch(TokenType.IDENTIFIER));
+			COMPOUND_ENTRY.append(new TokenItemMatch(TokenType.COLON));
+			COMPOUND_ENTRY.append(VALUE);
+		}
+
+		{
+			COMPOUND.append(new TokenItemMatch(TokenType.BRACE,"{"));
+			COMPOUND.append(new TokenListMatch(COMPOUND_ENTRY, new TokenItemMatch(TokenType.COMMA), true));
+			COMPOUND.append(new TokenItemMatch(TokenType.BRACE,"}"));
+			JSON_OBJECT.add(COMPOUND);
+		}
+
+		{
+			LIST.append(new TokenItemMatch(TokenType.BRACE,"["));
+			LIST.append(new TokenListMatch(VALUE, new TokenItemMatch(TokenType.COMMA), true));
+			LIST.append(new TokenItemMatch(TokenType.BRACE,"]"));
+			JSON_OBJECT.add(LIST);
+		}
+
+		VALUE.add(JSON_OBJECT);
 	}
 }

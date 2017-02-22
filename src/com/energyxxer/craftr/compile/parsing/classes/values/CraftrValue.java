@@ -1,8 +1,7 @@
 package com.energyxxer.craftr.compile.parsing.classes.values;
 
-import com.energyxxer.craftr.compile.analysis.token.structures.TokenStructure;
 import com.energyxxer.craftr.compile.exceptions.IllegalOperandsException;
-import com.energyxxer.craftr.compile.parsing.classes.evaluation.Evaluator;
+import com.energyxxer.craftr.compile.parsing.classes.evaluation.LiteralEvaluators;
 import com.sun.istack.internal.NotNull;
 
 /**
@@ -11,6 +10,7 @@ import com.sun.istack.internal.NotNull;
 public abstract class CraftrValue {
 
     private boolean implicit = false;
+
 
     public abstract String getType();
     public abstract String getInternalType();
@@ -54,18 +54,8 @@ public abstract class CraftrValue {
         return getInternalType() + " >> " + getValue();
     }
 
-    public static void init() {
-        CraftrBooleanValue.init();
-        CraftrFloatValue.init();
-        CraftrIntegerValue.init();
-        CraftrNullValue.init();
-        CraftrStringValue.init();
 
-        Evaluator.addEvaluator("VALUE", p -> {
-            if(p instanceof TokenStructure) {
-                return Evaluator.eval(((TokenStructure) p).getContents());
-            }
-            return null;
-        });
+    public static void init() {
+        LiteralEvaluators.registerEvaluators();
     }
 }

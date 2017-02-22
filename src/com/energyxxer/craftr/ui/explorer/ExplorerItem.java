@@ -68,7 +68,7 @@ public class ExplorerItem implements MouseListener {
 
         File[] subfiles;
         StringBuilder filenameBuilder = new StringBuilder(file.getName());
-        while(this.master.getFlag(ExplorerFlag.FLATTEN_EMPTY_PACKAGES) && (subfiles = file.listFiles()) != null && subfiles.length == 1 && subfiles[0].isDirectory()) {
+        while(this.master.getFlag(ExplorerFlag.FLATTEN_EMPTY_PACKAGES) && canFlatten(file) && (subfiles = file.listFiles()) != null && subfiles.length == 1 && subfiles[0].isDirectory()) {
             file = subfiles[0];
             filenameBuilder.append('.');
             filenameBuilder.append(file.getName());
@@ -87,6 +87,12 @@ public class ExplorerItem implements MouseListener {
         if(toOpen.contains(this.path)) {
             expand(toOpen);
         }
+    }
+
+    private static boolean canFlatten(File file) {
+        Project project = ProjectManager.getAssociatedProject(file);
+        if(project == null) return true;
+        return project.canFlatten(file);
     }
 
     private void addThemeListener() {
