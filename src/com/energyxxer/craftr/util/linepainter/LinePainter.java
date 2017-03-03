@@ -126,9 +126,8 @@ public class LinePainter
 
                     //  Remove the highlighting from the previously highlighted line
 
-                    if (lastView.y != currentView.y)
-                    {
-                        component.repaint(0, lastView.y, component.getWidth(), lastView.height);
+                    if (lastView == null || lastView.y != currentView.y) {
+                        if(lastView != null) component.repaint(0, lastView.y, component.getWidth(), lastView.height);
                         lastView = currentView;
                     }
                 }

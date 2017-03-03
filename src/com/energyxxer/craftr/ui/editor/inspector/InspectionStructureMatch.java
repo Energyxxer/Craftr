@@ -1,12 +1,12 @@
 package com.energyxxer.craftr.ui.editor.inspector;
 
-import com.energyxxer.craftr.compile.analysis.token.Token;
-import com.energyxxer.craftr.compile.analysis.token.TokenMatchResponse;
-import com.energyxxer.craftr.compile.analysis.token.TokenToolkit;
-import com.energyxxer.craftr.compile.analysis.token.matching.TokenPatternMatch;
-import com.energyxxer.craftr.compile.analysis.token.matching.TokenStructureMatch;
-import com.energyxxer.craftr.compile.analysis.token.structures.TokenList;
-import com.energyxxer.craftr.compile.analysis.token.structures.TokenPattern;
+import com.energyxxer.craftr.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftr.compiler.parsing.pattern_matching.TokenMatchResponse;
+import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenToolkit;
+import com.energyxxer.craftr.compiler.parsing.pattern_matching.matching.TokenPatternMatch;
+import com.energyxxer.craftr.compiler.parsing.pattern_matching.matching.TokenStructureMatch;
+import com.energyxxer.craftr.compiler.parsing.pattern_matching.structures.TokenList;
+import com.energyxxer.craftr.compiler.parsing.pattern_matching.structures.TokenPattern;
 
 import java.util.ArrayList;
 import java.util.List;

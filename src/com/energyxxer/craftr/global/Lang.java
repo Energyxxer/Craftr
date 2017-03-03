@@ -1,8 +1,8 @@
 package com.energyxxer.craftr.global;
 
-import com.energyxxer.craftr.compile.analysis.presets.CraftrAnalysisProfile;
-import com.energyxxer.craftr.compile.analysis.presets.JSONAnalysisProfile;
-import com.energyxxer.craftr.compile.analysis.profiles.AnalysisProfile;
+import com.energyxxer.craftr.compiler.lexical_analysis.presets.CraftrScannerProfile;
+import com.energyxxer.craftr.compiler.lexical_analysis.presets.JSONScannerProfile;
+import com.energyxxer.craftr.compiler.lexical_analysis.profiles.ScannerProfile;
 import com.energyxxer.craftr.ui.components.factory.Factory;
 
 import java.util.Arrays;
@@ -12,12 +12,12 @@ import java.util.List;
  * Created by User on 2/9/2017.
  */
 public enum Lang {
-    CRAFTR(CraftrAnalysisProfile::new, "craftr"), JSON(JSONAnalysisProfile::new, "json", "mcmeta");
+    CRAFTR(CraftrScannerProfile::new, "craftr"), JSON(JSONScannerProfile::new, "json", "mcmeta");
 
-    Factory<AnalysisProfile> factory;
+    Factory<ScannerProfile> factory;
     List<String> extensions;
 
-    Lang(Factory<AnalysisProfile> factory, String... extensions) {
+    Lang(Factory<ScannerProfile> factory, String... extensions) {
         this.factory = factory;
         this.extensions = Arrays.asList(extensions);
     }
@@ -26,7 +26,7 @@ public enum Lang {
         return extensions;
     }
 
-    public AnalysisProfile createProfile() {
+    public ScannerProfile createProfile() {
         return factory.createInstance();
     }
 

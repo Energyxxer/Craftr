@@ -1,8 +1,9 @@
 package com.energyxxer.craftr.ui.editor;
 
-import com.energyxxer.craftr.compile.analysis.Analyzer;
-import com.energyxxer.craftr.compile.analysis.token.Token;
-import com.energyxxer.craftr.compile.analysis.token.TokenStream;
+import com.energyxxer.craftr.compiler.lexical_analysis.Scanner;
+import com.energyxxer.craftr.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenSection;
+import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftr.global.Lang;
 import com.energyxxer.craftr.main.window.Window;
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
@@ -66,16 +67,16 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
 
         Style defaultStyle = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 
-        sd.setCharacterAttributes(0, sd.getLength(), defaultStyle, true);
-
         String text = getText();
 
-        new Analyzer(new File(parent.associatedTab.path), text, new TokenStream(true) {
+        new Scanner(new File(parent.associatedTab.path), text, new TokenStream(true) {
             @Override
             public void onWrite(Token token) {
                 Style style = CraftrEditorComponent.this.getStyle(token.type.toLowerCase());
                 if(style != null)
                     sd.setCharacterAttributes(token.loc.index, token.value.length(), style, true);
+                else
+                    sd.setCharacterAttributes(token.loc.index, token.value.length(), defaultStyle, true);
 
                 Set<String> set = token.attributes.keySet();
                 for(String key : set) {
@@ -83,6 +84,11 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
                     Style attrStyle = CraftrEditorComponent.this.getStyle("~" + key.toLowerCase());
                     if(attrStyle == null) continue;
                     sd.setCharacterAttributes(token.loc.index, token.value.length(), attrStyle, false);
+                }
+                for(TokenSection section : token.subSections.keySet()) {
+                    Style attrStyle = CraftrEditorComponent.this.getStyle("~" + token.subSections.get(section).toLowerCase());
+                    if(attrStyle == null) continue;
+                    sd.setCharacterAttributes(token.loc.index + section.start, section.length, attrStyle, false);
                 }
             }
         });

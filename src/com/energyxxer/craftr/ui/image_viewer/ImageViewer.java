@@ -6,6 +6,7 @@ import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.display.DisplayModule;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftr.util.ImageManager;
+import com.energyxxer.craftr.util.MathUtil;
 import com.energyxxer.craftr.util.StringUtil;
 
 import javax.imageio.ImageIO;
@@ -15,6 +16,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
@@ -47,7 +49,6 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
     private boolean crosshairVisible = false;
 
     private Color crosshairColor = new Color(0, 0, 0, 64);
-    private Color borderColor = new Color(32, 32, 32);
 
     public ImageViewer(Tab tab) {
         try {
@@ -76,7 +77,7 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
         }
 
         Rectangle rect = centerDimension();
-
+        Shape originalBounds = g.getClipBounds();
         g.setClip(rect);
 
         g.setColor(Color.WHITE);
@@ -92,6 +93,7 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
 
         g.drawImage(img, rect.x, rect.y, rect.width, rect.height, null);
 
+        g.setClip(originalBounds);
 
         if(crosshairVisible) {
             g.setColor(this.crosshairColor);
@@ -142,7 +144,7 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
 
     @Override
     public void displayCaretInfo() {
-        Window.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals((double) (posOnImage.x  * 16) / imgSize.width) + ", " + StringUtil.stripDecimals((double) (posOnImage.y  * 16) / imgSize.height));
+        Window.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x  * 16) / imgSize.width, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y  * 16) / imgSize.height),4)));
         Window.statusBar.setSelectionInfo("Pixel pos: " + posOnImage.x + ", " + posOnImage.y);
     }
 

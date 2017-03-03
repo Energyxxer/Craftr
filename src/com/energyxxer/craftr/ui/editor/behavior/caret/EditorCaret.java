@@ -294,7 +294,7 @@ public class EditorCaret extends DefaultCaret {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        bufferedDot.index = editor.viewToModel(e.getPoint());
+        if(bufferedDot != null) bufferedDot.index = editor.viewToModel(e.getPoint());
         editor.repaint();
         this.setVisible(true);
         readjustRect();

@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.main.window.sections;
 
-import com.energyxxer.craftr.compile.Compiler;
+import com.energyxxer.craftr.compiler.Compiler;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.ToolbarSeparator;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;

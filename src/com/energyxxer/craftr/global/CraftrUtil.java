@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.global;
 
-import com.energyxxer.craftr.compile.analysis.token.TokenType;
+import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenType;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,10 +12,10 @@ import java.util.List;
 public class CraftrUtil {
 
     private static final List<String>
-        modifiers = Arrays.asList("public", "static", "typestatic", "abstract", "final", "protected", "private", "synchronized", "compilation", "ingame"),
+        modifiers = Arrays.asList("public", "static", "abstract", "final", "protected", "private", "synchronized", "compilation", "ingame"),
         unit_types = Arrays.asList("entity", "item", "feature", "class", "enum"),
         unit_actions = Arrays.asList("extends", "implements", "requires"),
-        data_types = Arrays.asList("int", "String", "float", "boolean", "void"),
+        data_types = Arrays.asList("int", "String", "float", "boolean", "void", "char"),
         keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import", "operator", "instanceof"),
         action_keywords = Arrays.asList("break", "continue", "return"),
         booleans = Arrays.asList("true", "false"),
@@ -25,6 +25,10 @@ public class CraftrUtil {
      * Contains all pseudo-keywords.
      * */
     public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "Thread", "compare", "stack", "nbt", "equipment", "multipart");
+
+    public enum Modifier {
+        PUBLIC, STATIC, ABSTRACT, FINAL, PROTECTED, PRIVATE, SYNCHRONIZED, COMPILATION, INGAME
+    }
 
     public static String classify(String token) {
         for(String p : modifiers) {

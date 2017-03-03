@@ -1,8 +1,8 @@
 package com.energyxxer.craftr.ui.editor.inspector;
 
-import com.energyxxer.craftr.compile.analysis.Analyzer;
-import com.energyxxer.craftr.compile.analysis.token.TokenStream;
-import com.energyxxer.craftr.compile.analysis.token.structures.TokenPattern;
+import com.energyxxer.craftr.compiler.lexical_analysis.Scanner;
+import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenStream;
+import com.energyxxer.craftr.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftr.main.window.Window;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.editor.CraftrEditorComponent;
@@ -42,7 +42,7 @@ public class Inspector implements Highlighter.HighlightPainter {
     public void inspect() {
         items.clear();
         TokenStream ts = new TokenStream(true);
-        new Analyzer(new File(tab.path), editor.getText(), ts);
+        new Scanner(new File(tab.path), editor.getText(), ts);
 
         for(InspectionStructureMatch inspect : InspectionStructures.getAll()) {
             ArrayList<TokenPattern<?>> matches = ts.search(inspect);

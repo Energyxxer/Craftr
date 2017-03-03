@@ -119,7 +119,9 @@ public class StringUtil {
 	public static String stripDecimals(double n) {
 		if(n % 1 == 0) {
 			return Integer.toString((int) n);
-		} else return Double.toString(n);
+		} else {
+			return Double.toString(n);
+		}
 	}
 	
 	private StringUtil() {}

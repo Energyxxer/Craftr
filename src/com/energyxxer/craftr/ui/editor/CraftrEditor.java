@@ -166,16 +166,15 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 		syntax = newSyntax;
 		for(String value : syntax.getValues().keySet()) {
 			if(!value.contains(".")) continue;
-			String[] sections = value.split("\\.");
-			if(sections.length > 2) continue;
+			//if(sections.length > 2) continue;
 
-			String name = sections[0];
+			String name = value.substring(0,value.lastIndexOf("."));
 			Style style = editorComponent.getStyle(name);
 			if(style == null) {
 				style = editorComponent.addStyle(name, null);
 				this.styles.add(name);
 			}
-			switch(sections[1]) {
+			switch(value.substring(value.lastIndexOf(".")+1)) {
 				case "foreground": {
 					StyleConstants.setForeground(style, syntax.getColor(value));
 					break;

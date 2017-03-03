@@ -18,7 +18,7 @@ public class ExtendedStatusBar extends JPanel {
 
     {
         this.setLayout(new FlowLayout(FlowLayout.RIGHT, 20,5));
-        this.setPreferredSize(new Dimension(300, 25));
+        this.setPreferredSize(new Dimension(500, 25));
 
         this.setOpaque(false);
         this.setBackground(new Color(0,0,0,0));
