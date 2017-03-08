@@ -7,6 +7,7 @@ import com.energyxxer.craftr.global.Console;
 import com.energyxxer.craftr.logic.Project;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -16,16 +17,17 @@ public class SemanticAnalyzer {
 
     public final Project project;
     public final CraftrTypeRegistry typeRegistry;
+    public final ArrayList<CraftrFile> files;
 
     public SemanticAnalyzer(HashMap<File, TokenPattern<?>> filePatterns, Project project) {
 
         this.project = project;
         this.typeRegistry = new CraftrTypeRegistry();
+        this.files = new ArrayList<>();
 
         for(File f : filePatterns.keySet()) {
-            CraftrFile craftrFile;
             try {
-                craftrFile = new CraftrFile(this, f, filePatterns.get(f));
+                files.add(new CraftrFile(this, f, filePatterns.get(f)));
             } catch(CraftrException e) {
                 Console.err.println(e.getMessage());
                 return;

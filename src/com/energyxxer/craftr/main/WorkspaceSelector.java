@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.main;
 
 import com.energyxxer.craftr.global.Preferences;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -137,7 +138,7 @@ public class WorkspaceSelector {
             initialize();
         }
 
-        int result = JOptionPane.showOptionDialog(com.energyxxer.craftr.main.window.Window.jframe, dialog, "Setup workspace", JOptionPane.YES_NO_OPTION,
+        int result = JOptionPane.showOptionDialog(CraftrWindow.jframe, dialog, "Setup workspace", JOptionPane.YES_NO_OPTION,
                 JOptionPane.PLAIN_MESSAGE, null, new Object[] { okay, cancel }, null);
 
         if (result == JFileChooser.APPROVE_OPTION) {

@@ -2,7 +2,7 @@ package com.energyxxer.craftr.ui.dialogs.file_dialogs;
 
 import com.energyxxer.craftr.files.FileType;
 import com.energyxxer.craftr.global.CraftrUtil;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.components.Padding;
 import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
 import com.energyxxer.craftr.ui.styledcomponents.StyledIcon;
@@ -42,7 +42,7 @@ public class PackageDialog {
     private static final int HEIGHT = 115;
     private static final int HEIGHT_ERR = 140;
 
-    private static JDialog dialog = new JDialog(Window.jframe);
+    private static JDialog dialog = new JDialog(CraftrWindow.jframe);
     private static JPanel pane;
 
     private static StyledTextField nameField;
@@ -170,7 +170,7 @@ public class PackageDialog {
         String path = destination + File.separator + name;
 
         new File(path.replace('.',File.separatorChar)).mkdirs();
-        Window.explorer.refresh();
+        CraftrWindow.explorer.refresh();
 
         dialog.setVisible(false);
     }

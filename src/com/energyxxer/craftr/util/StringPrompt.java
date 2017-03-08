@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.util;
 
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -109,7 +109,7 @@ public class StringPrompt {
 		validator = v;
 		label.setText(prompt);
 		textfield.setText(defaultText);
-		int result = JOptionPane.showOptionDialog(Window.jframe, dialog, title, JOptionPane.YES_NO_OPTION,
+		int result = JOptionPane.showOptionDialog(CraftrWindow.jframe, dialog, title, JOptionPane.YES_NO_OPTION,
 				JOptionPane.PLAIN_MESSAGE, null, new Object[] { okay, cancel }, null);
 
 		if (result == JFileChooser.APPROVE_OPTION) {

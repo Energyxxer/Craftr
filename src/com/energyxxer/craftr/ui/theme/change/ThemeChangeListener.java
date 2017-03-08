@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.theme.change;
 
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.theme.Theme;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public interface ThemeChangeListener {
 		if(priority) listeners.add(0, l);
 		else listeners.add(l);
 
-		l.themeChanged(Window.getTheme());
+		l.themeChanged(CraftrWindow.getTheme());
 	}
 
 	default void addThemeChangeListener() {

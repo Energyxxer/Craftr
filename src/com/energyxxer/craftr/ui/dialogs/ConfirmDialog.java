@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.dialogs;
 
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.components.Padding;
 import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
@@ -33,7 +33,7 @@ public class ConfirmDialog {
     public boolean result = false;
 
     public ConfirmDialog(String title, String query) {
-        JDialog dialog = new JDialog(Window.jframe);
+        JDialog dialog = new JDialog(CraftrWindow.jframe);
 
         JPanel pane = new JPanel(new BorderLayout());
         pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));

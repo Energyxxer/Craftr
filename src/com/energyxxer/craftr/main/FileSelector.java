@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.main;
 
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.util.Range;
 
 import javax.swing.JButton;
@@ -148,7 +148,7 @@ public class FileSelector {
             }
         });
 
-        int result = JOptionPane.showOptionDialog(Window.jframe, dialog, windowLabel, JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, new Object[] { okay, cancel }, null);
+        int result = JOptionPane.showOptionDialog(CraftrWindow.jframe, dialog, windowLabel, JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, new Object[] { okay, cancel }, null);
 
         if (result == JFileChooser.APPROVE_OPTION) {
             value = textfield.getText();

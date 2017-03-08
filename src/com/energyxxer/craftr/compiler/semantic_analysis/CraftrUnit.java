@@ -54,6 +54,7 @@ public class CraftrUnit extends AbstractCraftrComponent {
                     if(references.size() > 1) throw new CraftrParserException("Unit cannot extend multiple units", p);
 
                     unitExtends = references.get(0).flatten(false);
+                    break;
                 }
                 case "implements": {
                     if(unitImplements != null) throw new CraftrParserException("Duplicate unit action 'implements'", p);
@@ -65,6 +66,7 @@ public class CraftrUnit extends AbstractCraftrComponent {
                         if(!unitImplements.contains(str)) unitImplements.add(str);
                         else throw new CraftrParserException("Duplicate unit '" + str + "'");
                     }
+                    break;
                 }
                 case "requires": {
                     if(unitRequires != null) throw new CraftrParserException("Duplicate unit action 'requires'", p);
@@ -76,6 +78,7 @@ public class CraftrUnit extends AbstractCraftrComponent {
                         if(!unitRequires.contains(str)) unitRequires.add(str);
                         else throw new CraftrParserException("Duplicate unit '" + str + "'");
                     }
+                    break;
                 }
                 default: {
                     Console.warn.println("Unit action \"" + actionType + "\"");
@@ -92,7 +95,7 @@ public class CraftrUnit extends AbstractCraftrComponent {
             for (TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
                 TokenStructure component = (TokenStructure) p.getContents();
                 if (component.name.equals("FIELD")) {
-                    fields.addAll(CraftrField.parseDeclaration(this, component));
+                    //fields.addAll(CraftrField.parseDeclaration(this, component));
                 }
             }
         }

@@ -6,7 +6,9 @@ import com.energyxxer.craftr.compiler.parsing.Parser;
 import com.energyxxer.craftr.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftr.global.Console;
 import com.energyxxer.craftr.global.ProjectManager;
+import com.energyxxer.craftr.global.Status;
 import com.energyxxer.craftr.logic.Project;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 
 public class Compiler {
 
@@ -17,12 +19,21 @@ public class Compiler {
 		if(project.getWorld() == null) {
 			project.promptOutput();
 		}
+
+		Status status = new Status("Scanning files...");
 		
 		this.project = project;
 		TokenStream ts = new TokenStream();
+		status.setMessage("Scanning files...");
+		CraftrWindow.setStatus(status);
 		new Scanner(project.getDirectory(),ts);
+		status.setMessage("Parsing tokens...");
+		CraftrWindow.setStatus(status);
 		Parser parser = new Parser(ts);
+		status.setMessage("Analyzing code...");
+		CraftrWindow.setStatus(status);
 		new SemanticAnalyzer(parser.filePatterns, project);
+		CraftrWindow.dismissStatus(status);
 
 		/*for(Token t : ts) {
 			System.out.println(t.getFullString());

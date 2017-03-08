@@ -391,7 +391,7 @@ public class ExplorerItem implements MouseListener {
                         parentItem.parent.collapse();
                         parentItem.parent.refresh();
                     } else {
-                        Window.explorer.refresh();
+                        CraftrWindow.explorer.refresh();
                     }
 
                     TabManager.renameTab(path, pathToParent + newName + extension);

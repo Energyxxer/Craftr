@@ -2,37 +2,61 @@ package com.energyxxer.craftr.main;
 
 import com.energyxxer.craftr.global.ProjectManager;
 import com.energyxxer.craftr.global.Resources;
-import com.energyxxer.craftr.main.window.Window;
-import com.energyxxer.craftr.minecraft.schematic.block.nbt.TagCompound;
-import com.energyxxer.craftr.minecraft.schematic.block.nbt.TagInt;
-import com.energyxxer.craftr.minecraft.schematic.block.nbt.TagList;
-import com.energyxxer.craftr.minecraft.schematic.block.nbt.TagString;
+import com.energyxxer.craftr.main.window.CraftrWindow;
+import com.energyxxer.craftr.util.ImageManager;
 import com.energyxxer.craftr.util.Version;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.Point;
 
 public class Craftr {
 	public static Craftr craftr;
 	public static final Version VERSION = new Version(0,0,0);
 	public static final boolean DEV = true;
 
-	public static Window window;
+	public static CraftrWindow window;
 
 	private Craftr() {
-		window = new Window();
+		window = new CraftrWindow();
 	}
 
 	public static void main(String[] args) {
+		JFrame splash = new JFrame();
+		splash.setSize(new Dimension(512, 256));
+		Point center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
+		center.x -= 256;
+		center.y -= 128;
+		splash.setLocation(center);
+		splash.setUndecorated(true);
+		splash.setContentPane(new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				g.drawImage(ImageManager.load("/assets/logo/splash.png").getScaledInstance(512, 256, Image.SCALE_SMOOTH), 0,0,this.getWidth(),this.getHeight(), null);
+			}
+		});
+		splash.setVisible(true);
+		splash.setIconImage(ImageManager.load("/assets/logo/logo.png").getScaledInstance(32, 32, Image.SCALE_SMOOTH));
+
 		Resources.load();
 
 		craftr = new Craftr();
 		
 		ProjectManager.loadWorkspace();
+
+		splash.setVisible(false);
+		splash.dispose();
 		
 		/*String s = "name=Test\n";
 		s += "prefix=t";
 		
 		new Project(ProjectFrom.CONFIG,s);*/
 		
-		TagCompound root = new TagCompound("");
+		/*TagCompound root = new TagCompound("");
 		
 		{
 			root.add(new TagString("Block","redstone_block"));
@@ -72,7 +96,7 @@ public class Craftr {
 					p2.add(new TagString("Command","kill @e[type=commandblock_minecart,dx=0]"));
 				}
 			}
-		}
+		}*/
 		
 		//System.out.println(root.toAnonymousString());
 		

@@ -2,7 +2,7 @@ package com.energyxxer.craftr.ui.common;
 
 import com.energyxxer.craftr.files.FileType;
 import com.energyxxer.craftr.global.Preferences;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.util.ImageManager;
@@ -119,20 +119,20 @@ public class MenuItems {
 						"Delete " + fileType, JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 				if (confirmation == JOptionPane.YES_OPTION) {
 					for(File file : files) FileUtil.deleteFolder(file);
-					Window.explorer.refresh();
+					CraftrWindow.explorer.refresh();
 				}
 			});*/
 			break;
 		case MOVE:
 			item = new StyledMenuItem("Move");
-			item.setEnabled(Window.explorer.getSelectedFiles().size() > 0);
+			item.setEnabled(CraftrWindow.explorer.getSelectedFiles().size() > 0);
 			break;
 		case PASTE:
 			item = new StyledMenuItem("Paste");
 			break;
 		case RENAME:
 			item = new StyledMenuItem("Rename", "rename");
-			item.setEnabled(Window.explorer.getSelectedFiles().size() == 1);
+			item.setEnabled(CraftrWindow.explorer.getSelectedFiles().size() == 1);
 			break;
 		default:
 			break;

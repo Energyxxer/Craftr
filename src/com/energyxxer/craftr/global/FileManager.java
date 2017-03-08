@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.global;
 
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.dialogs.ConfirmDialog;
 import com.energyxxer.craftr.util.FileUtil;
 
@@ -109,6 +109,6 @@ public class FileManager {
                 if(!success) Console.warn.println("Couldn't delete file '" + file.getName() + "'");
             }
         }
-        Window.explorer.refresh();
+        CraftrWindow.explorer.refresh();
     }
 }

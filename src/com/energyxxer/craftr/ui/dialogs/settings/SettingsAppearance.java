@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.dialogs.settings;
 
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.styledcomponents.StyledDropdownMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
@@ -85,7 +85,7 @@ class SettingsAppearance extends JPanel {
                 StyledDropdownMenu<Theme> themeDropdown = new StyledDropdownMenu<>(ThemeManager.getGUIThemesAsArray(), "Settings");
                 themeDropdown.setPopupFactory(StyledPopupMenu::new);
                 themeDropdown.setPopupItemFactory(StyledMenuItem::new);
-                themeDropdown.setValue(Window.getTheme());
+                themeDropdown.setValue(CraftrWindow.getTheme());
                 Settings.addOpenEvent(ThemeManager::loadAll);
                 Settings.addApplyEvent(() -> ThemeManager.setGUITheme(themeDropdown.getValue().getName()));
                 content.add(themeDropdown);

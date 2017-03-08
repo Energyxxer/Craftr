@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.main.window.sections;
 
 import com.energyxxer.craftr.global.Preferences;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.explorer.ExplorerMaster;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollBarUI;
@@ -46,12 +46,12 @@ public class Sidebar extends JPanel {
         ToolbarButton refresh = new ToolbarButton("reload");
         refresh.setToolTipText("Refresh Explorer");
 
-        refresh.addActionListener(e -> Window.explorer.refresh());
+        refresh.addActionListener(e -> CraftrWindow.explorer.refresh());
 
         header.add(refresh, BorderLayout.EAST);
         this.add(header, BorderLayout.NORTH);
 
-        JScrollPane sp = new JScrollPane(Window.explorer = new ExplorerMaster(new File(Preferences.get("workspace_dir"))));
+        JScrollPane sp = new JScrollPane(CraftrWindow.explorer = new ExplorerMaster(new File(Preferences.get("workspace_dir"))));
         sp.setBorder(new EmptyBorder(0,0,0,0));
         sp.getVerticalScrollBar().setUI(new OverlayScrollBarUI(sp, 20));
         sp.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(sp, 20));

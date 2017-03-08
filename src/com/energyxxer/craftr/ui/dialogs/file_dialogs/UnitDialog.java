@@ -8,7 +8,7 @@ import com.energyxxer.craftr.global.CraftrUtil;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.global.ProjectManager;
 import com.energyxxer.craftr.global.TabManager;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.components.Padding;
 import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
 import com.energyxxer.craftr.ui.styledcomponents.StyledDropdownMenu;
@@ -50,7 +50,7 @@ public class UnitDialog {
     private static final int HEIGHT = 115;
     private static final int HEIGHT_ERR = 150;
 
-    private static JDialog dialog = new JDialog(Window.jframe);
+    private static JDialog dialog = new JDialog(CraftrWindow.jframe);
     private static JPanel pane;
 
     private static StyledDropdownMenu<FileType> typeDropdown;
@@ -254,7 +254,7 @@ public class UnitDialog {
             }
 
             if(newFile.exists()) TabManager.openTab(path,pos);
-            Window.explorer.refresh();
+            CraftrWindow.explorer.refresh();
         } catch (IOException x) {
             x.printStackTrace();
         }

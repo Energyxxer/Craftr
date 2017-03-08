@@ -39,7 +39,7 @@ public class ToolbarButton extends JButton {
 		this.setContentAreaFilled(false);
 		this.setOpaque(false);
 		this.setBackground(new Color(0,0,0,0));
-		//this.setBackground(Window.theme.p3);
+		//this.setBackground(CraftrWindow.theme.p3);
 		this.setMinimumSize(new Dimension(25, 25));
 		this.setMaximumSize(new Dimension(25, 25));
 		this.setPreferredSize(new Dimension(25, 25));

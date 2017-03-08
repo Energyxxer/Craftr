@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.dialogs.settings;
 
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.components.ComponentResizer;
 import com.energyxxer.craftr.ui.components.Padding;
 import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 
 public class Settings {
 
-	private static JDialog dialog = new JDialog(Window.jframe);
+	private static JDialog dialog = new JDialog(CraftrWindow.jframe);
 	//static Theme t;
 
 	private static ArrayList<Runnable> openEvents = new ArrayList<>();

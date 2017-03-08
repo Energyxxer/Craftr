@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.global;
 
 import com.energyxxer.craftr.logic.Project;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.TabComponent;
 import com.energyxxer.craftr.ui.editor.CraftrEditor;
@@ -96,8 +96,8 @@ public class TabManager {
 				if (selectedTab == openTabs.get(i).getLinkedTabComponent())
 					closedActive = true;
 				openTabs.get(i).getLinkedTabComponent().getParent().remove(openTabs.get(i).getLinkedTabComponent());
-				Window.editArea.tabList.revalidate();
-				Window.editArea.tabList.repaint();
+				CraftrWindow.editArea.tabList.revalidate();
+				CraftrWindow.editArea.tabList.repaint();
 				openTabs.remove(i);
 				if (closedActive) {
 					if (openTabs.size() == 0) {
@@ -161,7 +161,7 @@ public class TabManager {
 	public static void setSelectedTab(Tab tab) {
 		if (selectedTab != null) {
 			selectedTab.selected = false;
-			Window.editArea.remove(selectedTab.getLinkedTab().getModuleComponent());
+			CraftrWindow.editArea.remove(selectedTab.getLinkedTab().getModuleComponent());
 			selectedTab = null;
 		}
 		if (tab != null) {
@@ -172,29 +172,29 @@ public class TabManager {
 				if(openTabs.indexOf(tab) >= 0) {
 					openTabs.remove(openTabs.indexOf(tab));
 					openTabs.add(0,tab);
-					Window.editArea.tabList.add(tab.getLinkedTabComponent(), 0);
+					CraftrWindow.editArea.tabList.add(tab.getLinkedTabComponent(), 0);
 				}
 			}
 			tab.getLinkedTabComponent().selected = true;
 			
 			Project linkedProject = tab.getLinkedProject();
-			Window.setTitle(tab.getLinkedTabComponent().getName() + ((linkedProject != null) ? " - " + linkedProject.getName() : ""));
-			Window.editArea.add(tab.getModuleComponent(), BorderLayout.CENTER);
+			CraftrWindow.setTitle(tab.getLinkedTabComponent().getName() + ((linkedProject != null) ? " - " + linkedProject.getName() : ""));
+			CraftrWindow.editArea.add(tab.getModuleComponent(), BorderLayout.CENTER);
 			tab.onSelect();
 		} else {
-			Window.statusBar.setCaretInfo(Commons.DEFAULT_CARET_DISPLAY_TEXT);
-			Window.statusBar.setSelectionInfo(" ");
-            Window.clearTitle();
+			CraftrWindow.statusBar.setCaretInfo(Commons.DEFAULT_CARET_DISPLAY_TEXT);
+			CraftrWindow.statusBar.setSelectionInfo(" ");
+            CraftrWindow.clearTitle();
 		}
 
-		Window.editArea.revalidate();
-		Window.editArea.repaint();
+		CraftrWindow.editArea.revalidate();
+		CraftrWindow.editArea.repaint();
 	}
 
 	public static void addTabComponent(TabComponent tab) {
-		Window.editArea.tabList.add(tab);
-		Window.editArea.tabList.revalidate();
-		Window.editArea.tabList.repaint();
+		CraftrWindow.editArea.tabList.add(tab);
+		CraftrWindow.editArea.tabList.revalidate();
+		CraftrWindow.editArea.tabList.repaint();
 	}
 	
 	private static void updateTabVisibility() {

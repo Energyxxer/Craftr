@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.dialogs;
 
 import com.energyxxer.craftr.logic.Project;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.minecraft.MinecraftConstants;
 import com.energyxxer.craftr.ui.components.ComponentResizer;
 import com.energyxxer.craftr.ui.components.XFileField;
@@ -23,7 +23,7 @@ public class ProjectProperties {
 
 	public static void show(Project project) {
 
-		JDialog dialog = new JDialog(Window.jframe);
+		JDialog dialog = new JDialog(CraftrWindow.jframe);
 
 
 		ThemeChangeListener.addThemeChangeListener(th -> t = th);

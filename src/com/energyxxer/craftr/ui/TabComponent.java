@@ -168,7 +168,7 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 		Graphics2D g2 = (Graphics2D) g;
 		Point offset = dragState.getOffset();
 		g2.translate(offset.x, offset.y);
-		//Rectangle tabListRect = Window.editArea.tabList.getBounds();
+		//Rectangle tabListRect = CraftrWindow.editArea.tabList.getBounds();
 		//g2.setClip(new Rectangle(0,0,tabListRect.width,tabListRect.height));
 		//System.out.println(getParent().getGraphics());
 

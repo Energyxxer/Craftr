@@ -4,7 +4,7 @@ import com.energyxxer.craftr.global.Console;
 import com.energyxxer.craftr.global.Lang;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.global.Resources;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,7 +68,7 @@ public class ThemeManager {
     public static void setGUITheme(String name) {
         if(name != null && name.equals("null")) {
             Preferences.put("theme","null");
-            Window.setTheme(nullTheme);
+            CraftrWindow.setTheme(nullTheme);
             currentGUITheme = nullTheme;
             return;
         }
@@ -77,7 +77,7 @@ public class ThemeManager {
         if(theme == null) theme = nullTheme;
 
         Preferences.put("theme",theme.getName());
-        Window.setTheme(theme);
+        CraftrWindow.setTheme(theme);
         currentGUITheme = theme;
 
     }

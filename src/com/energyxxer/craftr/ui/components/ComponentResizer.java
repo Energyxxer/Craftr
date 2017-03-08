@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.components;
 
 import com.energyxxer.craftr.global.Status;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
@@ -44,13 +44,13 @@ public class ComponentResizer {
 	        public void mouseMoved(MouseEvent me) {
 				status.setMessage(getCursor(me).toString());
 				status.setType(types[ThreadLocalRandom.current().nextInt(0, 3)]);
-				Window.setStatus(status);
+				CraftrWindow.setStatus(status);
                 component.setCursor(getCursor(me));
 	        }
 
 	        @Override
 	        public void mouseExited(MouseEvent me) {
-				Window.dismissStatus(status);
+				CraftrWindow.dismissStatus(status);
 				component.setCursor(Cursor.getDefaultCursor());
 	        }
 		};

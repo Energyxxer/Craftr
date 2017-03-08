@@ -33,7 +33,7 @@ import java.util.TimerTask;
 /**
  * Literally what it sounds like.
  */
-public class Window {
+public class CraftrWindow {
 
 	public static JFrame jframe;
 
@@ -48,7 +48,7 @@ public class Window {
 	private static final Dimension defaultSize = new Dimension(1200, 800);
 
 
-	public Window() {
+	public CraftrWindow() {
 		ThemeManager.loadAll();
 		ThemeManager.setGUITheme(Preferences.get("theme"));
 
@@ -87,7 +87,6 @@ public class Window {
 				ImageManager.load("/assets/logo/logo_icon.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH));
 		icons.add(ImageManager.load("/assets/logo/logo.png").getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH));
 		jframe.setIconImages(icons);
-		//jframe.setIconImage(ImageManager.load("/assets/logo/logo.png"));
 
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		Point center = env.getCenterPoint();
@@ -111,7 +110,7 @@ public class Window {
 
 			new Timer().schedule(new TimerTask() {
 				public void run() {
-					Window.dismissStatus(themeSetStatus);
+					CraftrWindow.dismissStatus(themeSetStatus);
 				}
 			}, 5000);
 		}

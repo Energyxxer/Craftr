@@ -27,12 +27,12 @@ public class ToolbarSeparator extends JPanel {
 		{
 			JPanel separatorLine = new JPanel(new BorderLayout());
 			separatorLine.setPreferredSize(new Dimension(2, 20));
-			//separatorLine.setBackground(Window.theme.l2);
+			//separatorLine.setBackground(CraftrWindow.theme.l2);
 			this.add(separatorLine);
 
 			JPanel lightLine = new JPanel();
 			lightLine.setPreferredSize(new Dimension(1, 1));
-			//lightLine.setBackground(Window.theme.p2);
+			//lightLine.setBackground(CraftrWindow.theme.p2);
 			separatorLine.add(lightLine, BorderLayout.EAST);
 
 			ThemeChangeListener.addThemeChangeListener(t -> {

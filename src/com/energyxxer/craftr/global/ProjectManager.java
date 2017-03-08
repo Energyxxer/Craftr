@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.global;
 
 import com.energyxxer.craftr.logic.Project;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.util.FileUtil;
 
@@ -77,7 +77,7 @@ public class ProjectManager {
 
 		Tab selectedTab = TabManager.getSelectedTab();
 
-		List<String> selectedFiles = Window.explorer.getSelectedFiles();
+		List<String> selectedFiles = CraftrWindow.explorer.getSelectedFiles();
 
 		if(selectedFiles.size() > 0) {
 			selected = getAssociatedProject(new File(selectedFiles.get(0)));

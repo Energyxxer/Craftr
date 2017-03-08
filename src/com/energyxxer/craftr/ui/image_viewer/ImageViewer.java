@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.image_viewer;
 
 import com.energyxxer.craftr.global.Console;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.display.DisplayModule;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
@@ -144,8 +144,8 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
 
     @Override
     public void displayCaretInfo() {
-        Window.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x  * 16) / imgSize.width, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y  * 16) / imgSize.height),4)));
-        Window.statusBar.setSelectionInfo("Pixel pos: " + posOnImage.x + ", " + posOnImage.y);
+        CraftrWindow.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x  * 16) / imgSize.width, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y  * 16) / imgSize.height),4)));
+        CraftrWindow.statusBar.setSelectionInfo("Pixel pos: " + posOnImage.x + ", " + posOnImage.y);
     }
 
     @Override

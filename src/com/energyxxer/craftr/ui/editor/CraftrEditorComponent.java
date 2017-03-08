@@ -5,7 +5,7 @@ import com.energyxxer.craftr.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenSection;
 import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftr.global.Lang;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
 import com.energyxxer.craftr.ui.editor.inspector.Inspector;
 
@@ -114,8 +114,8 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
     }
 
     void displayCaretInfo() {
-        Window.statusBar.setCaretInfo(getCaretInfo());
-        Window.statusBar.setSelectionInfo(getSelectionInfo());
+        CraftrWindow.statusBar.setCaretInfo(getCaretInfo());
+        CraftrWindow.statusBar.setSelectionInfo(getSelectionInfo());
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.energyxxer.craftr.ui.editor.inspector;
 import com.energyxxer.craftr.compiler.lexical_analysis.Scanner;
 import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftr.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.editor.CraftrEditorComponent;
 import com.energyxxer.craftr.util.StringBounds;
@@ -58,7 +58,7 @@ public class Inspector implements Highlighter.HighlightPainter {
         try {
             for (InspectionItem item : items) {
 
-                g.setColor(Window.getTheme().getColor(item.type.colorKey));
+                g.setColor(CraftrWindow.getTheme().getColor(item.type.colorKey));
 
                 try {
 

@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.main.window.sections;
 
 import com.energyxxer.craftr.global.Status;
-import com.energyxxer.craftr.main.window.Window;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
@@ -53,7 +53,7 @@ public class StatusBar extends JPanel {
 
     public void setStatus(Status status) {
 
-        Theme t = Window.getTheme();
+        Theme t = CraftrWindow.getTheme();
 
         statusLabel.setForeground(t.getColor("Status." + status.getType().toLowerCase(),t.getColor("General.foreground",Color.BLACK)));
         statusLabel.setText(status.getMessage());
