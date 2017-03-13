@@ -4,7 +4,6 @@ import com.energyxxer.craftr.util.LineReader;
 import com.energyxxer.craftr.util.Range;
 
 import java.awt.Color;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +22,7 @@ public class ThemeReader {
     public Theme read(Theme.ThemeType type, String name) throws ThemeParserException {
         themeValues = new HashMap<>();
         try {
-            ArrayList<String> lines = LineReader.read("/resources/themes/" + type.subdirectory + File.separator + name + ".properties");
+            ArrayList<String> lines = LineReader.read("/resources/themes/" + type.subdirectory + '/' + name + ".properties");
             for(String line : lines) {
                 currentLine++;
                 line = line.trim();

@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.ui.editor.behavior;
 
 import com.energyxxer.craftr.global.Commons;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.craftr.ui.editor.behavior.caret.Dot;
 import com.energyxxer.craftr.ui.editor.behavior.caret.EditorCaret;
@@ -94,6 +95,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     @Override
     public void keyTyped(KeyEvent e) {
         e.consume();
+        CraftrWindow.setStatus(e.getKeyChar() + ":" + Character.getName(e.getKeyChar()));
         /*if(e.getKeyChar() == '`') {
             try {
                 Object rawContents = this.getToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
@@ -200,6 +202,9 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             else if(keyCode == KeyEvent.VK_DOWN)
                 editManager.insertEdit(new LineMoveEdit(this, Dot.DOWN));
             e.consume();
+        } else if(keyCode == KeyEvent.VK_ESCAPE) {
+            int dotPos = caret.getDot();
+            caret.setProfile(new CaretProfile(dotPos, dotPos));
         }
     }
 

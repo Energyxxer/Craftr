@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
  */
 public class ResourceReader {
     public static String read(String file) {
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(Class.class.getResourceAsStream(file)))) {
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(ResourceReader.class.getResourceAsStream(file)))) {
             StringBuilder sb = new StringBuilder();
             String line;
             for (; (line = br.readLine()) != null; ) {
@@ -20,6 +20,7 @@ public class ResourceReader {
             }
             return sb.toString();
         } catch(NullPointerException x) {
+            x.printStackTrace();
             Console.err.println("[ERROR] File not found: " + file);
         } catch(IOException x) {
             Console.err.println("[ERROR] Unable to access file: " + file);

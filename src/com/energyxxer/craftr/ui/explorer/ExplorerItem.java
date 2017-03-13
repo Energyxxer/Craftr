@@ -215,7 +215,7 @@ public class ExplorerItem implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() % 2 == 0 && (e.getX() < x || e.getX() > x + ExplorerMaster.ROW_HEIGHT)) {
+        if(e.getButton() == MouseEvent.BUTTON1 && !e.isControlDown() && e.getClickCount() % 2 == 0 && (e.getX() < x || e.getX() > x + ExplorerMaster.ROW_HEIGHT)) {
             this.open();
         }
     }

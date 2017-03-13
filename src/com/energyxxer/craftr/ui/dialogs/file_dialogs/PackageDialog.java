@@ -115,7 +115,7 @@ public class PackageDialog {
             errorPanel.setOpaque(false);
             errorPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 0));
 
-            errorLabel = new StyledLabel("", "NewUnitDialog.error");
+            errorLabel = new StyledLabel("", "NewPackageDialog.error");
             errorLabel.setStyle(Font.BOLD);
             errorLabel.setMaximumSize(new Dimension(Integer.MAX_VALUE, errorLabel.getPreferredSize().height));
             errorPanel.add(errorLabel);
@@ -232,6 +232,7 @@ public class PackageDialog {
             pane.setPreferredSize(new Dimension(WIDTH, HEIGHT_ERR));
             errorPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
             errorLabel.setText(message);
+            errorLabel.revalidate();
             dialog.pack();
         }
     }

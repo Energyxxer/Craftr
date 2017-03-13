@@ -1,12 +1,16 @@
 package com.energyxxer.craftr.main.window.sections;
 
 import com.energyxxer.craftr.compiler.Compiler;
+import com.energyxxer.craftr.files.FileType;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.ToolbarSeparator;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import java.awt.Color;
+import java.awt.Dimension;
 
 /**
  * Created by User on 12/15/2016.
@@ -25,6 +29,7 @@ public class Toolbar extends JPanel {
         {
             ToolbarButton button = new ToolbarButton("project");
             button.setToolTipText("New Project");
+            button.addActionListener(e -> FileType.PROJECT.create(null));
             this.add(button);
         }
 

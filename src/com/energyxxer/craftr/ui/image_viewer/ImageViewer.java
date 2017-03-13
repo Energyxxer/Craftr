@@ -30,7 +30,7 @@ import java.io.IOException;
  */
 public class ImageViewer extends JPanel implements DisplayModule, MouseWheelListener, MouseMotionListener {
 
-    private static final double MIN_SCALE = 0.1;
+    private static final double MIN_SCALE = 0.25;
     private static final double MAX_SCALE = 50;
 
     private BufferedImage img;

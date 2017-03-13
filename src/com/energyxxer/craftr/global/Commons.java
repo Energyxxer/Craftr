@@ -19,7 +19,7 @@ public class Commons {
     }
 
     public static boolean isSpecialCharacter(char ch) {
-        return "\b\r\n\t\f\u007F".contains("" + ch);
+        return "\b\r\n\t\f\u007F\u001B".contains("" + ch);
     }
 
     public static void showInExplorer(String path) {

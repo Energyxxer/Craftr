@@ -86,10 +86,12 @@ public class Dot {
             }
             actionPerformed = true;
         } else if(key == KeyEvent.VK_HOME) {
-            nextPos = getRowStart();
+            if(e.isControlDown()) nextPos = 0;
+            else nextPos = getRowStart();
             actionPerformed = true;
         } else if(key == KeyEvent.VK_END) {
-            nextPos = getRowEnd();
+            if(e.isControlDown()) nextPos = component.getDocument().getLength();
+            else nextPos = getRowEnd();
             actionPerformed = true;
         }
 

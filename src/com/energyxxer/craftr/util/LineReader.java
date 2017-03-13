@@ -13,13 +13,18 @@ import java.util.ArrayList;
 public class LineReader {
     public static ArrayList<String> read(String file) throws IOException {
         ArrayList<String> lines = new ArrayList<>();
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(Class.class.getResourceAsStream(file)))) {
+        try(BufferedReader br = new BufferedReader(
+                new InputStreamReader(
+                        LineReader.
+                                class.
+                                getResourceAsStream(file)))) {
             String line;
             for (; (line = br.readLine()) != null; ) {
                 if(line.length() > 0 && !line.startsWith("#")) lines.add(line.trim());
             }
             return lines;
         } catch(NullPointerException npe) {
+            npe.printStackTrace();
             Console.err.println("[ERROR] File not found: " + file);
             return new ArrayList<>();
         }
