@@ -5,6 +5,7 @@ import com.energyxxer.craftr.compiler.exceptions.CraftrParserException;
 import com.energyxxer.craftr.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftr.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftr.compiler.parsing.pattern_matching.structures.TokenStructure;
+import com.energyxxer.craftr.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftr.global.Console;
 import com.energyxxer.craftr.global.CraftrUtil.Modifier;
 
@@ -37,11 +38,7 @@ public class CraftrUnit extends AbstractCraftrComponent {
         this.name = ((TokenItem) header.find("UNIT_NAME")).getContents().value;
         this.type = ((TokenItem) header.find("UNIT_TYPE")).getContents().value;
 
-        this.modifiers = new ArrayList<>();
-        List<TokenPattern<?>> modifierPatterns = header.deepSearchByName("UNIT_MODIFIER");
-        for(TokenPattern<?> p : modifierPatterns) {
-            this.modifiers.add(Modifier.valueOf(((TokenItem) p).getContents().value.toUpperCase()));
-        }
+        this.modifiers = SemanticUtils.getModifiers(header.deepSearchByName("UNIT_MODIFIER"));
 
         List<TokenPattern<?>> actionPatterns = header.deepSearchByName("UNIT_ACTION");
         for(TokenPattern<?> p : actionPatterns) {
@@ -95,7 +92,7 @@ public class CraftrUnit extends AbstractCraftrComponent {
             for (TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
                 TokenStructure component = (TokenStructure) p.getContents();
                 if (component.name.equals("FIELD")) {
-                    //fields.addAll(CraftrField.parseDeclaration(this, component));
+                    fields.addAll(CraftrField.parseDeclaration(this, component));
                 }
             }
         }

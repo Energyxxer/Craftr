@@ -1,5 +1,7 @@
 package com.energyxxer.craftr.util.out;
 
+import com.energyxxer.craftr.main.Craftr;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -26,6 +28,13 @@ public class MultiOutputStream extends OutputStream {
 
 	@Override
 	public void write(byte[] b, int off, int len) throws IOException {
+		if(Craftr.PRINT_CONSOLE_CALLS && len != 2) {
+			try {
+				throw new RuntimeException();
+			} catch(RuntimeException x) {
+				System.out.println(x.getStackTrace()[9]);
+			}
+		}
 		for (OutputStream out : outputStreams)
 			out.write(b, off, len);
 	}

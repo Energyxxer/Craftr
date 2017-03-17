@@ -76,7 +76,7 @@ public class InsertionEdit implements Edit {
             String str = doc.getText(0, doc.getLength());
 
             for (int i = 0; i < previousProfile.size() - 1; i += 2) {
-                int start = previousProfile.get(i);
+                int start = Math.min(previousProfile.get(i), previousProfile.get(i+1));
                 int resultEnd = start + value.length();
                 if(resultEnd < start) {
                     int temp = start;

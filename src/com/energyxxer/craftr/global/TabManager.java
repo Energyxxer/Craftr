@@ -178,7 +178,7 @@ public class TabManager {
 			tab.getLinkedTabComponent().selected = true;
 			
 			Project linkedProject = tab.getLinkedProject();
-			CraftrWindow.setTitle(tab.getLinkedTabComponent().getName() + ((linkedProject != null) ? " - " + linkedProject.getName() : ""));
+			CraftrWindow.setTitle(((linkedProject != null) ? linkedProject.getName() + " - " : "") + tab.getLinkedTabComponent().getName());
 			CraftrWindow.editArea.add(tab.getModuleComponent(), BorderLayout.CENTER);
 			tab.onSelect();
 		} else {

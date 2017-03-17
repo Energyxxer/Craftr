@@ -27,7 +27,12 @@ public class CraftrUtil {
     public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "Thread", "compare", "stack", "nbt", "equipment", "multipart");
 
     public enum Modifier {
-        PUBLIC, STATIC, ABSTRACT, FINAL, PROTECTED, PRIVATE, SYNCHRONIZED, COMPILATION, INGAME
+        PUBLIC, STATIC, ABSTRACT, FINAL, PROTECTED, PRIVATE, SYNCHRONIZED, COMPILATION, INGAME;
+
+        @Override
+        public String toString() {
+            return this.name().toLowerCase();
+        }
     }
 
     public static String classify(String token) {

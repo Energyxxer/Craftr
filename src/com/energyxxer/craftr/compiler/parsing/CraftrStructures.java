@@ -157,9 +157,9 @@ public class CraftrStructures {
         }
 
         {
-            TokenGroupMatch g2 = new TokenGroupMatch();
+            TokenGroupMatch g2 = new TokenGroupMatch().setName("INNER");
             g2.append(new TokenGroupMatch(true).append(ANNOTATION));
-            g2.append(new TokenListMatch(TokenType.MODIFIER,true));
+            g2.append(new TokenListMatch(TokenType.MODIFIER,true).setName("MODIFIER_LIST"));
             g2.append(DATA_TYPE);
             {
                 TokenGroupMatch g3 = new TokenGroupMatch();

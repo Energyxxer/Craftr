@@ -33,4 +33,9 @@ public class CraftrDataType {
     private static final CraftrDataType BOOLEAN = new CraftrDataType("boolean", true);
 
     public static final CraftrDataType[] PRIMITIVES = new CraftrDataType[] {INT, FLOAT, STRING, CHAR, BOOLEAN};
+
+    @Override
+    public boolean equals(Object o) {
+        return (o instanceof CraftrDataType) && this.name.equals(((CraftrDataType) o).name);
+    }
 }

@@ -33,7 +33,7 @@ public class ImageManager {
 
 	public static BufferedImage load(String path) {
 		if (!loadedImages.containsKey(path)) {
-			try(InputStream is = Class.class.getResourceAsStream(path)) {
+			try(InputStream is = ImageManager.class.getResourceAsStream(path)) {
 				if (is != null) {
 					loadedImages.put(path, ImageIO.read(is));
 					is.close();
