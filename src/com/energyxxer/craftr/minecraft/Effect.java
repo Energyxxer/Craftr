@@ -26,8 +26,8 @@ public enum Effect {
 	SATURATION(23, "saturation"),
 	GLOWING(24, "glowing"),
 	LEVITATION(25, "levitation"),
-	LUCK(1, "luck"),
-	BAD_LUCK(1, "bad_luck");
+	LUCK(26, "luck"),
+	BAD_LUCK(27, "bad_luck");
 	
 	int numerical_id;
 	String id;

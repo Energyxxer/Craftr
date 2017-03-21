@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by User on 1/6/2017.
  */
-public class CompoundEdit implements Edit {
+public class CompoundEdit extends Edit {
     private ArrayList<Edit> edits = new ArrayList<>();
 
     public CompoundEdit() {

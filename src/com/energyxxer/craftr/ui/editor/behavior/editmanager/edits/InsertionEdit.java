@@ -13,11 +13,10 @@ import java.util.ArrayList;
 /**
  * Created by User on 1/10/2017.
  */
-public class InsertionEdit implements Edit {
+public class InsertionEdit extends Edit {
     private String value;
     private ArrayList<String> previousValues = new ArrayList<>();
-    private CaretProfile previousProfile = new CaretProfile();
-    //private CaretProfile nextProfile = null;
+    private CaretProfile previousProfile;
 
     public InsertionEdit(String value, AdvancedEditor editor) {
         this.value = value;

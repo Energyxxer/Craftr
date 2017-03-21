@@ -80,7 +80,7 @@ public enum Block {
 	WOODEN_PRESSURE_PLATE("Wooden Pressure Plate"),
 	REDSTONE_ORE("Redstone Ore"),
 	LIT_REDSTONE_ORE("Glowing Redstone Ore"),
-	UNLIT_REDSTONE_TORCH("Unlit Redstone tTorch"),
+	UNLIT_REDSTONE_TORCH("Unlit Redstone Torch"),
 	REDSTONE_TORCH("Redstone Torch"),
 	STONE_BUTTON("Stone Button"),
 	SNOW_LAYER("Snow Layer"),

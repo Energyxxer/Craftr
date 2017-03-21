@@ -13,6 +13,8 @@ public class EditManager {
     private int currentEdit = 0;
     private CaretProfile lastProfile = null;
 
+    private static final int MERGE_DIFFERENCE = 300;
+
     private AdvancedEditor component;
 
     public EditManager(AdvancedEditor component) {
@@ -24,6 +26,7 @@ public class EditManager {
             if(component.getCaret().getProfile().equals(lastProfile)) {
                 edits.get(--currentEdit).undo(component);
                 lastProfile = component.getCaret().getProfile();
+                if(currentEdit > 0 && Math.abs(edits.get(currentEdit).time - edits.get(currentEdit-1).time) <= MERGE_DIFFERENCE) undo();
             } else {
                 component.getCaret().setProfile(lastProfile);
             }
@@ -35,6 +38,10 @@ public class EditManager {
             if(component.getCaret().getProfile().equals(lastProfile)) {
                 edits.get(currentEdit++).redo(component);
                 lastProfile = component.getCaret().getProfile();
+                if(currentEdit < edits.size() &&
+                   Math.abs(edits.get(currentEdit-1).time - edits.get(currentEdit).time) <= MERGE_DIFFERENCE) {
+                    redo();
+                }
             } else {
                 component.getCaret().setProfile(lastProfile);
             }
