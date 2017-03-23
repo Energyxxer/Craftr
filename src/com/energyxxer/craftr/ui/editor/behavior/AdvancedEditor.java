@@ -46,7 +46,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     private LinePainter linePainter;
 
     private HashMap<Integer, Integer> lineLocations = new HashMap<>();
-    //               (line)  (index)
+    //              (line)   (index)
 
     private static final float BIAS_POINT = 0.4f;
 
@@ -191,10 +191,15 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
         int line = 0;
         int lineStart = 0;
         for(int l = 0; l < lineLocations.size(); l++) {
-            if(lineLocations.get(l) < index) {
+            Integer loc = lineLocations.get(l);
+            if(loc == null) {
+                //Concurrent modification occurred.
+                break;
+            }
+            if(loc < index) {
                 line = l;
-                lineStart = lineLocations.get(l);
-            } else if(lineLocations.get(l) == index) {
+                lineStart = loc;
+            } else if(loc == index) {
                 return new StringLocation(index, l+1, 1);
             } else {
                 break;
@@ -223,31 +228,6 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             x.printStackTrace();
             return null;
         }
-        /*
-        Console.debug.println("getting location for offset " + index);
-        try {
-            int line = (index == 0) ? 1 : 0;
-            try {
-                int offset = index;
-                while(offset > 0) {
-                    int rs = Utilities.getRowStart(this, offset);
-                    if(rs < 0) {
-                        line = 1;
-                        break;
-                    }
-                    offset = rs - 1;
-                    line++;
-                }
-            } catch(BadLocationException ble) {
-                ble.printStackTrace();
-            }
-            int column;
-            int rs = Utilities.getRowStart(this, index);
-            column = (rs >= 0) ? index - rs + 1 : 1;
-            return new StringLocation(index, line, column);
-        } catch(BadLocationException e) {
-            return null;
-        }*/
     }
 
     protected String getCaretInfo() {

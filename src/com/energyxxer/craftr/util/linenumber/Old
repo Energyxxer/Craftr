@@ -9,12 +9,12 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 
 /**
- *  This class will display line numbers for a related text component. The text
- *  component must use the same line height for each line. TextLineNumber
+ *  This class will display line numbers for a related text editor. The text
+ *  editor must use the same line height for each line. TextLineNumber
  *  supports wrapped lines and will highlight the line number of the current
- *  line in the text component.
+ *  line in the text editor.
  *
- *  This class was designed to be used as a component added to the row header
+ *  This class was designed to be used as a editor added to the row header
  *  of a JScrollPane.
  */
 public class TextLineNumber extends JPanel
@@ -28,9 +28,9 @@ public class TextLineNumber extends JPanel
 
 	private final static int HEIGHT = Integer.MAX_VALUE - 1000000;
 
-	//  Text component this TextTextLineNumber component is in sync with
+	//  Text editor this TextTextLineNumber editor is in sync with
 
-	private JTextComponent component;
+	private JTextComponent editor;
 
 	//  Properties that can be changed
 
@@ -40,7 +40,7 @@ public class TextLineNumber extends JPanel
 	private float digitAlignment;
 	private int minimumDisplayDigits;
 
-	//  Keep history information to reduce the number of times the component
+	//  Keep history information to reduce the number of times the editor
 	//  needs to be repainted
 
 	private int lastDigits;
@@ -50,37 +50,37 @@ public class TextLineNumber extends JPanel
 	private HashMap<String, FontMetrics> fonts;
 
 	/**
-	 *	Create a line number component for a text component. This minimum
+	 *	Create a line number editor for a text editor. This minimum
 	 *  display width will be based on 3 digits.
 	 *
-	 *  @param component  the related text component
+	 *  @param editor  the related text editor
 	 */
-	public TextLineNumber(JTextComponent component)
+	public TextLineNumber(JTextComponent editor)
 	{
-		this(component, 3);
+		this(editor, 3);
 	}
 
 	/**
-	 *	Create a line number component for a text component.
+	 *	Create a line number editor for a text editor.
 	 *
-	 *  @param component  the related text component
+	 *  @param editor  the related text editor
 	 *  @param minimumDisplayDigits  the number of digits used to calculate
-	 *                               the minimum width of the component
+	 *                               the minimum width of the editor
 	 */
-	public TextLineNumber(JTextComponent component, int minimumDisplayDigits)
+	public TextLineNumber(JTextComponent editor, int minimumDisplayDigits)
 	{
-		this.component = component;
+		this.editor = editor;
 
-		setFont( component.getFont() );
+		setFont( editor.getFont() );
 
 		setBorderGap( 5 );
 		setCurrentLineForeground( Color.RED );
 		setDigitAlignment( RIGHT );
 		setMinimumDisplayDigits( minimumDisplayDigits );
 
-		component.getDocument().addDocumentListener(this);
-		component.addCaretListener( this );
-		component.addPropertyChangeListener("font", this);
+		editor.getDocument().addDocumentListener(this);
+		editor.addCaretListener( this );
+		editor.addPropertyChangeListener("font", this);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public class TextLineNumber extends JPanel
 
 	/**
 	 *  Set the update font property. Indicates whether this Font should be
-	 *  updated automatically when the Font of the related text component
+	 *  updated automatically when the Font of the related text editor
 	 *  is changed.
 	 *
 	 *  @param updateFont  when true update the Font and repaint the line
@@ -162,7 +162,7 @@ public class TextLineNumber extends JPanel
 	}
 
 	/**
-	 *  Specify the horizontal alignment of the digits within the component.
+	 *  Specify the horizontal alignment of the digits within the editor.
 	 *  Common values would be:
 	 *  <ul>
 	 *  <li>TextLineNumber.LEFT
@@ -189,7 +189,7 @@ public class TextLineNumber extends JPanel
 
 	/**
 	 *  Specify the mimimum number of digits used to calculate the preferred
-	 *  width of the component. Default is 3.
+	 *  width of the editor. Default is 3.
 	 *
 	 *  @param minimumDisplayDigits  the number digits used in the preferred
 	 *                               width calculation
@@ -205,7 +205,7 @@ public class TextLineNumber extends JPanel
 	 */
 	private void setPreferredWidth()
 	{
-		Element root = component.getDocument().getDefaultRootElement();
+		Element root = editor.getDocument().getDefaultRootElement();
 		int lines = root.getElementCount();
 		int digits = Math.max(String.valueOf(lines).length(), minimumDisplayDigits);
 
@@ -240,15 +240,15 @@ public class TextLineNumber extends JPanel
 
 		//	Determine the width of the space available to draw the line number
 
-		FontMetrics fontMetrics = component.getFontMetrics( component.getFont() );
+		FontMetrics fontMetrics = editor.getFontMetrics( editor.getFont() );
 		Insets insets = getInsets();
 		int availableWidth = getSize().width - insets.left - insets.right;
 
 		//  Determine the rows to draw within the clipped bounds.
 
 		Rectangle clip = g.getClipBounds();
-		int rowStartOffset = component.viewToModel( new Point(0, clip.y) );
-		int endOffset = component.viewToModel( new Point(0, clip.y + clip.height) );
+		int rowStartOffset = editor.viewToModel( new Point(0, clip.y) );
+		int endOffset = editor.viewToModel( new Point(0, clip.y + clip.height) );
 
 		while (rowStartOffset <= endOffset)
 		{
@@ -270,7 +270,7 @@ public class TextLineNumber extends JPanel
 
 				//  Move to the next row
 
-				rowStartOffset = Utilities.getRowEnd(component, rowStartOffset) + 1;
+				rowStartOffset = Utilities.getRowEnd(editor, rowStartOffset) + 1;
 			}
 			catch(Exception e) {break;}
 		}
@@ -282,8 +282,8 @@ public class TextLineNumber extends JPanel
 	 */
 	private boolean isCurrentLine(int rowStartOffset)
 	{
-		int caretPosition = component.getCaretPosition();
-		Element root = component.getDocument().getDefaultRootElement();
+		int caretPosition = editor.getCaretPosition();
+		Element root = editor.getDocument().getDefaultRootElement();
 
 		if (root.getElementIndex( rowStartOffset ) == root.getElementIndex(caretPosition))
 			return true;
@@ -297,7 +297,7 @@ public class TextLineNumber extends JPanel
 	 */
 	protected String getTextLineNumber(int rowStartOffset)
 	{
-		Element root = component.getDocument().getDefaultRootElement();
+		Element root = editor.getDocument().getDefaultRootElement();
 		int index = root.getElementIndex( rowStartOffset );
 		Element line = root.getElement( index );
 
@@ -323,7 +323,7 @@ public class TextLineNumber extends JPanel
 	{
 		//  Get the bounding rectangle of the row
 
-		Rectangle r = component.modelToView( rowStartOffset );
+		Rectangle r = editor.modelToView( rowStartOffset );
 		int lineHeight = fontMetrics.getHeight();
 		int y = r.y + r.height;
 		int descent = 0;
@@ -340,7 +340,7 @@ public class TextLineNumber extends JPanel
 			if (fonts == null)
 				fonts = new HashMap<String, FontMetrics>();
 
-			Element root = component.getDocument().getDefaultRootElement();
+			Element root = editor.getDocument().getDefaultRootElement();
 			int index = root.getElementIndex( rowStartOffset );
 			Element line = root.getElement( index );
 
@@ -357,7 +357,7 @@ public class TextLineNumber extends JPanel
 				if (fm == null)
 				{
 					Font font = new Font(fontFamily, Font.PLAIN, fontSize);
-					fm = component.getFontMetrics( font );
+					fm = editor.getFontMetrics( font );
 					fonts.put(key, fm);
 				}
 
@@ -377,8 +377,8 @@ public class TextLineNumber extends JPanel
 
 		//  Get the line the caret is positioned on
 
-		int caretPosition = component.getCaretPosition();
-		Element root = component.getDocument().getDefaultRootElement();
+		int caretPosition = editor.getCaretPosition();
+		Element root = editor.getDocument().getDefaultRootElement();
 		int currentLine = root.getElementIndex( caretPosition );
 
 		//  Need to repaint so the correct line number can be highlighted
@@ -417,7 +417,7 @@ public class TextLineNumber extends JPanel
 	 */
 	private void documentChanged()
 	{
-		//  View of the component has not been updated at the time
+		//  View of the editor has not been updated at the time
 		//  the DocumentEvent is fired
 
 		SwingUtilities.invokeLater(new Runnable()
@@ -427,8 +427,8 @@ public class TextLineNumber extends JPanel
 			{
 				try
 				{
-					int endPos = component.getDocument().getLength();
-					Rectangle rect = component.modelToView(endPos);
+					int endPos = editor.getDocument().getLength();
+					Rectangle rect = editor.modelToView(endPos);
 
 					if (rect != null && rect.y != lastHeight)
 					{

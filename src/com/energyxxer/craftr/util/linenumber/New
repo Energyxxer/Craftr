@@ -22,7 +22,7 @@ public class TextLineNumber extends JPanel
 
 	private final int HEIGHT = getPreferredSize().height;
 
-	private JTextComponent component;
+	private JTextComponent editor;
 	private JScrollPane scrollPane;
 
 	private Color currentLineForeground = null;
@@ -36,18 +36,18 @@ public class TextLineNumber extends JPanel
 	private int lastDigits = 0;
 	private int lastHeight = 0;
 
-	public TextLineNumber(JTextComponent component, JScrollPane scrollPane) {
-		this(component, scrollPane, 3);
+	public TextLineNumber(JTextComponent editor, JScrollPane scrollPane) {
+		this(editor, scrollPane, 3);
 	}
 
-	public TextLineNumber(JTextComponent component, JScrollPane scrollPane, int minimumDigits) {
-		this.component = component;
+	public TextLineNumber(JTextComponent editor, JScrollPane scrollPane, int minimumDigits) {
+		this.editor = editor;
 		this.scrollPane = scrollPane;
 		this.minimumDigits = minimumDigits;
 		digitAlignment = RIGHT;
 		setPadding(5);
-		component.getDocument().addDocumentListener(this);
-		component.addCaretListener( this );
+		editor.getDocument().addDocumentListener(this);
+		editor.addCaretListener( this );
 		scrollPane.getVerticalScrollBar().addAdjustmentListener(this);
 	}
 
@@ -57,7 +57,7 @@ public class TextLineNumber extends JPanel
 	}
 
 	private void updateWidth() {
-		Element root = component.getDocument().getDefaultRootElement();
+		Element root = editor.getDocument().getDefaultRootElement();
 		int lines = root.getElementCount();
 		int digits = Math.max(String.valueOf(lines).length(), minimumDigits);
 
@@ -79,13 +79,13 @@ public class TextLineNumber extends JPanel
 	protected void paintComponent(Graphics g) {
 		System.out.println("Painting");
 		super.paintComponent(g);
-		FontMetrics fontMetrics = component.getFontMetrics( component.getFont() );
+		FontMetrics fontMetrics = editor.getFontMetrics( editor.getFont() );
 		int availableWidth = getSize().width - (2 * padding);
 
 		Rectangle viewport = scrollPane.getViewport().getViewRect();
 
-		int start = component.viewToModel(new Point(0,viewport.y));
-		int end = component.viewToModel(new Point(0,viewport.y + viewport.height));
+		int start = editor.viewToModel(new Point(0,viewport.y));
+		int end = editor.viewToModel(new Point(0,viewport.y + viewport.height));
 
 		int n = start;
 
@@ -116,7 +116,7 @@ public class TextLineNumber extends JPanel
 
 				g.drawString(lineNumber, x, y);
 
-				n += component.modelToView(1).y-1;
+				n += editor.modelToView(1).y-1;
 			} catch(Exception e) {break;}
 		}
 
@@ -140,7 +140,7 @@ public class TextLineNumber extends JPanel
 
 				//  Move to the next row
 
-				rowStartOffset = Utilities.getRowEnd(component, rowStartOffset) + 1;
+				rowStartOffset = Utilities.getRowEnd(editor, rowStartOffset) + 1;
 			}
 			catch(Exception e) {break;}
 		}*/
@@ -148,14 +148,14 @@ public class TextLineNumber extends JPanel
 
 	private boolean isCurrentLine(int rowStartOffset)
 	{
-		int caretPosition = component.getCaretPosition();
-		Element root = component.getDocument().getDefaultRootElement();
+		int caretPosition = editor.getCaretPosition();
+		Element root = editor.getDocument().getDefaultRootElement();
 
 		return root.getElementIndex(rowStartOffset) == root.getElementIndex(caretPosition);
 	}
 
 	protected int getLineNumberFor(int offset) {
-		Element root = component.getDocument().getDefaultRootElement();
+		Element root = editor.getDocument().getDefaultRootElement();
 		int index = root.getElementIndex( offset );
 		Element line = root.getElement( index );
 
@@ -175,7 +175,7 @@ public class TextLineNumber extends JPanel
 	{
 		//  Get the bounding rectangle of the row
 
-		Rectangle r = component.modelToView( rowStartOffset );
+		Rectangle r = editor.modelToView( rowStartOffset );
 		int lineHeight = fontMetrics.getHeight();
 		int y = r.y + r.height;
 		int descent = 0;
@@ -192,7 +192,7 @@ public class TextLineNumber extends JPanel
 			if (fonts == null)
 				fonts = new HashMap<String, FontMetrics>();
 
-			Element root = component.getDocument().getDefaultRootElement();
+			Element root = editor.getDocument().getDefaultRootElement();
 			int index = root.getElementIndex( rowStartOffset );
 			Element line = root.getElement( index );
 
@@ -209,7 +209,7 @@ public class TextLineNumber extends JPanel
 				if (fm == null)
 				{
 					Font font = new Font(fontFamily, Font.PLAIN, fontSize);
-					fm = component.getFontMetrics( font );
+					fm = editor.getFontMetrics( font );
 					fonts.put(key, fm);
 				}
 
@@ -242,7 +242,7 @@ public class TextLineNumber extends JPanel
 
 	private void documentChanged()
 	{
-		//  View of the component has not been updated at the time
+		//  View of the editor has not been updated at the time
 		//  the DocumentEvent is fired
 		repaint();/*
 		SwingUtilities.invokeLater(new Runnable()
@@ -252,8 +252,8 @@ public class TextLineNumber extends JPanel
 			{
 				try
 				{
-					int endPos = component.getDocument().getLength();
-					Rectangle rect = component.modelToView(endPos);
+					int endPos = editor.getDocument().getLength();
+					Rectangle rect = editor.modelToView(endPos);
 
 					if (rect != null && rect.y != lastHeight)
 					{
