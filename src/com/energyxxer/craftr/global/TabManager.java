@@ -4,13 +4,13 @@ import com.energyxxer.craftr.logic.Project;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.TabComponent;
+import com.energyxxer.craftr.ui.dialogs.OptionDialog;
 import com.energyxxer.craftr.ui.editor.CraftrEditor;
 import com.energyxxer.craftr.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.craftr.util.ImageManager;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -74,20 +74,11 @@ public class TabManager {
 		if(tab == null) return;
 		if(!force) {
 			if(!tab.getLinkedTabComponent().isSaved()) {
-				int confirmation = JOptionPane.showOptionDialog(
-						null,
-						"'" + tab.getLinkedTabComponent().getName() + "' has changes; do you want to save them?",
-						"Unsaved changes",
-						JOptionPane.DEFAULT_OPTION,
-						JOptionPane.WARNING_MESSAGE,
-						null,
-						new String[] {"Save", "Don't Save", "Cancel"},
-						"Cancel"
-				);
-				if (confirmation == 0) {
+				String confirmation = new OptionDialog("Unsaved changes", "'" + tab.getLinkedTabComponent().getName() + "' has changes; do you want to save them?", new String[] {"Save", "Don't Save", "Cancel"}).result;
+				if("Save".equals(confirmation)) {
 					tab.save();
 				}
-				if(confirmation == 2 || confirmation == -1) return;
+				if(confirmation == null || "Cancel".equals(confirmation)) return;
 			}
 		}
 		for (int i = 0; i < openTabs.size(); i++) {

@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * Created by User on 1/10/2017.
  */
-public class DeletionEdit implements Edit {
+public class DeletionEdit extends Edit {
     private boolean wholeWord = false;
     private boolean forwards = false;
     private ArrayList<String> previousValues = new ArrayList<>();

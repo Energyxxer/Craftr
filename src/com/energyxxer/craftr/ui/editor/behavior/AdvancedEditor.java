@@ -6,14 +6,13 @@ import com.energyxxer.craftr.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.craftr.ui.editor.behavior.caret.Dot;
 import com.energyxxer.craftr.ui.editor.behavior.caret.EditorCaret;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.EditManager;
-import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.CompoundEdit;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.DeletionEdit;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.IndentEdit;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.InsertionEdit;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.LineMoveEdit;
-import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.SimpleEdit;
+import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.NewlineEdit;
+import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.TabInsertionEdit;
 import com.energyxxer.craftr.util.StringLocation;
-import com.energyxxer.craftr.util.StringUtil;
 import com.energyxxer.craftr.util.linepainter.LinePainter;
 
 import javax.swing.AbstractAction;
@@ -27,15 +26,14 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.StyledDocument;
 import java.awt.Color;
-import java.awt.Event;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by User on 1/5/2017.
@@ -48,7 +46,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     private LinePainter linePainter;
 
     private HashMap<Integer, Integer> lineLocations = new HashMap<>();
-    //               (line)  (index)
+    //              (line)   (index)
 
     private static final float BIAS_POINT = 0.4f;
 
@@ -62,8 +60,8 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
         //this.getInputMap().setParent(null);
         this.setInputMap(JComponent.WHEN_FOCUSED,new InputMap());
 
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.CTRL_MASK),"undo");
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.CTRL_MASK),"redo");
+        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK),"undo");
+        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK),"redo");
 
         this.getActionMap().put("undo", new AbstractAction() {
             @Override
@@ -122,68 +120,18 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
 
             CaretProfile profile = caret.getProfile();
             if(profile.getSelectedCharCount() == 0) {
-                List<Integer> locations = profile.asList();
-                int characterDrift = 0;
-
-                CompoundEdit insertTabulation = new CompoundEdit();
-
-                for (int i = 0; i < locations.size() - 1; i += 2) {
-                    int d = locations.get(i) + characterDrift;
-                    StringLocation location = getLocationForOffset(d);
-                    if(location == null) continue;
-                    int spaces = 4 - ((location.column - 1) % 4);
-                    spaces = (spaces > 0) ? spaces : 4;
-                    characterDrift += spaces;
-                    String str = StringUtil.repeat(" ", spaces);
-                    insertTabulation.appendEdit(new SimpleEdit(str, new CaretProfile(d, d)));
-                }
-                editManager.insertEdit(insertTabulation);
-                caret.deselect();
+                editManager.insertEdit(new TabInsertionEdit(this));
             } else {
                 editManager.insertEdit(new IndentEdit(this, e.isShiftDown()));
             }
-            e.consume();
         } else if(keyCode == KeyEvent.VK_BACK_SPACE || keyCode == KeyEvent.VK_DELETE) {
             e.consume();
             editManager.insertEdit(new DeletionEdit(this, e.isControlDown(), keyCode == KeyEvent.VK_DELETE));
-            e.consume();
         } else if(keyCode == KeyEvent.VK_ENTER) {
             e.consume();
-
-            String text = "";
-            try {
-                text = getDocument().getText(0,getDocument().getLength());
-            } catch(BadLocationException ble) {
-                ble.printStackTrace();
-            }
-
-            List<Integer> locations = caret.getProfile().asList();
-            int characterDrift = 0;
-
-            CompoundEdit insertNewline = new CompoundEdit();
-
-            for(int i = 0; i < locations.size()-1; i += 2) {
-                int d = locations.get(i) + characterDrift;
-                String str = "\n";
-
-                StringLocation loc = getLocationForOffset(d);
-
-                String currentLine = text.substring(loc.index-(loc.column-1),loc.index);
-                int spaces = 0;
-                for(int j = 0; j < currentLine.length(); j++) {
-                    if(currentLine.charAt(j) == ' ') spaces++; else break;
-                }
-                int tabs = spaces/4;
-
-                str += StringUtil.repeat("    ", tabs + ((currentLine.trim().endsWith("{")) ? 1 : 0));
-
-                insertNewline.appendEdit(new SimpleEdit(str, new CaretProfile(d, locations.get(i+1)+characterDrift)));
-            }
-
-            editManager.insertEdit(insertNewline);
-            caret.deselect();
-            e.consume();
+            editManager.insertEdit(new NewlineEdit(this, !e.isControlDown()));
         } else if(keyCode == KeyEvent.VK_V && e.isControlDown()) {
+            e.consume();
             try {
                 Object rawContents = this.getToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
                 if(rawContents == null) return;
@@ -192,16 +140,17 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             } catch(Exception x) {
                 x.printStackTrace();
             }
-            e.consume();
         } else if(keyCode == KeyEvent.VK_A && e.isControlDown()) {
+            e.consume();
             caret.setProfile(new CaretProfile(0, getDocument().getLength()));
-            e.consume();
         } else if(keyCode >= KeyEvent.VK_LEFT && keyCode <= KeyEvent.VK_DOWN && e.isAltDown()) {
-            if(keyCode == KeyEvent.VK_UP)
-                editManager.insertEdit(new LineMoveEdit(this, Dot.UP));
-            else if(keyCode == KeyEvent.VK_DOWN)
-                editManager.insertEdit(new LineMoveEdit(this, Dot.DOWN));
             e.consume();
+            if(keyCode == KeyEvent.VK_UP) {
+                editManager.insertEdit(new LineMoveEdit(this, Dot.UP));
+            }
+            else if(keyCode == KeyEvent.VK_DOWN) {
+                editManager.insertEdit(new LineMoveEdit(this, Dot.DOWN));
+            }
         } else if(keyCode == KeyEvent.VK_ESCAPE) {
             int dotPos = caret.getDot();
             caret.setProfile(new CaretProfile(dotPos, dotPos));
@@ -242,10 +191,15 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
         int line = 0;
         int lineStart = 0;
         for(int l = 0; l < lineLocations.size(); l++) {
-            if(lineLocations.get(l) < index) {
+            Integer loc = lineLocations.get(l);
+            if(loc == null) {
+                //Concurrent modification occurred.
+                break;
+            }
+            if(loc < index) {
                 line = l;
-                lineStart = lineLocations.get(l);
-            } else if(lineLocations.get(l) == index) {
+                lineStart = loc;
+            } else if(loc == index) {
                 return new StringLocation(index, l+1, 1);
             } else {
                 break;
@@ -274,38 +228,13 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             x.printStackTrace();
             return null;
         }
-        /*
-        Console.debug.println("getting location for offset " + index);
-        try {
-            int line = (index == 0) ? 1 : 0;
-            try {
-                int offset = index;
-                while(offset > 0) {
-                    int rs = Utilities.getRowStart(this, offset);
-                    if(rs < 0) {
-                        line = 1;
-                        break;
-                    }
-                    offset = rs - 1;
-                    line++;
-                }
-            } catch(BadLocationException ble) {
-                ble.printStackTrace();
-            }
-            int column;
-            int rs = Utilities.getRowStart(this, index);
-            column = (rs >= 0) ? index - rs + 1 : 1;
-            return new StringLocation(index, line, column);
-        } catch(BadLocationException e) {
-            return null;
-        }*/
     }
 
-    public String getCaretInfo() {
+    protected String getCaretInfo() {
         return caret.getCaretInfo();
     }
 
-    public String getSelectionInfo() {
+    protected String getSelectionInfo() {
         return caret.getSelectionInfo();
     }
 

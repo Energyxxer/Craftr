@@ -13,42 +13,51 @@ public class EditManager {
     private int currentEdit = 0;
     private CaretProfile lastProfile = null;
 
-    private AdvancedEditor component;
+    /**
+     * Time interval in milliseconds within text editing operation will be done and undone together in the edit manager.
+     * */
+    private static final int EDIT_GROUP_DELAY = 300;
 
-    public EditManager(AdvancedEditor component) {
-        this.component = component;
+    private AdvancedEditor editor;
+
+    public EditManager(AdvancedEditor editor) {
+        this.editor = editor;
     }
 
     public void undo() {
         if(currentEdit-1 >= 0) {
-            if(component.getCaret().getProfile().equals(lastProfile)) {
-                edits.get(--currentEdit).undo(component);
-                lastProfile = component.getCaret().getProfile();
+            if(editor.getCaret().getProfile().equals(lastProfile)) {
+                edits.get(--currentEdit).undo(editor);
+                lastProfile = editor.getCaret().getProfile();
+                if(currentEdit > 0 && Math.abs(edits.get(currentEdit).time - edits.get(currentEdit-1).time) <= EDIT_GROUP_DELAY) undo();
             } else {
-                component.getCaret().setProfile(lastProfile);
+                editor.getCaret().setProfile(lastProfile);
             }
         }
     }
 
     public void redo() {
         if(currentEdit < edits.size()) {
-            if(component.getCaret().getProfile().equals(lastProfile)) {
-                edits.get(currentEdit++).redo(component);
-                lastProfile = component.getCaret().getProfile();
+            if(editor.getCaret().getProfile().equals(lastProfile)) {
+                edits.get(currentEdit++).redo(editor);
+                lastProfile = editor.getCaret().getProfile();
+                if(currentEdit < edits.size() && Math.abs(edits.get(currentEdit-1).time - edits.get(currentEdit).time) <= EDIT_GROUP_DELAY) {
+                    redo();
+                }
             } else {
-                component.getCaret().setProfile(lastProfile);
+                editor.getCaret().setProfile(lastProfile);
             }
         }
     }
 
     public void insertEdit(Edit edit) {
-        if(edit.redo(component)) {
+        if(edit.redo(editor)) {
             while(edits.size() > currentEdit) {
                 edits.remove(currentEdit);
             }
             edits.add(edit);
             currentEdit++;
-            lastProfile = component.getCaret().getProfile();
+            lastProfile = editor.getCaret().getProfile();
         }
     }
 }

@@ -12,7 +12,7 @@ import javax.swing.text.Document;
 /**
  * Created by User on 1/26/2017.
  */
-public class LineMoveEdit implements Edit {
+public class LineMoveEdit extends Edit {
     private CaretProfile previousProfile = new CaretProfile();
     private String previousText;
     private final int dir;
@@ -96,10 +96,10 @@ public class LineMoveEdit implements Edit {
 
             doc.remove(0,doc.getLength());
             doc.insertString(0, this.previousText, null);
-            caret.setProfile(previousProfile);
         } catch(BadLocationException x) {
             x.printStackTrace();
         }
+        caret.setProfile(previousProfile);
         return true;
     }
 }

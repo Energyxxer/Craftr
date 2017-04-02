@@ -9,13 +9,20 @@ import com.energyxxer.craftr.util.StringUtil;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import java.util.ArrayList;
 
 /**
  * Created by User on 1/27/2017.
  */
-public class IndentEdit implements Edit {
-    private CaretProfile previousProfile = new CaretProfile();
-    private String previousText;
+public class IndentEdit extends Edit {
+    private CaretProfile previousProfile;
+    /**
+     * ArrayList containing information about how to undo the edit.
+     * Must contain even entries.
+     * Every even index (0, 2, 4...) contains the position in the document where spaces were added/removed.
+     * Every odd index (1, 3, 5...) contains the amount of spaces added/removed at the position given by the index before it.
+     * */
+    private ArrayList<Integer> modifications = new ArrayList<>();
     private final boolean reverse;
 
     public IndentEdit(AdvancedEditor editor) {
@@ -36,7 +43,7 @@ public class IndentEdit implements Edit {
 
         try {
             String text = doc.getText(0, doc.getLength()); //Result
-            this.previousText = text;
+            this.modifications.clear();
 
             int characterDrift = 0;
 
@@ -57,6 +64,8 @@ public class IndentEdit implements Edit {
                         int spacesToAdd = 4 - (spaces % 4);
                         spacesToAdd = (spacesToAdd > 0) ? spacesToAdd : 4;
                         doc.insertString(l,StringUtil.repeat(" ", spacesToAdd),null);
+                        modifications.add(l);
+                        modifications.add(spacesToAdd);
                         nextProfile.pushFrom(l,spacesToAdd);
                         actionPerformed = true;
                         if(l == end + characterDrift) break;
@@ -71,6 +80,8 @@ public class IndentEdit implements Edit {
                         }
                         actionPerformed = true;
                         doc.remove(l,spacesToRemove);
+                        modifications.add(l);
+                        modifications.add(spacesToRemove);
                         if(l == end + characterDrift) break;
                         characterDrift -= spacesToRemove;
                     }
@@ -90,14 +101,17 @@ public class IndentEdit implements Edit {
         EditorCaret caret = editor.getCaret();
 
         try {
-            //Too complicated, just put back the text from before.
+            for(int i = modifications.size()-2; i >= 0; i -= 2) {
+                int index = modifications.get(i);
+                int spaces = modifications.get(i+1);
 
-            doc.remove(0,doc.getLength());
-            doc.insertString(0, this.previousText, null);
-            caret.setProfile(previousProfile);
+                if(!reverse) doc.remove(index, spaces);
+                else doc.insertString(index, StringUtil.repeat(" ", spaces), null);
+            }
         } catch(BadLocationException x) {
             x.printStackTrace();
         }
+        caret.setProfile(previousProfile);
         return true;
     }
 }

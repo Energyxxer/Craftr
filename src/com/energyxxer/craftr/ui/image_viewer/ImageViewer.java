@@ -17,6 +17,8 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
@@ -28,7 +30,7 @@ import java.io.IOException;
 /**
  * Created by User on 2/8/2017.
  */
-public class ImageViewer extends JPanel implements DisplayModule, MouseWheelListener, MouseMotionListener {
+public class ImageViewer extends JPanel implements DisplayModule, MouseWheelListener, MouseMotionListener, KeyListener {
 
     private static final double MIN_SCALE = 0.25;
     private static final double MAX_SCALE = 50;
@@ -59,6 +61,7 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
         this.imgSize = new Dimension(img.getWidth(), img.getHeight());
         this.addMouseWheelListener(this);
         this.addMouseMotionListener(this);
+        this.addKeyListener(this);
         ThemeChangeListener.addThemeChangeListener(t -> {
             this.setBackground(t.getColor("ImageViewer.background",Color.WHITE));
             this.crosshairColor = t.getColor("ImageViewer.crosshair",new Color(0,0,0,64));
@@ -143,9 +146,45 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
     }
 
     @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
+            this.crosshairVisible = true;
+            repaint();
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_CONTROL) {
+            this.crosshairVisible = false;
+            repaint();
+        }
+
+    }
+
+    private void onGenericMouseEvent(Point p, boolean controlDown) {
+
+    }
+
+    @Override
     public void displayCaretInfo() {
-        CraftrWindow.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x  * 16) / imgSize.width, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y  * 16) / imgSize.height),4)));
         CraftrWindow.statusBar.setSelectionInfo("Pixel pos: " + posOnImage.x + ", " + posOnImage.y);
+        if(imgSize.width == imgSize.height) {
+            CraftrWindow.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x * 16) / imgSize.width, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y  * 16) / imgSize.height),4)));
+        } else if(imgSize.width % imgSize.height == 0 || imgSize.height % imgSize.width == 0) {
+            if(imgSize.width > imgSize.height) {
+                CraftrWindow.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x % imgSize.height * 16) / imgSize.height, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y * 16) / imgSize.height),4)) + "    Animated");
+            } else {
+                CraftrWindow.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x * 16) / imgSize.width, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y % imgSize.width * 16) / imgSize.width),4)) + "    Animated");
+            }
+        } else {
+            CraftrWindow.statusBar.setCaretInfo("Invalid aspect ratio");
+        }
     }
 
     @Override

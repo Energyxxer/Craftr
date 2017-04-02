@@ -2,10 +2,14 @@ package com.energyxxer.craftr.ui.editor.behavior.editmanager;
 
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
 
+import java.util.Date;
+
 /**
  * Created by User on 1/10/2017.
  */
-public interface Edit {
-    boolean redo(AdvancedEditor editor);
-    boolean undo(AdvancedEditor editor);
+public abstract class Edit {
+    public final long time = new Date().getTime();
+
+    public abstract boolean redo(AdvancedEditor editor);
+    public abstract boolean undo(AdvancedEditor editor);
 }
