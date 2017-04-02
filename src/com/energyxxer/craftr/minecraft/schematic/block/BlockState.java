@@ -1,11 +1,11 @@
 package com.energyxxer.craftr.minecraft.schematic.block;
 
-import java.util.ArrayList;
-
 import com.energyxxer.craftr.util.Pair;
 
+import java.util.ArrayList;
+
 public class BlockState {
-	public ArrayList<Pair<String, String>> states = new ArrayList<Pair<String, String>>();
+	private ArrayList<Pair<String, String>> states = new ArrayList<>();
 	
 	public BlockState(String raw) {
 		String[] params = raw.split(",");

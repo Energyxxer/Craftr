@@ -31,9 +31,9 @@ import java.util.List;
  */
 public class ExplorerItem implements MouseListener {
     private final ExplorerMaster master;
+    private ExplorerItem parent = null;
 
-    public ExplorerItem parent = null;
-    protected String path = null;
+    String path = null;
     private boolean isDirectory = false;
     private String filename = null;
     private int indentation = 0;
@@ -41,6 +41,7 @@ public class ExplorerItem implements MouseListener {
     private ArrayList<ExplorerItem> children = new ArrayList<>();
 
     boolean selected = false;
+    boolean rollover = false;
     private boolean expanded = false;
 
     private Image icon = null;
@@ -76,7 +77,7 @@ public class ExplorerItem implements MouseListener {
 
         this.path = file.getPath();
         this.indentation = parent.indentation + 1;
-        this.x = indentation * ExplorerMaster.INDENT_IN_PIXELS;
+        this.x = indentation * ExplorerMaster.INDENT_PER_LEVEL + ExplorerMaster.INITIAL_INDENT;
 
         this.filename = filenameBuilder.toString();
 
@@ -91,8 +92,7 @@ public class ExplorerItem implements MouseListener {
 
     private static boolean canFlatten(File file) {
         Project project = ProjectManager.getAssociatedProject(file);
-        if(project == null) return true;
-        return project.canFlatten(file);
+        return project == null || project.canFlatten(file);
     }
 
     private void addThemeListener() {
@@ -168,29 +168,63 @@ public class ExplorerItem implements MouseListener {
         int y = master.offsetY;
         master.flatList.add(this);
 
-        int x = indentation * ExplorerMaster.INDENT_IN_PIXELS;
+        int x = (indentation * ExplorerMaster.INDENT_PER_LEVEL) + ExplorerMaster.INITIAL_INDENT;
 
-        g.setColor(ExplorerMaster.colors.get("item.selected.background"));
-        if(this.selected) g.fillRect(0, master.offsetY, master.getWidth(), ExplorerMaster.ROW_HEIGHT);
+        g.setColor((this.rollover || this.selected) ? ExplorerMaster.colors.get("item.rollover.background") : ExplorerMaster.colors.get("item.background"));
+        g.fillRect(0, master.offsetY, master.getWidth(), ExplorerMaster.ROW_HEIGHT);
+        if(this.selected) {
+            g.setColor(ExplorerMaster.colors.get("item.selected.background"));
+
+            switch(ExplorerMaster.SELECTION_STYLE) {
+                case "FULL": {
+                    g.fillRect(0, master.offsetY, master.getWidth(), ExplorerMaster.ROW_HEIGHT);
+                    break;
+                }
+                case "LINE_LEFT": {
+                    g.fillRect(0, master.offsetY, ExplorerMaster.SELECTION_LINE_THICKNESS, ExplorerMaster.ROW_HEIGHT);
+                    break;
+                }
+                case "LINE_RIGHT": {
+                    g.fillRect(master.getWidth() - ExplorerMaster.SELECTION_LINE_THICKNESS, master.offsetY, ExplorerMaster.SELECTION_LINE_THICKNESS, ExplorerMaster.ROW_HEIGHT);
+                    break;
+                }
+                case "LINE_TOP": {
+                    g.fillRect(0, master.offsetY, master.getWidth(), ExplorerMaster.SELECTION_LINE_THICKNESS);
+                    break;
+                }
+                case "LINE_BOTTOM": {
+                    g.fillRect(0, master.offsetY + ExplorerMaster.ROW_HEIGHT - ExplorerMaster.SELECTION_LINE_THICKNESS, master.getWidth(), ExplorerMaster.SELECTION_LINE_THICKNESS);
+                    break;
+                }
+            }
+        }
 
         //Expand/Collapse button
         File[] listFiles = new File(path).listFiles();
         if(isDirectory && listFiles != null && listFiles.length > 0){
+            int margin = ((ExplorerMaster.ROW_HEIGHT - 16) / 2);
             if(expanded) {
-                g.drawImage(ExplorerMaster.assets.get("collapse"),x+2,y+2,16, 16,new Color(0,0,0,0),null);
+                g.drawImage(ExplorerMaster.assets.get("collapse"),x,y + margin,16, 16,new Color(0,0,0,0),null);
             } else {
-                g.drawImage(ExplorerMaster.assets.get("expand"),x+2,y+2,16, 16,new Color(0,0,0,0),null);
+                g.drawImage(ExplorerMaster.assets.get("expand"),x,y + margin,16, 16,new Color(0,0,0,0),null);
             }
         }
-        x += ExplorerMaster.ROW_HEIGHT + 3;
+        x += 23;
 
         //File Icon
         {
-            g.drawImage(this.icon,x+2,y+2,16, 16,new Color(0,0,0,0),null);
+            int margin = ((ExplorerMaster.ROW_HEIGHT - 16) / 2);
+            g.drawImage(this.icon,x,y + margin,16, 16,new Color(0,0,0,0),null);
         }
-        x += ExplorerMaster.ROW_HEIGHT + 5;
+        x += 25;
 
-        g.setColor(ExplorerMaster.colors.get("item.foreground"));
+        if(this.selected) {
+            g.setColor(ExplorerMaster.colors.get("item.selected.foreground"));
+        } else if(this.rollover) {
+            g.setColor(ExplorerMaster.colors.get("item.rollover.foreground"));
+        } else {
+            g.setColor(ExplorerMaster.colors.get("item.foreground"));
+        }
         FontMetrics metrics = g.getFontMetrics(g.getFont());
 
         g.drawString(filename, x, master.offsetY + metrics.getAscent() + ((ExplorerMaster.ROW_HEIGHT - metrics.getHeight())/2));
@@ -223,7 +257,8 @@ public class ExplorerItem implements MouseListener {
     @Override
     public void mousePressed(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
-            if(this.isDirectory && e.getX() >= x && e.getX() <= x + ExplorerMaster.ROW_HEIGHT) {
+            x = indentation * ExplorerMaster.INDENT_PER_LEVEL + ExplorerMaster.INITIAL_INDENT;
+            if(this.isDirectory && e.getX() >= x && e.getX() <= x + 20) {
                 if(expanded) collapse();
                 else expand(new ArrayList<>());
             } else {

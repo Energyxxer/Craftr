@@ -137,7 +137,6 @@ public class TokenListMatch extends TokenPatternMatch {
 							length += itemMatch.length;
 							list.add(itemMatch.pattern);
 							expectSeparator = true;
-							continue;
 						}
 					}
 				} else {
@@ -166,7 +165,6 @@ public class TokenListMatch extends TokenPatternMatch {
 						case COMPLETE_MATCH: {
 							i += itemMatch.length;
 							list.add(itemMatch.pattern);
-							continue;
 						}
 					}
 				}

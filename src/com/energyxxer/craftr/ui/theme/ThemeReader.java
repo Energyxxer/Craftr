@@ -93,6 +93,10 @@ public class ThemeReader {
             return obj;
         } else if(Arrays.asList("true","false").contains(value)) {
             return Boolean.valueOf(value);
+        } else if(value.matches("^[-+]?\\d+$")) {
+            return Integer.parseInt(value);
+        } else if(value.matches("^[-+]?\\d+(\\.\\d++)?$")) {
+            return Float.parseFloat(value);
         } else {
             return value;
         }

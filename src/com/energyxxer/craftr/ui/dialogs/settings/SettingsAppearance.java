@@ -77,7 +77,7 @@ class SettingsAppearance extends JPanel {
             }
 
             {
-                StyledLabel label = new StyledLabel("Color Scheme:","Settings.content");
+                StyledLabel label = new StyledLabel("GUI Theme:","Settings.content");
                 label.setStyle(Font.BOLD);
                 content.add(label);
             }

@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.global.Commons;
+import com.energyxxer.craftr.global.Console;
 import com.energyxxer.craftr.global.ProjectManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 
@@ -13,6 +14,7 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +23,7 @@ import java.util.List;
 /**
  * Created by User on 2/7/2017.
  */
-public class ExplorerMaster extends JPanel implements MouseListener {
+public class ExplorerMaster extends JPanel implements MouseListener, MouseMotionListener {
 
     private final File root;
 
@@ -29,6 +31,8 @@ public class ExplorerMaster extends JPanel implements MouseListener {
 
     private ArrayList<ExplorerItem> children = new ArrayList<>();
     private ArrayList<ExplorerItem> selectedItems = new ArrayList<>();
+
+    private ExplorerItem rolloverItem = null;
 
     ArrayList<ExplorerItem> flatList = new ArrayList<>();
     int width = 0;
@@ -39,12 +43,16 @@ public class ExplorerMaster extends JPanel implements MouseListener {
     static HashMap<String, Color> colors = new HashMap<>();
     static HashMap<String, Image> assets = new HashMap<>();
 
-    static final int ROW_HEIGHT = 20;
-    static final int INDENT_IN_PIXELS = 20;
+    static int ROW_HEIGHT = 20;
+    static int INDENT_PER_LEVEL = 20;
+    static int INITIAL_INDENT = 0;
+    static String SELECTION_STYLE = "FULL";
+    static int SELECTION_LINE_THICKNESS = 2;
 
     public ExplorerMaster(File root) {
         this.root = root;
         this.addMouseListener(this);
+        this.addMouseMotionListener(this);
 
         explorerFlags.put(ExplorerFlag.FLATTEN_EMPTY_PACKAGES, true);
         explorerFlags.put(ExplorerFlag.SHOW_PROJECT_FILES, true);
@@ -144,6 +152,30 @@ public class ExplorerMaster extends JPanel implements MouseListener {
         if(index >= 0 && index < flatList.size()) {
             flatList.get(index).mouseExited(e);
         }
+
+        if(rolloverItem != null) {
+            rolloverItem.rollover = false;
+            repaint();
+        }
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        int index = e.getY()/ ROW_HEIGHT;
+        if(index >= 0 && index < flatList.size()) {
+            if(rolloverItem != null) rolloverItem.rollover = false;
+            rolloverItem = flatList.get(index);
+            rolloverItem.rollover = true;
+        } else {
+            if(rolloverItem != null) rolloverItem.rollover = false;
+            rolloverItem = null;
+        }
+        repaint();
     }
 
     private void clearSelected() {
@@ -201,8 +233,21 @@ public class ExplorerMaster extends JPanel implements MouseListener {
     static {
         ThemeChangeListener.addThemeChangeListener(t -> {
             colors.put("background",t.getColor("Explorer.background",Color.WHITE));
+            colors.put("item.background",t.getColor("Explorer.item.background",new Color(0,0,0,0)));
             colors.put("item.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK)));
-            colors.put("item.selected.background",t.getColor("Explorer.item.selected.background",Color.BLUE));
+            colors.put("item.selected.background",t.getColor("Explorer.item.selected.background",t.getColor("Explorer.item.background",Color.BLUE)));
+            colors.put("item.selected.foreground",t.getColor("Explorer.item.selected.foreground",t.getColor("Explorer.item.rollover.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK)))));
+            colors.put("item.rollover.background",t.getColor("Explorer.item.rollover.background",t.getColor("Explorer.item.background",new Color(0,0,0,0))));
+            colors.put("item.rollover.foreground",t.getColor("Explorer.item.rollover.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK))));
+
+            Console.debug.println(t.getInteger("Explorer.item.height",20));
+
+            ROW_HEIGHT = Math.max(t.getInteger("Explorer.item.height",20), 1);
+            INDENT_PER_LEVEL = Math.max(t.getInteger("Explorer.item.indent",20), 0);
+            INITIAL_INDENT = Math.max(t.getInteger("Explorer.item.initialIndent",0), 0);
+
+            SELECTION_STYLE = t.getString("Explorer.item.selectionStyle","FULL");
+            SELECTION_LINE_THICKNESS = Math.max(t.getInteger("Explorer.item.selectionLineThickness",2), 0);
 
             assets.put("expand",Commons.getIcon("expand").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
             assets.put("collapse",Commons.getIcon("collapse").getScaledInstance(16, 16, Image.SCALE_SMOOTH));

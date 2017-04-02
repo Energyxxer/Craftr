@@ -12,7 +12,7 @@ import com.energyxxer.craftr.main.window.CraftrWindow;
 
 public class Compiler {
 
-	public final Project project;
+	private final Project project;
 	
 	private Compiler(Project project) {
 		

@@ -1,7 +1,7 @@
 GUI Themes:
 -Craftr Light
 -Craftr Dark
--Sans Dark
+-Electron Dark
 
 Syntax Themes:
 -Craftr Syntax Light

@@ -53,10 +53,6 @@ public class PropertiesReferences {
         s = "action_keyword.italic";
         s = "action_keyword.bold";
 
-        s = "constructor_keyword.foreground";
-        s = "constructor_keyword.italic";
-        s = "constructor_keyword.bold";
-
         s = "comment.foreground";
         s = "comment.italic";
         s = "comment.bold";
@@ -108,10 +104,6 @@ public class PropertiesReferences {
         s = "end_of_statement.foreground";
         s = "end_of_statement.italic";
         s = "end_of_statement.bold";
-
-        s = "end_of_file.foreground";
-        s = "end_of_file.italic";
-        s = "end_of_file.bold";
 
         
 

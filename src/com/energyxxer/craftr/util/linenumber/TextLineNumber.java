@@ -60,8 +60,7 @@ public class TextLineNumber extends JPanel
 
 	private int getLineCount() {
 		Element root = component.getDocument().getDefaultRootElement();
-		int lines = root.getElementCount();
-		return lines;
+		return root.getElementCount();
 	}
 
 	private void updateWidth() {

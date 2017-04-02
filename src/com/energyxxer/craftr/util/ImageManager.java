@@ -14,7 +14,7 @@ import java.util.HashMap;
  * Loads images and remembers them.
  */
 public class ImageManager {
-	public static HashMap<String, BufferedImage> loadedImages = new HashMap<>();
+	private static HashMap<String, BufferedImage> loadedImages = new HashMap<>();
 
 	static {
 		BufferedImage nullTexture = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);

@@ -56,8 +56,7 @@ public class XFileField extends JPanel {
 						if(file.exists() && file.isDirectory()) XFileField.this.value = file;
 						break;
 					} case SAVE: {
-						File file = new File(field.getText());
-						XFileField.this.value = file;
+						XFileField.this.value = new File(field.getText());
 						break;
 					}
 				}

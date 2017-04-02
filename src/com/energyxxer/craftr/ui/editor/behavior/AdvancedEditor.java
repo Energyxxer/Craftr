@@ -45,12 +45,12 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     private EditorCaret caret;
 
     private EditManager editManager = new EditManager(this);
-    protected LinePainter linePainter;
+    private LinePainter linePainter;
 
     private HashMap<Integer, Integer> lineLocations = new HashMap<>();
     //               (line)  (index)
 
-    public static final float BIAS_POINT = 0.4f;
+    private static final float BIAS_POINT = 0.4f;
 
     {
         this.addKeyListener(this);
