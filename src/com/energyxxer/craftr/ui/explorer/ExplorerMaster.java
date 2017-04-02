@@ -1,7 +1,6 @@
 package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.craftr.global.Console;
 import com.energyxxer.craftr.global.ProjectManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 
@@ -239,8 +238,6 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
             colors.put("item.selected.foreground",t.getColor("Explorer.item.selected.foreground",t.getColor("Explorer.item.rollover.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK)))));
             colors.put("item.rollover.background",t.getColor("Explorer.item.rollover.background",t.getColor("Explorer.item.background",new Color(0,0,0,0))));
             colors.put("item.rollover.foreground",t.getColor("Explorer.item.rollover.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK))));
-
-            Console.debug.println(t.getInteger("Explorer.item.height",20));
 
             ROW_HEIGHT = Math.max(t.getInteger("Explorer.item.height",20), 1);
             INDENT_PER_LEVEL = Math.max(t.getInteger("Explorer.item.indent",20), 0);
