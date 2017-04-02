@@ -52,7 +52,7 @@ public class Settings {
 			StyledList<String> navigator = new StyledList<>(sections, "Settings");
 			sidebar.setBackground(navigator.getBackground());
 			ThemeChangeListener.addThemeChangeListener(t ->
-					sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, t.getColor("Settings.content.border",new Color(200, 200, 200))))
+					sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger("Settings.content.border.thickness",1),0), t.getColor("Settings.content.border.color",new Color(200, 200, 200))))
 			);
 			navigator.setPreferredSize(new Dimension(200,500));
 

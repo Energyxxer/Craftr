@@ -29,7 +29,7 @@ public class Sidebar extends JPanel {
         this.setPreferredSize(new Dimension(350, 500));
         ThemeChangeListener.addThemeChangeListener(t -> {
             this.setBackground(t.getColor("Explorer.background",Color.WHITE));
-            this.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, t.getColor("Explorer.border",new Color(200, 200, 200))));
+            this.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger("Explorer.border.thickness",1), 0), t.getColor("Explorer.border.color",new Color(200, 200, 200))));
         });
 
         JPanel header = new JPanel(new BorderLayout());

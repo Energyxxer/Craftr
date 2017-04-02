@@ -48,7 +48,7 @@ public class ProjectProperties {
 
 			StyledList<String> navigator = new StyledList<>(sections, "ProjectProperties");
 			sidebar.setBackground(navigator.getBackground());
-			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, t.getColor("ProjectProperties.content.border",new Color(200, 200, 200))));
+			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger("ProjectProperties.content.border.thickness",1),0), t.getColor("ProjectProperties.content.border.color",new Color(200, 200, 200))));
 			navigator.setPreferredSize(new Dimension(200,500));
 
 			sidebar.add(navigator, BorderLayout.CENTER);
@@ -68,7 +68,7 @@ public class ProjectProperties {
 			{
 				JPanel header = new JPanel(new BorderLayout());
 				header.setBackground(t.getColor("ProjectProperties.content.header.background", new Color(235, 235, 235)));
-				header.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.getColor("ProjectProperties.content.header.border", new Color(200, 200, 200))));
+				header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger("ProjectProperties.content.header.border.thickness",1),0), 0, t.getColor("ProjectProperties.content.header.border.color", new Color(200, 200, 200))));
 				header.setPreferredSize(new Dimension(0,40));
 				contentCompiler.add(header, BorderLayout.NORTH);
 				

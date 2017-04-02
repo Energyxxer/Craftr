@@ -257,9 +257,9 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 								0,
 								0,
 								0,
-								1,
+								Math.max(t.getInteger("Editor.lineNumber.border.thickness",1),0),
 								t.getColor(
-										"Editor.lineNumber.border",
+										"Editor.lineNumber.border.color",
 										t.getColor(
 												"General.line",
 												new Color(200, 200, 200)

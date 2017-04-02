@@ -29,7 +29,8 @@ public class StyledMenu extends XMenu {
             this.setRolloverBackground(t.getColor("General.menu.selected.background",new Color(190, 190, 190)));
             this.getPopupMenu().setBackground(this.getBackground());
             //this.getPopupMenu().setForeground(this.getForeground());
-            this.getPopupMenu().setBorder(BorderFactory.createMatteBorder(1,1,1,1,t.getColor("General.menu.border",new Color(200, 200, 200))));
+            int borderThickness = Math.max(t.getInteger("General.menu.border.thickness",1),0);
+            this.getPopupMenu().setBorder(BorderFactory.createMatteBorder(borderThickness,borderThickness,borderThickness,borderThickness,t.getColor("General.menu.border.color",new Color(200, 200, 200))));
             this.setFont(new Font(t.getString("General.menu.font",t.getString("General.font","Tahoma")), 0, 12));
             if(icon != null) this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
         });

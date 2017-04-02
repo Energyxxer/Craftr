@@ -118,8 +118,8 @@ public class XFileField extends JPanel {
 		return new File(field.getText());
 	}
 	
-	public void setBorderColor(Color bc) {
-		field.setBorderColor(bc);
+	public void setBorderColor(Color bc, int thickness) {
+		field.setBorder(bc, thickness);
 	}
 
 	public void setDialogTitle(String title) {

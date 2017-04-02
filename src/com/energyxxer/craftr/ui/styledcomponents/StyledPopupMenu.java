@@ -27,10 +27,12 @@ public class StyledPopupMenu extends JPopupMenu {
         ThemeChangeListener.addThemeChangeListener(t -> {
             if (this.namespace != null) {
                 setBackground(t.getColor(this.namespace + ".menu.background",t.getColor("General.menu.background",new Color(215, 215, 215))));
-                setBorder(BorderFactory.createMatteBorder(1,1,1,1,t.getColor(this.namespace + ".menu.background",t.getColor("General.menu.border",new Color(200, 200, 200)))));
+                int borderThickness = Math.max(t.getInteger(this.namespace + ".menu.border.thickness", t.getInteger("General.menu.border.thickness",1)),0);
+                setBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness, t.getColor(this.namespace + ".menu.border.color",t.getColor("General.menu.border.color",new Color(200, 200, 200)))));
             } else {
                 setBackground(t.getColor("General.menu.background",new Color(215, 215, 215)));
-                setBorder(BorderFactory.createMatteBorder(1,1,1,1,t.getColor("General.menu.border",new Color(200, 200, 200))));
+                int borderThickness = Math.max(t.getInteger("General.menu.border.thickness",1),0);
+                setBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness ,t.getColor("General.menu.border.color",new Color(200, 200, 200))));
             }
         });
     }

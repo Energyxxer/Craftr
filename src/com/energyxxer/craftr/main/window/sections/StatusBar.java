@@ -35,7 +35,7 @@ public class StatusBar extends JPanel {
                 this.setBackground(t.getColor("Status.background",new Color(235, 235, 235)));
                 this.setBorder(
                     new CompoundBorder(
-                        new MatteBorder(1, 0, 0, 0, t.getColor("Status.border",new Color(200, 200, 200))),
+                        new MatteBorder(Math.max(t.getInteger("Status.border.thickness"),0), 0, 0, 0, t.getColor("Status.border.color",new Color(200, 200, 200))),
                         new EmptyBorder(0,5,0,5)
                 ));}
             )

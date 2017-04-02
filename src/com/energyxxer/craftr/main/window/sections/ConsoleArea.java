@@ -35,7 +35,7 @@ public class ConsoleArea extends JPanel {
     {
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(0, CONSOLE_HEIGHT));
-        ThemeChangeListener.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, t.getColor("Console.header.border",new Color(200, 200, 200)))));
+        ThemeChangeListener.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger("Console.header.border.thickness",1),0), 0, 0, 0, t.getColor("Console.header.border.color",new Color(200, 200, 200)))));
 
         JPanel consoleHeader = new JPanel(new BorderLayout());
         ThemeChangeListener.addThemeChangeListener(t -> consoleHeader.setBackground(t.getColor("Console.header.background",new Color(235, 235, 235))));
@@ -152,7 +152,7 @@ public class ConsoleArea extends JPanel {
 
         ThemeChangeListener.addThemeChangeListener(t -> {
             consoleScrollPane.setBackground(console.getBackground());
-            consoleScrollPane.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, t.getColor("Console.header.border",new Color(200, 200, 200))));
+            consoleScrollPane.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger("Console.header.border.thickness"),0), 0, 0, 0, t.getColor("Console.header.border.color",new Color(200, 200, 200))));
         });
 
         this.add(consoleScrollPane, BorderLayout.CENTER);

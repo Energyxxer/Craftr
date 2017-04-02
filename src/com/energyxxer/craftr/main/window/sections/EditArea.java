@@ -31,7 +31,7 @@ public class EditArea extends JPanel {
 
         JPanel tabActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
         tabActionPanel.setOpaque(false);
-        ThemeChangeListener.addThemeChangeListener(t -> tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.getColor("TabList.border",new Color(200, 200, 200)))));
+        ThemeChangeListener.addThemeChangeListener(t -> tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger("TabList.border.thickness",1),0), 0, t.getColor("TabList.border.color",new Color(200, 200, 200)))));
 
         {
             ToolbarButton more = new ToolbarButton("more");
@@ -50,7 +50,7 @@ public class EditArea extends JPanel {
         tabList.setPreferredSize(new Dimension(1, 30));
         ThemeChangeListener.addThemeChangeListener(t -> {
             tabList.setBackground(t.getColor("TabList.background",new Color(200, 202, 205)));
-            tabList.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, t.getColor("TabList.border",new Color(200, 200, 200))));
+            tabList.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger("TabList.border.thickness",1),0), 0, t.getColor("TabList.border.color",new Color(200, 200, 200))));
         });
         tabListHolder.add(tabList, BorderLayout.CENTER);
 

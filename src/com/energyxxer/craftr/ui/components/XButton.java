@@ -6,13 +6,9 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public class XButton extends JButton {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6056286045892985732L;
 	
 	protected Color borderColor = new Color(150,150,150);
+	protected int borderThickness = 1;
 	protected Color rolloverColor = new Color(240,240,240);
 	protected Color pressedColor = new Color(175,175,175);
 	
@@ -47,16 +43,21 @@ public class XButton extends JButton {
 		} else {
 			g.setColor(this.getBackground());
 		}
-		g.fillRect(1, 1, this.getWidth()-2, this.getHeight()-2);
+		g.fillRect(borderThickness, borderThickness, this.getWidth()-2* borderThickness, this.getHeight()-2* borderThickness);
 		super.paintComponent(g);
 	}
 	
-	public void setBorderColor(Color c) {
+	public void setBorder(Color c, int thickness) {
 		if(c != null) borderColor = c;
+		this.borderThickness = thickness;
 	}
 	
 	public Color getBorderColor() {
 		return borderColor;
+	}
+
+	public int getBorderThickness() {
+		return borderThickness;
 	}
 
 	public Color getRolloverColor() {

@@ -61,12 +61,12 @@ public class StyledFileField extends XFileField {
                 field.setForeground       (t.getColor(this.namespace + ".textfield.foreground",           t.getColor("General.textfield.foreground",          t.getColor("General.foreground", Color.BLACK))));
                 field.setSelectionColor   (t.getColor(this.namespace + ".textfield.selection.background", t.getColor("General.textfield.selection.background",new Color(50, 100, 175))));
                 field.setSelectedTextColor(t.getColor(this.namespace + ".textfield.selection.foreground", t.getColor("General.textfield.selection.foreground",field.getForeground())));
-                field.setBorderColor      (t.getColor(this.namespace + ".textfield.border",               t.getColor("General.textfield.border",              new Color(200, 200, 200))));
+                field.setBorder(t.getColor(this.namespace + ".textfield.border.color",               t.getColor("General.textfield.border.color",              new Color(200, 200, 200))),Math.max(t.getInteger(this.namespace + ".textfield.border.borderThickness", t.getInteger("General.textfield.border.borderThickness", 1)),0));
                 field.setFont(new Font   (t.getString(this.namespace + ".textfield.font",                t.getString("General.textfield.font",                t.getString("General.font","Tahoma"))),0,12));
 
                 button.setBackground       (t.getColor(this.namespace + ".button.background",          t.getColor("General.button.background",         new Color(215, 215, 215))));
                 button.setForeground       (t.getColor(this.namespace + ".button.foreground",          t.getColor("General.button.foreground",         t.getColor("General.foreground", Color.BLACK))));
-                button.setBorderColor      (t.getColor(this.namespace + ".button.border",              t.getColor("General.button.border",             new Color(200, 200, 200))));
+                button.setBorder(t.getColor(this.namespace + ".button.border.color",              t.getColor("General.button.border.color",             new Color(200, 200, 200))), Math.max(t.getInteger(this.namespace + ".button.border.thickness", t.getInteger("General.button.border.thickness",1)),0));
                 button.setRolloverColor    (t.getColor(this.namespace + ".button.hover.background",    t.getColor("General.button.hover.background",   new Color(200, 202, 205))));
                 button.setPressedColor     (t.getColor(this.namespace + ".button.pressed.background",  t.getColor("General.button.pressed.background", Color.WHITE)));
                 button.setFont(new Font   (t.getString(this.namespace + ".button.font",               t.getString("General.button.font",               t.getString("General.font","Tahoma"))),0,12));
@@ -75,12 +75,12 @@ public class StyledFileField extends XFileField {
                 field.setForeground       (t.getColor("General.textfield.foreground",          t.getColor("General.foreground", Color.BLACK)));
                 field.setSelectionColor   (t.getColor("General.textfield.selection.background",new Color(50, 100, 175)));
                 field.setSelectedTextColor(t.getColor("General.textfield.selection.foreground",field.getForeground()));
-                field.setBorderColor      (t.getColor("General.textfield.border",              new Color(200, 200, 200)));
+                field.setBorder(t.getColor("General.textfield.border.color",              new Color(200, 200, 200)),Math.max(t.getInteger("General.textfield.border.borderThickness", 1),0));
                 field.setFont(new Font   (t.getString("General.textfield.font",                t.getString("General.font","Tahoma")),0,12));
 
                 button.setBackground       (t.getColor("General.button.background",         new Color(215, 215, 215)));
                 button.setForeground       (t.getColor("General.button.foreground",         t.getColor("General.foreground", Color.BLACK)));
-                button.setBorderColor      (t.getColor("General.button.border",             new Color(200, 200, 200)));
+                button.setBorder(t.getColor("General.button.border.color",             new Color(200, 200, 200)), Math.max(t.getInteger("General.button.border.thickness",1),0));
                 button.setRolloverColor    (t.getColor("General.button.hover.background",   new Color(200, 202, 205)));
                 button.setPressedColor     (t.getColor("General.button.pressed.background", Color.WHITE));
                 button.setFont(new Font   (t.getString("General.button.font",               t.getString("General.font","Tahoma")),0,12));

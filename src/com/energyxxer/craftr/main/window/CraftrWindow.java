@@ -97,7 +97,8 @@ public class CraftrWindow {
 		ThemeChangeListener.addThemeChangeListener(t -> {
 			UIManager.put("ToolTip.background",t.getColor("Tooltip.background",Color.WHITE));
 			UIManager.put("ToolTip.foreground",t.getColor("Tooltip.foreground",Color.BLACK));
-			UIManager.put("ToolTip.border",BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1,1,1,1,t.getColor("Tooltip.border",Color.BLACK)),BorderFactory.createEmptyBorder(3,5,3,5)));
+			int borderThickness = Math.max(t.getInteger("Tooltip.border.thickness",1),0);
+			UIManager.put("ToolTip.border",BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness, t.getColor("Tooltip.border.color",Color.BLACK)),BorderFactory.createEmptyBorder(3,5,3,5)));
 		});
 
 	}

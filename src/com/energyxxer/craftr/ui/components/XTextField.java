@@ -5,10 +5,7 @@ import java.awt.*;
 
 public class XTextField extends JTextField {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5119684159251378123L;
+	private int borderThickness = 1;
 	
 	{
 		setBackground(new Color(225,225,225));
@@ -31,13 +28,17 @@ public class XTextField extends JTextField {
 		super(text, columns);
 	}
 	
-	public void setBorderColor(Color bc) {
-		setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(bc), BorderFactory.createEmptyBorder(0, 5, 0, 5)));
+	public void setBorder(Color bc, int thickness) {
+		this.borderThickness = thickness;
+		setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(bc, thickness), BorderFactory.createEmptyBorder(0, 5, 0, 5)));
 	}
 	
 	public void setForeground(Color fg) {
 		this.setCaretColor(fg);
 		super.setForeground(fg);
 	}
-	
+
+	public int getBorderThickness() {
+		return borderThickness;
+	}
 }

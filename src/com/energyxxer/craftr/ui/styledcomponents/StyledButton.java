@@ -37,14 +37,14 @@ public class StyledButton extends XButton {
             if(this.namespace != null) {
                 setBackground       (t.getColor(this.namespace + ".button.background",          t.getColor("General.button.background",         new Color(215, 215, 215))));
                 setForeground       (t.getColor(this.namespace + ".button.foreground",          t.getColor("General.button.foreground",         t.getColor("General.foreground", Color.BLACK))));
-                setBorderColor      (t.getColor(this.namespace + ".button.border",              t.getColor("General.button.border",             new Color(200, 200, 200))));
+                setBorder(t.getColor(this.namespace + ".button.border.color",              t.getColor("General.button.border.color",             new Color(200, 200, 200))), Math.max(t.getInteger(this.namespace + ".button.border.thickness", t.getInteger("General.button.border.thickness", 1)),0));
                 setRolloverColor    (t.getColor(this.namespace + ".button.hover.background",    t.getColor("General.button.hover.background",   new Color(200, 202, 205))));
                 setPressedColor     (t.getColor(this.namespace + ".button.pressed.background",  t.getColor("General.button.pressed.background", Color.WHITE)));
                 setFont(new Font   (t.getString(this.namespace + ".button.font",               t.getString("General.button.font",               t.getString("General.font","Tahoma"))),0,12));
             } else {
                 setBackground       (t.getColor("General.button.background",         new Color(215, 215, 215)));
                 setForeground       (t.getColor("General.button.foreground",         t.getColor("General.foreground", Color.BLACK)));
-                setBorderColor      (t.getColor("General.button.border",             new Color(200, 200, 200)));
+                setBorder(t.getColor("General.button.border.color",             new Color(200, 200, 200)),Math.max(t.getInteger("General.button.border.thickness", 1),0));
                 setRolloverColor    (t.getColor("General.button.hover.background",   new Color(200, 202, 205)));
                 setPressedColor     (t.getColor("General.button.pressed.background", Color.WHITE));
                 setFont(new Font   (t.getString("General.button.font",               t.getString("General.font","Tahoma")),0,12));
