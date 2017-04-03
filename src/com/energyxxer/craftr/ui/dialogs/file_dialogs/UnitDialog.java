@@ -69,7 +69,7 @@ public class UnitDialog {
         pane = new JPanel(new BorderLayout());
         pane.setPreferredSize(new Dimension(WIDTH,HEIGHT));
         ThemeChangeListener.addThemeChangeListener(t ->
-            pane.setBackground(t.getColor("NewUnitDialog.background", new Color(235, 235, 235)))
+            pane.setBackground(t.getColor(new Color(235, 235, 235), "NewUnitDialog.background"))
         );
 
         //<editor-fold desc="Inner Margin">

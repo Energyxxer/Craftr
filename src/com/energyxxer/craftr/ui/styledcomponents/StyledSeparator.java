@@ -22,9 +22,9 @@ public class StyledSeparator extends JSeparator {
         this.setBackground(new Color(0,0,0,0));
         ThemeChangeListener.addThemeChangeListener(t -> {
             if(this.namespace != null) {
-                this.setForeground(t.getColor(this.namespace + ".menu.separator", t.getColor("General.menu.separator",new Color(150, 150, 150))));
+                this.setForeground(t.getColor(new Color(150, 150, 150), this.namespace + ".menu.separator","General.menu.separator"));
             } else {
-                this.setForeground(t.getColor("General.menu.separator",new Color(150, 150, 150)));
+                this.setForeground(t.getColor(new Color(150, 150, 150), "General.menu.separator"));
             }
         });
     }

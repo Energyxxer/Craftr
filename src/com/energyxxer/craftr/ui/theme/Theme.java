@@ -41,14 +41,17 @@ public class Theme {
 		return (value != null) ? value : defaultValue;
 	}
 
-	public Color getColor(String key, Color defaultValue) {
-		Object value = values.get(key);
-		if(value == null) return defaultValue;
-		if(value instanceof Color) return (Color) value;
-		else return defaultValue;
+	//Colors
+
+	public Color getColor(Color defaultValue, String... keys) {
+		for(String key : keys) {
+			Object value = values.get(key);
+			if(value != null && value instanceof Color) return (Color) value;
+		}
+		return defaultValue;
 	}
 
-	public Color getColor(String key) { return getColor(key, null); }
+	public Color getColor(String... keys) { return getColor(null, keys); }
 
 	//Booleans
 

@@ -239,18 +239,18 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 
 	@Override
 	public void themeChanged(Theme t) {
-		editorComponent.setBackground(t.getColor("Editor.background",Color.WHITE));
+		editorComponent.setBackground(t.getColor(Color.WHITE, "Editor.background"));
 		setBackground(editorComponent.getBackground());
-		editorComponent.setForeground(t.getColor("Editor.foreground",t.getColor("General.foreground",Color.BLACK)));
+		editorComponent.setForeground(t.getColor(Color.BLACK, "Editor.foreground","General.foreground"));
 		editorComponent.setCaretColor(editorComponent.getForeground());
-		editorComponent.setSelectionColor(t.getColor("Editor.selection.background",new Color(50, 100, 175)));
-		editorComponent.setSelectedTextColor(t.getColor("Editor.selection.foreground", editorComponent.getForeground()));
-		editorComponent.setCurrentLineColor(t.getColor("Editor.currentLine.background",new Color(235, 235, 235)));
+		editorComponent.setSelectionColor(t.getColor(new Color(50, 100, 175), "Editor.selection.background"));
+		editorComponent.setSelectedTextColor(t.getColor(editorComponent.getForeground(), "Editor.selection.foreground"));
+		editorComponent.setCurrentLineColor(t.getColor(new Color(235, 235, 235), "Editor.currentLine.background"));
 		editorComponent.setFont(new Font(t.getString("Editor.font","default:monospaced"), 0, 12));
-		tln.setBackground(t.getColor("Editor.lineNumber.background",new Color(235, 235, 235)));
-		tln.setForeground(t.getColor("Editor.lineNumber.foreground",new Color(150, 150, 150)));
+		tln.setBackground(t.getColor(new Color(235, 235, 235), "Editor.lineNumber.background"));
+		tln.setForeground(t.getColor(new Color(150, 150, 150), "Editor.lineNumber.foreground"));
 		//tln current line background
-		tln.setCurrentLineForeground(t.getColor("CraftrEditor.lineNumber.currentLine.foreground",tln.getForeground()));
+		tln.setCurrentLineForeground(t.getColor(tln.getForeground(), "CraftrEditor.lineNumber.currentLine.foreground"));
 		tln.setBorder(
 				BorderFactory.createCompoundBorder(
 						BorderFactory.createMatteBorder(
@@ -258,13 +258,7 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 								0,
 								0,
 								Math.max(t.getInteger(1,"Editor.lineNumber.border.thickness"),0),
-								t.getColor(
-										"Editor.lineNumber.border.color",
-										t.getColor(
-												"General.line",
-												new Color(200, 200, 200)
-										)
-								)
+								t.getColor(new Color(200, 200, 200), "Editor.lineNumber.border.color","General.line")
 						),
 						BorderFactory.createEmptyBorder(
 								0,

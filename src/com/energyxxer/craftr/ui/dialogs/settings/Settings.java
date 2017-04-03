@@ -35,7 +35,7 @@ public class Settings {
 		JPanel pane = new JPanel(new BorderLayout());
 		pane.setPreferredSize(new Dimension(900,600));
 		ThemeChangeListener.addThemeChangeListener(t ->
-				pane.setBackground(t.getColor("Settings.background", new Color(235, 235, 235)))
+				pane.setBackground(t.getColor(new Color(235, 235, 235), "Settings.background"))
 		);
 
 		JPanel contentPane = new JPanel(new BorderLayout());
@@ -52,7 +52,7 @@ public class Settings {
 			StyledList<String> navigator = new StyledList<>(sections, "Settings");
 			sidebar.setBackground(navigator.getBackground());
 			ThemeChangeListener.addThemeChangeListener(t ->
-					sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger(1,"Settings.content.border.thickness"),0), t.getColor("Settings.content.border.color",new Color(200, 200, 200))))
+					sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger(1,"Settings.content.border.thickness"),0), t.getColor(new Color(200, 200, 200), "Settings.content.border.color")))
 			);
 			navigator.setPreferredSize(new Dimension(200,500));
 
@@ -69,7 +69,7 @@ public class Settings {
 		}
 
 		ThemeChangeListener.addThemeChangeListener(t ->
-				contentPane.setBackground(t.getColor("Settings.content.background", new Color(235, 235, 235)))
+				contentPane.setBackground(t.getColor(new Color(235, 235, 235), "Settings.content.background"))
 		);
 		pane.add(contentPane, BorderLayout.CENTER);
 

@@ -24,13 +24,13 @@ public class StyledMenu extends XMenu {
         super(text);
 
         ThemeChangeListener.addThemeChangeListener(t -> {
-            this.setBackground(t.getColor("General.menu.background",new Color(215, 215, 215)));
-            this.setForeground(t.getColor("General.menu.foreground",t.getColor("General.foreground", Color.BLACK)));
-            this.setRolloverBackground(t.getColor("General.menu.selected.background",new Color(190, 190, 190)));
+            this.setBackground(t.getColor(new Color(215, 215, 215), "General.menu.background"));
+            this.setForeground(t.getColor(Color.BLACK, "General.menu.foreground","General.foreground"));
+            this.setRolloverBackground(t.getColor(new Color(190, 190, 190), "General.menu.selected.background"));
             this.getPopupMenu().setBackground(this.getBackground());
             //this.getPopupMenu().setForeground(this.getForeground());
             int borderThickness = Math.max(t.getInteger(1,"General.menu.border.thickness"),0);
-            this.getPopupMenu().setBorder(BorderFactory.createMatteBorder(borderThickness,borderThickness,borderThickness,borderThickness,t.getColor("General.menu.border.color",new Color(200, 200, 200))));
+            this.getPopupMenu().setBorder(BorderFactory.createMatteBorder(borderThickness,borderThickness,borderThickness,borderThickness,t.getColor(new Color(200, 200, 200), "General.menu.border.color")));
             this.setFont(new Font(t.getString("General.menu.font","General.font","default:Tahoma"), 0, 12));
             if(icon != null) this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
         });

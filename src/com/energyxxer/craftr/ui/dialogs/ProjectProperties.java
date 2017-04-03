@@ -36,7 +36,7 @@ public class ProjectProperties {
 		//JButton cancel = new JButton("Cancel");
 		
 		pane.setPreferredSize(new Dimension(900,600));
-		pane.setBackground(t.getColor("ProjectProperties.background", new Color(235, 235, 235)));
+		pane.setBackground(t.getColor(new Color(235, 235, 235), "ProjectProperties.background"));
 		
 		{
 			JPanel sidebar = new JPanel(new BorderLayout());
@@ -48,7 +48,7 @@ public class ProjectProperties {
 
 			StyledList<String> navigator = new StyledList<>(sections, "ProjectProperties");
 			sidebar.setBackground(navigator.getBackground());
-			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger(1,"ProjectProperties.content.border.thickness"),0), t.getColor("ProjectProperties.content.border.color",new Color(200, 200, 200))));
+			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger(1,"ProjectProperties.content.border.thickness"),0), t.getColor(new Color(200, 200, 200), "ProjectProperties.content.border.color")));
 			navigator.setPreferredSize(new Dimension(200,500));
 
 			sidebar.add(navigator, BorderLayout.CENTER);
@@ -57,7 +57,7 @@ public class ProjectProperties {
 		}
 		
 		JPanel contentPane = new JPanel(new BorderLayout());
-		contentPane.setBackground(t.getColor("ProjectProperties.content.background", new Color(235, 235, 235)));
+		contentPane.setBackground(t.getColor(new Color(235, 235, 235), "ProjectProperties.content.background"));
 		pane.add(contentPane, BorderLayout.CENTER);
 
 		JPanel contentCompiler = new JPanel(new BorderLayout());
@@ -67,8 +67,8 @@ public class ProjectProperties {
 			
 			{
 				JPanel header = new JPanel(new BorderLayout());
-				header.setBackground(t.getColor("ProjectProperties.content.header.background", new Color(235, 235, 235)));
-				header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"ProjectProperties.content.header.border.thickness"),0), 0, t.getColor("ProjectProperties.content.header.border.color", new Color(200, 200, 200))));
+				header.setBackground(t.getColor(new Color(235, 235, 235), "ProjectProperties.content.header.background"));
+				header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"ProjectProperties.content.header.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "ProjectProperties.content.header.border.color")));
 				header.setPreferredSize(new Dimension(0,40));
 				contentCompiler.add(header, BorderLayout.NORTH);
 				
@@ -80,7 +80,7 @@ public class ProjectProperties {
 				}
 				
 				JLabel label = new JLabel("Compiler");
-				label.setForeground(t.getColor("ProjectProperties.content.header.foreground", Color.BLACK));
+				label.setForeground(t.getColor(Color.BLACK, "ProjectProperties.content.header.foreground"));
 				label.setFont(new Font(t.getString("ProjectProperties.content.header.font","General.font","default:Tahoma"),1,20));
 				header.add(label, BorderLayout.CENTER);
 			}
@@ -166,7 +166,7 @@ public class ProjectProperties {
 				{
 					{
 						JLabel label = new JLabel("World Output:");
-						label.setForeground(t.getColor("ProjectProperties.content.label.foreground", Color.BLACK));
+						label.setForeground(t.getColor(Color.BLACK, "ProjectProperties.content.label.foreground"));
 						label.setFont(new Font(t.getString("ProjectProperties.content.label.font","General.font","default:Tahoma"),1,12));
 						content.add(label);
 					}

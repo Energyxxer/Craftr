@@ -231,14 +231,13 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
 
     static {
         ThemeChangeListener.addThemeChangeListener(t -> {
-            colors.put("background",t.getColor("Explorer.background",Color.WHITE));
-            colors.put("item.background",t.getColor("Explorer.item.background",new Color(0,0,0,0)));
-            colors.put("item.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK)));
-            colors.put("item.selected.background",t.getColor("Explorer.item.selected.background",t.getColor("Explorer.item.background",Color.BLUE)));
-            colors.put("item.selected.foreground",t.getColor("Explorer.item.selected.foreground",t.getColor("Explorer.item.rollover.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK)))));
-            //colors.put(Color.BLACK, "item.selected.foreground", "Explorer.item.selected.foreground", "Explorer.item.rollover.foreground", "Explorer.item.foreground", "General.foreground");
-            colors.put("item.rollover.background",t.getColor("Explorer.item.rollover.background",t.getColor("Explorer.item.background",new Color(0,0,0,0))));
-            colors.put("item.rollover.foreground",t.getColor("Explorer.item.rollover.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK))));
+            colors.put("background",t.getColor(Color.WHITE, "Explorer.background"));
+            colors.put("item.background",t.getColor(new Color(0,0,0,0), "Explorer.item.background"));
+            colors.put("item.foreground",t.getColor(Color.BLACK, "Explorer.item.foreground","General.foreground"));
+            colors.put("item.selected.background",t.getColor(Color.BLUE, "Explorer.item.selected.background","Explorer.item.background"));
+            colors.put("item.selected.foreground",t.getColor(Color.BLACK, "Explorer.item.selected.foreground","Explorer.item.rollover.foreground","Explorer.item.foreground","General.foreground"));
+            colors.put("item.rollover.background",t.getColor(new Color(0,0,0,0), "Explorer.item.rollover.background","Explorer.item.background"));
+            colors.put("item.rollover.foreground",t.getColor(Color.BLACK, "Explorer.item.rollover.foreground","Explorer.item.foreground","General.foreground"));
 
             ROW_HEIGHT = Math.max(t.getInteger(20,"Explorer.item.height"), 1);
             INDENT_PER_LEVEL = Math.max(t.getInteger(20,"Explorer.item.indent"), 0);

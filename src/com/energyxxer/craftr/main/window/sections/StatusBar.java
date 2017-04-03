@@ -32,10 +32,10 @@ public class StatusBar extends JPanel {
 
         ThemeChangeListener.addThemeChangeListener(t ->
             SwingUtilities.invokeLater(() -> {
-                this.setBackground(t.getColor("Status.background",new Color(235, 235, 235)));
+                this.setBackground(t.getColor(new Color(235, 235, 235), "Status.background"));
                 this.setBorder(
                     new CompoundBorder(
-                        new MatteBorder(Math.max(t.getInteger("Status.border.thickness"),0), 0, 0, 0, t.getColor("Status.border.color",new Color(200, 200, 200))),
+                        new MatteBorder(Math.max(t.getInteger("Status.border.thickness"),0), 0, 0, 0, t.getColor(new Color(200, 200, 200), "Status.border.color")),
                         new EmptyBorder(0,5,0,5)
                 ));}
             )
@@ -55,7 +55,7 @@ public class StatusBar extends JPanel {
 
         Theme t = CraftrWindow.getTheme();
 
-        statusLabel.setForeground(t.getColor("Status." + status.getType().toLowerCase(),t.getColor("General.foreground",Color.BLACK)));
+        statusLabel.setForeground(t.getColor(Color.BLACK, "Status." + status.getType().toLowerCase(),"General.foreground"));
         statusLabel.setText(status.getMessage());
 
         this.currentStatus = status;

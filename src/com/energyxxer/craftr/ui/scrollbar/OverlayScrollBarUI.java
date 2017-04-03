@@ -22,8 +22,8 @@ public class OverlayScrollBarUI extends BasicScrollBarUI {
         this.sp = sp;
         this.thumbSize = size;
         ThemeChangeListener.addThemeChangeListener(t -> {
-            thumbColor = t.getColor("General.scrollbar.color",new Color(0,0,0,50));
-            thumbRolloverColor = t.getColor("General.scrollbar.hover.color",new Color(0,0,0,100));
+            thumbColor = t.getColor(new Color(0,0,0,50), "General.scrollbar.color");
+            thumbRolloverColor = t.getColor(new Color(0,0,0,100), "General.scrollbar.hover.color");
         });
     }
 

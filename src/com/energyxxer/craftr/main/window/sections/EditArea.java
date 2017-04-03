@@ -23,15 +23,15 @@ public class EditArea extends JPanel {
     {
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(500, 500));
-        ThemeChangeListener.addThemeChangeListener(t -> this.setBackground(t.getColor("Editor.background",new Color(215, 215, 215))));
+        ThemeChangeListener.addThemeChangeListener(t -> this.setBackground(t.getColor(new Color(215, 215, 215), "Editor.background")));
 
         JPanel tabListHolder = new JPanel(new BorderLayout());
         tabListHolder.setPreferredSize(new Dimension(1,30));
-        ThemeChangeListener.addThemeChangeListener(t -> tabListHolder.setBackground(t.getColor("TabList.background",new Color(200, 202, 205))));
+        ThemeChangeListener.addThemeChangeListener(t -> tabListHolder.setBackground(t.getColor(new Color(200, 202, 205), "TabList.background")));
 
         JPanel tabActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
         tabActionPanel.setOpaque(false);
-        ThemeChangeListener.addThemeChangeListener(t -> tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"TabList.border.thickness"),0), 0, t.getColor("TabList.border.color",new Color(200, 200, 200)))));
+        ThemeChangeListener.addThemeChangeListener(t -> tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"TabList.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "TabList.border.color"))));
 
         {
             ToolbarButton more = new ToolbarButton("more");
@@ -49,8 +49,8 @@ public class EditArea extends JPanel {
         tabList = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         tabList.setPreferredSize(new Dimension(1, 30));
         ThemeChangeListener.addThemeChangeListener(t -> {
-            tabList.setBackground(t.getColor("TabList.background",new Color(200, 202, 205)));
-            tabList.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"TabList.border.thickness"),0), 0, t.getColor("TabList.border.color",new Color(200, 200, 200))));
+            tabList.setBackground(t.getColor(new Color(200, 202, 205), "TabList.background"));
+            tabList.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"TabList.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "TabList.border.color")));
         });
         tabListHolder.add(tabList, BorderLayout.CENTER);
 

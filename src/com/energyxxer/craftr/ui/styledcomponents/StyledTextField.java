@@ -42,23 +42,23 @@ public class StyledTextField extends XTextField {
 
         ThemeChangeListener.addThemeChangeListener(t -> {
             if(this.namespace != null) {
-                setBackground       (t.getColor(this.namespace + ".textfield.background",           t.getColor("General.textfield.background",          new Color(220, 220, 220))));
-                setForeground       (t.getColor(this.namespace + ".textfield.foreground",           t.getColor("General.textfield.foreground",          t.getColor("General.foreground", Color.BLACK))));
-                setSelectionColor   (t.getColor(this.namespace + ".textfield.selection.background", t.getColor("General.textfield.selection.background",new Color(50, 100, 175))));
-                setSelectedTextColor(t.getColor(this.namespace + ".textfield.selection.foreground", t.getColor("General.textfield.selection.foreground",getForeground())));
-                setBorder(t.getColor(this.namespace + ".textfield.border.color",               t.getColor("General.textfield.border.color",              new Color(200, 200, 200))),Math.max(t.getInteger(1,this.namespace + ".textfield.border.borderThickness","General.textfield.border.borderThickness"),0));
+                setBackground       (t.getColor(new Color(220, 220, 220), this.namespace + ".textfield.background","General.textfield.background"));
+                setForeground       (t.getColor(Color.BLACK, this.namespace + ".textfield.foreground","General.textfield.foreground","General.foreground"));
+                setSelectionColor   (t.getColor(new Color(50, 100, 175), this.namespace + ".textfield.selection.background","General.textfield.selection.background"));
+                setSelectedTextColor(t.getColor(getForeground(), this.namespace + ".textfield.selection.foreground","General.textfield.selection.foreground"));
+                setBorder(t.getColor(new Color(200, 200, 200), this.namespace + ".textfield.border.color","General.textfield.border.color"),Math.max(t.getInteger(1,this.namespace + ".textfield.border.borderThickness","General.textfield.border.borderThickness"),0));
                 setFont(new Font   (t.getString(this.namespace + ".textfield.font","General.textfield.font","General.font","default:Tahoma"),0,12));
 
-                setDisabledTextColor(t.getColor(this.namespace + ".textfield.disabled.foreground", t.getColor("General.textfield.disabled.foreground",getForeground())));
+                setDisabledTextColor(t.getColor(getForeground(), this.namespace + ".textfield.disabled.foreground","General.textfield.disabled.foreground"));
             } else {
-                setBackground       (t.getColor("General.textfield.background",          new Color(220, 220, 220)));
-                setForeground       (t.getColor("General.textfield.foreground",          t.getColor("General.foreground", Color.BLACK)));
-                setSelectionColor   (t.getColor("General.textfield.selection.background",new Color(50, 100, 175)));
-                setSelectedTextColor(t.getColor("General.textfield.selection.foreground",getForeground()));
-                setBorder(t.getColor("General.textfield.border.color",              new Color(200, 200, 200)),Math.max(t.getInteger(1,"General.textfield.border.borderThickness"),0));
+                setBackground       (t.getColor(new Color(220, 220, 220), "General.textfield.background"));
+                setForeground       (t.getColor(Color.BLACK, "General.textfield.foreground","General.foreground"));
+                setSelectionColor   (t.getColor(new Color(50, 100, 175), "General.textfield.selection.background"));
+                setSelectedTextColor(t.getColor(getForeground(), "General.textfield.selection.foreground"));
+                setBorder(t.getColor(new Color(200, 200, 200), "General.textfield.border.color"),Math.max(t.getInteger(1,"General.textfield.border.borderThickness"),0));
                 setFont(new Font   (t.getString("General.textfield.font","General.font","default:Tahoma"),0,12));
 
-                setDisabledTextColor(t.getColor("General.textfield.disabled.foreground",getForeground()));
+                setDisabledTextColor(t.getColor(getForeground(), "General.textfield.disabled.foreground"));
             }
         });
     }

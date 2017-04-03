@@ -37,10 +37,10 @@ class SettingsGeneral extends JPanel {
             header.add(label, BorderLayout.CENTER);
 
             ThemeChangeListener.addThemeChangeListener(t -> {
-                setBackground(t.getColor("Settings.content.background", new Color(235, 235, 235)));
-                header.setBackground(t.getColor("Settings.content.header.background", new Color(235, 235, 235)));
-                header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Settings.content.border.thickness"),0), 0, t.getColor("Settings.content.header.border.color", new Color(200, 200, 200))));
-                label.setForeground(t.getColor("Settings.content.header.foreground", Color.BLACK));
+                setBackground(t.getColor(new Color(235, 235, 235), "Settings.content.background"));
+                header.setBackground(t.getColor(new Color(235, 235, 235), "Settings.content.header.background"));
+                header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Settings.content.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "Settings.content.header.border.color")));
+                label.setForeground(t.getColor(Color.BLACK, "Settings.content.header.foreground"));
                 label.setFont(new Font(t.getString("Settings.content.header.font","General.font","default:Tahoma"),1,20));
             });
         }

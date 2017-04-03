@@ -38,7 +38,7 @@ public class ConfirmDialog {
         JPanel pane = new JPanel(new BorderLayout());
         pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         ThemeChangeListener.addThemeChangeListener(t ->
-                pane.setBackground(t.getColor("ConfirmDialog.background", new Color(235, 235, 235)))
+                pane.setBackground(t.getColor(new Color(235, 235, 235), "ConfirmDialog.background"))
         );
 
         pane.add(new Padding(10), BorderLayout.NORTH);

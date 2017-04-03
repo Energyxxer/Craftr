@@ -241,14 +241,14 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 	@Override
 	public void themeChanged(Theme t) {
 		setFont(new Font(t.getString("Tab.font","General.font","default:Tahoma"), 0, 11));
-		setForeground(t.getColor("Tab.foreground",t.getColor("General.foreground",Color.BLACK)));
+		setForeground(t.getColor(Color.BLACK, "Tab.foreground","General.foreground"));
 
-		this.normal_bg = t.getColor("Tab.background",new Color(200, 202, 205));
-		this.normal_line = t.getColor("Tab.border",new Color(200, 200, 200));
-		this.rollover_bg = t.getColor("Tab.hover.background",Color.WHITE);
-		this.rollover_line = t.getColor("Tab.hover.border",new Color(200, 200, 200));
-		this.selected_bg = t.getColor("Tab.selected.background",Color.WHITE);
-		this.selected_line = t.getColor("Tab.selected.border",new Color(200, 200, 200));
+		this.normal_bg = t.getColor(new Color(200, 202, 205), "Tab.background");
+		this.normal_line = t.getColor(new Color(200, 200, 200), "Tab.border");
+		this.rollover_bg = t.getColor(Color.WHITE, "Tab.hover.background");
+		this.rollover_line = t.getColor(new Color(200, 200, 200), "Tab.hover.border");
+		this.selected_bg = t.getColor(Color.WHITE, "Tab.selected.background");
+		this.selected_line = t.getColor(new Color(200, 200, 200), "Tab.selected.border");
 
 		updateIcon();
 		updateName();

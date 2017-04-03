@@ -35,16 +35,16 @@ public class ConsoleArea extends JPanel {
     {
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(0, CONSOLE_HEIGHT));
-        ThemeChangeListener.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger(1, "Console.header.border.thickness"),0), 0, 0, 0, t.getColor("Console.header.border.color",new Color(200, 200, 200)))));
+        ThemeChangeListener.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger(1, "Console.header.border.thickness"),0), 0, 0, 0, t.getColor(new Color(200, 200, 200), "Console.header.border.color"))));
 
         JPanel consoleHeader = new JPanel(new BorderLayout());
-        ThemeChangeListener.addThemeChangeListener(t -> consoleHeader.setBackground(t.getColor("Console.header.background",new Color(235, 235, 235))));
+        ThemeChangeListener.addThemeChangeListener(t -> consoleHeader.setBackground(t.getColor(new Color(235, 235, 235), "Console.header.background")));
         consoleHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         consoleHeader.setPreferredSize(new Dimension(0, 25));
 
         JLabel consoleLabel = new JLabel("Console");
         ThemeChangeListener.addThemeChangeListener(t -> {
-            consoleLabel.setForeground(t.getColor("Console.header.foreground",Color.BLACK));
+            consoleLabel.setForeground(t.getColor(Color.BLACK, "Console.header.foreground"));
             consoleLabel.setFont(new Font(t.getString("Console.header.font","General.font","default:Tahoma"), 0, 12));
         });
         consoleHeader.add(consoleLabel, BorderLayout.WEST);
@@ -80,20 +80,20 @@ public class ConsoleArea extends JPanel {
 
         JTextPane console = new JTextPane();
         ThemeChangeListener.addThemeChangeListener(t -> {
-            console.setBackground(t.getColor("Console.background",Color.WHITE));
-            console.setSelectionColor(t.getColor("Console.selection.background",t.getColor("General.textfield.selection.background",new Color(50, 100, 175))));
-            console.setSelectedTextColor(t.getColor("Console.selection.foreground",t.getColor("General.textfield.selection.foreground",t.getColor("Console.foreground",t.getColor("General.foreground",Color.BLACK)))));
+            console.setBackground(t.getColor(Color.WHITE, "Console.background"));
+            console.setSelectionColor(t.getColor(new Color(50, 100, 175), "Console.selection.background","General.textfield.selection.background"));
+            console.setSelectedTextColor(t.getColor(Color.BLACK, "Console.selection.foreground","General.textfield.selection.foreground","Console.foreground","General.foreground"));
             console.setFont(new Font(t.getString("Console.font","Editor.font","default:monospaced"), 0, 12));
-            console.setForeground(t.getColor("Console.foreground",Color.BLACK));
+            console.setForeground(t.getColor(Color.BLACK, "Console.foreground"));
 
             if(console.getStyle("warning") != null) console.removeStyle("warning");
             if(console.getStyle("error") != null) console.removeStyle("error");
 
             Style warningStyle = console.addStyle("warning", null);
-            StyleConstants.setForeground(warningStyle, t.getColor("Console.warning", new Color(255, 140, 0)));
+            StyleConstants.setForeground(warningStyle, t.getColor(new Color(255, 140, 0), "Console.warning"));
 
             Style errorStyle = console.addStyle("error", null);
-            StyleConstants.setForeground(errorStyle, t.getColor("Console.error", new Color(200,50,50)));
+            StyleConstants.setForeground(errorStyle, t.getColor(new Color(200,50,50), "Console.error"));
 
             Style debugStyle = console.addStyle("debug", null);
             StyleConstants.setForeground(debugStyle, new Color(104,151,187));
@@ -152,7 +152,7 @@ public class ConsoleArea extends JPanel {
 
         ThemeChangeListener.addThemeChangeListener(t -> {
             consoleScrollPane.setBackground(console.getBackground());
-            consoleScrollPane.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger("Console.header.border.thickness"),0), 0, 0, 0, t.getColor("Console.header.border.color",new Color(200, 200, 200))));
+            consoleScrollPane.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger("Console.header.border.thickness"),0), 0, 0, 0, t.getColor(new Color(200, 200, 200), "Console.header.border.color")));
         });
 
         this.add(consoleScrollPane, BorderLayout.CENTER);

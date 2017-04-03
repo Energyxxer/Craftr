@@ -16,8 +16,8 @@ public class StyledMenuItem extends XMenuItem {
     public StyledMenuItem(String text, String icon) {
         if(text != null) setText(text);
         ThemeChangeListener.addThemeChangeListener(t -> {
-            this.setRolloverBackground(t.getColor("General.menu.selected.background",new Color(190, 190, 190)));
-            this.setForeground(t.getColor("General.menu.foreground",t.getColor("General.foreground", Color.BLACK)));
+            this.setRolloverBackground(t.getColor(new Color(190, 190, 190), "General.menu.selected.background"));
+            this.setForeground(t.getColor(Color.BLACK, "General.menu.foreground","General.foreground"));
             this.setFont(new Font(t.getString("General.menu.font","General.font","default:Tahoma"), 0, 12));
             if(icon != null) this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
         });

@@ -36,8 +36,8 @@ public class ToolbarSeparator extends JPanel {
 			separatorLine.add(lightLine, BorderLayout.EAST);
 
 			ThemeChangeListener.addThemeChangeListener(t -> {
-				lightLine.setBackground(t.getColor("Toolbar.separator.light",new Color(235, 235, 235)));
-				separatorLine.setBackground(t.getColor("Toolbar.separator.dark",new Color(150, 150, 150)));
+				lightLine.setBackground(t.getColor(new Color(235, 235, 235), "Toolbar.separator.light"));
+				separatorLine.setBackground(t.getColor(new Color(150, 150, 150), "Toolbar.separator.dark"));
 			});
 		}
 	}

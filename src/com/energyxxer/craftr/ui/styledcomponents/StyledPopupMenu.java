@@ -26,13 +26,13 @@ public class StyledPopupMenu extends JPopupMenu {
 
         ThemeChangeListener.addThemeChangeListener(t -> {
             if (this.namespace != null) {
-                setBackground(t.getColor(this.namespace + ".menu.background",t.getColor("General.menu.background",new Color(215, 215, 215))));
+                setBackground(t.getColor(new Color(215, 215, 215), this.namespace + ".menu.background", "General.menu.background"));
                 int borderThickness = Math.max(t.getInteger(1,this.namespace + ".menu.border.thickness","General.menu.border.thickness"),0);
-                setBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness, t.getColor(this.namespace + ".menu.border.color",t.getColor("General.menu.border.color",new Color(200, 200, 200)))));
+                setBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness, t.getColor(new Color(200, 200, 200), this.namespace + ".menu.border.color", "General.menu.border.color")));
             } else {
-                setBackground(t.getColor("General.menu.background",new Color(215, 215, 215)));
+                setBackground(t.getColor(new Color(215, 215, 215), "General.menu.background"));
                 int borderThickness = Math.max(t.getInteger(1,"General.menu.border.thickness"),0);
-                setBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness ,t.getColor("General.menu.border.color",new Color(200, 200, 200))));
+                setBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness ,t.getColor(new Color(200, 200, 200), "General.menu.border.color")));
             }
         });
     }

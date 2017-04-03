@@ -63,8 +63,8 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
         this.addMouseMotionListener(this);
         this.addKeyListener(this);
         ThemeChangeListener.addThemeChangeListener(t -> {
-            this.setBackground(t.getColor("ImageViewer.background",Color.WHITE));
-            this.crosshairColor = t.getColor("ImageViewer.crosshair",new Color(0,0,0,64));
+            this.setBackground(t.getColor(Color.WHITE, "ImageViewer.background"));
+            this.crosshairColor = t.getColor(new Color(0,0,0,64), "ImageViewer.crosshair");
         });
     }
 

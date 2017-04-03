@@ -56,7 +56,7 @@ public class CraftrWindow {
 		setTitle("");
 		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-		ThemeChangeListener.addThemeChangeListener(t -> jframe.getContentPane().setBackground(t.getColor("Window.background",new Color(215, 215, 215))));
+		ThemeChangeListener.addThemeChangeListener(t -> jframe.getContentPane().setBackground(t.getColor(new Color(215, 215, 215), "Window.background")));
 
 		/*try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -95,10 +95,10 @@ public class CraftrWindow {
 		jframe.setLocation(center);
 
 		ThemeChangeListener.addThemeChangeListener(t -> {
-			UIManager.put("ToolTip.background",t.getColor("Tooltip.background",Color.WHITE));
-			UIManager.put("ToolTip.foreground",t.getColor("Tooltip.foreground",Color.BLACK));
+			UIManager.put("ToolTip.background",t.getColor(Color.WHITE, "Tooltip.background"));
+			UIManager.put("ToolTip.foreground",t.getColor(Color.BLACK, "Tooltip.foreground"));
 			int borderThickness = Math.max(t.getInteger(1,"Tooltip.border.thickness"),0);
-			UIManager.put("ToolTip.border",BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness, t.getColor("Tooltip.border.color",Color.BLACK)),BorderFactory.createEmptyBorder(3,5,3,5)));
+			UIManager.put("ToolTip.border",BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness, t.getColor(Color.BLACK, "Tooltip.border.color")),BorderFactory.createEmptyBorder(3,5,3,5)));
 		});
 
 	}

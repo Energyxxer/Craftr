@@ -20,8 +20,8 @@ public class Toolbar extends JPanel {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.setPreferredSize(new Dimension(1, 30));
         ThemeChangeListener.addThemeChangeListener(t -> {
-            this.setBackground(t.getColor("Toolbar.background",new Color(235, 235, 235)));
-            this.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Toolbar.border.thickness"),0), 0, t.getColor("Toolbar.border.color",new Color(200, 200, 200))));
+            this.setBackground(t.getColor(new Color(235, 235, 235), "Toolbar.background"));
+            this.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Toolbar.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "Toolbar.border.color")));
         });
 
         this.add(new ToolbarSeparator());
