@@ -52,7 +52,7 @@ public class Settings {
 			StyledList<String> navigator = new StyledList<>(sections, "Settings");
 			sidebar.setBackground(navigator.getBackground());
 			ThemeChangeListener.addThemeChangeListener(t ->
-					sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger("Settings.content.border.thickness",1),0), t.getColor("Settings.content.border.color",new Color(200, 200, 200))))
+					sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger(1,"Settings.content.border.thickness"),0), t.getColor("Settings.content.border.color",new Color(200, 200, 200))))
 			);
 			navigator.setPreferredSize(new Dimension(200,500));
 
@@ -88,14 +88,14 @@ public class Settings {
 
 		{
 			JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT));
-			buttons.setPreferredSize(new Dimension(0,50));
+			buttons.setPreferredSize(new Dimension(0,60));
 			ThemeChangeListener.addThemeChangeListener(t -> buttons.setBackground(contentPane.getBackground()));
 
 			buttons.add(new Padding(25));
 
 			{
 				StyledButton okay = new StyledButton("OK", "Settings");
-				okay.setPreferredSize(new Dimension(75, 25));
+				ThemeChangeListener.addThemeChangeListener(t -> okay.setPreferredSize(new Dimension(Math.max(t.getInteger(75,"Settings.okButton.width"),10), Math.max(t.getInteger(25,"Settings.okButton.height"),10))));
 				buttons.add(okay);
 
 				okay.addActionListener(e -> {
@@ -107,7 +107,7 @@ public class Settings {
 
 			{
 				StyledButton cancel = new StyledButton("Cancel", "Settings");
-				cancel.setPreferredSize(new Dimension(75, 25));
+				ThemeChangeListener.addThemeChangeListener(t -> cancel.setPreferredSize(new Dimension(Math.max(t.getInteger(75,"Settings.cancelButton.width"),10), Math.max(t.getInteger(25,"Settings.cancelButton.height"),10))));
 				buttons.add(cancel);
 
 				cancel.addActionListener(e -> {

@@ -14,7 +14,7 @@ public class Commons {
 
     static {
         ThemeChangeListener.addThemeChangeListener(t -> {
-            themeAssetsPath = t.getString("Assets.path","light_theme/");
+            themeAssetsPath = t.getString("Assets.path","default:light_theme/");
         }, true);
     }
 

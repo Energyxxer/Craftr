@@ -240,7 +240,7 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 
 	@Override
 	public void themeChanged(Theme t) {
-		setFont(new Font(t.getString("Tab.font",t.getString("General.font","Tahoma")), 0, 11));
+		setFont(new Font(t.getString("Tab.font","General.font","default:Tahoma"), 0, 11));
 		setForeground(t.getColor("Tab.foreground",t.getColor("General.foreground",Color.BLACK)));
 
 		this.normal_bg = t.getColor("Tab.background",new Color(200, 202, 205));

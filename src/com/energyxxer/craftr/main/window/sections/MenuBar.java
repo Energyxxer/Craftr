@@ -25,7 +25,7 @@ public class MenuBar extends JMenuBar {
     {
         ThemeChangeListener.addThemeChangeListener(t -> {
             this.setBackground(t.getColor("MenuBar.background", new Color(215, 215, 215)));
-            this.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger("MenuBar.border.thickness",1),0), 0, t.getColor("MenuBar.border.color", new Color(150, 150, 150))));
+            this.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"MenuBar.border.thickness"),0), 0, t.getColor("MenuBar.border.color", new Color(150, 150, 150))));
         });
 
         this.setPreferredSize(new Dimension(0, 20));

@@ -48,7 +48,7 @@ public class ProjectProperties {
 
 			StyledList<String> navigator = new StyledList<>(sections, "ProjectProperties");
 			sidebar.setBackground(navigator.getBackground());
-			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger("ProjectProperties.content.border.thickness",1),0), t.getColor("ProjectProperties.content.border.color",new Color(200, 200, 200))));
+			sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger(1,"ProjectProperties.content.border.thickness"),0), t.getColor("ProjectProperties.content.border.color",new Color(200, 200, 200))));
 			navigator.setPreferredSize(new Dimension(200,500));
 
 			sidebar.add(navigator, BorderLayout.CENTER);
@@ -68,7 +68,7 @@ public class ProjectProperties {
 			{
 				JPanel header = new JPanel(new BorderLayout());
 				header.setBackground(t.getColor("ProjectProperties.content.header.background", new Color(235, 235, 235)));
-				header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger("ProjectProperties.content.header.border.thickness",1),0), 0, t.getColor("ProjectProperties.content.header.border.color", new Color(200, 200, 200))));
+				header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"ProjectProperties.content.header.border.thickness"),0), 0, t.getColor("ProjectProperties.content.header.border.color", new Color(200, 200, 200))));
 				header.setPreferredSize(new Dimension(0,40));
 				contentCompiler.add(header, BorderLayout.NORTH);
 				
@@ -81,7 +81,7 @@ public class ProjectProperties {
 				
 				JLabel label = new JLabel("Compiler");
 				label.setForeground(t.getColor("ProjectProperties.content.header.foreground", Color.BLACK));
-				label.setFont(new Font(t.getString("ProjectProperties.content.header.font",t.getString("General.font","Tahoma")),1,20));
+				label.setFont(new Font(t.getString("ProjectProperties.content.header.font","General.font","default:Tahoma"),1,20));
 				header.add(label, BorderLayout.CENTER);
 			}
 			
@@ -167,7 +167,7 @@ public class ProjectProperties {
 					{
 						JLabel label = new JLabel("World Output:");
 						label.setForeground(t.getColor("ProjectProperties.content.label.foreground", Color.BLACK));
-						label.setFont(new Font(t.getString("ProjectProperties.content.label.font",t.getString("General.font","Tahoma")),1,12));
+						label.setFont(new Font(t.getString("ProjectProperties.content.label.font","General.font","default:Tahoma"),1,12));
 						content.add(label);
 					}
 					File file = new File(MinecraftConstants.getMinecraftDir() + File.separator + "saves");

@@ -42,9 +42,9 @@ class SettingsAppearance extends JPanel {
             ThemeChangeListener.addThemeChangeListener(t -> {
                 setBackground(t.getColor("Settings.content.background", new Color(235, 235, 235)));
                 header.setBackground(t.getColor("Settings.content.header.background", new Color(235, 235, 235)));
-                header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger("Settings.content.border.thickness",1),0), 0, t.getColor("Settings.content.header.border.color", new Color(200, 200, 200))));
+                header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Settings.content.header.border.thickness"),0), 0, t.getColor("Settings.content.header.border.color", new Color(200, 200, 200))));
                 label.setForeground(t.getColor("Settings.content.header.foreground", Color.BLACK));
-                label.setFont(new Font(t.getString("Settings.content.header.font",t.getString("General.font","Tahoma")),1,20));
+                label.setFont(new Font(t.getString("Settings.content.header.font","General.font","default:Tahoma"),1,20));
             });
         }
 

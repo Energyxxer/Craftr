@@ -1,14 +1,25 @@
 package com.energyxxer.craftr.util.linenumber;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.*;
-import java.awt.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.StyleConstants;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.util.HashMap;
@@ -129,11 +140,7 @@ public class TextLineNumber extends JPanel
 	}
 
 	protected int getLineNumberFor(int offset) {
-		Element root = component.getDocument().getDefaultRootElement();
-		int index = root.getElementIndex( offset );
-		Element line = root.getElement( index );
-
-		return line.getStartOffset() == offset ? index + 1 : -1;
+		return component.getDocument().getDefaultRootElement().getElementIndex(offset) + 1;
 	}
 
 	private int getOffsetX(int availableWidth, int stringWidth)

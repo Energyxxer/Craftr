@@ -129,10 +129,10 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
             Theme t = this.theme;
             if (this.namespace != null) {
                 setForeground(t.getColor(this.namespace + ".label.foreground", t.getColor("General.label.foreground", t.getColor("General.foreground", Color.BLACK))));
-                setFont(new Font(t.getString(this.namespace + "label.font", t.getString("General.label.font", t.getString("General.font", "Tahoma"))), style, 12));
+                setFont(new Font(t.getString(this.namespace + "label.font","General.label.font","General.font", "default:Tahoma"), style, 12));
             } else {
                 setForeground(t.getColor("General.label.foreground", t.getColor("General.foreground", Color.BLACK)));
-                setFont(new Font(t.getString("General.label.font", t.getString("General.font", "Tahoma")), style, size));
+                setFont(new Font(t.getString("General.label.font","General.font", "default:Tahoma"), style, size));
             }
             if (icon != null) {
                 this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16, 16, Image.SCALE_SMOOTH)));

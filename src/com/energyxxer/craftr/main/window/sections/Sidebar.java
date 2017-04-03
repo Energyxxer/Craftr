@@ -29,7 +29,7 @@ public class Sidebar extends JPanel {
         this.setPreferredSize(new Dimension(350, 500));
         ThemeChangeListener.addThemeChangeListener(t -> {
             this.setBackground(t.getColor("Explorer.background",Color.WHITE));
-            this.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger("Explorer.border.thickness",1), 0), t.getColor("Explorer.border.color",new Color(200, 200, 200))));
+            this.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger(1,"Explorer.border.thickness"), 0), t.getColor("Explorer.border.color",new Color(200, 200, 200))));
         });
 
         JPanel header = new JPanel(new BorderLayout());
@@ -37,7 +37,7 @@ public class Sidebar extends JPanel {
 
         JLabel label = new JLabel("    Project Explorer");
         ThemeChangeListener.addThemeChangeListener(t -> {
-            label.setFont(new Font(t.getString("Explorer.header.font",t.getString("General.font","Tahoma")), Font.PLAIN, 14));
+            label.setFont(new Font(t.getString("Explorer.header.font","General.font","default:Tahoma"), Font.PLAIN, 14));
             label.setForeground(t.getColor("Explorer.header.foreground",t.getColor("General.foreground",Color.BLACK)));
         });
         label.setPreferredSize(new Dimension(500, 25));

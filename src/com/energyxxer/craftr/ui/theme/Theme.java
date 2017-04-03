@@ -50,32 +50,48 @@ public class Theme {
 
 	public Color getColor(String key) { return getColor(key, null); }
 
-	public boolean getBoolean(String key, boolean defaultValue) {
-		Object value = values.get(key);
-		if(value == null) return defaultValue;
-		if(value instanceof Boolean) return (Boolean) value;
-		else return defaultValue;
+	//Booleans
+
+	public boolean getBoolean(boolean defaultValue, String... keys) {
+		for(String key : keys) {
+			Object value = values.get(key);
+			if(value != null && value instanceof Boolean) return (Boolean) value;
+		}
+		return defaultValue;
 	}
 
-	public boolean getBoolean(String key) { return getBoolean(key, false); }
+	public boolean getBoolean(String key) { return getBoolean(false, key); }
 
-	public String getString(String key, String defaultValue) {
-		Object value = values.get(key);
-		if(value == null) return defaultValue;
-		if(value instanceof String) return (String) value;
-		else return defaultValue;
+	//Strings
+
+	public String getString(String... keys) {
+		String defaultValue = null;
+		for(String key : keys) {
+			if(key.startsWith("default:")) {
+				defaultValue = key.substring("default:".length());
+				continue;
+			}
+			Object value = values.get(key);
+			if(value != null && value instanceof String) return (String) value;
+		}
+		return defaultValue;
 	}
 
-	public String getString(String key) { return getString(key, null); }
+	//Integers
 
-	public int getInteger(String key, int defaultValue) {
-		Object value = values.get(key);
-		if(value == null) return defaultValue;
-		if(value instanceof Integer) return (Integer) value;
-		else return defaultValue;
+	public int getInteger(int defaultValue, String... keys) {
+		for(String key : keys) {
+			Object value = values.get(key);
+			if(value != null && value instanceof Integer) return (Integer) value;
+		}
+		return defaultValue;
 	}
 
-	public int getInteger(String key) { return getInteger(key, 0); }
+	public int getInteger(String... keys) {
+		return getInteger(0, keys);
+	}
+
+	//Other
 
 	public String getName() {return name;}
 

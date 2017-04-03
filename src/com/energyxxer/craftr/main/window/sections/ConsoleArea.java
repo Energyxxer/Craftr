@@ -35,7 +35,7 @@ public class ConsoleArea extends JPanel {
     {
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(0, CONSOLE_HEIGHT));
-        ThemeChangeListener.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger("Console.header.border.thickness",1),0), 0, 0, 0, t.getColor("Console.header.border.color",new Color(200, 200, 200)))));
+        ThemeChangeListener.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger(1, "Console.header.border.thickness"),0), 0, 0, 0, t.getColor("Console.header.border.color",new Color(200, 200, 200)))));
 
         JPanel consoleHeader = new JPanel(new BorderLayout());
         ThemeChangeListener.addThemeChangeListener(t -> consoleHeader.setBackground(t.getColor("Console.header.background",new Color(235, 235, 235))));
@@ -45,7 +45,7 @@ public class ConsoleArea extends JPanel {
         JLabel consoleLabel = new JLabel("Console");
         ThemeChangeListener.addThemeChangeListener(t -> {
             consoleLabel.setForeground(t.getColor("Console.header.foreground",Color.BLACK));
-            consoleLabel.setFont(new Font(t.getString("Console.header.font",t.getString("General.font","Tahoma")), 0, 12));
+            consoleLabel.setFont(new Font(t.getString("Console.header.font","General.font","default:Tahoma"), 0, 12));
         });
         consoleHeader.add(consoleLabel, BorderLayout.WEST);
 
@@ -83,7 +83,7 @@ public class ConsoleArea extends JPanel {
             console.setBackground(t.getColor("Console.background",Color.WHITE));
             console.setSelectionColor(t.getColor("Console.selection.background",t.getColor("General.textfield.selection.background",new Color(50, 100, 175))));
             console.setSelectedTextColor(t.getColor("Console.selection.foreground",t.getColor("General.textfield.selection.foreground",t.getColor("Console.foreground",t.getColor("General.foreground",Color.BLACK)))));
-            console.setFont(new Font(t.getString("Console.font",t.getString("Editor.font","monospaced")), 0, 12));
+            console.setFont(new Font(t.getString("Console.font","Editor.font","default:monospaced"), 0, 12));
             console.setForeground(t.getColor("Console.foreground",Color.BLACK));
 
             if(console.getStyle("warning") != null) console.removeStyle("warning");

@@ -236,15 +236,16 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
             colors.put("item.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK)));
             colors.put("item.selected.background",t.getColor("Explorer.item.selected.background",t.getColor("Explorer.item.background",Color.BLUE)));
             colors.put("item.selected.foreground",t.getColor("Explorer.item.selected.foreground",t.getColor("Explorer.item.rollover.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK)))));
+            //colors.put(Color.BLACK, "item.selected.foreground", "Explorer.item.selected.foreground", "Explorer.item.rollover.foreground", "Explorer.item.foreground", "General.foreground");
             colors.put("item.rollover.background",t.getColor("Explorer.item.rollover.background",t.getColor("Explorer.item.background",new Color(0,0,0,0))));
             colors.put("item.rollover.foreground",t.getColor("Explorer.item.rollover.foreground",t.getColor("Explorer.item.foreground",t.getColor("General.foreground",Color.BLACK))));
 
-            ROW_HEIGHT = Math.max(t.getInteger("Explorer.item.height",20), 1);
-            INDENT_PER_LEVEL = Math.max(t.getInteger("Explorer.item.indent",20), 0);
-            INITIAL_INDENT = Math.max(t.getInteger("Explorer.item.initialIndent",0), 0);
+            ROW_HEIGHT = Math.max(t.getInteger(20,"Explorer.item.height"), 1);
+            INDENT_PER_LEVEL = Math.max(t.getInteger(20,"Explorer.item.indent"), 0);
+            INITIAL_INDENT = Math.max(t.getInteger(0,"Explorer.item.initialIndent"), 0);
 
-            SELECTION_STYLE = t.getString("Explorer.item.selectionStyle","FULL");
-            SELECTION_LINE_THICKNESS = Math.max(t.getInteger("Explorer.item.selectionLineThickness",2), 0);
+            SELECTION_STYLE = t.getString("Explorer.item.selectionStyle","default:FULL");
+            SELECTION_LINE_THICKNESS = Math.max(t.getInteger(2,"Explorer.item.selectionLineThickness"), 0);
 
             assets.put("expand",Commons.getIcon("expand").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
             assets.put("collapse",Commons.getIcon("collapse").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
