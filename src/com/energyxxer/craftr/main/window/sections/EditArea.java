@@ -26,8 +26,10 @@ public class EditArea extends JPanel {
         ThemeChangeListener.addThemeChangeListener(t -> this.setBackground(t.getColor(new Color(215, 215, 215), "Editor.background")));
 
         JPanel tabListHolder = new JPanel(new BorderLayout());
-        tabListHolder.setPreferredSize(new Dimension(1,30));
-        ThemeChangeListener.addThemeChangeListener(t -> tabListHolder.setBackground(t.getColor(new Color(200, 202, 205), "TabList.background")));
+        ThemeChangeListener.addThemeChangeListener(t -> {
+            tabListHolder.setBackground(t.getColor(new Color(200, 202, 205), "TabList.background"));
+            tabListHolder.setPreferredSize(new Dimension(1, t.getInteger(30, "TabList.height")));
+        });
 
         JPanel tabActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
         tabActionPanel.setOpaque(false);
@@ -47,9 +49,9 @@ public class EditArea extends JPanel {
 
         this.add(tabListHolder, BorderLayout.NORTH);
         tabList = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        tabList.setPreferredSize(new Dimension(1, 30));
         ThemeChangeListener.addThemeChangeListener(t -> {
             tabList.setBackground(t.getColor(new Color(200, 202, 205), "TabList.background"));
+            tabList.setPreferredSize(new Dimension(1, t.getInteger(30, "TabList.height")));
             tabList.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"TabList.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "TabList.border.color")));
         });
         tabListHolder.add(tabList, BorderLayout.CENTER);

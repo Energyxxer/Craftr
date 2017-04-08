@@ -3,20 +3,20 @@ package com.energyxxer.craftr.main.window.sections;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.ToolbarButton;
+import com.energyxxer.craftr.ui.components.Padding;
 import com.energyxxer.craftr.ui.explorer.ExplorerMaster;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollBarUI;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollPaneLayout;
+import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.io.File;
 
 /**
@@ -33,15 +33,18 @@ public class Sidebar extends JPanel {
         });
 
         JPanel header = new JPanel(new BorderLayout());
-        ThemeChangeListener.addThemeChangeListener(t -> header.setBackground(this.getBackground()));
 
-        JLabel label = new JLabel("    Project Explorer");
-        ThemeChangeListener.addThemeChangeListener(t -> {
-            label.setFont(new Font(t.getString("Explorer.header.font","General.font","default:Tahoma"), Font.PLAIN, 14));
-            label.setForeground(t.getColor(Color.BLACK, "Explorer.header.foreground","General.foreground"));
-        });
+        StyledLabel label = new StyledLabel("Project Explorer", "Explorer.header");
+        label.setFontSize(14);
         label.setPreferredSize(new Dimension(500, 25));
-        header.add(label, BorderLayout.WEST);
+        header.add(new Padding(15, "Explorer.header.indent"), BorderLayout.WEST);
+        header.add(label, BorderLayout.CENTER);
+
+        ThemeChangeListener.addThemeChangeListener(t -> {
+            header.setBackground(t.getColor(this.getBackground(),"Explorer.header.background"));
+            header.setPreferredSize(new Dimension(500, t.getInteger(25, "Explorer.header.height")));
+            label.setPreferredSize(new Dimension(500, t.getInteger(25, "Explorer.header.height")));
+        });
 
         ToolbarButton refresh = new ToolbarButton("reload");
         refresh.setToolTipText("Refresh Explorer");

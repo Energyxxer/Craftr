@@ -2,6 +2,7 @@ package com.energyxxer.craftr.main.window.sections;
 
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.global.ProjectManager;
+import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.dialogs.settings.Settings;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
@@ -16,6 +17,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.io.File;
 
 /**
  * Created by User on 12/15/2016.
@@ -244,6 +246,16 @@ public class MenuBar extends JMenuBar {
                     if (confirmation == JOptionPane.YES_OPTION) {
                         Preferences.reset();
                     }
+                });
+                menu.add(item);
+            }
+
+            // --------------------------------------------------
+
+            {
+                StyledMenuItem item = new StyledMenuItem("Edit Electron Theme");
+                item.addActionListener(e -> {
+                    TabManager.openTab(System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "resources" + File.separator + "themes" + File.separator + "gui" + File.separator + "Electron Dark.properties");
                 });
                 menu.add(item);
             }

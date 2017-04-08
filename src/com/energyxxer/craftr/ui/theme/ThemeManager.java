@@ -6,6 +6,7 @@ import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,47 @@ public class ThemeManager {
                 Console.warn.println(e.getMessage());
             }
         }
+
+        //Read theme directory
+
+        String themeDirPath = System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "resources" + File.separator + "themes" + File.separator;
+
+        File themeDir = new File(themeDirPath);
+        if(themeDir.exists()) {
+            File guiThemeDirectory = new File(themeDirPath + "gui");
+            if(guiThemeDirectory.exists()) {
+                File[] files = guiThemeDirectory.listFiles();
+                if(files != null) {
+                    for(File file : files) {
+                        try {
+                            Theme theme = tr.read(Theme.ThemeType.GUI_THEME, file);
+                            if(theme != null) gui_themes.put(theme.getName(),theme);
+                        } catch(ThemeParserException e) {
+                            Console.warn.println(e.getMessage());
+                        }
+                    }
+                }
+
+            } else guiThemeDirectory.mkdir();
+
+            File syntaxThemeDirectory = new File(themeDirPath + "syntax");
+            if(syntaxThemeDirectory.exists()) {
+                File[] files = syntaxThemeDirectory.listFiles();
+                if(files != null) {
+                    for(File file : files) {
+                        try {
+                            Theme theme = tr.read(Theme.ThemeType.SYNTAX_THEME, file);
+                            if(theme != null) syntax_themes.put(theme.getName(),theme);
+                        } catch(ThemeParserException e) {
+                            Console.warn.println(e.getMessage());
+                        }
+                    }
+                }
+
+            } else syntaxThemeDirectory.mkdir();
+        } else themeDir.mkdirs();
+
+        setGUITheme(Preferences.get("theme"));
     }
 
     public static HashMap<String, Theme> getGUIThemes() {

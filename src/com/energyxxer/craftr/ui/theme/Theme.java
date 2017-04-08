@@ -36,9 +36,12 @@ public class Theme {
 		values.put(key,value);
 	}
 
-	public Object get(String key, Object defaultValue) {
-		Object value = values.get(key);
-		return (value != null) ? value : defaultValue;
+	public Object get(Object defaultValue, String... keys) {
+		for(String key : keys) {
+			Object value = values.get(key);
+			if(value != null) return value;
+		}
+		return defaultValue;
 	}
 
 	//Colors

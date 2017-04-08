@@ -1,5 +1,7 @@
 package com.energyxxer.craftr.ui.components;
 
+import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+
 import javax.swing.JPanel;
 import java.awt.Dimension;
 
@@ -9,13 +11,23 @@ import java.awt.Dimension;
 public class Padding extends JPanel {
 
     public Padding(int size) {
-        this(size, size);
+        this(size, (String[]) null);
     }
 
-    public Padding(int width, int height) {
+    public Padding(int size, String... keys) {
         this.setOpaque(false);
-        Dimension dim = new Dimension(width, height);
-        this.setPreferredSize(dim);
-        this.setMaximumSize(dim);
+        if(keys != null && keys.length > 0) {
+            ThemeChangeListener.addThemeChangeListener(t -> {
+                int realSize = t.getInteger(size, keys);
+                Dimension dim = new Dimension(realSize, realSize);
+                this.setPreferredSize(dim);
+                this.setMaximumSize(dim);
+            });
+        } else {
+            Dimension dim = new Dimension(size, size);
+            this.setPreferredSize(dim);
+            this.setMaximumSize(dim);
+        }
+
     }
 }

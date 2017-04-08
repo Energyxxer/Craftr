@@ -101,7 +101,7 @@ public class UnitDialog {
             entry.add(nameField,  BorderLayout.CENTER);
             content.add(entry);
         }
-        content.add(new Padding(Integer.MAX_VALUE,5));
+        content.add(new Padding(5));
         {
 
             JPanel entry = new JPanel(new BorderLayout());
@@ -135,7 +135,7 @@ public class UnitDialog {
         kindLabel.setPreferredSize(new Dimension(maxLabelWidth, kindLabel.getPreferredSize().height));
         nameLabel.setPreferredSize(new Dimension(maxLabelWidth, nameLabel.getPreferredSize().height));
 
-        content.add(new Padding(Integer.MAX_VALUE, 5));
+        content.add(new Padding(5));
 
         {
             errorPanel = new JPanel();

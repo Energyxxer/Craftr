@@ -1,13 +1,15 @@
 package com.energyxxer.craftr.ui.theme;
 
+import com.energyxxer.craftr.util.FileUtil;
 import com.energyxxer.craftr.util.LineReader;
 import com.energyxxer.craftr.util.Range;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by User on 12/13/2016.
@@ -17,33 +19,43 @@ public class ThemeReader {
     private HashMap<String, Object> themeValues;
 
     private int currentLine = 0;
-    private String line;
+    private String line = null;
 
     public Theme read(Theme.ThemeType type, String name) throws ThemeParserException {
-        themeValues = new HashMap<>();
         try {
-            ArrayList<String> lines = LineReader.read("/resources/themes/" + type.subdirectory + '/' + name + ".properties");
-            for(String line : lines) {
-                currentLine++;
-                line = line.trim();
-                if(line.length() == 0) continue;
-                if(line.startsWith("#")) continue;
-                if(!line.contains("=")) throw new ThemeParserException("Couldn't find key/value separator.",currentLine,line);
-
-                String key = line.substring(0,line.indexOf("=")).trim();
-                String valueString = line.substring(line.indexOf("=")+1).trim();
-
-                if(key.length() == 0) throw new ThemeParserException("Couldn't find key.",currentLine,line);
-                if(valueString.length() == 0) throw new ThemeParserException("Couldn't find value.",currentLine,line);
-
-                Object value = parseValue(valueString);
-                themeValues.put(key,value);
-            }
-        } catch(IOException e) {
-            System.out.println(e.getMessage());
-            return null;
+            return read(type, name, LineReader.read("/resources/themes/" + type.subdirectory + '/' + name + ".properties"));
+        } catch(IOException x) {
+            throw new ThemeParserException(x.getMessage(),0,"");
         }
-        return new Theme(type, name,themeValues);
+    }
+
+    public Theme read(Theme.ThemeType type, File file) throws ThemeParserException {
+        try {
+            return read(type, FileUtil.stripExtension(file.getName()), LineReader.read(file));
+        } catch(IOException x) {
+            throw new ThemeParserException(x.getMessage(),0,"");
+        }
+    }
+
+    private Theme read(Theme.ThemeType type, String name, List<String> lines) throws ThemeParserException {
+        themeValues = new HashMap<>();
+        for(String rawLine : lines) {
+            currentLine++;
+            line = rawLine.trim();
+            if(line.length() == 0) continue;
+            if(line.startsWith("#")) continue;
+            if(!line.contains("=")) throw new ThemeParserException("Couldn't find key/value separator.",currentLine,line);
+
+            String key = line.substring(0,line.indexOf("=")).trim();
+            String valueString = line.substring(line.indexOf("=")+1).trim();
+
+            if(key.length() == 0) throw new ThemeParserException("Couldn't find key.",currentLine,line);
+            if(valueString.length() == 0) throw new ThemeParserException("Couldn't find value.",currentLine,line);
+
+            Object value = parseValue(valueString);
+            themeValues.put(key,value);
+        }
+        return new Theme(type, name, themeValues);
     }
 
     private Object parseValue(String value) throws ThemeParserException {

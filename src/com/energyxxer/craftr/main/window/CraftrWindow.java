@@ -1,6 +1,5 @@
 package com.energyxxer.craftr.main.window;
 
-import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.global.Status;
 import com.energyxxer.craftr.main.Craftr;
 import com.energyxxer.craftr.main.window.sections.EditArea;
@@ -49,9 +48,6 @@ public class CraftrWindow {
 
 
 	public CraftrWindow() {
-		ThemeManager.loadAll();
-		ThemeManager.setGUITheme(Preferences.get("theme"));
-
 		jframe = new JFrame();
 		setTitle("");
 		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

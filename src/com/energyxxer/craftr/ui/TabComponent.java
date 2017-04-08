@@ -62,6 +62,8 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 	private Color selected_bg;
 	private Color selected_line;
 
+	private int height = 30;
+
 	private Draggable dragState = new Draggable(this, AXIS_X);
 
 	TabComponent(Tab associatedTab) {
@@ -142,7 +144,7 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 	private void updateName() {
 		setText(((!saved) ? "*" : "") + StringUtil.ellipsis(name, 32));
 		setPreferredSize(null);
-		setPreferredSize(new Dimension(getPreferredSize().width + 30, 30));
+		setPreferredSize(new Dimension(getPreferredSize().width + 30, height));
 		revalidate();
 	}
 
@@ -249,6 +251,8 @@ public class TabComponent extends JLabel implements MouseListener, ThemeChangeLi
 		this.rollover_line = t.getColor(new Color(200, 200, 200), "Tab.hover.border");
 		this.selected_bg = t.getColor(Color.WHITE, "Tab.selected.background");
 		this.selected_line = t.getColor(new Color(200, 200, 200), "Tab.selected.border");
+
+		this.height = t.getInteger(30, "TabList.height");
 
 		updateIcon();
 		updateName();

@@ -20,7 +20,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ import java.util.List;
 /**
  * Created by User on 2/7/2017.
  */
-public class ExplorerItem implements MouseListener {
+public class ExplorerItem extends ExplorerElement {
     private final ExplorerMaster master;
     private ExplorerItem parent = null;
 
@@ -40,8 +39,6 @@ public class ExplorerItem implements MouseListener {
 
     private ArrayList<ExplorerItem> children = new ArrayList<>();
 
-    boolean selected = false;
-    boolean rollover = false;
     private boolean expanded = false;
 
     private Image icon = null;
@@ -284,6 +281,11 @@ public class ExplorerItem implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    @Override
+    public String getPath() {
+        return path;
     }
 
     private StyledPopupMenu generatePopup() {

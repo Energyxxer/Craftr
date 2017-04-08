@@ -28,12 +28,12 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
 
     private HashMap<ExplorerFlag, Boolean> explorerFlags = new HashMap<>();
 
-    private ArrayList<ExplorerItem> children = new ArrayList<>();
-    private ArrayList<ExplorerItem> selectedItems = new ArrayList<>();
+    private ArrayList<ExplorerElement> children = new ArrayList<>();
+    private ArrayList<ExplorerElement> selectedItems = new ArrayList<>();
 
-    private ExplorerItem rolloverItem = null;
+    private ExplorerElement rolloverItem = null;
 
-    ArrayList<ExplorerItem> flatList = new ArrayList<>();
+    ArrayList<ExplorerElement> flatList = new ArrayList<>();
     int width = 0;
     int offsetY = 0;
 
@@ -87,6 +87,16 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
         for(File f : subfiles1) {
             this.children.add(new ExplorerItem(this, f, toOpen));
         }
+
+        this.children.add(new ExplorerSeparator(this));
+
+        File[] resourceFiles = new File(System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "resources").listFiles();
+        if(resourceFiles != null) {
+            for(File f : resourceFiles) {
+                this.children.add(new ExplorerItem(this, f, toOpen));
+            }
+        }
+
         repaint();
     }
 
@@ -99,7 +109,7 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
         flatList.clear();
         g.setColor(colors.get("background"));
         g.fillRect(0,0,this.getWidth(), this.getHeight());
-        for(ExplorerItem i : children) {
+        for(ExplorerElement i : children) {
             i.render(g);
         }
 
@@ -153,7 +163,7 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
         }
 
         if(rolloverItem != null) {
-            rolloverItem.rollover = false;
+            rolloverItem.setRollover(false);
             repaint();
         }
     }
@@ -167,39 +177,39 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
     public void mouseMoved(MouseEvent e) {
         int index = e.getY()/ ROW_HEIGHT;
         if(index >= 0 && index < flatList.size()) {
-            if(rolloverItem != null) rolloverItem.rollover = false;
+            if(rolloverItem != null) rolloverItem.setRollover(false);
             rolloverItem = flatList.get(index);
-            rolloverItem.rollover = true;
+            rolloverItem.setRollover(true);
         } else {
-            if(rolloverItem != null) rolloverItem.rollover = false;
+            if(rolloverItem != null) rolloverItem.setRollover(false);
             rolloverItem = null;
         }
         repaint();
     }
 
     private void clearSelected() {
-        for(ExplorerItem item : selectedItems) {
-            item.selected = false;
+        for(ExplorerElement item : selectedItems) {
+            item.setSelected(false);
         }
         selectedItems.clear();
     }
 
-    private void addSelected(ExplorerItem item) {
+    private void addSelected(ExplorerElement item) {
         this.addSelected(item, true);
     }
 
-    private void addSelected(ExplorerItem item, boolean invert) {
+    private void addSelected(ExplorerElement item, boolean invert) {
         if(!selectedItems.contains(item)) {
-            item.selected = true;
+            item.setSelected(true);
             selectedItems.add(item);
         } else if(invert) {
-            item.selected = false;
+            item.setSelected(false);
             selectedItems.remove(item);
         }
     }
 
-    void setSelected(ExplorerItem item, MouseEvent e) {
-        ExplorerItem lastItem = null;
+    void setSelected(ExplorerElement item, MouseEvent e) {
+        ExplorerElement lastItem = null;
         if(this.selectedItems.size() > 0) lastItem = this.selectedItems.get(this.selectedItems.size()-1);
         if(!e.isControlDown()) {
             clearSelected();
@@ -221,7 +231,10 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
 
     public List<String> getSelectedFiles() {
         List<String> list = new ArrayList<>();
-        selectedItems.forEach(item -> list.add(item.path));
+        selectedItems.forEach(item -> {
+            String path = item.getPath();
+            if(path != null) list.add(path);
+        });
         return list;
     }
 

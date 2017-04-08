@@ -36,10 +36,10 @@ public abstract class ScannerProfile {
      *
      * @param token Token to be filtered.
      *
-     * @return false if the token should not be added to the stream, true otherwise.
+     * @return false if the token should be added to the stream, true otherwise.
      * */
     public boolean filter(Token token) {
-        return true;
+        return false;
     }
 
     /**

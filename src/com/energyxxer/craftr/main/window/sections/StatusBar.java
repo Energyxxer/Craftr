@@ -4,9 +4,13 @@ import com.energyxxer.craftr.global.Status;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.theme.Theme;
+import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -14,6 +18,8 @@ import javax.swing.border.MatteBorder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * Created by User on 12/15/2016.
@@ -45,6 +51,16 @@ public class StatusBar extends JPanel {
         this.add(statusLabel,BorderLayout.CENTER);
 
         this.add(extension,BorderLayout.EAST);
+
+
+
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK), "reloadThemes");
+        this.getActionMap().put("reloadThemes", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ThemeManager.loadAll();
+            }
+        });
     }
 
     public void setStatus(String text) {

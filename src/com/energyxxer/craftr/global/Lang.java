@@ -2,6 +2,7 @@ package com.energyxxer.craftr.global;
 
 import com.energyxxer.craftr.compiler.lexical_analysis.presets.CraftrScannerProfile;
 import com.energyxxer.craftr.compiler.lexical_analysis.presets.JSONScannerProfile;
+import com.energyxxer.craftr.compiler.lexical_analysis.presets.PropertiesScannerProfile;
 import com.energyxxer.craftr.compiler.lexical_analysis.profiles.ScannerProfile;
 import com.energyxxer.craftr.ui.components.factory.Factory;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * Created by User on 2/9/2017.
  */
 public enum Lang {
-    CRAFTR(CraftrScannerProfile::new, "craftr"), JSON(JSONScannerProfile::new, "json", "mcmeta");
+    CRAFTR(CraftrScannerProfile::new, "craftr"), JSON(JSONScannerProfile::new, "json", "mcmeta"), PROPERTIES(PropertiesScannerProfile::new, "properties", "lang");
 
     Factory<ScannerProfile> factory;
     List<String> extensions;
