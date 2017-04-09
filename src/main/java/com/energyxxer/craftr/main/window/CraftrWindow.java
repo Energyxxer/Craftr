@@ -128,7 +128,7 @@ public class CraftrWindow {
 	}
 
 	public static void setTitle(String title) {
-		jframe.setTitle(title + ((title.length() > 0) ? " - " : "") + "Craftr " + Craftr.VERSION + ((Craftr.DEV) ? " DEV" : ""));
+		jframe.setTitle(title + ((title.length() > 0) ? " - " : "") + "Craftr " + Craftr.VERSION);
 	}
 
 	public static void clearTitle() {

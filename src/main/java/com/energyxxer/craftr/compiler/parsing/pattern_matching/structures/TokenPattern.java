@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class TokenPattern<T> {
 
-	public String name = "";
+	protected String name = "";
 	public abstract T getContents();
 	public abstract TokenPattern<T> setName(String name);
 
@@ -50,4 +50,8 @@ public abstract class TokenPattern<T> {
 	public abstract ArrayList<Token> flattenTokens();
 
 	public abstract String getType();
+
+    public String getName() {
+        return name;
+    }
 }

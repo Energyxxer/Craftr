@@ -4,11 +4,17 @@ package com.energyxxer.craftr.util;
  * Created by User on 1/21/2017.
  */
 public class Version {
+    public final String gen;
     public final int major;
     public final int minor;
     public final int patch;
 
     public Version(int major, int minor, int patch) {
+        this(null, major, minor, patch);
+    }
+
+    public Version(String gen, int major, int minor, int patch) {
+        this.gen = gen;
         this.major = major;
         this.minor = minor;
         this.patch = patch;
@@ -22,6 +28,6 @@ public class Version {
 
     @Override
     public String toString() {
-        return String.format("%d.%d.%d",major,minor,patch);
+        return (gen != null) ? String.format("%d.%d.%d %s",major, minor, patch, gen) : String.format("%d.%d.%d", major, minor, patch);
     }
 }

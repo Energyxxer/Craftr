@@ -162,16 +162,16 @@ public class CraftrStructures {
             g2.append(new TokenListMatch(TokenType.MODIFIER,true).setName("MODIFIER_LIST"));
             g2.append(DATA_TYPE);
             {
-                TokenGroupMatch g3 = new TokenGroupMatch();
+                TokenGroupMatch g3 = new TokenGroupMatch().setName("FIELD_DECLARATION");
 
-                g3.append(new TokenItemMatch(TokenType.IDENTIFIER));
+                g3.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("FIELD_NAME"));
 
-                TokenGroupMatch g4 = new TokenGroupMatch(true);
+                TokenGroupMatch g4 = new TokenGroupMatch(true).setName("FIELD_INITIALIZATION");
                 g4.append(new TokenItemMatch(TokenType.OPERATOR,"="));
                 g4.append(VALUE);
                 g3.append(g4);
 
-                g2.append(new TokenListMatch(g3,new TokenItemMatch(TokenType.COMMA),true));
+                g2.append(new TokenListMatch(g3,new TokenItemMatch(TokenType.COMMA).setName("FIELD_DECLARATION_SEPARATOR"),true).setName("FIELD_DECLARATION_LIST"));
             }
 
             TokenGroupMatch g = new TokenGroupMatch();

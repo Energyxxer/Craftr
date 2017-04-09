@@ -16,8 +16,7 @@ import java.awt.Point;
 
 public class Craftr {
 	public static Craftr craftr;
-	public static final Version VERSION = new Version(0,0,0);
-	public static final boolean DEV = true;
+	public static final Version VERSION = new Version("ALPHA",0,0,0);
 
 	public static final boolean PRINT_CONSOLE_CALLS = false;
 
@@ -26,11 +25,6 @@ public class Craftr {
 	private Craftr() {
 		window = new CraftrWindow();
 	}
-
-	private static final int
-		IDLE = 0,
-		IDLE_TO_SEARCH = 1,
-		SEARCH = 2;
 
 	public static void main(String[] args) {
 		JFrame splash = new JFrame();

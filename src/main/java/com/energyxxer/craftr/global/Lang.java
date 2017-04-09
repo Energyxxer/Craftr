@@ -13,7 +13,7 @@ import java.util.List;
  * Created by User on 2/9/2017.
  */
 public enum Lang {
-    CRAFTR(CraftrScannerProfile::new, "craftr"), JSON(JSONScannerProfile::new, "json", "mcmeta"), PROPERTIES(PropertiesScannerProfile::new, "properties", "lang");
+    CRAFTR(CraftrScannerProfile::new, "craftr"), JSON(JSONScannerProfile::new, "json", "mcmeta"), PROPERTIES(PropertiesScannerProfile::new, "properties", "lang", "project");
 
     Factory<ScannerProfile> factory;
     List<String> extensions;

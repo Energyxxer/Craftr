@@ -91,7 +91,7 @@ public class CraftrUnit extends AbstractCraftrComponent {
         if(componentList != null) {
             for (TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
                 TokenStructure component = (TokenStructure) p.getContents();
-                if (component.name.equals("FIELD")) {
+                if (component.getName().equals("FIELD")) {
                     fields.addAll(CraftrField.parseDeclaration(this, component));
                 }
             }
@@ -102,9 +102,10 @@ public class CraftrUnit extends AbstractCraftrComponent {
 
     @Override
     public String toString() {
-        return "" + modifiers + " " + type + " " + name + " "
-                + ((unitExtends != null) ? "extends " + unitExtends + " " : "")
-                + ((unitImplements != null) ? "implements " + unitImplements + " " : "")
-                + ((unitRequires != null) ? "requires " + unitRequires + " " : "");
+        return name;
+        /*return "" + modifiers + " " + type + " " + name + ""
+                + ((unitExtends != null) ? " extends " + unitExtends: "")
+                + ((unitImplements != null) ? " implements " + unitImplements: "")
+                + ((unitRequires != null) ? " requires " + unitRequires: "");*/
     }
 }
