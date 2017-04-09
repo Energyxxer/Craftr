@@ -4,6 +4,10 @@ apply plugin: "java"
 group = craftrGroup
 version = craftrVersion
 
-repositories {}
+repositories {
+    mavenCentral()
+}
 
-dependencies {}
+dependencies {
+    compile group: "org.jetbrains", name: "annotations", version: "15.0"
+}

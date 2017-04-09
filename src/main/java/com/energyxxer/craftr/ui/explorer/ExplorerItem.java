@@ -1,25 +1,18 @@
 package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.files.FileType;
-import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.craftr.global.FileManager;
-import com.energyxxer.craftr.global.Preferences;
-import com.energyxxer.craftr.global.ProjectManager;
-import com.energyxxer.craftr.global.TabManager;
+import com.energyxxer.craftr.global.*;
 import com.energyxxer.craftr.logic.Project;
 import com.energyxxer.craftr.ui.common.MenuItems;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.ui.styledcomponents.StyledPopupMenu;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

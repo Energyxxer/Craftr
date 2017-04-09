@@ -1,12 +1,11 @@
 package com.energyxxer.craftr.ui;
 
-import com.sun.istack.internal.NotNull;
 
-import javax.swing.JComponent;
-import java.awt.Point;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 /**
