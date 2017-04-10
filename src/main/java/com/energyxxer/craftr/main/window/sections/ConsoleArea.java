@@ -1,11 +1,11 @@
 package com.energyxxer.craftr.main.window.sections;
 
-import com.energyxxer.craftr.global.Console;
+import com.energyxxer.util.out.Console;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollBarUI;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.craftr.util.out.ConsoleOutputStream;
+import com.energyxxer.util.out.ConsoleOutputStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;

@@ -1,11 +1,16 @@
 package com.energyxxer.craftr.ui.components;
 
-import com.energyxxer.craftr.ui.components.factory.Factory;
+import com.energyxxer.util.Factory;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.SwingConstants;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 

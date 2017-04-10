@@ -1,13 +1,13 @@
 package com.energyxxer.craftr.global;
 
-import com.energyxxer.craftr.logic.Project;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.TabComponent;
 import com.energyxxer.craftr.ui.dialogs.OptionDialog;
 import com.energyxxer.craftr.ui.editor.CraftrEditor;
 import com.energyxxer.craftr.ui.editor.behavior.caret.CaretProfile;
-import com.energyxxer.craftr.util.ImageManager;
+import com.energyxxer.craftrlang.projects.Project;
+import com.energyxxer.util.ImageManager;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;

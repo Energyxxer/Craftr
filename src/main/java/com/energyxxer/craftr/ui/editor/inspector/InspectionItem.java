@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.editor.inspector;
 
-import com.energyxxer.craftr.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 
 /**
  * Created by User on 1/1/2017.

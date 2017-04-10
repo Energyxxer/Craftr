@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.util;
 
-import com.energyxxer.craftr.global.ProjectManager;
-import com.energyxxer.craftr.logic.Project;
+import com.energyxxer.craftrlang.projects.ProjectManager;
+import com.energyxxer.craftrlang.projects.Project;
 
 import java.io.File;
 import java.util.regex.Matcher;
@@ -41,6 +41,19 @@ public class FileUtil {
 		return result;
 	}
 
+	public static String stripExtension(String str) {
+
+		if (str == null)
+			return null;
+
+		int pos = str.lastIndexOf(".");
+
+		if (pos == -1)
+			return str;
+
+		return str.substring(0, pos);
+	}
+
 	public static String getPackage(File file) {
 		return getPackageInclusive(file.getParentFile());
 	}
@@ -59,17 +72,4 @@ public class FileUtil {
 	}
 
 	private FileUtil() {}
-
-	public static String stripExtension(String str) {
-
-		if (str == null)
-			return null;
-
-		int pos = str.lastIndexOf(".");
-
-		if (pos == -1)
-			return str;
-
-		return str.substring(0, pos);
-	}
 }

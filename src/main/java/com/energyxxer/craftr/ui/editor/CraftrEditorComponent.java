@@ -1,10 +1,10 @@
 package com.energyxxer.craftr.ui.editor;
 
-import com.energyxxer.craftr.compiler.lexical_analysis.Scanner;
-import com.energyxxer.craftr.compiler.lexical_analysis.token.Token;
-import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenSection;
-import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenStream;
-import com.energyxxer.craftr.global.Lang;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenSection;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.Lang;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
 import com.energyxxer.craftr.ui.editor.inspector.Inspector;

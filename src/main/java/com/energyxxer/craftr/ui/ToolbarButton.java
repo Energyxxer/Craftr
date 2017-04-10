@@ -1,12 +1,20 @@
 package com.energyxxer.craftr.ui;
 
-import java.awt.*;
-
-import javax.swing.*;
-
 import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.craftr.util.ImageManager;
+import com.energyxxer.util.ImageManager;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 
 /**
  * Represents a single button in the toolbar.

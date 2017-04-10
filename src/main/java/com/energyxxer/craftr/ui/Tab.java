@@ -1,8 +1,8 @@
 package com.energyxxer.craftr.ui;
 
-import com.energyxxer.craftr.global.ProjectManager;
+import com.energyxxer.craftrlang.projects.ProjectManager;
 import com.energyxxer.craftr.global.TabManager;
-import com.energyxxer.craftr.logic.Project;
+import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftr.ui.display.DisplayModule;
 import com.energyxxer.craftr.ui.editor.CraftrEditor;
 import com.energyxxer.craftr.ui.image_viewer.ImageViewer;

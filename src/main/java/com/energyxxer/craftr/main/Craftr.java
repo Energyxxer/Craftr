@@ -1,10 +1,10 @@
 package com.energyxxer.craftr.main;
 
-import com.energyxxer.craftr.global.ProjectManager;
 import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.main.window.CraftrWindow;
-import com.energyxxer.craftr.util.ImageManager;
 import com.energyxxer.craftr.util.Version;
+import com.energyxxer.craftrlang.projects.ProjectManager;
+import com.energyxxer.util.ImageManager;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;

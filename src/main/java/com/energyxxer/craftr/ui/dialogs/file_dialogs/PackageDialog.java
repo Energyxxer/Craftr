@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.dialogs.file_dialogs;
 
 import com.energyxxer.craftr.files.FileType;
-import com.energyxxer.craftr.global.CraftrUtil;
+import com.energyxxer.craftrlang.CraftrUtil;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.components.Padding;
 import com.energyxxer.craftr.ui.styledcomponents.StyledButton;

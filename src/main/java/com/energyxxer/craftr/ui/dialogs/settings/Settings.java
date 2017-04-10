@@ -6,7 +6,7 @@ import com.energyxxer.craftr.ui.components.Padding;
 import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
 import com.energyxxer.craftr.ui.styledcomponents.StyledList;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.craftr.util.ImageManager;
+import com.energyxxer.util.ImageManager;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;

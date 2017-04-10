@@ -28,6 +28,6 @@ public class Version {
 
     @Override
     public String toString() {
-        return (gen != null) ? String.format("%d.%d.%d %s",major, minor, patch, gen) : String.format("%d.%d.%d", major, minor, patch);
+        return (gen != null) ? String.format("%d.%d.%d-%s",major, minor, patch, gen) : String.format("%d.%d.%d", major, minor, patch);
     }
 }

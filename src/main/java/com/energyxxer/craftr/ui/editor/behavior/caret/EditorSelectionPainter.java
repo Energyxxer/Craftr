@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.editor.behavior.caret;
 
-import com.energyxxer.craftr.util.StringBounds;
+import com.energyxxer.util.StringBounds;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Highlighter;

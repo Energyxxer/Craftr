@@ -1,13 +1,15 @@
 package com.energyxxer.craftr.main.window.sections;
 
+import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.global.Preferences;
-import com.energyxxer.craftr.global.ProjectManager;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.main.window.CraftrWindow;
+import com.energyxxer.craftr.ui.dialogs.ProjectProperties;
 import com.energyxxer.craftr.ui.dialogs.settings.Settings;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftrlang.projects.Project;
 
 import javax.swing.BorderFactory;
 import javax.swing.JMenuBar;
@@ -221,7 +223,8 @@ public class MenuBar extends JMenuBar {
             {
                 StyledMenuItem item = new StyledMenuItem("Properties");
                 item.addActionListener(e -> {
-                    if (ProjectManager.getSelected() != null) ProjectManager.getSelected().showPropertiesDialog();
+                    Project selectedProject = Commons.getSelectedProject();
+                    if(selectedProject != null) ProjectProperties.show(selectedProject);
                 });
                 menu.add(item);
             }

@@ -12,8 +12,8 @@ import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.InsertionEdit;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.LineMoveEdit;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.NewlineEdit;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.TabInsertionEdit;
-import com.energyxxer.craftr.util.StringLocation;
 import com.energyxxer.craftr.util.linepainter.LinePainter;
+import com.energyxxer.util.StringLocation;
 
 import javax.swing.AbstractAction;
 import javax.swing.InputMap;
@@ -49,6 +49,8 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
     //              (line)   (index)
 
     private static final float BIAS_POINT = 0.4f;
+
+    private static final String WORD_DELIMITERS = "./\\()\"'-:,.;<>~!@#$%^&*|+=[]{}`~?";
 
     {
         this.addKeyListener(this);
@@ -245,6 +247,44 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
 
     public void setCurrentLineColor(Color c) {
         linePainter.setColor(c);
+    }
+
+    public int getPreviousWord(int offs) throws BadLocationException {
+        Document doc = this.getDocument();
+        String text = doc.getText(0, doc.getLength());
+
+        int index = offs-1;
+        char lastChar = '\000';
+        boolean initialWhitespace = true;
+        while(index >= 0) {
+            char ch = text.charAt(index);
+            if(((initialWhitespace || Character.isJavaIdentifierPart(lastChar) == Character.isJavaIdentifierPart(ch)) && ch != '\n') || index == offs-1) {
+                if((index != offs-1 && initialWhitespace && !Character.isWhitespace(ch)) || ch == '\n') initialWhitespace = false;
+                index--;
+                lastChar = ch;
+            } else break;
+        }
+        return index+1;
+    }
+
+    public int getNextWord(int offs) throws BadLocationException {
+        Document doc = this.getDocument();
+        String text = doc.getText(0, doc.getLength());
+
+        int index = offs;
+        char lastChar = '\000';
+        while(index < doc.getLength()) {
+            char ch = text.charAt(index);
+            if((Character.isJavaIdentifierPart(lastChar) == Character.isJavaIdentifierPart(ch) && ch != '\n') || index == offs) {
+                index++;
+                lastChar = ch;
+            } else break;
+        }
+        char ch;
+        while(index < text.length() && ((ch = text.charAt(index)) != '\n' && Character.isWhitespace(ch))) {
+            index++;
+        }
+        return index;
     }
 
     //Delegates and deprecated methods

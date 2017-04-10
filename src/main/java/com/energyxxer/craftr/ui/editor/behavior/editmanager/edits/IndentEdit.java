@@ -5,7 +5,7 @@ import com.energyxxer.craftr.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.craftr.ui.editor.behavior.caret.Dot;
 import com.energyxxer.craftr.ui.editor.behavior.caret.EditorCaret;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.Edit;
-import com.energyxxer.craftr.util.StringUtil;
+import com.energyxxer.util.StringUtil;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;

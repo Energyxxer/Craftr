@@ -1,10 +1,16 @@
 package com.energyxxer.craftr.global;
 
+import com.energyxxer.craftr.main.window.CraftrWindow;
+import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.craftr.util.ImageManager;
+import com.energyxxer.craftrlang.projects.Project;
+import com.energyxxer.craftrlang.projects.ProjectManager;
+import com.energyxxer.util.ImageManager;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class Commons {
 
@@ -36,5 +42,20 @@ public class Commons {
 
     public static BufferedImage getIcon(String name) {
         return ImageManager.load(getIconPath(name));
+    }
+
+    public static Project getSelectedProject() {
+        Project selected = null;
+
+        Tab selectedTab = TabManager.getSelectedTab();
+
+        List<String> selectedFiles = CraftrWindow.explorer.getSelectedFiles();
+
+        if(selectedFiles.size() > 0) {
+            selected = ProjectManager.getAssociatedProject(new File(selectedFiles.get(0)));
+        } else if(selectedTab != null) {
+            selected = selectedTab.getLinkedProject();
+        }
+        return selected;
     }
 }

@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.theme;
 
-import com.energyxxer.craftr.global.Console;
-import com.energyxxer.craftr.global.Lang;
+import com.energyxxer.util.out.Console;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.Lang;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.main.window.CraftrWindow;

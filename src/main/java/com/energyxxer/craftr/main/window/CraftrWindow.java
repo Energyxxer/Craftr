@@ -11,7 +11,7 @@ import com.energyxxer.craftr.ui.explorer.ExplorerMaster;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.craftr.util.ImageManager;
+import com.energyxxer.util.ImageManager;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;

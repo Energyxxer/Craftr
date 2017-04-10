@@ -1,14 +1,14 @@
 package com.energyxxer.craftr.ui;
 
 import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.craftr.global.ProjectManager;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.ui.styledcomponents.StyledPopupMenu;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.craftr.util.ImageManager;
-import com.energyxxer.craftr.util.StringUtil;
+import com.energyxxer.craftrlang.projects.ProjectManager;
+import com.energyxxer.util.ImageManager;
+import com.energyxxer.util.StringUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;

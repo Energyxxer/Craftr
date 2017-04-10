@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.editor.behavior.caret;
 
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
-import com.energyxxer.craftr.util.StringBounds;
+import com.energyxxer.util.StringBounds;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Utilities;
@@ -132,14 +132,14 @@ public class Dot {
 
     public int getPositionBeforeWord() {
         try {
-            return Math.max(Utilities.getPreviousWord(component, Math.min(index,mark)), Math.max(0,getRowStart()-1));
+            return Math.max(component.getPreviousWord(Math.min(index,mark)), Math.max(0,getRowStart()-1));
         } catch(BadLocationException ble) {}
         return 0;
     }
 
     public int getPositionAfterWord() {
         try {
-            int pos = Utilities.getNextWord(component, Math.max(index,mark));
+            int pos = component.getNextWord(Math.max(index,mark));
             int rowEnd = getRowEnd();
             return (Math.max(index, mark) == rowEnd) ? pos : Math.min(pos, rowEnd);
         } catch(BadLocationException ble) {}

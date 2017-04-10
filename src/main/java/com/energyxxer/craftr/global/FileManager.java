@@ -3,6 +3,7 @@ package com.energyxxer.craftr.global;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.dialogs.ConfirmDialog;
 import com.energyxxer.craftr.util.FileUtil;
+import com.energyxxer.util.out.Console;
 
 import java.io.File;
 import java.util.HashMap;

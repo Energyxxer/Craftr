@@ -1,13 +1,13 @@
 package com.energyxxer.craftr.ui.image_viewer;
 
-import com.energyxxer.craftr.global.Console;
+import com.energyxxer.util.out.Console;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.display.DisplayModule;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
-import com.energyxxer.craftr.util.ImageManager;
 import com.energyxxer.craftr.util.MathUtil;
-import com.energyxxer.craftr.util.StringUtil;
+import com.energyxxer.util.ImageManager;
+import com.energyxxer.util.StringUtil;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;

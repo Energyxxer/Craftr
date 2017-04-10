@@ -1,7 +1,8 @@
 package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.craftr.global.ProjectManager;
+import com.energyxxer.craftr.global.Preferences;
+import com.energyxxer.craftrlang.projects.ProjectManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 
 import javax.swing.JPanel;
@@ -60,6 +61,7 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
     }
 
     public void refresh() {
+        ProjectManager.setWorkspaceDir(Preferences.get("workspace_dir"));
         ProjectManager.loadWorkspace();
 
         ArrayList<String> copy = new ArrayList<>();

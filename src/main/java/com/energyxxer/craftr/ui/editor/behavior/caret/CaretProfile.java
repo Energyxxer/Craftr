@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.editor.behavior.caret;
 
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
-import com.energyxxer.craftr.util.StringLocation;
+import com.energyxxer.util.StringLocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;

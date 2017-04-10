@@ -2,7 +2,7 @@ package com.energyxxer.craftr.ui.editor.behavior.caret;
 
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
 import com.energyxxer.craftr.util.Range;
-import com.energyxxer.craftr.util.StringLocation;
+import com.energyxxer.util.StringLocation;
 
 import javax.swing.plaf.TextUI;
 import javax.swing.text.BadLocationException;

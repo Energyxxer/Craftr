@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.editor;
 
-import com.energyxxer.craftr.global.Console;
-import com.energyxxer.craftr.global.Lang;
+import com.energyxxer.util.out.Console;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.Lang;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.display.DisplayModule;

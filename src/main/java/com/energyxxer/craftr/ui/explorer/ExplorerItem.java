@@ -2,12 +2,13 @@ package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.files.FileType;
 import com.energyxxer.craftr.global.*;
-import com.energyxxer.craftr.logic.Project;
+import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftr.ui.common.MenuItems;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.ui.styledcomponents.StyledPopupMenu;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftrlang.projects.ProjectManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -25,7 +26,7 @@ public class ExplorerItem extends ExplorerElement {
     private final ExplorerMaster master;
     private ExplorerItem parent = null;
 
-    String path = null;
+    private String path = null;
     private boolean isDirectory = false;
     private String filename = null;
     private int indentation = 0;

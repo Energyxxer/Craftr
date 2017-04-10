@@ -5,7 +5,7 @@ import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
-import com.energyxxer.craftr.util.ImageManager;
+import com.energyxxer.util.ImageManager;
 
 import javax.swing.ImageIcon;
 

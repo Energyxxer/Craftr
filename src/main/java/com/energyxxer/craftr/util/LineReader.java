@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.util;
 
-import com.energyxxer.craftr.global.Console;
+import com.energyxxer.util.out.Console;
 
 import java.io.BufferedReader;
 import java.io.File;

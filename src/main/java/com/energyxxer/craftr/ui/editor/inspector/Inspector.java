@@ -1,12 +1,12 @@
 package com.energyxxer.craftr.ui.editor.inspector;
 
-import com.energyxxer.craftr.compiler.lexical_analysis.Scanner;
-import com.energyxxer.craftr.compiler.lexical_analysis.token.TokenStream;
-import com.energyxxer.craftr.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.editor.CraftrEditorComponent;
-import com.energyxxer.craftr.util.StringBounds;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
+import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.util.StringBounds;
 
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Highlighter;
