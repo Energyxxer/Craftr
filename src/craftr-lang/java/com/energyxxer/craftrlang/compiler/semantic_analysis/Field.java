@@ -5,9 +5,9 @@ import com.energyxxer.craftrlang.compiler.exceptions.CraftrException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.Access;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.util.out.Console;
 
@@ -34,6 +34,11 @@ public class Field extends AbstractFileComponent implements Symbol {
         this.type = null;
 
         this.name = ((TokenItem) pattern.find("FIELD_NAME")).getContents().value;
+        if(this.name.equalsIgnoreCase("debug")) {
+            Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("src.com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime"));
+        }
+
+        this.declaringUnit.getSubSymbolTable().put(this);
 
         Console.debug.println("at " + declaringUnit + "#" + name);
     }
@@ -65,10 +70,15 @@ public class Field extends AbstractFileComponent implements Symbol {
         return name;
     }
 
-    public Access getAccess() {
-        return modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? Access.PUBLIC :
-               modifiers.contains(CraftrUtil.Modifier.PROTECTED) ? Access.PROTECTED :
-               modifiers.contains(CraftrUtil.Modifier.PRIVATE) ? Access.PRIVATE :
-               Access.PACKAGE;
+    @Override
+    public String toString() {
+        return modifiers + " " + this.name;
+    }
+
+    public SymbolVisibility getVisibility() {
+        return modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL :
+               modifiers.contains(CraftrUtil.Modifier.PROTECTED) ? SymbolVisibility.UNIT :
+               modifiers.contains(CraftrUtil.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
+               SymbolVisibility.PACKAGE;
     }
 }

@@ -1,4 +1,4 @@
-group 'enx-util'
+group 'com.energyxxer'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'

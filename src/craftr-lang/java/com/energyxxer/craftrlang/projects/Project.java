@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.projects;
 
-import com.energyxxer.craftrlang.util.StringUtil;
+import com.energyxxer.util.StringUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;

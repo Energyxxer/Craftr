@@ -5,6 +5,7 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.util.out.Console;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,9 +24,7 @@ public class Parser {
 			currentList.add(t);
 			if(t.type == TokenType.END_OF_FILE) {
 				ArrayList<Token> f = new ArrayList<>();
-				for(Token t2 : currentList) {
-					f.add(t2);
-				}
+				f.addAll(currentList);
 				tokens.add(f);
 				currentList.clear();
 			}
@@ -40,9 +39,9 @@ public class Parser {
 			TokenMatchResponse match = CraftrStructures.FILE.match(f);
 
 			if(!match.matched) {
-				System.err.println(match.getFormattedErrorMessage());
-				System.out.println(match.pattern);
-				System.out.println(match);
+				Console.err.println(match.getFormattedErrorMessage());
+				Console.info.println(match.pattern);
+				Console.info.println(match);
 				return;
 			}
 

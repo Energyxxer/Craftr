@@ -1,8 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package;
 
 import com.energyxxer.craftrlang.CraftrUtil;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.Access;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
@@ -19,7 +18,7 @@ public class Package implements Symbol {
     private String name;
 
     private HashMap<String, Package> subPackages = new HashMap<>();
-    private HashMap<String, CraftrFile> subFiles = new HashMap<>();
+    private HashMap<String, Unit> units = new HashMap<>();
 
     private SymbolTable symbolTable;
 
@@ -32,7 +31,8 @@ public class Package implements Symbol {
     Package(@NotNull Package parent, String name) {
         this.parent = parent;
         this.name = name;
-        this.symbolTable = new SymbolTable(SymbolVisibility.PACKAGE, parent.symbolTable);
+        this.symbolTable = new SymbolTable(SymbolVisibility.GLOBAL, parent.symbolTable);
+        parent.symbolTable.put(this);
     }
 
     Package createPackage(String path) {
@@ -45,6 +45,11 @@ public class Package implements Symbol {
         return (sections.length > 1) ? newPackage.createPackage(sections[1]) : newPackage;
     }
 
+    public void addUnit(Unit unit) {
+        this.units.put(unit.getName(), unit);
+        symbolTable.put(unit);
+    }
+
     @Override
     public String getName() {
         return name;
@@ -55,11 +60,11 @@ public class Package implements Symbol {
     }
 
     @Override
-    public Access getAccess() {
-        return Access.PUBLIC;
+    public SymbolVisibility getVisibility() {
+        return SymbolVisibility.GLOBAL;
     }
 
-    public SymbolTable getSymbolTable() {
+    public SymbolTable getSubSymbolTable() {
         return symbolTable;
     }
 
@@ -70,5 +75,10 @@ public class Package implements Symbol {
 
     public boolean isRoot() {
         return parent == null;
+    }
+
+    public Package getRoot() {
+        if(this.parent == null) return this;
+        return parent.getRoot();
     }
 }

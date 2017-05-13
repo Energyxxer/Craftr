@@ -6,9 +6,10 @@ import com.energyxxer.craftrlang.compiler.exceptions.ParserException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.Access;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.util.out.Console;
 
 import java.util.ArrayList;
@@ -18,8 +19,9 @@ import java.util.List;
  * Created by User on 2/25/2017.
  */
 public class Unit extends AbstractFileComponent implements Symbol {
-    private CraftrFile declaringFile;
+    private final CraftrFile declaringFile;
     public List<CraftrUtil.Modifier> modifiers;
+    public final SymbolVisibility visibility;
     public String name;
     public String type;
 
@@ -28,6 +30,8 @@ public class Unit extends AbstractFileComponent implements Symbol {
     public List<String> unitRequires = null;
 
     public List<Field> fields;
+
+    public SymbolTable symbolTable;
 
     public Unit(CraftrFile file, TokenPattern<?> pattern) throws CraftrException {
         super(pattern);
@@ -41,6 +45,8 @@ public class Unit extends AbstractFileComponent implements Symbol {
         this.type = ((TokenItem) header.find("UNIT_TYPE")).getContents().value;
 
         this.modifiers = SemanticUtils.getModifiers(header.deepSearchByName("UNIT_MODIFIER"));
+
+        Console.debug.println(modifiers);
 
         List<TokenPattern<?>> actionPatterns = header.deepSearchByName("UNIT_ACTION");
         for(TokenPattern<?> p : actionPatterns) {
@@ -85,6 +91,11 @@ public class Unit extends AbstractFileComponent implements Symbol {
             }
         }
 
+        this.visibility = modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL : SymbolVisibility.PACKAGE;
+
+        this.symbolTable = new SymbolTable(this.visibility, file.getPackage().getSubSymbolTable());
+        file.getPackage().getSubSymbolTable().put(this);
+
         //Parse body
 
         this.fields = new ArrayList<>();
@@ -108,8 +119,8 @@ public class Unit extends AbstractFileComponent implements Symbol {
     }
 
     @Override
-    public Access getAccess() {
-        return modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? Access.PUBLIC : Access.PACKAGE;
+    public SymbolVisibility getVisibility() {
+        return modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL : SymbolVisibility.PACKAGE;
     }
 
     @Override
@@ -119,5 +130,13 @@ public class Unit extends AbstractFileComponent implements Symbol {
                 + ((unitExtends != null) ? " extends " + unitExtends: "")
                 + ((unitImplements != null) ? " implements " + unitImplements: "")
                 + ((unitRequires != null) ? " requires " + unitRequires: "");*/
+    }
+
+    public SymbolTable getSubSymbolTable() {
+        return symbolTable;
+    }
+
+    public CraftrFile getDeclaringFile() {
+        return declaringFile;
     }
 }

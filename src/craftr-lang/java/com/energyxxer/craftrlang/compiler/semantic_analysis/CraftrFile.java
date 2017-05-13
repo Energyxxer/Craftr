@@ -39,8 +39,10 @@ public class CraftrFile extends AbstractFileComponent {
 
         List<TokenPattern<?>> unitPatterns = pattern.find("UNIT_LIST").searchByName("UNIT");
 
-        for(TokenPattern<?> unit : unitPatterns) {
-            this.units.add(new Unit(this, unit));
+        for(TokenPattern<?> rawUnit : unitPatterns) {
+            Unit unit = new Unit(this, rawUnit);
+            this.units.add(unit);
+            this.parentPackage.addUnit(unit);
         }
     }
 
