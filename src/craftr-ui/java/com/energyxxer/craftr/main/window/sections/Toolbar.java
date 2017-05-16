@@ -105,10 +105,10 @@ public class Toolbar extends JPanel {
                 Compiler c = new Compiler(Commons.getSelectedProject());
                 c.addProgressListener(CraftrWindow::setStatus);
                 c.addCompletionListener(() -> {
-                    c.getReport().getErrors().forEach(err -> {
-                        Console.err.println(err);
-                    });
+                    CraftrWindow.noticeBoard.explorerMaster.setNotices(c.getReport().groupByLabel());
+                    if(c.getReport().getTotal() > 0) CraftrWindow.noticeBoard.expand();
                     c.getReport().getWarnings().forEach(Console.warn::println);
+                    c.getReport().getErrors().forEach(Console.err::println);
                 });
                 c.compile();
 

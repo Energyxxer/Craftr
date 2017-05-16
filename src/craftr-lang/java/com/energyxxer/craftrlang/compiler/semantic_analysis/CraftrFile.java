@@ -8,6 +8,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.util.FileUtil;
@@ -30,11 +31,14 @@ public class CraftrFile extends AbstractFileComponent {
     public SymbolTable importTable;
     private boolean importsInitialized = false;
 
+    private Context context;
+
     public CraftrFile(SemanticAnalyzer analyzer, File file, TokenPattern<?> pattern) throws CraftrException {
         super(pattern);
         this.analyzer = analyzer;
         this.file = file;
-        this.importTable = new SymbolTable(analyzer.compiler);
+        this.context = new Context(this);
+        this.importTable = new SymbolTable(analyzer.getCompiler());
 
         TokenPattern<?> packagePattern = pattern.find("PACKAGE.PACKAGE_PATH");
 
@@ -66,7 +70,7 @@ public class CraftrFile extends AbstractFileComponent {
         TokenList importList = (TokenList) pattern.find("IMPORT_LIST");
         if(importList == null) {
             importsInitialized = true;
-            Console.info.println("No imports found for file '" + file.getName() + "'");
+            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.INFO, "No imports found for file '" + file.getName() + "'"));
             return;
         }
 
@@ -80,7 +84,7 @@ public class CraftrFile extends AbstractFileComponent {
 
             Symbol itemToImport;
             try {
-                itemToImport = analyzer.getSymbolTable().getSymbol(fullyQualifiedName);
+                itemToImport = analyzer.getSymbolTable().getSymbol(fullyQualifiedName, context);
             } catch(CompilerException x) {
                 analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, x.getMessage(), identifier.getFormattedPath()));
                 continue;
@@ -91,7 +95,11 @@ public class CraftrFile extends AbstractFileComponent {
             }
             this.importTable.put(shortName, itemToImport);
 
-            Console.info.println("    Saving '" + fullyQualifiedName + "' as '" + shortName + "'");
+            {
+                Notice n = new Notice(NoticeType.INFO, "Saving '" + fullyQualifiedName + "' as '" + shortName + "'", "\b" + file.getPath() + "\b0\b0\b" + file.getName() + ":1:1#0");
+                n.setLabel("\bImports for file '" + file.getName() + "':");
+                analyzer.getCompiler().getReport().addNotice(n);
+            }
         }
         importsInitialized = true;
     }

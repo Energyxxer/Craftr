@@ -72,6 +72,7 @@ public class StatusBar extends JPanel {
         Theme t = CraftrWindow.getTheme();
 
         statusLabel.setForeground(t.getColor(Color.BLACK, "Status." + status.getType().toLowerCase(),"General.foreground"));
+        statusLabel.setIconName(status.getType().toLowerCase());
         statusLabel.setText(status.getMessage());
 
         this.currentStatus = status;

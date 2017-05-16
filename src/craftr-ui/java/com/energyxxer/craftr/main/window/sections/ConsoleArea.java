@@ -1,14 +1,14 @@
 package com.energyxxer.craftr.main.window.sections;
 
-import com.energyxxer.util.out.Console;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollBarUI;
+import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.util.out.Console;
 import com.energyxxer.util.out.ConsoleOutputStream;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -42,11 +42,7 @@ public class ConsoleArea extends JPanel {
         consoleHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         consoleHeader.setPreferredSize(new Dimension(0, 25));
 
-        JLabel consoleLabel = new JLabel("Console");
-        ThemeChangeListener.addThemeChangeListener(t -> {
-            consoleLabel.setForeground(t.getColor(Color.BLACK, "Console.header.foreground"));
-            consoleLabel.setFont(new Font(t.getString("Console.header.font","General.font","default:Tahoma"), 0, 12));
-        });
+        StyledLabel consoleLabel = new StyledLabel("Console", "Console.header");
         consoleHeader.add(consoleLabel, BorderLayout.WEST);
 
         JPanel consoleActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));

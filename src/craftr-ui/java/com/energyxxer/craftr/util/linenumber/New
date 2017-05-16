@@ -63,10 +63,10 @@ public class TextLineNumber extends JPanel
 
 		if(digits != lastDigits) {
 			int digitWidth = this.getFontMetrics(this.getFont()).charWidth('0');
-			int width = padding + (digitWidth * digits) + padding;
+			int contentWidth = padding + (digitWidth * digits) + padding;
 
-			setPreferredSize(new Dimension(width, 0));
-			//setPreferredSize(new Dimension(width, Integer.MAX_VALUE - 10000));
+			setPreferredSize(new Dimension(contentWidth, 0));
+			//setPreferredSize(new Dimension(contentWidth, Integer.MAX_VALUE - 10000));
 			//setSize( d );
 		}
 	}
@@ -80,7 +80,7 @@ public class TextLineNumber extends JPanel
 		System.out.println("Painting");
 		super.paintComponent(g);
 		FontMetrics fontMetrics = editor.getFontMetrics( editor.getFont() );
-		int availableWidth = getSize().width - (2 * padding);
+		int availableWidth = getSize().contentWidth - (2 * padding);
 
 		Rectangle viewport = scrollPane.getViewport().getViewRect();
 

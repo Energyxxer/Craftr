@@ -48,8 +48,8 @@ public class Scanner {
 			if (file.isDirectory()) {
 				if(!file.getName().equals("resources") || !file.getParentFile().getParent().equals(ProjectManager.getWorkspaceDir())) {
 					//This is not the resource pack directory.
+					parse(file);
 				}
-				parse(file);
 			} else {
 				Lang fileLang = Lang.getLangForFile(name);
 				if(fileLang == null) continue;

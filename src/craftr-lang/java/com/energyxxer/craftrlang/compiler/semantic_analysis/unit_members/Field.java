@@ -1,4 +1,4 @@
-package com.energyxxer.craftrlang.compiler.semantic_analysis;
+package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.craftrlang.CraftrUtil;
 import com.energyxxer.craftrlang.compiler.exceptions.CompilerException;
@@ -8,11 +8,15 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.AbstractFileComponent;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.util.out.Console;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,13 +43,17 @@ public class Field extends AbstractFileComponent implements Symbol {
         this.name = ((TokenItem) pattern.find("FIELD_NAME")).getContents().value;
         if(this.name.equalsIgnoreCase("debug")) {
             try {
-                Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime"));
+                Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime", declaringUnit.getContext()));
             } catch(CompilerException x) {
                 declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, x.getMessage(), this.pattern.getFormattedPath()));
             }
         }
 
-        this.declaringUnit.getSubSymbolTable().put(this);
+        if(modifiers.contains(CraftrUtil.Modifier.STATIC)) {
+            this.declaringUnit.getStaticSymbolTable().put(this);
+        } else {
+            this.declaringUnit.getInstanceSymbolTable().put(this);
+        }
 
         Console.debug.println("at " + declaringUnit + "#" + name);
     }
@@ -73,6 +81,16 @@ public class Field extends AbstractFileComponent implements Symbol {
     }
 
     @Override
+    public @Nullable Unit getUnit() {
+        return declaringUnit;
+    }
+
+    @Override
+    public @Nullable Package getPackage() {
+        return declaringUnit.getPackage();
+    }
+
+    @Override
     public String getName() {
         return name;
     }
@@ -84,8 +102,8 @@ public class Field extends AbstractFileComponent implements Symbol {
 
     public SymbolVisibility getVisibility() {
         return modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL :
-               modifiers.contains(CraftrUtil.Modifier.PROTECTED) ? SymbolVisibility.UNIT :
-               modifiers.contains(CraftrUtil.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
-               SymbolVisibility.PACKAGE;
+                modifiers.contains(CraftrUtil.Modifier.PROTECTED) ? SymbolVisibility.UNIT :
+                        modifiers.contains(CraftrUtil.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
+                                SymbolVisibility.PACKAGE;
     }
 }

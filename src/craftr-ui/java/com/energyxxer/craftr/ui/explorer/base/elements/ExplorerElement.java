@@ -1,7 +1,8 @@
-package com.energyxxer.craftr.ui.explorer;
+package com.energyxxer.craftr.ui.explorer.base.elements;
 
 import java.awt.Graphics;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 /**
  * Created by User on 4/8/2017.
@@ -9,8 +10,11 @@ import java.awt.event.MouseListener;
 public abstract class ExplorerElement implements MouseListener {
     protected boolean selected;
     protected boolean rollover;
+    protected boolean expanded;
 
-    abstract void render(Graphics g);
+    protected ArrayList<ExplorerElement> children = new ArrayList<>();
+
+    public abstract void render(Graphics g);
 
     public boolean isSelected() {
         return selected;
@@ -29,4 +33,6 @@ public abstract class ExplorerElement implements MouseListener {
     }
 
     public abstract String getPath();
+
+    public abstract int getHeight();
 }

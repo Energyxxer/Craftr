@@ -169,7 +169,7 @@ public class ProjectDialog {
         Project newProject = new Project(name);
         newProject.createNew();
 
-        CraftrWindow.explorer.refresh();
+        CraftrWindow.projectExplorer.refresh();
 
         dialog.setVisible(false);
     }

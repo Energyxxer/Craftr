@@ -254,7 +254,7 @@ public class UnitDialog {
             }
 
             if(newFile.exists()) TabManager.openTab(path,pos);
-            CraftrWindow.explorer.refresh();
+            CraftrWindow.projectExplorer.refresh();
         } catch (IOException x) {
             x.printStackTrace();
         }

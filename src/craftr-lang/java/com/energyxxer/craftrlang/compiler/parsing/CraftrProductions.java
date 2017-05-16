@@ -178,13 +178,17 @@ public class CraftrProductions {
             EXPRESSION.add(g2);
         }
 
+		//--------------------
+		//  START OF METHODS
+		//--------------------
+
 		{
 			//Method
-			TokenGroupMatch g = new TokenGroupMatch();
+			TokenGroupMatch g = new TokenGroupMatch().setName("METHOD_METHOD");
 			g.append(new TokenGroupMatch(true).append(ANNOTATION));
-			g.append(new TokenListMatch(TokenType.MODIFIER,true));
+			g.append(new TokenListMatch(TokenType.MODIFIER,true).setName("MODIFIER_LIST"));
 			g.append(DATA_TYPE);
-			g.append(new TokenItemMatch(TokenType.IDENTIFIER));
+			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME"));
 
 			g.append(new TokenItemMatch(TokenType.BRACE,"("));
 
@@ -213,10 +217,10 @@ public class CraftrProductions {
 
         {
         	//Constructor
-            TokenGroupMatch g = new TokenGroupMatch();
+            TokenGroupMatch g = new TokenGroupMatch().setName("METHOD_CONSTRUCTOR");
             g.append(new TokenGroupMatch(true).append(ANNOTATION));
-            g.append(new TokenListMatch(TokenType.MODIFIER,true));
-            g.append(new TokenItemMatch(TokenType.IDENTIFIER));
+            g.append(new TokenListMatch(TokenType.MODIFIER,true).setName("MODIFIER_LIST"));
+            g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME"));
 
             g.append(new TokenItemMatch(TokenType.BRACE,"("));
 
@@ -237,15 +241,15 @@ public class CraftrProductions {
 
 		{
 			//Operator Overload
-			TokenGroupMatch g = new TokenGroupMatch();
+			TokenGroupMatch g = new TokenGroupMatch().setName("METHOD_OPERATOR");
 			g.append(new TokenGroupMatch(true).append(ANNOTATION));
 			g.append(new TokenItemMatch(TokenType.KEYWORD,"operator"));
 			g.append(DATA_TYPE);
 			{
 				TokenStructureMatch s = new TokenStructureMatch("OPERATOR_REFERENCE");
 
-				s.add(new TokenItemMatch(TokenType.OPERATOR));
-				s.add(new TokenItemMatch(TokenType.IDENTIFIER, "compare"));
+				s.add(new TokenItemMatch(TokenType.OPERATOR).setName("METHOD_NAME"));
+				s.add(new TokenItemMatch(TokenType.IDENTIFIER, "compare").setName("METHOD_NAME"));
 				g.append(s);
 			}
 
@@ -268,10 +272,10 @@ public class CraftrProductions {
 
 		{
 			//Event
-			TokenGroupMatch g = new TokenGroupMatch();
+			TokenGroupMatch g = new TokenGroupMatch().setName("METHOD_EVENT");
 			g.append(new TokenGroupMatch(true).append(ANNOTATION));
 			g.append(new TokenItemMatch(TokenType.KEYWORD, "event"));
-			g.append(new TokenItemMatch(TokenType.IDENTIFIER));
+			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME"));
 
 			g.append(new TokenItemMatch(TokenType.BRACE,"("));
 
@@ -297,6 +301,10 @@ public class CraftrProductions {
 
 			METHOD.add(g);
 		}
+
+		//--------------------
+		//   END OF METHODS
+		//--------------------
 
         {
             TokenGroupMatch g = new TokenGroupMatch();

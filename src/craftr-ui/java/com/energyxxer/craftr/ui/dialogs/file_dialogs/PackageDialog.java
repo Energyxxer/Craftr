@@ -170,7 +170,7 @@ public class PackageDialog {
         String path = destination + File.separator + name;
 
         new File(path.replace('.',File.separatorChar)).mkdirs();
-        CraftrWindow.explorer.refresh();
+        CraftrWindow.projectExplorer.refresh();
 
         dialog.setVisible(false);
     }

@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.main.window.sections;
 
 import com.energyxxer.craftr.global.TabManager;
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 
@@ -57,5 +58,6 @@ public class EditArea extends JPanel {
         tabListHolder.add(tabList, BorderLayout.CENTER);
 
         if (useConsole) this.add(new ConsoleArea(), BorderLayout.SOUTH);
+        this.add(CraftrWindow.noticeBoard = new NoticeBoard(), BorderLayout.SOUTH);
     }
 }

@@ -4,10 +4,12 @@ import com.energyxxer.craftr.global.Status;
 import com.energyxxer.craftr.main.Craftr;
 import com.energyxxer.craftr.main.window.sections.EditArea;
 import com.energyxxer.craftr.main.window.sections.MenuBar;
+import com.energyxxer.craftr.main.window.sections.NoticeBoard;
 import com.energyxxer.craftr.main.window.sections.Sidebar;
 import com.energyxxer.craftr.main.window.sections.StatusBar;
 import com.energyxxer.craftr.main.window.sections.Toolbar;
-import com.energyxxer.craftr.ui.explorer.ExplorerMaster;
+import com.energyxxer.craftr.ui.explorer.NoticeExplorerMaster;
+import com.energyxxer.craftr.ui.explorer.ProjectExplorerMaster;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
@@ -36,18 +38,21 @@ public class CraftrWindow {
 
 	public static JFrame jframe;
 
-	public static ExplorerMaster explorer;
+	public static ProjectExplorerMaster projectExplorer;
+	public static NoticeExplorerMaster noticeExplorer;
+	public static NoticeBoard noticeBoard;
 
 	public static MenuBar menuBar;
 	public static Toolbar toolbar;
 	public static Sidebar sidebar;
 	public static EditArea editArea;
+
 	public static StatusBar statusBar;
 
 	private static final Dimension defaultSize = new Dimension(1200, 800);
 
 
-	public CraftrWindow() {
+    public CraftrWindow() {
 		jframe = new JFrame();
 		setTitle("");
 		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

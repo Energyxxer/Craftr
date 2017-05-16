@@ -1,9 +1,15 @@
 package com.energyxxer.xswing;
 
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.LookAndFeel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.io.File;
 
 public class XFileField extends JPanel {
@@ -27,6 +33,18 @@ public class XFileField extends JPanel {
 		button.setPreferredSize(new Dimension(100,25));
 
 		button.addActionListener(e -> {
+
+			LookAndFeel laf = UIManager.getLookAndFeel();
+
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+					| UnsupportedLookAndFeelException x) {
+				x.printStackTrace();
+			}
+
+
+
 			JFileChooser jfc = new JFileChooser();
 			int[] modes = new int[] {JFileChooser.FILES_AND_DIRECTORIES,JFileChooser.FILES_ONLY,JFileChooser.DIRECTORIES_ONLY,JFileChooser.FILES_AND_DIRECTORIES};
 			jfc.setFileSelectionMode(modes[operation]);
@@ -36,6 +54,12 @@ public class XFileField extends JPanel {
 			if (result == JFileChooser.APPROVE_OPTION) {
 				value = jfc.getSelectedFile();
 				field.setText(value.getAbsolutePath());
+			}
+
+			try {
+				UIManager.setLookAndFeel(laf);
+			} catch(UnsupportedLookAndFeelException x) {
+				x.printStackTrace();
 			}
 		});
 

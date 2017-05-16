@@ -16,7 +16,7 @@ import java.util.HashMap;
  * Created by User on 3/3/2017.
  */
 public class SemanticAnalyzer {
-    public final Compiler compiler;
+    private final Compiler compiler;
 
     public final File rootPath;
     public final TypeRegistry typeRegistry;

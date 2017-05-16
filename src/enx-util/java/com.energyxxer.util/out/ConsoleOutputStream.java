@@ -55,12 +55,11 @@ public class ConsoleOutputStream extends OutputStream {
             return;
 
         //Hyperlink Syntax:
-        // \b PATH \b LINE \b COLUMN \b LENGTH \b TEXT \b
+        // \b PATH \b LOCATION \b LENGTH \b TEXT \b
 
         switch(hyperLinkStage) {
             case NONE: {
                 if(b == '\b') {
-                    System.out.println("Start of hyperlink");
                     hyperLinkStage++;
                     hyperLinkElements.put("PATH",new StringBuilder());
                     hyperLinkElements.put("LOCATION",new StringBuilder());

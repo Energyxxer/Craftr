@@ -29,20 +29,25 @@ public class Compiler {
 	
 	public void compile() {
 		report = new CompilerReport();
+		if(project == null) {
+			report.addNotice(new Notice(NoticeType.ERROR, "No project selected"));
+			completionListeners.forEach(Runnable::run);
+			return;
+		}
 		if(project.getWorld() == null) {
 			report.addNotice(new Notice(NoticeType.ERROR, "Project does not have an output directory."));
 		}
 		new Thread(() -> {
-			this.setProgress("Scanning files...");
+			this.setProgress("Scanning files... [" + project.getName() + "]");
 			TokenStream ts = new TokenStream();
-			this.setProgress("Scanning files...");
+			this.setProgress("Scanning files... [" + project.getName() + "]");
 			new Scanner(project.getDirectory(),ts);
-			this.setProgress("Parsing tokens...");
+			this.setProgress("Parsing tokens... [" + project.getName() + "]");
 			Parser parser = new Parser(ts);
-			this.setProgress("Analyzing code...");
+			this.setProgress("Analyzing code... [" + project.getName() + "]");
 			new SemanticAnalyzer(this, parser.filePatterns, project.getDirectory());
 
-			this.setProgress("Compilation ended with " + report.getTotals());
+			this.setProgress("Compilation completed with " + report.getTotalsString());
 			completionListeners.forEach(Runnable::run);
 		}).start();
 	}

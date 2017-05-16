@@ -30,7 +30,7 @@ public class Commons {
 
     public static void showInExplorer(String path) {
         try {
-            Runtime.getRuntime().exec("explorer.exe /select," + path);
+            Runtime.getRuntime().exec("Explorer.exe /select," + path);
         } catch (IOException x) {
             x.printStackTrace();
         }
@@ -49,7 +49,7 @@ public class Commons {
 
         Tab selectedTab = TabManager.getSelectedTab();
 
-        List<String> selectedFiles = CraftrWindow.explorer.getSelectedFiles();
+        List<String> selectedFiles = CraftrWindow.projectExplorer.getSelectedFiles();
 
         if(selectedFiles.size() > 0) {
             selected = ProjectManager.getAssociatedProject(new File(selectedFiles.get(0)));

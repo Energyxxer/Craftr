@@ -3,6 +3,7 @@ package com.energyxxer.craftrlang.compiler;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by User on 5/15/2017.
@@ -47,10 +48,33 @@ public class CompilerReport {
         return info;
     }
 
-    public String getTotals() {
+    public HashMap<String, ArrayList<Notice>> groupByLabel() {
+        HashMap<String, ArrayList<Notice>> map = new HashMap<>();
+
+        for(Notice n : getInfo()) {
+            if(!map.containsKey(n.getLabel())) map.put(n.getLabel(), new ArrayList<>());
+            map.get(n.getLabel()).add(n);
+        }
+        for(Notice n : getWarnings()) {
+            if(!map.containsKey(n.getLabel())) map.put(n.getLabel(), new ArrayList<>());
+            map.get(n.getLabel()).add(n);
+        }
+        for(Notice n : getErrors()) {
+            if(!map.containsKey(n.getLabel())) map.put(n.getLabel(), new ArrayList<>());
+            map.get(n.getLabel()).add(n);
+        }
+
+        return map;
+    }
+
+    public String getTotalsString() {
         int errorCount = errors.size();
         int warningsCount = warnings.size();
 
         return "" + ((errorCount == 0) ? "no" : errorCount) + " error" + ((errorCount == 1) ? "" : "s") + " and " + ((warningsCount == 0) ? "no" : warningsCount) + " warning" + ((warningsCount == 1) ? "" : "s");
+    }
+
+    public int getTotal() {
+        return info.size() + warnings.size() + errors.size();
     }
 }

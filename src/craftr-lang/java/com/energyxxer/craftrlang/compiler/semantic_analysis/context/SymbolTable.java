@@ -63,11 +63,11 @@ public class SymbolTable {
         this.rootSkipName = rootSkipName;
     }
 
-    public Symbol getSymbol(String path) {
+    public Symbol getSymbol(String path, Context context) {
         if(rootSkipName != null) {
             SymbolTable subTable = table.get(rootSkipName).getSubSymbolTable();
             if(subTable == null) return null;
-            return subTable.getSymbol(path);
+            return subTable.getSymbol(path, context);
         }
 
         String[] sections = path.split("\\.",2);
@@ -75,10 +75,36 @@ public class SymbolTable {
         //Console.info.println(Arrays.toString(sections));
         Symbol next = this.table.get(sections[0]);
         if(next != null) {
+            switch(next.getVisibility()) {
+                case PACKAGE: {
+                    if(context.getFile().getPackage() != next.getPackage()) {
+                        throw new CompilerException("Cannot access symbol '" + sections[0] + "' from current context");
+                    }
+                    break;
+                }
+                case UNIT: {
+                    if(context.getUnit() != next.getUnit()) {
+                        throw new CompilerException("Cannot access symbol '" + sections[0] + "' from current context");
+                    }
+                    break;
+                }
+                case UNIT_INHERITED: {
+                    //TODO
+                    break;
+                }
+                case METHOD: {
+                    //TODO
+                    break;
+                }
+                case BLOCK: {
+                    //TODO
+                    break;
+                }
+            }
             if(sections.length > 1) {
                 SymbolTable subTable = next.getSubSymbolTable();
                 if(subTable != null) {
-                    return next.getSubSymbolTable().getSymbol(sections[1]);
+                    return next.getSubSymbolTable().getSymbol(sections[1], context);
                 }
                 throw new CompilerException(next + " is not a data structure");
             }

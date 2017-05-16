@@ -116,7 +116,7 @@ public class MenuBar extends JMenuBar {
 
             {
                 StyledMenuItem item = new StyledMenuItem("Refresh", "reload");
-                item.addActionListener(e -> CraftrWindow.explorer.refresh());
+                item.addActionListener(e -> CraftrWindow.projectExplorer.refresh());
                 menu.add(item);
             }
 

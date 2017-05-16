@@ -1,7 +1,9 @@
-package com.energyxxer.craftr.ui.explorer;
+package com.energyxxer.craftr.ui.explorer.base.elements;
 
 import com.energyxxer.craftr.files.FileType;
 import com.energyxxer.craftr.global.*;
+import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
+import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
 import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftr.ui.common.MenuItems;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
@@ -31,21 +33,22 @@ public class ExplorerItem extends ExplorerElement {
     private String filename = null;
     private int indentation = 0;
 
-    private ArrayList<ExplorerItem> children = new ArrayList<>();
-
     private boolean expanded = false;
 
     private Image icon = null;
 
     private int x = 0;
 
-    ExplorerItem(ExplorerMaster master, File file, ArrayList<String> toOpen) {
+    public ExplorerItem(ExplorerMaster master, File file, ArrayList<String> toOpen) {
         this.path = file.getPath();
         this.master = master;
 
         this.isDirectory = file.isDirectory();
 
         this.filename = file.getName();
+        if(!this.isDirectory) {
+            if(filename.endsWith(".craftr") || filename.endsWith(".png")) filename = filename.substring(0, filename.lastIndexOf('.'));
+        }
 
         this.addThemeListener();
 
@@ -68,11 +71,14 @@ public class ExplorerItem extends ExplorerElement {
 
         this.path = file.getPath();
         this.indentation = parent.indentation + 1;
-        this.x = indentation * ExplorerMaster.INDENT_PER_LEVEL + ExplorerMaster.INITIAL_INDENT;
+        this.x = indentation * master.getIndentPerLevel() + master.getInitialIndent();
 
         this.filename = filenameBuilder.toString();
-
         this.isDirectory = file.isDirectory();
+
+        if(!this.isDirectory) {
+            if(filename.endsWith(".craftr") || filename.endsWith(".png")) filename = filename.substring(0, filename.lastIndexOf('.'));
+        }
 
         this.addThemeListener();
 
@@ -102,7 +108,6 @@ public class ExplorerItem extends ExplorerElement {
                 String iconName = ProjectManager.getIconFor(new File(path));
                 if (iconName == null) {
                     if (this.isDirectory) {
-
                         if (new File(this.path).getParent().equals(Preferences.get("workspace_dir"))) {
                             iconName = "project";
                         } else {
@@ -136,7 +141,7 @@ public class ExplorerItem extends ExplorerElement {
         }
 
         expanded = true;
-        master.openDirectories.add(this.path);
+        master.getExpandedElements().add(this.path);
         master.repaint();
     }
 
@@ -148,43 +153,42 @@ public class ExplorerItem extends ExplorerElement {
     }
 
     private void propagateCollapse() {
-        master.openDirectories.remove(this.path);
-        for(ExplorerItem item : children) {
-            item.propagateCollapse();
+        master.getExpandedElements().remove(this.path);
+        for(ExplorerElement element : children) {
+            if(element instanceof ExplorerItem) ((ExplorerItem) element).propagateCollapse();
         }
     }
 
-    void render(Graphics g) {
+    public void render(Graphics g) {
+        int y = master.getOffsetY();
+        master.getFlatList().add(this);
 
-        int y = master.offsetY;
-        master.flatList.add(this);
+        int x = (indentation * master.getIndentPerLevel()) + master.getInitialIndent();
 
-        int x = (indentation * ExplorerMaster.INDENT_PER_LEVEL) + ExplorerMaster.INITIAL_INDENT;
-
-        g.setColor((this.rollover || this.selected) ? ExplorerMaster.colors.get("item.rollover.background") : ExplorerMaster.colors.get("item.background"));
-        g.fillRect(0, master.offsetY, master.getWidth(), ExplorerMaster.ROW_HEIGHT);
+        g.setColor((this.rollover || this.selected) ? master.getColors().get("item.rollover.background") : master.getColors().get("item.background"));
+        g.fillRect(0, master.getOffsetY(), master.getWidth(), master.getRowHeight());
         if(this.selected) {
-            g.setColor(ExplorerMaster.colors.get("item.selected.background"));
+            g.setColor(master.getColors().get("item.selected.background"));
 
-            switch(ExplorerMaster.SELECTION_STYLE) {
+            switch(master.getSelectionStyle()) {
                 case "FULL": {
-                    g.fillRect(0, master.offsetY, master.getWidth(), ExplorerMaster.ROW_HEIGHT);
+                    g.fillRect(0, master.getOffsetY(), master.getWidth(), master.getRowHeight());
                     break;
                 }
                 case "LINE_LEFT": {
-                    g.fillRect(0, master.offsetY, ExplorerMaster.SELECTION_LINE_THICKNESS, ExplorerMaster.ROW_HEIGHT);
+                    g.fillRect(0, master.getOffsetY(), master.getSelectionLineThickness(), master.getRowHeight());
                     break;
                 }
                 case "LINE_RIGHT": {
-                    g.fillRect(master.getWidth() - ExplorerMaster.SELECTION_LINE_THICKNESS, master.offsetY, ExplorerMaster.SELECTION_LINE_THICKNESS, ExplorerMaster.ROW_HEIGHT);
+                    g.fillRect(master.getWidth() - master.getSelectionLineThickness(), master.getOffsetY(), master.getSelectionLineThickness(), master.getRowHeight());
                     break;
                 }
                 case "LINE_TOP": {
-                    g.fillRect(0, master.offsetY, master.getWidth(), ExplorerMaster.SELECTION_LINE_THICKNESS);
+                    g.fillRect(0, master.getOffsetY(), master.getWidth(), master.getSelectionLineThickness());
                     break;
                 }
                 case "LINE_BOTTOM": {
-                    g.fillRect(0, master.offsetY + ExplorerMaster.ROW_HEIGHT - ExplorerMaster.SELECTION_LINE_THICKNESS, master.getWidth(), ExplorerMaster.SELECTION_LINE_THICKNESS);
+                    g.fillRect(0, master.getOffsetY() + master.getRowHeight() - master.getSelectionLineThickness(), master.getWidth(), master.getSelectionLineThickness());
                     break;
                 }
             }
@@ -193,37 +197,39 @@ public class ExplorerItem extends ExplorerElement {
         //Expand/Collapse button
         File[] listFiles = new File(path).listFiles();
         if(isDirectory && listFiles != null && listFiles.length > 0){
-            int margin = ((ExplorerMaster.ROW_HEIGHT - 16) / 2);
+            int margin = ((master.getRowHeight() - 16) / 2);
             if(expanded) {
-                g.drawImage(ExplorerMaster.assets.get("collapse"),x,y + margin,16, 16,new Color(0,0,0,0),null);
+                g.drawImage(master.getAssets().get("collapse"),x,y + margin,16, 16,new Color(0,0,0,0),null);
             } else {
-                g.drawImage(ExplorerMaster.assets.get("expand"),x,y + margin,16, 16,new Color(0,0,0,0),null);
+                g.drawImage(master.getAssets().get("expand"),x,y + margin,16, 16,new Color(0,0,0,0),null);
             }
         }
         x += 23;
 
         //File Icon
         {
-            int margin = ((ExplorerMaster.ROW_HEIGHT - 16) / 2);
+            int margin = ((master.getRowHeight() - 16) / 2);
             g.drawImage(this.icon,x,y + margin,16, 16,new Color(0,0,0,0),null);
         }
         x += 25;
 
+        //File Name
+
         if(this.selected) {
-            g.setColor(ExplorerMaster.colors.get("item.selected.foreground"));
+            g.setColor(master.getColors().get("item.selected.foreground"));
         } else if(this.rollover) {
-            g.setColor(ExplorerMaster.colors.get("item.rollover.foreground"));
+            g.setColor(master.getColors().get("item.rollover.foreground"));
         } else {
-            g.setColor(ExplorerMaster.colors.get("item.foreground"));
+            g.setColor(master.getColors().get("item.foreground"));
         }
         FontMetrics metrics = g.getFontMetrics(g.getFont());
 
-        g.drawString(filename, x, master.offsetY + metrics.getAscent() + ((ExplorerMaster.ROW_HEIGHT - metrics.getHeight())/2));
+        g.drawString(filename, x, master.getOffsetY() + metrics.getAscent() + ((master.getRowHeight() - metrics.getHeight())/2));
         x += metrics.stringWidth(filename);
 
-        master.offsetY += ExplorerMaster.ROW_HEIGHT;
-        master.width = Math.max(master.width, x);
-        for(ExplorerItem i : children) {
+        master.setOffsetY(master.getOffsetY() + master.getRowHeight());
+        master.setContentWidth(Math.max(master.getWidth(), x));
+        for(ExplorerElement i : children) {
             i.render(g);
         }
     }
@@ -239,8 +245,13 @@ public class ExplorerItem extends ExplorerElement {
     }
 
     @Override
+    public int getHeight() {
+        return master.getRowHeight();
+    }
+
+    @Override
     public void mouseClicked(MouseEvent e) {
-        if(e.getButton() == MouseEvent.BUTTON1 && !e.isControlDown() && e.getClickCount() % 2 == 0 && (e.getX() < x || e.getX() > x + ExplorerMaster.ROW_HEIGHT)) {
+        if(e.getButton() == MouseEvent.BUTTON1 && !e.isControlDown() && e.getClickCount() % 2 == 0 && (e.getX() < x || e.getX() > x + master.getRowHeight())) {
             this.open();
         }
     }
@@ -248,7 +259,7 @@ public class ExplorerItem extends ExplorerElement {
     @Override
     public void mousePressed(MouseEvent e) {
         if(e.getButton() == MouseEvent.BUTTON1) {
-            x = indentation * ExplorerMaster.INDENT_PER_LEVEL + ExplorerMaster.INITIAL_INDENT;
+            //x = indentation * master.getIndentPerLevel() + master.getInitialIndent();
             if(this.isDirectory && e.getX() >= x && e.getX() <= x + 20) {
                 if(expanded) collapse();
                 else expand(new ArrayList<>());
@@ -416,13 +427,13 @@ public class ExplorerItem extends ExplorerElement {
 
             if (newName != null) {
                 if (ProjectManager.renameFile(new File(path), newName)) {
-                    com.energyxxer.craftr.ui.explorer.ExplorerItem parentItem = ExplorerMaster.selectedLabels.get(0).parent;
+                    com.energyxxer.craftr.ui.projectExplorer.ExplorerItem parentItem = ExplorerMaster.selectedLabels.get(0).parent;
                     parentItem.path = pathToParent + newName + extension;
                     if (parentItem.parent != null) {
                         parentItem.parent.collapse();
                         parentItem.parent.refresh();
                     } else {
-                        CraftrWindow.explorer.refresh();
+                        CraftrWindow.projectExplorer.refresh();
                     }
 
                     TabManager.renameTab(path, pathToParent + newName + extension);

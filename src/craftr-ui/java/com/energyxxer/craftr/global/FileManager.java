@@ -107,6 +107,6 @@ public class FileManager {
                 if(!success) Console.warn.println("Couldn't delete file '" + file.getName() + "'");
             }
         }
-        CraftrWindow.explorer.refresh();
+        CraftrWindow.projectExplorer.refresh();
     }
 }

@@ -51,7 +51,7 @@ public class TextLineNumber extends JPanel
 
 	/**
 	 *	Create a line number editor for a text editor. This minimum
-	 *  display width will be based on 3 digits.
+	 *  display contentWidth will be based on 3 digits.
 	 *
 	 *  @param editor  the related text editor
 	 */
@@ -65,7 +65,7 @@ public class TextLineNumber extends JPanel
 	 *
 	 *  @param editor  the related text editor
 	 *  @param minimumDisplayDigits  the number of digits used to calculate
-	 *                               the minimum width of the editor
+	 *                               the minimum contentWidth of the editor
 	 */
 	public TextLineNumber(JTextComponent editor, int minimumDisplayDigits)
 	{
@@ -189,10 +189,10 @@ public class TextLineNumber extends JPanel
 
 	/**
 	 *  Specify the mimimum number of digits used to calculate the preferred
-	 *  width of the editor. Default is 3.
+	 *  contentWidth of the editor. Default is 3.
 	 *
 	 *  @param minimumDisplayDigits  the number digits used in the preferred
-	 *                               width calculation
+	 *                               contentWidth calculation
 	 */
 	public void setMinimumDisplayDigits(int minimumDisplayDigits)
 	{
@@ -201,7 +201,7 @@ public class TextLineNumber extends JPanel
 	}
 
 	/**
-	 *  Calculate the width needed to display the maximum line number
+	 *  Calculate the contentWidth needed to display the maximum line number
 	 */
 	private void setPreferredWidth()
 	{
@@ -215,9 +215,9 @@ public class TextLineNumber extends JPanel
 		{
 			lastDigits = digits;
 			FontMetrics fontMetrics = getFontMetrics( getFont() );
-			int width = fontMetrics.charWidth( '0' ) * digits;
+			int contentWidth = fontMetrics.charWidth( '0' ) * digits;
 			Insets insets = getInsets();
-			int preferredWidth = insets.left + insets.right + width;
+			int preferredWidth = insets.left + insets.right + contentWidth;
 
 			Dimension d = getPreferredSize();
 			d.setSize(preferredWidth, HEIGHT);
@@ -238,11 +238,11 @@ public class TextLineNumber extends JPanel
 		g.setColor(getBackground());
 		g.fillRect(-1,0,getWidth()+1,getHeight());
 
-		//	Determine the width of the space available to draw the line number
+		//	Determine the contentWidth of the space available to draw the line number
 
 		FontMetrics fontMetrics = editor.getFontMetrics( editor.getFont() );
 		Insets insets = getInsets();
-		int availableWidth = getSize().width - insets.left - insets.right;
+		int availableWidth = getSize().contentWidth - insets.left - insets.right;
 
 		//  Determine the rows to draw within the clipped bounds.
 

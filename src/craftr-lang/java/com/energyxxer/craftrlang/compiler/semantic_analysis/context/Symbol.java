@@ -1,5 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.context;
 
+import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -11,4 +13,10 @@ public interface Symbol {
         return null;
     }
     SymbolVisibility getVisibility();
+    default @Nullable Package getPackage() {
+        return null;
+    }
+    default @Nullable Unit getUnit() {
+        return null;
+    }
 }
