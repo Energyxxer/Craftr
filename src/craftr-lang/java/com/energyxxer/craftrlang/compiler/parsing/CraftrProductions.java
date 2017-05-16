@@ -8,13 +8,13 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.Toke
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenStructureMatch;
 
 /**
- * Class containing the definitions of each aspect of the Craftr language.
+ * Class containing the definitions of each production of the Craftr language.
  * It holds certain token structure patterns to match against a list of
- * tokens.
+ * tokens (It's called a production, 2016 me).
  *
  * //Apparently this is the entire parser. Yay, I guess?
  * */
-public class CraftrStructures {
+public class CraftrProductions {
 
     public static final TokenStructureMatch FILE;
 
@@ -93,9 +93,6 @@ public class CraftrStructures {
 
 		NESTED_POINTER = new TokenStructureMatch("NESTED_POINTER");
 		POINTER = new TokenStructureMatch("POINTER");
-
-
-
 		JSON_OBJECT = new TokenStructureMatch("JSON_OBJECT");
 
 		COMPOUND = new TokenGroupMatch().setName("COMPOUND");
@@ -116,13 +113,12 @@ public class CraftrStructures {
 			TokenGroupMatch g = new TokenGroupMatch();
 
 			g.append(PACKAGE);
-			g.append(new TokenListMatch(IMPORT,true));
+			g.append(new TokenListMatch(IMPORT,true).setName("IMPORT_LIST"));
 			g.append(new TokenListMatch(UNIT).setName("UNIT_LIST"));
 			g.append(new TokenItemMatch(TokenType.END_OF_FILE));
 
 			FILE.add(g);
         }
-
         {
             TokenGroupMatch g = new TokenGroupMatch();
 

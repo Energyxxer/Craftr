@@ -1,26 +1,32 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.context;
 
-import com.energyxxer.util.out.Console;
+import com.energyxxer.craftrlang.compiler.Compiler;
+import com.energyxxer.craftrlang.compiler.exceptions.CompilerException;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
  * Created by User on 3/3/2017.
  */
 public class SymbolTable {
+    private final Compiler compiler;
     private final SymbolVisibility visibility;
     private SymbolTable parent = null;
 
     private HashMap<String, Symbol> table = new HashMap<>();
 
-    public SymbolTable() {
-        this(SymbolVisibility.GLOBAL, null);
+    private String rootSkipName = null;
+
+    public SymbolTable(Compiler compiler) {
+        this.visibility = SymbolVisibility.GLOBAL;
+        this.parent = null;
+        this.compiler = compiler;
     }
 
     public SymbolTable(SymbolVisibility visibility, SymbolTable parent) {
         this.visibility = visibility;
         this.parent = parent;
+        this.compiler = parent.compiler;
     }
 
     public int getLevel() {
@@ -49,10 +55,24 @@ public class SymbolTable {
         return parent.getRoot();
     }
 
+    public String getRootSkipName() {
+        return rootSkipName;
+    }
+
+    public void setRootSkipName(String rootSkipName) {
+        this.rootSkipName = rootSkipName;
+    }
+
     public Symbol getSymbol(String path) {
+        if(rootSkipName != null) {
+            SymbolTable subTable = table.get(rootSkipName).getSubSymbolTable();
+            if(subTable == null) return null;
+            return subTable.getSymbol(path);
+        }
+
         String[] sections = path.split("\\.",2);
-        Console.info.println(path);
-        Console.info.println(Arrays.toString(sections));
+        //Console.info.println(path);
+        //Console.info.println(Arrays.toString(sections));
         Symbol next = this.table.get(sections[0]);
         if(next != null) {
             if(sections.length > 1) {
@@ -60,13 +80,13 @@ public class SymbolTable {
                 if(subTable != null) {
                     return next.getSubSymbolTable().getSymbol(sections[1]);
                 }
-                Console.err.println(next + " is not a symbol table");
-                return null;
+                throw new CompilerException(next + " is not a data structure");
             }
             return next;
         }
-        Console.err.println(sections[0] + " is not defined");
-        return null;
+        CompilerException x = new CompilerException("Cannot resolve symbol '" + sections[0] + "'");
+        x.setErrorCode("SYMBOL_NOT_DEFINED");
+        throw x;
     }
 
     public HashMap<String, Symbol> getMap() {

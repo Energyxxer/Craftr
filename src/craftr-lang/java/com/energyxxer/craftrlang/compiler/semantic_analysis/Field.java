@@ -1,10 +1,13 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
 import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.compiler.exceptions.CompilerException;
 import com.energyxxer.craftrlang.compiler.exceptions.CraftrException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
@@ -35,7 +38,11 @@ public class Field extends AbstractFileComponent implements Symbol {
 
         this.name = ((TokenItem) pattern.find("FIELD_NAME")).getContents().value;
         if(this.name.equalsIgnoreCase("debug")) {
-            Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("src.com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime"));
+            try {
+                Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime"));
+            } catch(CompilerException x) {
+                declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, x.getMessage(), this.pattern.getFormattedPath()));
+            }
         }
 
         this.declaringUnit.getSubSymbolTable().put(this);

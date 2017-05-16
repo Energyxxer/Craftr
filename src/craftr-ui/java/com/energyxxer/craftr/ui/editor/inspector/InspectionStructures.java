@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.editor.inspector;
 
-import com.energyxxer.craftrlang.compiler.parsing.CraftrStructures;
+import com.energyxxer.craftrlang.compiler.parsing.CraftrProductions;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenGroupMatch;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenItemMatch;
@@ -22,12 +22,12 @@ public class InspectionStructures {
 
         {
             TokenGroupMatch g = new TokenGroupMatch();
-            g.append(CraftrStructures.RETURN_EXPRESSION);
-            g.append(new TokenListMatch(CraftrStructures.STATEMENT));
+            g.append(CraftrProductions.RETURN_EXPRESSION);
+            g.append(new TokenListMatch(CraftrProductions.STATEMENT));
 
             UNREACHABLE_CODE.add(g);
-            UNREACHABLE_CODE.setHighlight(CraftrStructures.STATEMENT);
-            UNREACHABLE_CODE.setExclude(CraftrStructures.RETURN_EXPRESSION);
+            UNREACHABLE_CODE.setHighlight(CraftrProductions.STATEMENT);
+            UNREACHABLE_CODE.setExclude(CraftrProductions.RETURN_EXPRESSION);
         }
 
         all.add(UNREACHABLE_CODE);

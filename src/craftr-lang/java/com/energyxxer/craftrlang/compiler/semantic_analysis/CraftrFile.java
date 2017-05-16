@@ -1,9 +1,15 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
+import com.energyxxer.craftrlang.compiler.exceptions.CompilerException;
 import com.energyxxer.craftrlang.compiler.exceptions.CraftrException;
 import com.energyxxer.craftrlang.compiler.exceptions.ParserException;
+import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.util.FileUtil;
 import com.energyxxer.util.out.Console;
 
@@ -21,10 +27,14 @@ public class CraftrFile extends AbstractFileComponent {
     private Package parentPackage = null;
     public ArrayList<Unit> units = new ArrayList<>();
 
+    public SymbolTable importTable;
+    private boolean importsInitialized = false;
+
     public CraftrFile(SemanticAnalyzer analyzer, File file, TokenPattern<?> pattern) throws CraftrException {
         super(pattern);
         this.analyzer = analyzer;
         this.file = file;
+        this.importTable = new SymbolTable(analyzer.compiler);
 
         TokenPattern<?> packagePattern = pattern.find("PACKAGE.PACKAGE_PATH");
 
@@ -48,5 +58,45 @@ public class CraftrFile extends AbstractFileComponent {
 
     public Package getPackage() {
         return parentPackage;
+    }
+
+    public void initImports() throws CraftrException {
+        if(importsInitialized) return;
+
+        TokenList importList = (TokenList) pattern.find("IMPORT_LIST");
+        if(importList == null) {
+            importsInitialized = true;
+            Console.info.println("No imports found for file '" + file.getName() + "'");
+            return;
+        }
+
+        TokenPattern<?>[] imports = importList.getContents();
+
+        Console.info.println("Imports for file '" + file.getName() + "':");
+        for (TokenPattern<?> rawImport : imports) {
+            TokenPattern<?> identifier = rawImport.find("IDENTIFIER");
+            String fullyQualifiedName = identifier.flatten(false);
+            String shortName = fullyQualifiedName.substring(fullyQualifiedName.lastIndexOf('.')+1);
+
+            Symbol itemToImport;
+            try {
+                itemToImport = analyzer.getSymbolTable().getSymbol(fullyQualifiedName);
+            } catch(CompilerException x) {
+                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, x.getMessage(), identifier.getFormattedPath()));
+                continue;
+            }
+            if(!(itemToImport instanceof Unit)) {
+                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' isn't an unit", identifier.getFormattedPath()));
+                continue;
+            }
+            this.importTable.put(shortName, itemToImport);
+
+            Console.info.println("    Saving '" + fullyQualifiedName + "' as '" + shortName + "'");
+        }
+        importsInitialized = true;
+    }
+
+    public SemanticAnalyzer getAnalyzer() {
+        return analyzer;
     }
 }

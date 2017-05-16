@@ -1,7 +1,5 @@
 package com.energyxxer.util.out;
 
-import com.energyxxer.util.out.Console;
-
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
@@ -62,6 +60,7 @@ public class ConsoleOutputStream extends OutputStream {
         switch(hyperLinkStage) {
             case NONE: {
                 if(b == '\b') {
+                    System.out.println("Start of hyperlink");
                     hyperLinkStage++;
                     hyperLinkElements.put("PATH",new StringBuilder());
                     hyperLinkElements.put("LOCATION",new StringBuilder());
@@ -105,25 +104,25 @@ public class ConsoleOutputStream extends OutputStream {
                     //Finalize
                     hyperLinkStage = NONE;
 
+                    final String path = hyperLinkElements.get("PATH").toString();
+                    final String location = hyperLinkElements.get("LOCATION").toString();
+                    final String length = hyperLinkElements.get("LENGTH").toString();
+                    final String text = hyperLinkElements.get("TEXT").toString();
+                    final Style hyperlink = component.addStyle("hyperlink:"+path+"?"+location+"&"+length, null);
+                    hyperlink.addAttribute("IS_HYPERLINK",true);
+                    hyperlink.addAttribute("PATH",path);
+                    hyperlink.addAttribute("LOCATION",location);
+                    hyperlink.addAttribute("LENGTH",length);
+                    StyleConstants.setForeground(hyperlink,new Color(50, 100, 175));
+                    StyleConstants.setUnderline(hyperlink, true);
                     SwingUtilities.invokeLater(() -> {
-                        String path = hyperLinkElements.get("PATH").toString();
-                        String location = hyperLinkElements.get("LOCATION").toString();
-                        String length = hyperLinkElements.get("LENGTH").toString();
-                        Style hyperlink = component.addStyle("hyperlink:"+path+"?"+location+"&"+length, null);
-                        hyperlink.addAttribute("IS_HYPERLINK",true);
-                        hyperlink.addAttribute("PATH",path);
-                        hyperlink.addAttribute("LOCATION",location);
-                        hyperlink.addAttribute("LENGTH",length);
-                        StyleConstants.setForeground(hyperlink,new Color(50, 100, 175));
-                        StyleConstants.setUnderline(hyperlink, true);
                         try {
                             component.getStyledDocument().insertString(
                                     component.getStyledDocument().getLength(),
-                                    hyperLinkElements.get("TEXT").toString(),
+                                    text,
                                     hyperlink
                             );
-                            Console.info.println("Adding " + hyperLinkElements.get("TEXT").toString());
-                        } catch(BadLocationException e) {}
+                        } catch(BadLocationException x) {}
                     });
 
                 } else {

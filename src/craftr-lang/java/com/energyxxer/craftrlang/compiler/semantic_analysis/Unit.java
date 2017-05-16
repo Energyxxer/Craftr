@@ -6,6 +6,8 @@ import com.energyxxer.craftrlang.compiler.exceptions.ParserException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
+import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
@@ -43,6 +45,8 @@ public class Unit extends AbstractFileComponent implements Symbol {
 
         this.name = ((TokenItem) header.find("UNIT_NAME")).getContents().value;
         this.type = ((TokenItem) header.find("UNIT_TYPE")).getContents().value;
+
+        if(this.type.equals("entity") && !Character.isLowerCase(name.charAt(0))) declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Entity name '" + this.name + "' does not follow Craftr naming conventions", header.find("UNIT_NAME").getFormattedPath()));
 
         this.modifiers = SemanticUtils.getModifiers(header.deepSearchByName("UNIT_MODIFIER"));
 

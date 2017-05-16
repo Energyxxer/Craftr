@@ -7,6 +7,7 @@ import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.ToolbarSeparator;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftrlang.compiler.Compiler;
+import com.energyxxer.util.out.Console;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -103,7 +104,14 @@ public class Toolbar extends JPanel {
             button.addActionListener(e -> {
                 Compiler c = new Compiler(Commons.getSelectedProject());
                 c.addProgressListener(CraftrWindow::setStatus);
+                c.addCompletionListener(() -> {
+                    c.getReport().getErrors().forEach(err -> {
+                        Console.err.println(err);
+                    });
+                    c.getReport().getWarnings().forEach(Console.warn::println);
+                });
                 c.compile();
+
             });
             this.add(button);
         }

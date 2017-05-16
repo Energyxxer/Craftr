@@ -36,7 +36,7 @@ public class Parser {
 			if(!fileHeader.attributes.get("TYPE").equals("craftr")) continue;
 			f.remove(0);
 
-			TokenMatchResponse match = CraftrStructures.FILE.match(f);
+			TokenMatchResponse match = CraftrProductions.FILE.match(f);
 
 			if(!match.matched) {
 				Console.err.println(match.getFormattedErrorMessage());

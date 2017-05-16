@@ -6,7 +6,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 /**
  * Created by User on 1/22/2017.
  */
-public class CraftrException extends Throwable {
+public class CraftrException extends Exception {
 
     public CraftrException(String message) {
         super(message);
