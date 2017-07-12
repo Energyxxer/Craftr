@@ -40,25 +40,26 @@ public class Field extends AbstractFileComponent implements Symbol {
         this.modifiers.addAll(modifiers);
         this.type = null;
 
-        this.name = ((TokenItem) pattern.find("FIELD_NAME")).getContents().value;
+        this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
         if(this.name.equalsIgnoreCase("debug")) {
             try {
-                Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime", declaringUnit.getContext()));
+                Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime", declaringUnit));
             } catch(CompilerException x) {
                 declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, x.getMessage(), this.pattern.getFormattedPath()));
             }
         }
 
-        if(modifiers.contains(CraftrUtil.Modifier.STATIC)) {
-            this.declaringUnit.getStaticSymbolTable().put(this);
+        if(!this.declaringUnit.getSubSymbolTable().getMap().containsKey(this.name)) {
+            this.declaringUnit.getSubSymbolTable().put(this);
         } else {
-            this.declaringUnit.getInstanceSymbolTable().put(this);
+            declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.getFormattedPath()));
         }
+
 
         Console.debug.println("at " + declaringUnit + "#" + name);
     }
 
-    public static List<Field> parseDeclaration(Unit declaringUnit, TokenPattern<?> pattern) throws CraftrException {
+    public static List<Field> parseDeclaration(TokenPattern<?> pattern, Unit declaringUnit) throws CraftrException {
         ArrayList<Field> fields = new ArrayList<>();
 
         //Skipping over annotations
@@ -70,10 +71,10 @@ public class Field extends AbstractFileComponent implements Symbol {
 
         Console.debug.println("[Field] Modifiers: " + modifiers);
 
-        TokenPattern<?>[] declarationList = ((TokenList) pattern.find("INNER.FIELD_DECLARATION_LIST")).getContents();
+        TokenPattern<?>[] declarationList = ((TokenList) pattern.find("INNER.VARIABLE_DECLARATION_LIST")).getContents();
 
         for(TokenPattern<?> p : declarationList) {
-            if(!p.getName().equals("FIELD_DECLARATION")) continue;
+            if(!p.getName().equals("VARIABLE_DECLARATION")) continue;
             fields.add(new Field(declaringUnit, p, modifiers, null));
         }
 

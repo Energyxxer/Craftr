@@ -29,6 +29,9 @@ public class TypeRegistry {
         for(DataType primitive : DataType.PRIMITIVES) {
             add(primitive);
         }
+        for(DataType defType : DataType.DEFAULT_TYPES) {
+            add(defType);
+        }
     }
 
 

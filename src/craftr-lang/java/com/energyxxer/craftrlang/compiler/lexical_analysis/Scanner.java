@@ -7,6 +7,8 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenSection;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
+import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 import com.energyxxer.util.StringLocation;
 
@@ -14,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -22,6 +25,8 @@ import java.util.HashMap;
 public class Scanner {
 	
 	private TokenStream stream;
+
+	private ArrayList<Notice> notices = new ArrayList<>();
 	
 	public Scanner(File project, TokenStream stream) {
 		this.stream = stream;
@@ -115,6 +120,9 @@ public class Scanner {
 			for(ScannerContext ctx : profile.contexts) {
 				if(ctx.getCondition() == ScannerContext.ContextCondition.LEADING_WHITESPACE && token.length() > 0) continue;
 				ScannerContextResponse response = ctx.analyze(sub);
+				if(response.errorMessage != null) {
+					notices.add(new Notice(NoticeType.ERROR, response.errorMessage, "\b" + file.getAbsolutePath() + "\b" + (i + response.errorIndex) + "\b" + response.errorLength));
+				}
 				if(response.success) {
 					flush();
 					updateTokenPos();
@@ -179,5 +187,13 @@ public class Scanner {
 	
 	private void flush(Token token) {
 		stream.write(token);
+	}
+
+	public ArrayList<Notice> getNotices() {
+		return notices;
+	}
+
+	public TokenStream getStream() {
+		return stream;
 	}
 }

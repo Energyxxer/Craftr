@@ -177,10 +177,11 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             if(ch == '\n') return superResult;
             Rectangle backward = this.modelToView(superResult);
             Rectangle forward = this.modelToView(superResult+1);
+            if(backward.x > forward.x) return superResult;
 
             float offset = (float) (pt.x - backward.x) / (forward.x - backward.x);
             if(offset < 0) {
-                return (1+offset >= BIAS_POINT) ? superResult : Math.max(superResult-1,0);
+                return (1+offset >= BIAS_POINT || (superResult > 0 && this.getDocument().getText(superResult-1,1).charAt(0) == '\n')) ? superResult : Math.max(superResult-1,0);
             }
             return (offset >= BIAS_POINT) ? superResult+1 : superResult;
         } catch(BadLocationException x) {

@@ -106,6 +106,6 @@ public class TokenItemMatch extends TokenPatternMatch {
 
 	@Override
 	public String toTrimmedString() {
-		return (stringMatch != null) ? stringMatch : type;
+		return (stringMatch != null) ? "'" + stringMatch + "'" : type;
 	}
 }

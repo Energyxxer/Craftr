@@ -34,6 +34,18 @@ public class ScannerContextResponse {
      * with the given syntax key.
      * */
     public final HashMap<TokenSection, String> subSections;
+    /**
+     * A field containing a possible error message for the context response.
+     * */
+    public String errorMessage = null;
+    /**
+     * A field containing the index at which the error occurs, if any.
+     * */
+    public int errorIndex = -1;
+    /**
+     * A field containing the length of the error, if any.
+     * */
+    public int errorLength = 0;
 
     /**
      * Creates a response from the given success value. This should <b>only</b> be used
@@ -117,5 +129,18 @@ public class ScannerContextResponse {
         this.endLocation = endLoc;
         this.tokenType = tokenType;
         this.subSections = subSections;
+    }
+
+    /**
+     * Sets the error fields with the given information.
+     *
+     * @param message The error message.
+     * @param index The index at which the error occurs.
+     * @param length The length of the error.
+     * */
+    public void setError(String message, int index, int length) {
+        this.errorMessage = message;
+        this.errorIndex = index;
+        this.errorLength = length;
     }
 }

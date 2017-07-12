@@ -193,7 +193,7 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
     public List<String> getSelectedFiles() {
         List<String> list = new ArrayList<>();
         selectedItems.forEach(item -> {
-            String path = item.getPath();
+            String path = item.getIdentifier();
             if(path != null) list.add(path);
         });
         return list;

@@ -13,18 +13,26 @@ public class Notice extends Throwable {
     private String filePath;
     private int locationIndex;
     private int locationLength;
-    private String pathDisplay;
 
     private String label;
 
     public Notice(NoticeType type, String message) {
-        this(type, message, null);
+        this(null, type, message);
     }
 
     public Notice(NoticeType type, String message, String formattedPath) {
+        this(null, type, message, formattedPath);
+    }
+
+    public Notice(String label, NoticeType type, String message) {
+        this(label, type, message, null);
+    }
+
+    public Notice(String label, NoticeType type, String message, String formattedPath) {
         this.type = type;
         this.message = message;
         setFormattedPath(formattedPath);
+        if(label != null) this.label = label;
     }
 
     public NoticeType getType() {
@@ -51,11 +59,9 @@ public class Notice extends Throwable {
         this.formattedPath = formattedPath;
         if(formattedPath != null) {
             String[] segments = formattedPath.split("\b");
-            System.out.println(Arrays.toString(segments));
             this.filePath = segments[1];
             this.locationIndex = Integer.parseInt(segments[2]);
             this.locationLength = Integer.parseInt(segments[3]);
-            this.pathDisplay = segments[4];
 
             this.label = this.filePath;
         }
@@ -71,10 +77,6 @@ public class Notice extends Throwable {
 
     public int getLocationLength() {
         return locationLength;
-    }
-
-    public String getPathDisplay() {
-        return pathDisplay;
     }
 
     public String getLabel() {

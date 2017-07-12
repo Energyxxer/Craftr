@@ -6,6 +6,7 @@ import com.energyxxer.craftr.ui.editor.CraftrEditorComponent;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.util.StringBounds;
 
 import javax.swing.text.BadLocationException;
@@ -23,7 +24,7 @@ import java.util.ConcurrentModificationException;
  */
 public class Inspector implements Highlighter.HighlightPainter {
 
-    volatile protected ArrayList<InspectionItem> items = new ArrayList<>();
+    private volatile ArrayList<InspectionItem> items = new ArrayList<>();
 
     private Tab tab;
     private CraftrEditorComponent editor;
@@ -39,15 +40,13 @@ public class Inspector implements Highlighter.HighlightPainter {
         catch(BadLocationException ble) {}
     }
 
-    public void inspect() {
+    public void inspect(TokenStream ts) {
         items.clear();
-        TokenStream ts = new TokenStream(true);
-        new Scanner(new File(tab.path), editor.getText(), ts);
 
         for(InspectionStructureMatch inspect : InspectionStructures.getAll()) {
             ArrayList<TokenPattern<?>> matches = ts.search(inspect);
             for(TokenPattern<?> match : matches) {
-                items.add(new InspectionItem(match, inspect.type));
+                items.add(new InspectionItem(inspect.type, inspect.name, match.getStringBounds()));
             }
         }
         editor.repaint();
@@ -62,24 +61,25 @@ public class Inspector implements Highlighter.HighlightPainter {
 
                 try {
 
-                    StringBounds bounds = item.pattern.getStringBounds();
+                    StringBounds bounds = item.bounds;
 
                     for (int l = bounds.start.line; l <= bounds.end.line; l++) {
                         Rectangle rectangle;
                         if (l == bounds.start.line) {
                             rectangle = editor.modelToView(bounds.start.index);
                             if (bounds.start.line == bounds.end.line) {
+                                //One line only
                                 rectangle.width = editor.modelToView(bounds.end.index).x - rectangle.x;
                             } else {
                                 rectangle.width = c.getWidth() - rectangle.x;
                             }
                         } else if (l == bounds.end.line) {
                             rectangle = editor.modelToView(bounds.end.index);
-                            rectangle.width = rectangle.x;
-                            rectangle.x = 0;
+                            rectangle.width = rectangle.x - c.modelToView(0).x;
+                            rectangle.x = c.modelToView(0).x; //0
                         } else {
                             rectangle = editor.modelToView(bounds.start.index);
-                            rectangle.x = 0;
+                            rectangle.x = c.modelToView(0).x; //0
                             rectangle.y += rectangle.height * (l - bounds.start.line);
                             rectangle.width = c.getWidth();
                         }
@@ -100,4 +100,22 @@ public class Inspector implements Highlighter.HighlightPainter {
         } catch(ConcurrentModificationException e) {}
     }
 
+    public void insertNotices(ArrayList<Notice> notices) {
+        for(Notice n : notices) {
+            InspectionType type = InspectionType.SUGGESTION;
+            switch(n.getType()) {
+                case ERROR: {
+                    type = InspectionType.ERROR;
+                    break;
+                }
+                case WARNING: {
+                    type = InspectionType.WARNING;
+                    break;
+                }
+            }
+            InspectionItem item = new InspectionItem(type, n.getMessage(), new StringBounds(editor.getLocationForOffset(n.getLocationIndex()), editor.getLocationForOffset(n.getLocationIndex() + n.getLocationLength())));
+            System.out.println("Created item: " + item);
+            items.add(item);
+        }
+    }
 }

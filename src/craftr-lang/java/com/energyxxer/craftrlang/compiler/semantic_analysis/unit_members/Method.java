@@ -4,20 +4,20 @@ import com.energyxxer.craftrlang.CraftrUtil;
 import com.energyxxer.craftrlang.compiler.exceptions.CraftrException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
+import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.AbstractFileComponent;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
-import com.energyxxer.util.out.Console;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,8 +30,13 @@ public class Method extends AbstractFileComponent implements Symbol {
     private List<CraftrUtil.Modifier> modifiers;
     private DataType returnType;
     private String name;
-    private List<FormalParameter> parameters;
+    private List<FormalParameter> positionalParams = new ArrayList<>();
+    private List<FormalParameter> keywordParams = new ArrayList<>();
     private String thread;
+
+    private CodeBlock codeBlock;
+
+    private final MethodSignature signature;
 
     public Method(Unit declaringUnit, TokenStructure pattern) throws CraftrException {
         super(pattern);
@@ -64,6 +69,8 @@ public class Method extends AbstractFileComponent implements Symbol {
             this.name = ((TokenItem) pattern.find("METHOD_NAME")).getContents().value;
         }
 
+        boolean validConstructor = this.type == MethodType.CONSTRUCTOR;
+
         if(this.type == MethodType.CONSTRUCTOR && !this.name.equals(this.declaringUnit.getName())) {
             this.declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(
                     new Notice(
@@ -72,20 +79,74 @@ public class Method extends AbstractFileComponent implements Symbol {
                             pattern.find("METHOD_NAME").getFormattedPath()
                     )
             );
+            validConstructor = false;
         }
-
-        List<CraftrUtil.Modifier> modifiers = Collections.emptyList();
 
         TokenList modifierPatterns = (TokenList) pattern.find("MODIFIER_LIST");
         if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()));
 
-        if(modifiers.contains(CraftrUtil.Modifier.STATIC)) {
-            this.declaringUnit.getStaticSymbolTable().put(this);
-        } else {
-            this.declaringUnit.getInstanceSymbolTable().put(this);
+        this.declaringUnit.getSubSymbolTable().put(this);
+
+        TokenList rawParameterList = (TokenList) pattern.find("PARAMETER_LIST");
+
+        if(rawParameterList != null) {
+            List<TokenPattern<?>> parameterPatterns = rawParameterList.searchByName("FORMAL_PARAMETER");
+
+            for(TokenPattern<?> rawParam : parameterPatterns) {
+                boolean isKeyword = rawParam.find("PARAMETER_INITIALIZER") != null;
+                if(!isKeyword && !keywordParams.isEmpty()) {
+                    this.declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(
+                            new Notice(
+                                    NoticeType.ERROR,
+                                    "Positional parameters must not follow keyword parameters",
+                                    rawParam.getFormattedPath()
+                            )
+                    );
+                }
+
+                String dataType = (rawParam.find("DATA_TYPE")).flatten(false);
+                String paramName = ((TokenItem) rawParam.find("PARAMETER_NAME")).getContents().value;
+
+                boolean isDuplicate = false;
+
+                for(FormalParameter p : positionalParams) {
+                    if(p.getName().equals(paramName)) {
+                        this.declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(
+                                new Notice(
+                                        NoticeType.ERROR,
+                                        "Variable '" + paramName + "' already defined in the scope",
+                                        rawParam.find("PARAMETER_NAME").getFormattedPath()
+                                )
+                        );
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+                if(!isDuplicate) for(FormalParameter p : keywordParams) {
+                    if(p.getName().equals(paramName)) {
+                        this.declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(
+                                new Notice(
+                                        NoticeType.ERROR,
+                                        "Variable '" + paramName + "' already defined in the scope",
+                                        rawParam.find("PARAMETER_NAME").getFormattedPath()
+                                )
+                        );
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+
+                if(!isDuplicate) {
+                    FormalParameter param = new FormalParameter(new DataType(dataType, false), paramName);
+                    ((isKeyword) ? keywordParams : positionalParams).add(param);
+                }
+
+            }
         }
 
-        Console.debug.println("[" + this.type + "] " + modifiers + " " + this.declaringUnit + "::" + this.name);
+        this.signature = new MethodSignature(declaringUnit, name, positionalParams);
+
+        System.out.println("signature = " + signature);
     }
 
     @Override

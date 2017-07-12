@@ -26,10 +26,10 @@ public class CraftrProductions {
     public static final TokenStructureMatch UNIT_BODY;
     public static final TokenStructureMatch UNIT_COMPONENT;
 
-    public static final TokenStructureMatch FIELD;
+    public static final TokenStructureMatch VARIABLE;
     public static final TokenStructureMatch METHOD;
 
-    public static final TokenStructureMatch VARIABLE_DECLARATION;
+    public static final TokenStructureMatch FORMAL_PARAMETER;
 
 	public static final TokenStructureMatch IDENTIFIER;
 	public static final TokenStructureMatch CONSTRUCTOR_KEYWORD;
@@ -72,13 +72,13 @@ public class CraftrProductions {
         UNIT_BODY = new TokenStructureMatch("UNIT_BODY");
         UNIT_COMPONENT = new TokenStructureMatch("UNIT_COMPONENT");
 
-        FIELD = new TokenStructureMatch("FIELD");
+        VARIABLE = new TokenStructureMatch("VARIABLE");
         METHOD = new TokenStructureMatch("METHOD");
+
+        FORMAL_PARAMETER = new TokenStructureMatch("FORMAL_PARAMETER");
 
 		IDENTIFIER = new TokenStructureMatch("IDENTIFIER");
 		CONSTRUCTOR_KEYWORD = new TokenStructureMatch("CONSTRUCTOR_KEYWORD");
-
-		VARIABLE_DECLARATION = new TokenStructureMatch("VARIABLE_DECLARATION");
 
 		DATA_TYPE = new TokenStructureMatch("DATA_TYPE");
 		EXPRESSION = new TokenStructureMatch("EXPRESSION");
@@ -129,27 +129,8 @@ public class CraftrProductions {
         }
 
         {
-            UNIT_COMPONENT.add(FIELD);
+            UNIT_COMPONENT.add(VARIABLE);
             UNIT_COMPONENT.add(METHOD);
-        }
-
-        {
-			TokenGroupMatch g = new TokenGroupMatch();
-			g.append(new TokenGroupMatch(true).append(ANNOTATION));
-			g.append(new TokenListMatch(TokenType.MODIFIER,true));
-			g.append(DATA_TYPE);
-			{
-				TokenGroupMatch g2 = new TokenGroupMatch();
-
-				g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
-				g2.append(new TokenItemMatch(TokenType.OPERATOR,"="));
-				g2.append(VALUE);
-
-				g.append(new TokenListMatch(g2,new TokenItemMatch(TokenType.COMMA),true));
-			}
-			g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
-
-            VARIABLE_DECLARATION.add(g);
         }
 
         {
@@ -158,29 +139,46 @@ public class CraftrProductions {
             g2.append(new TokenListMatch(TokenType.MODIFIER,true).setName("MODIFIER_LIST"));
             g2.append(DATA_TYPE);
             {
-                TokenGroupMatch g3 = new TokenGroupMatch().setName("FIELD_DECLARATION");
+                TokenGroupMatch g3 = new TokenGroupMatch().setName("VARIABLE_DECLARATION");
 
-                g3.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("FIELD_NAME"));
+                g3.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("VARIABLE_NAME"));
 
-                TokenGroupMatch g4 = new TokenGroupMatch(true).setName("FIELD_INITIALIZATION");
+                TokenGroupMatch g4 = new TokenGroupMatch(true).setName("VARIABLE_INITIALIZATION");
                 g4.append(new TokenItemMatch(TokenType.OPERATOR,"="));
                 g4.append(VALUE);
                 g3.append(g4);
 
-                g2.append(new TokenListMatch(g3,new TokenItemMatch(TokenType.COMMA).setName("FIELD_DECLARATION_SEPARATOR"),true).setName("FIELD_DECLARATION_LIST"));
+                g2.append(new TokenListMatch(g3,new TokenItemMatch(TokenType.COMMA).setName("VARIABLE_DECLARATION_SEPARATOR"),true).setName("VARIABLE_DECLARATION_LIST"));
             }
 
             TokenGroupMatch g = new TokenGroupMatch();
             g.append(g2);
             g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 
-            FIELD.add(g);
+            VARIABLE.add(g);
             EXPRESSION.add(g2);
         }
 
 		//--------------------
 		//  START OF METHODS
 		//--------------------
+
+        {
+            //Formal Parameter
+            TokenGroupMatch g = new TokenGroupMatch().setName("FORMAL_PARAMETER");
+            g.append(DATA_TYPE);
+            g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("PARAMETER_NAME"));
+
+            {
+                TokenGroupMatch g2 = new TokenGroupMatch(true).setName("PARAMETER_INITIALIZER");
+                g2.append(new TokenItemMatch(TokenType.OPERATOR,"="));
+                g2.append(VALUE);
+
+                g.append(g2);
+            }
+
+            FORMAL_PARAMETER.add(g);
+        }
 
 		{
 			//Method
@@ -190,23 +188,15 @@ public class CraftrProductions {
 			g.append(DATA_TYPE);
 			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME"));
 
-			g.append(new TokenItemMatch(TokenType.BRACE,"("));
-
-			{
-				TokenGroupMatch g2 = new TokenGroupMatch();
-
-				g2.append(DATA_TYPE);
-				g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
-				g.append(new TokenListMatch(g2,new TokenItemMatch(TokenType.COMMA),true));
-			}
-
+            g.append(new TokenItemMatch(TokenType.BRACE,"("));
+            g.append(new TokenListMatch(FORMAL_PARAMETER,new TokenItemMatch(TokenType.COMMA),true).setName("PARAMETER_LIST"));
 			g.append(new TokenItemMatch(TokenType.BRACE,")"));
 
 			{
 				TokenGroupMatch g2 = new TokenGroupMatch(true).setName("THREAD_MARKER");
 
 				g2.append(new TokenItemMatch(TokenType.COLON));
-				g2.append(VALUE);
+				g2.append(IDENTIFIER);
 				g.append(g2);
 			}
 
@@ -223,16 +213,16 @@ public class CraftrProductions {
             g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME"));
 
             g.append(new TokenItemMatch(TokenType.BRACE,"("));
-
-            {
-                TokenGroupMatch g2 = new TokenGroupMatch();
-
-                g2.append(DATA_TYPE);
-                g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
-                g.append(new TokenListMatch(g2,new TokenItemMatch(TokenType.COMMA),true));
-            }
-
+            g.append(new TokenListMatch(FORMAL_PARAMETER,new TokenItemMatch(TokenType.COMMA),true).setName("PARAMETER_LIST"));
             g.append(new TokenItemMatch(TokenType.BRACE,")"));
+
+			{
+				TokenGroupMatch g2 = new TokenGroupMatch(true).setName("THREAD_MARKER");
+
+				g2.append(new TokenItemMatch(TokenType.COLON));
+				g2.append(IDENTIFIER);
+				g.append(g2);
+			}
 
             g.append(CONSTRUCTOR_BODY);
 
@@ -254,16 +244,16 @@ public class CraftrProductions {
 			}
 
 			g.append(new TokenItemMatch(TokenType.BRACE,"("));
+            g.append(new TokenListMatch(FORMAL_PARAMETER,new TokenItemMatch(TokenType.COMMA),true).setName("PARAMETER_LIST"));
+			g.append(new TokenItemMatch(TokenType.BRACE,")"));
 
 			{
-				TokenGroupMatch g2 = new TokenGroupMatch(true);
+				TokenGroupMatch g2 = new TokenGroupMatch(true).setName("THREAD_MARKER");
 
-				g2.append(DATA_TYPE);
-				g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
+				g2.append(new TokenItemMatch(TokenType.COLON));
+				g2.append(IDENTIFIER);
 				g.append(g2);
 			}
-
-			g.append(new TokenItemMatch(TokenType.BRACE,")"));
 
 			g.append(CODE_BLOCK);
 
@@ -278,22 +268,14 @@ public class CraftrProductions {
 			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME"));
 
 			g.append(new TokenItemMatch(TokenType.BRACE,"("));
-
-			{
-				TokenGroupMatch g2 = new TokenGroupMatch();
-
-				g2.append(DATA_TYPE);
-				g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
-				g.append(new TokenListMatch(g2,new TokenItemMatch(TokenType.COMMA),true));
-			}
-
+			g.append(new TokenListMatch(FORMAL_PARAMETER,new TokenItemMatch(TokenType.COMMA),true).setName("PARAMETER_LIST"));
 			g.append(new TokenItemMatch(TokenType.BRACE,")"));
 
 			{
 				TokenGroupMatch g2 = new TokenGroupMatch(true).setName("THREAD_MARKER");
 
 				g2.append(new TokenItemMatch(TokenType.COLON));
-				g2.append(VALUE);
+				g2.append(IDENTIFIER);
 				g.append(g2);
 			}
 
@@ -403,13 +385,13 @@ public class CraftrProductions {
 
 			// [VALUE OPERATOR...]
 			{
-				TokenGroupMatch g = new TokenGroupMatch();
-				g.append(new TokenListMatch(VALUE, new TokenItemMatch(TokenType.OPERATOR)));
+				TokenGroupMatch g = new TokenGroupMatch().setName("OPERATION");
+				g.append(new TokenListMatch(VALUE, new TokenItemMatch(TokenType.OPERATOR).setName("OPERATOR")).setName("OPERATION_LIST"));
 				EXPRESSION.add(g);
 			}
 
 			{
-				TokenGroupMatch g = new TokenGroupMatch();
+				TokenGroupMatch g = new TokenGroupMatch().setName("PARENTHESIZED_EXPRESSION");
 				g.append(new TokenItemMatch(TokenType.BRACE,"("));
 				g.append(EXPRESSION);
 				g.append(new TokenItemMatch(TokenType.BRACE,")"));
@@ -417,14 +399,14 @@ public class CraftrProductions {
 			}
 			
 			{
-				TokenGroupMatch g = new TokenGroupMatch();
+				TokenGroupMatch g = new TokenGroupMatch().setName("UNARY_OPERATION_R");
 				g.append(new TokenItemMatch(TokenType.IDENTIFIER));
 				g.append(new TokenItemMatch(TokenType.IDENTIFIER_OPERATOR));
 				EXPRESSION.add(g);
 			}
 			
 			{
-				TokenGroupMatch g = new TokenGroupMatch();
+				TokenGroupMatch g = new TokenGroupMatch().setName("UNARY_OPERATION_L");
 				g.append(new TokenItemMatch(TokenType.IDENTIFIER_OPERATOR));
 				g.append(new TokenItemMatch(TokenType.IDENTIFIER));
 				EXPRESSION.add(g);

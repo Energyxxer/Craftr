@@ -34,7 +34,7 @@ public class TokenGroup extends TokenPattern<TokenPattern<?>[]> {
 
 	@Override
 	public String toString() {
-		String o = "{ ";
+		String o = name + ": { ";
 		
 		for(TokenPattern<?> p : patterns) {
 			o += p.toString();

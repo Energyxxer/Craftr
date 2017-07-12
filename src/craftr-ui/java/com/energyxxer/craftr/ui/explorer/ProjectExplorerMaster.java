@@ -3,7 +3,6 @@ package com.energyxxer.craftr.ui.explorer;
 import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
-import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerItem;
 import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerSeparator;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftrlang.projects.ProjectManager;
@@ -51,14 +50,14 @@ public class ProjectExplorerMaster extends ExplorerMaster {
         ProjectManager.loadWorkspace();
 
         ArrayList<String> copy = new ArrayList<>();
-        copy.addAll(getExpandedElements());
+        copy.addAll(this.getExpandedElements());
         refresh(copy);
     }
 
     private void refresh(ArrayList<String> toOpen) {
         children.clear();
         flatList.clear();
-        getExpandedElements().clear();
+        this.getExpandedElements().clear();
 
         File[] subfiles = root.listFiles();
         if(subfiles == null) return;
@@ -67,13 +66,13 @@ public class ProjectExplorerMaster extends ExplorerMaster {
 
         for(File f : subfiles) {
             if(f.isDirectory()) {
-                this.children.add(new ExplorerItem(this, f, toOpen));
+                this.children.add(new ProjectExplorerItem(this, f, toOpen));
             } else {
                 subfiles1.add(f);
             }
         }
         for(File f : subfiles1) {
-            this.children.add(new ExplorerItem(this, f, toOpen));
+            this.children.add(new ProjectExplorerItem(this, f, toOpen));
         }
 
         this.children.add(new ExplorerSeparator(this));
@@ -81,7 +80,7 @@ public class ProjectExplorerMaster extends ExplorerMaster {
         File[] resourceFiles = new File(System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "resources").listFiles();
         if(resourceFiles != null) {
             for(File f : resourceFiles) {
-                this.children.add(new ExplorerItem(this, f, toOpen));
+                this.children.add(new ProjectExplorerItem(this, f, toOpen));
             }
         }
 

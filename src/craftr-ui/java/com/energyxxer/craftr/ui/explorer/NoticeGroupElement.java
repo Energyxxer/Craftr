@@ -33,12 +33,13 @@ public class NoticeGroupElement extends ExplorerElement {
         this.label = label;
         this.notices = notices;
 
-        String iconName = ProjectManager.getIconFor(new File(notices.get(0).getFilePath()));
-        if (iconName == null) {
-            iconName = "file";
+        if(notices.size() > 0 && notices.get(0).getFilePath() != null) {
+            String iconName = ProjectManager.getIconFor(new File(notices.get(0).getFilePath()));
+            if (iconName == null) {
+                iconName = "file";
+            }
+            this.icon = Commons.getIcon(iconName).getScaledInstance(16, 16, Image.SCALE_SMOOTH);
         }
-
-        this.icon = Commons.getIcon(iconName).getScaledInstance(16, 16, Image.SCALE_SMOOTH);
 
         this.x = master.getInitialIndent() + (indentation * master.getIndentPerLevel());
     }
@@ -152,7 +153,7 @@ public class NoticeGroupElement extends ExplorerElement {
     }
 
     @Override
-    public String getPath() {
+    public String getIdentifier() {
         return null;
     }
 

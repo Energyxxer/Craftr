@@ -103,7 +103,7 @@ public class TextLineNumber extends JPanel
 
 		try {
 			FontMetrics fontMetrics = component.getFontMetrics( component.getFont() );
-			int lineHeight = component.modelToView(component.viewToModel(new Point(0,0))).height;
+			int lineHeight = component.modelToView(0).height;
 			int availableWidth = getSize().width - (2 * padding);
 
 			Rectangle viewport = scrollPane.getViewport().getViewRect();

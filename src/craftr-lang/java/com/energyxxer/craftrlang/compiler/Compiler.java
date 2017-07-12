@@ -41,15 +41,29 @@ public class Compiler {
 			this.setProgress("Scanning files... [" + project.getName() + "]");
 			TokenStream ts = new TokenStream();
 			this.setProgress("Scanning files... [" + project.getName() + "]");
-			new Scanner(project.getDirectory(),ts);
+			Scanner sc = new Scanner(project.getSource(),ts);
+			this.getReport().addNotices(sc.getNotices());
+			if(sc.getNotices().size() > 0) {
+				finalizeCompilation();
+				return;
+			}
 			this.setProgress("Parsing tokens... [" + project.getName() + "]");
-			Parser parser = new Parser(ts);
+			Parser parser = new Parser(this, ts);
+			this.getReport().addNotices(parser.getNotices());
 			this.setProgress("Analyzing code... [" + project.getName() + "]");
-			new SemanticAnalyzer(this, parser.filePatterns, project.getDirectory());
+			new SemanticAnalyzer(this, parser.getFilePatterns(), project.getSource());
 
 			this.setProgress("Compilation completed with " + report.getTotalsString());
-			completionListeners.forEach(Runnable::run);
-		}).start();
+			finalizeCompilation();
+		},"Craftr-Compiler").start();
+	}
+
+	public Project getProject() {
+		return project;
+	}
+
+	private void finalizeCompilation() {
+		completionListeners.forEach(Runnable::run);
 	}
 
 	public void addProgressListener(ProgressListener l) {

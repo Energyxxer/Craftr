@@ -3,6 +3,7 @@ package com.energyxxer.craftrlang.compiler;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -14,6 +15,10 @@ public class CompilerReport {
     private final ArrayList<Notice> info = new ArrayList<>();
 
     public CompilerReport() {
+    }
+
+    public void addNotices(Collection<? extends Notice> notices) {
+        notices.forEach(this::addNotice);
     }
 
     public void addNotice(Notice n) {

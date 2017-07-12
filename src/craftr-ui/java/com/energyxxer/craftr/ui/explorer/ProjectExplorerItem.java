@@ -1,9 +1,10 @@
-package com.energyxxer.craftr.ui.explorer.base.elements;
+package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.files.FileType;
 import com.energyxxer.craftr.global.*;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
+import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerElement;
 import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftr.ui.common.MenuItems;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
@@ -24,9 +25,9 @@ import java.util.List;
 /**
  * Created by User on 2/7/2017.
  */
-public class ExplorerItem extends ExplorerElement {
+public class ProjectExplorerItem extends ExplorerElement {
     private final ExplorerMaster master;
-    private ExplorerItem parent = null;
+    private ProjectExplorerItem parent = null;
 
     private String path = null;
     private boolean isDirectory = false;
@@ -39,7 +40,7 @@ public class ExplorerItem extends ExplorerElement {
 
     private int x = 0;
 
-    public ExplorerItem(ExplorerMaster master, File file, ArrayList<String> toOpen) {
+    public ProjectExplorerItem(ExplorerMaster master, File file, ArrayList<String> toOpen) {
         this.path = file.getPath();
         this.master = master;
 
@@ -57,7 +58,7 @@ public class ExplorerItem extends ExplorerElement {
         }
     }
 
-    private ExplorerItem(@NotNull ExplorerItem parent, File file, ArrayList<String> toOpen) {
+    private ProjectExplorerItem(@NotNull ProjectExplorerItem parent, File file, ArrayList<String> toOpen) {
         this.parent = parent;
         this.master = parent.master;
 
@@ -131,13 +132,13 @@ public class ExplorerItem extends ExplorerElement {
 
         for(File f : subfiles) {
             if(f.isDirectory()) {
-                this.children.add(new ExplorerItem(this, f, toOpen));
+                this.children.add(new ProjectExplorerItem(this, f, toOpen));
             } else {
                 subfiles1.add(f);
             }
         }
         for(File f : subfiles1) {
-            this.children.add(new ExplorerItem(this, f, toOpen));
+            this.children.add(new ProjectExplorerItem(this, f, toOpen));
         }
 
         expanded = true;
@@ -155,7 +156,7 @@ public class ExplorerItem extends ExplorerElement {
     private void propagateCollapse() {
         master.getExpandedElements().remove(this.path);
         for(ExplorerElement element : children) {
-            if(element instanceof ExplorerItem) ((ExplorerItem) element).propagateCollapse();
+            if(element instanceof ProjectExplorerItem) ((ProjectExplorerItem) element).propagateCollapse();
         }
     }
 
@@ -289,7 +290,7 @@ public class ExplorerItem extends ExplorerElement {
     }
 
     @Override
-    public String getPath() {
+    public String getIdentifier() {
         return path;
     }
 
@@ -427,7 +428,7 @@ public class ExplorerItem extends ExplorerElement {
 
             if (newName != null) {
                 if (ProjectManager.renameFile(new File(path), newName)) {
-                    com.energyxxer.craftr.ui.projectExplorer.ExplorerItem parentItem = ExplorerMaster.selectedLabels.get(0).parent;
+                    com.energyxxer.craftr.ui.projectExplorer.ProjectExplorerItem parentItem = ExplorerMaster.selectedLabels.get(0).parent;
                     parentItem.path = pathToParent + newName + extension;
                     if (parentItem.parent != null) {
                         parentItem.parent.collapse();

@@ -32,7 +32,7 @@ public abstract class ExplorerElement implements MouseListener {
         this.rollover = rollover;
     }
 
-    public abstract String getPath();
+    public abstract String getIdentifier();
 
     public abstract int getHeight();
 }

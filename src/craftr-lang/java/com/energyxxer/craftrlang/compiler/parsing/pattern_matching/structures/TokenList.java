@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TokenList extends TokenPattern<TokenPattern<?>[]> {
-	private ArrayList<TokenPattern<?>> patterns = new ArrayList<TokenPattern<?>>();
-	
+	private ArrayList<TokenPattern<?>> patterns = new ArrayList<>();
+
 	public TokenList() {}
 	
 	public TokenList(ArrayList<TokenPattern<?>> patterns) {
@@ -20,6 +20,10 @@ public class TokenList extends TokenPattern<TokenPattern<?>[]> {
 	public void add(TokenPattern<?> pattern) {
 		if(pattern != null)	patterns.add(pattern);
 	}
+
+	public int size() {
+	    return patterns.size();
+    }
 	
 	@Override
 	public TokenList setName(String name) {

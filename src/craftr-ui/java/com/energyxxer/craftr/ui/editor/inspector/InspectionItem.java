@@ -1,17 +1,19 @@
 package com.energyxxer.craftr.ui.editor.inspector;
 
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.util.StringBounds;
 
 /**
  * Created by User on 1/1/2017.
  */
 public class InspectionItem {
 
-    TokenPattern<?> pattern;
+    StringBounds bounds;
     InspectionType type;
+    String message;
 
-    public InspectionItem(TokenPattern<?> pattern, InspectionType type) {
-        this.pattern = pattern;
+    public InspectionItem(InspectionType type, String message, StringBounds bounds) {
+        this.bounds = bounds;
+        this.message = message;
         this.type = type;
     }
 }

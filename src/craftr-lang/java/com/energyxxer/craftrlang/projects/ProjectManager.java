@@ -63,7 +63,21 @@ public class ProjectManager {
 				return "meta";
 			} else if(filename.endsWith(".ogg")) {
 				return "audio";
+			} else if(filename.endsWith(".nbt")) {
+				return "structure";
 			}
+
+			//TODO: Make this extension-to-icon mapping data-driven by the selected UI theme.
+
+            /*
+sounds.json = sound_config
+blockstates/*.json = blockstate
+*.json = model
+*.lang = lang
+*.mcmeta = meta
+*.ogg = audio
+*.nbt = structure
+            */
 		}
 		return null;
 	}

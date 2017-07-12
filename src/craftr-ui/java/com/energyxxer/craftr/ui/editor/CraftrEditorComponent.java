@@ -45,7 +45,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
 
         sd = this.getStyledDocument();
 
-        if(Lang.getLangForFile(parent.associatedTab.path) == Lang.CRAFTR) this.inspector = new Inspector(parent.associatedTab, this);
+        if(Lang.getLangForFile(parent.associatedTab.path) != null) this.inspector = new Inspector(parent.associatedTab, this);
 
         this.addCaretListener(this);
 
@@ -69,7 +69,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
 
         String text = getText();
 
-        new Scanner(new File(parent.associatedTab.path), text, new TokenStream(true) {
+        Scanner sc = new Scanner(new File(parent.associatedTab.path), text, new TokenStream(true) {
             @Override
             public void onWrite(Token token) {
                 Style style = CraftrEditorComponent.this.getStyle(token.type.toLowerCase());
@@ -92,6 +92,11 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
                 }
             }
         });
+
+        if(this.inspector != null) {
+            this.inspector.inspect(sc.getStream());
+            this.inspector.insertNotices(sc.getNotices());
+        }
     }
 
     void highlight() {
@@ -107,7 +112,6 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
                 } catch(BadLocationException e) {
                     e.printStackTrace();
                 }
-                if(this.inspector != null) this.inspector.inspect();
             },"Text Highlighter").start();
             lastEdit = -1;
         }

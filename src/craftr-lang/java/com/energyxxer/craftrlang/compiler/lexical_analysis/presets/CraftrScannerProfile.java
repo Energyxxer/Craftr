@@ -93,7 +93,9 @@ public class CraftrScannerProfile extends ScannerProfile {
                         end.index++;
 
                         if(c == '\n' && startingCharacter != multiLineDelimiter) {
-                            throw new RuntimeException("Illegal line end in string literal");
+                            ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), end, TokenType.STRING_LITERAL, escapedChars);
+                            response.setError("Illegal line end in string literal", i, 1);
+                            return response;
                         }
                         token.append(c);
                         if(c == '\\') {
@@ -105,7 +107,9 @@ public class CraftrScannerProfile extends ScannerProfile {
                         }
                     }
                     //Unexpected end of input
-                    throw new RuntimeException("Unexpected end of input");
+                    ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), end, TokenType.STRING_LITERAL, escapedChars);
+                    response.setError("Unexpected end of input", str.length()-1, 1);
+                    return response;
                 } else return new ScannerContextResponse(false);
             }
         };
@@ -126,7 +130,11 @@ public class CraftrScannerProfile extends ScannerProfile {
 
                     if(multiline) {
                         int end = str.substring(multiLineCommentStart.length()).indexOf(multiLineCommentEnd) + multiLineCommentStart.length() + multiLineCommentEnd.length();
-                        if(end < multiLineCommentStart.length() + multiLineCommentEnd.length()) throw new RuntimeException("Unclosed comment");
+                        boolean unclosed = false;
+                        if(end < multiLineCommentStart.length() + multiLineCommentEnd.length()) {
+                            unclosed = true;
+                            end = str.length();
+                        }
                         String fullComment = str.substring(0,end);
                         StringLocation endLoc = new StringLocation(multiLineCommentStart.length(),0,multiLineCommentStart.length());
 
@@ -140,7 +148,11 @@ public class CraftrScannerProfile extends ScannerProfile {
                             endLoc.index++;
                         }
 
-                        return new ScannerContextResponse(true, fullComment, endLoc, TokenType.COMMENT);
+                        ScannerContextResponse response = new ScannerContextResponse(true, fullComment, endLoc, TokenType.COMMENT);
+                        if(unclosed) {
+                            response.setError("Unclosed comment", end-1, 1);
+                        }
+                        return response;
                     } else {
                         int end = str.substring(singleLineComment.length()).indexOf("\n") + singleLineComment.length();
                         if(end < singleLineComment.length()) end = str.length();

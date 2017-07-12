@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
 import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.compiler.exceptions.CompilerException;
 import com.energyxxer.craftrlang.compiler.exceptions.CraftrException;
 import com.energyxxer.craftrlang.compiler.exceptions.ParserException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
@@ -10,13 +11,12 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.*;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Field;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 import com.energyxxer.util.out.Console;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Created by User on 2/25/2017.
  */
-public class Unit extends AbstractFileComponent implements Symbol {
+public class Unit extends AbstractFileComponent implements Symbol, Context {
     private final CraftrFile declaringFile;
     public List<CraftrUtil.Modifier> modifiers;
     public final SymbolVisibility visibility;
@@ -36,18 +36,12 @@ public class Unit extends AbstractFileComponent implements Symbol {
     public List<String> unitImplements = null;
     public List<String> unitRequires = null;
 
-    private List<Field> fields;
+    private SymbolTable fields;
     private List<Method> methods;
-
-    private SymbolTable staticSymbolTable;
-    private SymbolTable instanceSymbolTable;
-
-    private Context context;
 
     public Unit(CraftrFile file, TokenPattern<?> pattern) throws CraftrException {
         super(pattern);
         this.declaringFile = file;
-        this.context = new Context(this);
 
         //Parse header
 
@@ -107,22 +101,23 @@ public class Unit extends AbstractFileComponent implements Symbol {
 
         this.visibility = modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL : SymbolVisibility.PACKAGE;
 
-        this.staticSymbolTable = new SymbolTable(this.visibility, file.getPackage().getSubSymbolTable());
+        this.fields = new SymbolTable(this.visibility, file.getPackage().getSubSymbolTable());
         file.getPackage().getSubSymbolTable().put(this);
-
-        this.instanceSymbolTable = new SymbolTable(file.getAnalyzer().getCompiler());
 
         //Parse body
 
-        this.fields = new ArrayList<>();
         this.methods = new ArrayList<>();
 
         TokenPattern<?> componentList = pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST");
         if(componentList != null) {
             for (TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
                 TokenStructure component = (TokenStructure) p.getContents();
-                if (component.getName().equals("FIELD")) {
-                    fields.addAll(Field.parseDeclaration(this, component));
+                if (component.getName().equals("VARIABLE")) {
+                    try {
+                        Variable.parseDeclaration(component, this);
+                    } catch(CompilerException x) {
+                        this.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, x.getMessage(), x.getFormattedPath()));
+                    }
                 } else if(component.getName().equals("METHOD")) {
                     methods.add(new Method(this, component));
                 }
@@ -148,32 +143,18 @@ public class Unit extends AbstractFileComponent implements Symbol {
         return declaringFile.getPackage();
     }
 
-    public SymbolTable getSubSymbolTable() {
-        return staticSymbolTable;
+    @Override
+    public ContextType getType() {
+        return ContextType.UNIT;
+    }
+
+    @Override
+    public @NotNull SymbolTable getSubSymbolTable() {
+        return fields;
     }
 
     public CraftrFile getDeclaringFile() {
         return declaringFile;
-    }
-
-    public Context getContext() {
-        return context;
-    }
-
-    public SymbolTable getStaticSymbolTable() {
-        return staticSymbolTable;
-    }
-
-    public SymbolTable getInstanceSymbolTable() {
-        return instanceSymbolTable;
-    }
-
-    public List<Field> getFields() {
-        return fields;
-    }
-
-    public List<Method> getMethods() {
-        return methods;
     }
 
     @Override

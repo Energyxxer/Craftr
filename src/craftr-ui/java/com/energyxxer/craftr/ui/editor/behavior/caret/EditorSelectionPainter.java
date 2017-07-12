@@ -42,11 +42,11 @@ public class EditorSelectionPainter implements Highlighter.HighlightPainter {
                         }
                     } else if (l == bounds.end.line) {
                         rectangle = c.modelToView(bounds.end.index);
-                        rectangle.width = rectangle.x;
-                        rectangle.x = 0;
+                        rectangle.width = rectangle.x - c.modelToView(0).x;
+                        rectangle.x = c.modelToView(0).x; //0
                     } else {
                         rectangle = c.modelToView(bounds.start.index);
-                        rectangle.x = 0;
+                        rectangle.x = c.modelToView(0).x; //0
                         rectangle.y += rectangle.height * (l - bounds.start.line);
                         rectangle.width = c.getWidth();
                     }

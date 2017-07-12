@@ -3,6 +3,8 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis;
 import com.energyxxer.craftrlang.compiler.Compiler;
 import com.energyxxer.craftrlang.compiler.exceptions.CraftrException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.PackageManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.TypeRegistry;
@@ -18,7 +20,7 @@ import java.util.HashMap;
 public class SemanticAnalyzer {
     private final Compiler compiler;
 
-    public final File rootPath;
+    public final File sourcePath;
     public final TypeRegistry typeRegistry;
     public final ArrayList<CraftrFile> files;
 
@@ -26,13 +28,12 @@ public class SemanticAnalyzer {
 
     private final PackageManager packageManager;
 
-    public SemanticAnalyzer(Compiler compiler, HashMap<File, TokenPattern<?>> filePatterns, File rootPath) {
+    public SemanticAnalyzer(Compiler compiler, HashMap<File, TokenPattern<?>> filePatterns, File sourcePath) {
         this.compiler = compiler;
-        this.rootPath = rootPath;
+        this.sourcePath = sourcePath;
         this.typeRegistry = new TypeRegistry();
         this.files = new ArrayList<>();
         this.symbolTable = new SymbolTable(compiler);
-        this.symbolTable.setRootSkipName("src");
         this.packageManager = new PackageManager(this.symbolTable);
 
         try {

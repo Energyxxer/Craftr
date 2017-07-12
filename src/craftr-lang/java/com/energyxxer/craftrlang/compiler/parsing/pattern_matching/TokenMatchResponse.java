@@ -53,13 +53,13 @@ public class TokenMatchResponse {
 	public String getErrorMessage() {
 		if (!matched) {
 			if(faultyToken == null) {
-				return "Uncaught Syntax Error: Unexpected end of input. Expected " + expected + ".\n";
+				return "Unexpected end of input. Expected " + expected.toTrimmedString();
 			}
 			if(faultyToken.type == TokenType.END_OF_FILE) {
-				return "Uncaught Syntax Error: Unexpected end of input. Expected " + expected + ".\n\tat " + faultyToken.getLocation();
+				return "Unexpected end of input. Expected " + expected.toTrimmedString();
 			}
-			return "Uncaught Syntax Error: Unexpected token " + faultyToken.value + ". Expected " + expected
-					+ ", instead got " + faultyToken.type + "\n\tat " + faultyToken.getLocation();
+			return "Unexpected token " + faultyToken.value + ". Expected " + expected.toTrimmedString()
+					+ ", instead got " + faultyToken.type;
 		}
 		return null;
 	}
