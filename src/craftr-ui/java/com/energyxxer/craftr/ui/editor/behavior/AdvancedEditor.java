@@ -288,7 +288,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
         return index;
     }
 
-    //Delegates and deprecated methods
+    //Delegates and deprecated managers
 
     @Override
     public boolean getScrollableTracksViewportWidth() {

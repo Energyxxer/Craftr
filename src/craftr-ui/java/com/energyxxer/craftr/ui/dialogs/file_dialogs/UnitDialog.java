@@ -232,9 +232,10 @@ public class UnitDialog {
                 variables.put("package", FileUtil.getPackage(newFile));
                 variables.put("name", filename);
                 variables.put("user", Preferences.get("username", "User"));
+                variables.put("indent", "    ");
 
                 Date date = new Date();
-                variables.put("day", Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG_FORMAT, Locale.getDefault()));
+                variables.put("day", Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()));
                 variables.put("date", Integer.toString(Calendar.getInstance().get(Calendar.DAY_OF_MONTH)));
                 variables.put("week", Integer.toString(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)));
                 variables.put("month", Integer.toString(Calendar.getInstance().get(Calendar.MONTH) + 1));

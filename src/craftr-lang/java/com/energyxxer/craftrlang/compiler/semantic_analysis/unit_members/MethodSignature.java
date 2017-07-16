@@ -25,15 +25,14 @@ public class MethodSignature {
 
         MethodSignature that = (MethodSignature) o;
 
-        return declaringUnit == that.declaringUnit && name.equals(that.name) && positionalParams.equals(that.positionalParams);
+        return name.equals(that.name) && positionalParams.equals(that.positionalParams);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(declaringUnit.getName());
-        sb.append("::");
-        sb.append((declaringUnit.getName().equals(this.name)) ? "new" : name);
+        //sb.append((declaringUnit.getName().equals(this.name)) ? "new" : name);
+        sb.append(name);
         sb.append("(");
         boolean hasParam = false;
         for(FormalParameter p : positionalParams) {
@@ -43,6 +42,24 @@ public class MethodSignature {
         }
         if(hasParam) sb.setLength(sb.length()-2);
         sb.append(")");
+
+        return sb.toString();
+    }
+
+    public String getFullyQualifiedName() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(declaringUnit.getFullyQualifiedName());
+        sb.append('.');
+        sb.append((declaringUnit.getName().equals(this.name)) ? "new" : name);
+        sb.append('(');
+        boolean hasParam = false;
+        for(FormalParameter p : positionalParams) {
+            sb.append(p.getType());
+            sb.append(", ");
+            hasParam = true;
+        }
+        if(hasParam) sb.setLength(sb.length()-2);
+        sb.append(')');
 
         return sb.toString();
     }

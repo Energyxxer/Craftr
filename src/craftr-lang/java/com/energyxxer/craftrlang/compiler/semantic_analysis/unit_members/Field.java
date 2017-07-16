@@ -1,8 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.craftrlang.CraftrUtil;
-import com.energyxxer.craftrlang.compiler.exceptions.CompilerException;
-import com.energyxxer.craftrlang.compiler.exceptions.CraftrException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -42,24 +40,20 @@ public class Field extends AbstractFileComponent implements Symbol {
 
         this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
         if(this.name.equalsIgnoreCase("debug")) {
-            try {
-                Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime", declaringUnit));
-            } catch(CompilerException x) {
-                declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, x.getMessage(), this.pattern.getFormattedPath()));
-            }
+            Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime", declaringUnit));
         }
 
         if(!this.declaringUnit.getSubSymbolTable().getMap().containsKey(this.name)) {
             this.declaringUnit.getSubSymbolTable().put(this);
         } else {
-            declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.getFormattedPath()));
+            declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.getFormattedPath()));
         }
 
 
         Console.debug.println("at " + declaringUnit + "#" + name);
     }
 
-    public static List<Field> parseDeclaration(TokenPattern<?> pattern, Unit declaringUnit) throws CraftrException {
+    public static List<Field> parseDeclaration(TokenPattern<?> pattern, Unit declaringUnit) {
         ArrayList<Field> fields = new ArrayList<>();
 
         //Skipping over annotations
@@ -67,7 +61,7 @@ public class Field extends AbstractFileComponent implements Symbol {
         List<CraftrUtil.Modifier> modifiers = Collections.emptyList();
 
         TokenList modifierPatterns = (TokenList) pattern.find("INNER.MODIFIER_LIST");
-        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()));
+        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), declaringUnit.getAnalyzer());
 
         Console.debug.println("[Field] Modifiers: " + modifiers);
 

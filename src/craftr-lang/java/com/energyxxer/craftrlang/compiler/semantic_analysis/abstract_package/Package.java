@@ -64,7 +64,8 @@ public class Package implements Symbol {
         return SymbolVisibility.GLOBAL;
     }
 
-    public SymbolTable getSubSymbolTable() {
+    @Override
+    public @NotNull SymbolTable getSubSymbolTable() {
         return symbolTable;
     }
 

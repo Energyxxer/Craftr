@@ -1,14 +1,10 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
 import com.energyxxer.craftrlang.compiler.Compiler;
-import com.energyxxer.craftrlang.compiler.exceptions.CraftrException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.report.Notice;
-import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.PackageManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.TypeRegistry;
-import com.energyxxer.util.out.Console;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,18 +32,12 @@ public class SemanticAnalyzer {
         this.symbolTable = new SymbolTable(compiler);
         this.packageManager = new PackageManager(this.symbolTable);
 
-        try {
-            for(File f : filePatterns.keySet()) {
-                files.add(new CraftrFile(this, f, filePatterns.get(f)));
-            }
+        for(File f : filePatterns.keySet()) {
+            files.add(new CraftrFile(this, f, filePatterns.get(f)));
+        }
 
-            for(CraftrFile f : files) {
-                f.initImports();
-            }
-
-        } catch(CraftrException e) {
-            Console.err.println(e.getMessage());
-            return;
+        for(CraftrFile f : files) {
+            f.initImports();
         }
     }
 

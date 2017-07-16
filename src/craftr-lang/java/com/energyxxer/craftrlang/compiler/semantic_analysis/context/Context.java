@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.context;
 
 import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
 
@@ -9,5 +10,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBloc
  */
 public interface Context {
     CraftrFile getDeclaringFile();
-    ContextType getType();
+    Unit getUnit();
+    ContextType getContextType();
+    SemanticAnalyzer getAnalyzer();
 }

@@ -12,10 +12,10 @@ import java.util.List;
 public class CraftrUtil {
 
     private static final List<String>
-        modifiers = Arrays.asList("public", "static", "abstract", "final", "protected", "private", "compilation", "ingame"),
+        modifiers = Arrays.asList("public", "static", "abstract", "final", "protected", "private", "compilation", "ingame", "native"),
         unit_types = Arrays.asList("entity", "item", "feature", "class", "enum"),
         unit_actions = Arrays.asList("extends", "implements", "requires"),
-        data_types = Arrays.asList("int", "String", "float", "boolean", "void", "char"),
+        data_types = Arrays.asList("int", "String", "float", "double", "long", "boolean", "void", "char"),
         keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import", "operator", "instanceof"),
         action_keywords = Arrays.asList("break", "continue", "return"),
         booleans = Arrays.asList("true", "false"),
@@ -27,7 +27,7 @@ public class CraftrUtil {
     public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "Thread", "compare", "stack", "nbt", "equipment", "multipart");
 
     public enum Modifier {
-        PUBLIC, STATIC, ABSTRACT, FINAL, PROTECTED, PRIVATE, COMPILATION, INGAME;
+        PUBLIC, STATIC, ABSTRACT, FINAL, PROTECTED, PRIVATE, COMPILATION, INGAME, NATIVE;
 
         @Override
         public String toString() {

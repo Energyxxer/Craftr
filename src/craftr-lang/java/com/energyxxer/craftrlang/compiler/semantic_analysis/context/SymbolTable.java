@@ -1,21 +1,30 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.context;
 
 import com.energyxxer.craftrlang.compiler.Compiler;
-import com.energyxxer.craftrlang.compiler.exceptions.CompilerException;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by User on 3/3/2017.
  */
-public class SymbolTable {
+public class SymbolTable implements Iterable<Symbol> {
     private final Compiler compiler;
     private final SymbolVisibility visibility;
     private SymbolTable parent = null;
 
     private HashMap<String, Symbol> table = new HashMap<>();
+
+    public SymbolTable() {
+        this.visibility = SymbolVisibility.GLOBAL;
+        this.parent = null;
+        this.compiler = null;
+    }
 
     public SymbolTable(Compiler compiler) {
         this.visibility = SymbolVisibility.GLOBAL;
@@ -63,13 +72,13 @@ public class SymbolTable {
             switch(next.getVisibility()) {
                 case PACKAGE: {
                     if(context.getDeclaringFile().getPackage() != next.getPackage()) {
-                        throw new CompilerException("Cannot access symbol '" + raw + "' from current context", token.getFormattedPath());
+                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
                     }
                     break;
                 }
                 case UNIT: {
-                    if(context.getType() != ContextType.UNIT || context != next.getUnit()) {
-                        throw new CompilerException("Cannot access symbol '" + raw + "' from current context", token.getFormattedPath());
+                    if(context.getContextType() != ContextType.UNIT || context != next.getUnit()) {
+                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
                     }
                     break;
                 }
@@ -91,13 +100,15 @@ public class SymbolTable {
                 if(subTable != null) {
                     return next.getSubSymbolTable().getSymbol(flatTokens.subList(2, flatTokens.size()), context);
                 }
-                throw new CompilerException(raw + " is not a data structure", token.getFormattedPath());
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, raw + " is not a data structure", token.getFormattedPath()));
             }
             return next;
         }
-        throw new CompilerException("Cannot resolve symbol '" + raw + "'", token.getFormattedPath());
+        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + raw + "'", token.getFormattedPath()));
+        return null;
     }
 
+    @Deprecated
     public Symbol getSymbol(String path, Context context) {
         String[] sections = path.split("\\.",2);
         Symbol next = this.table.get(sections[0]);
@@ -105,13 +116,13 @@ public class SymbolTable {
             switch(next.getVisibility()) {
                 case PACKAGE: {
                     if(context.getDeclaringFile().getPackage() != next.getPackage()) {
-                        throw new CompilerException("Cannot access symbol '" + sections[0] + "' from current context");
+                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + sections[0] + "' from current context"));
                     }
                     break;
                 }
                 case UNIT: {
-                    if(context.getType() != ContextType.UNIT || context != next.getUnit()) {
-                        throw new CompilerException("Cannot access symbol '" + sections[0] + "' from current context");
+                    if(context.getContextType() != ContextType.UNIT || context != next.getUnit()) {
+                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + sections[0] + "' from current context"));
                     }
                     break;
                 }
@@ -133,16 +144,32 @@ public class SymbolTable {
                 if(subTable != null) {
                     return next.getSubSymbolTable().getSymbol(sections[1], context);
                 }
-                throw new CompilerException(next + " is not a data structure");
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, next + " is not a data structure"));
             }
             return next;
         }
-        CompilerException x = new CompilerException("Cannot resolve symbol '" + sections[0] + "'");
-        x.setErrorCode("SYMBOL_NOT_DEFINED");
-        throw x;
+        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + sections[0] + "'"));
+        return null;
     }
 
     public HashMap<String, Symbol> getMap() {
         return table;
+    }
+
+    @NotNull
+    @Override
+    public Iterator<Symbol> iterator() {
+        return table.values().iterator();
+    }
+
+    public SymbolTable mergeWith(SymbolTable other) {
+        SymbolTable newTable = new SymbolTable();
+        for(Symbol symbol : this.table.values()) {
+            newTable.put(symbol);
+        }
+        for(Symbol symbol : other.table.values()) {
+            newTable.put(symbol);
+        }
+        return newTable;
     }
 }

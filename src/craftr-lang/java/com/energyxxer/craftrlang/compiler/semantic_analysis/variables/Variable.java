@@ -1,20 +1,20 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.variables;
 
 import com.energyxxer.craftrlang.CraftrUtil;
-import com.energyxxer.craftrlang.compiler.exceptions.CompilerException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.AbstractFileComponent;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprParser;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +28,7 @@ import java.util.List;
  * Created by Energyxxer on 07/10/2017.
  */
 public class Variable extends AbstractFileComponent implements Symbol {
+    private final SemanticAnalyzer analyzer;
 
     private SymbolVisibility visibility = SymbolVisibility.BLOCK;
     private List<CraftrUtil.Modifier> modifiers;
@@ -36,34 +37,33 @@ public class Variable extends AbstractFileComponent implements Symbol {
     private String name;
 
     private CodeBlock block = null;
-    private Unit unit = null;
+    private FieldManager fieldManager = null;
 
     private Value value = null;
 
     private SymbolTable table;
 
-    private Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType) {
+    private Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, SemanticAnalyzer analyzer) {
         super(pattern);
         this.modifiers = new ArrayList<>();
         this.modifiers.addAll(modifiers);
         this.dataType = dataType;
+        this.analyzer = analyzer;
 
         this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
 
         TokenPattern<?> initialization = this.pattern.find("VARIABLE_INITIALIZATION");
 
         if(initialization != null) {
-            this.value = ExprParser.parseValue(initialization.find("VALUE"));
+            this.value = ExprParser.parseValue(initialization.find("VALUE"), analyzer);
             if(this.value != null && this.dataType != this.value.getDataType()) {
-                CompilerException x = new CompilerException("Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath());
-                x.setErrorCode("INCOMPATIBLE_TYPES");
-                throw x;
+                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
             }
         }
     }
 
-    public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, CodeBlock block) throws CompilerException {
-        this(pattern, modifiers, dataType);
+    public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, CodeBlock block) {
+        this(pattern, modifiers, dataType, block.getAnalyzer());
 
         this.block = block;
         this.table = block.getSymbolTable();
@@ -71,27 +71,23 @@ public class Variable extends AbstractFileComponent implements Symbol {
         if(block.findVariable(this.name) == null) {
             block.getSymbolTable().put(this);
         } else {
-            CompilerException x = new CompilerException("Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath());
-            x.setErrorCode("VARIABLE_ALREADY_DEFINED");
-            throw x;
+            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
         }
     }
 
-    public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, Unit unit) throws CompilerException {
-        this(pattern, modifiers, dataType);
+    public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, FieldManager fieldManager) {
+        this(pattern, modifiers, dataType, fieldManager.getParentUnit().getAnalyzer());
 
-        this.unit = unit;
-        this.table = unit.getSubSymbolTable();
+        this.fieldManager = fieldManager;
+        this.table = this.isStatic() ? fieldManager.getStaticFieldTable() : fieldManager.getInstanceFieldTable();
 
-        if(!table.getMap().containsKey(this.name)) {
+        if(fieldManager.findField(name) == null) {
             table.put(this);
         } else {
-            CompilerException x = new CompilerException("Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath());
-            x.setErrorCode("VARIABLE_ALREADY_DEFINED");
-            throw x;
+            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
         }
 
-        unit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report: ", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
+        analyzer.getCompiler().getReport().addNotice(new Notice("Value Report: ", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
     }
 
     /*
@@ -102,7 +98,7 @@ public class Variable extends AbstractFileComponent implements Symbol {
     * */
 
     //Local variable parsing
-    public static List<Variable> parseDeclaration(TokenPattern<?> pattern, CodeBlock block) throws CompilerException  {
+    public static List<Variable> parseDeclaration(TokenPattern<?> pattern, CodeBlock block) {
         ArrayList<Variable> variables = new ArrayList<>();
 
         //Skipping over annotations
@@ -110,7 +106,7 @@ public class Variable extends AbstractFileComponent implements Symbol {
         List<CraftrUtil.Modifier> modifiers = Collections.emptyList();
 
         TokenList modifierPatterns = (TokenList) pattern.find("INNER.MODIFIER_LIST");
-        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()));
+        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), block.getAnalyzer());
 
         TokenPattern<?>[] declarationList = ((TokenList) pattern.find("INNER.VARIABLE_DECLARATION_LIST")).getContents();
 
@@ -122,7 +118,7 @@ public class Variable extends AbstractFileComponent implements Symbol {
         return variables;
     }
 
-    public static List<Variable> parseDeclaration(TokenPattern<?> pattern, Unit unit) throws CompilerException {
+    public static List<Variable> parseDeclaration(TokenPattern<?> pattern, FieldManager fieldManager) {
         ArrayList<Variable> variables = new ArrayList<>();
 
         //Skipping over annotations
@@ -130,15 +126,15 @@ public class Variable extends AbstractFileComponent implements Symbol {
         List<CraftrUtil.Modifier> modifiers = Collections.emptyList();
 
         TokenList modifierPatterns = (TokenList) pattern.find("INNER.MODIFIER_LIST");
-        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()));
+        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), fieldManager.getParentUnit().getAnalyzer());
 
-        DataType dataType = DataType.parseType((pattern.find("INNER.DATA_TYPE")).flatten(false), unit.getSubSymbolTable());
+        DataType dataType = DataType.parseType((pattern.find("INNER.DATA_TYPE")).flatten(false), fieldManager.getParentUnit().getSubSymbolTable());
 
         TokenPattern<?>[] declarationList = ((TokenList) pattern.find("INNER.VARIABLE_DECLARATION_LIST")).getContents();
 
         for(TokenPattern<?> p : declarationList) {
             if(!p.getName().equals("VARIABLE_DECLARATION")) continue;
-            variables.add(new Variable(p, modifiers, dataType, unit));
+            variables.add(new Variable(p, modifiers, dataType, fieldManager));
         }
 
         return variables;

@@ -1,7 +1,5 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
-import com.energyxxer.craftrlang.compiler.exceptions.CompilerException;
-import com.energyxxer.craftrlang.compiler.exceptions.CraftrException;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -26,12 +24,14 @@ public class CraftrFile extends AbstractFileComponent implements Context {
     private File file;
 
     private Package parentPackage = null;
-    public ArrayList<Unit> units = new ArrayList<>();
+    private ArrayList<Unit> units = new ArrayList<>();
 
-    public SymbolTable importTable;
+    private SymbolTable importTable;
+    private SymbolTable referenceTable;
+
     private boolean importsInitialized = false;
 
-    public CraftrFile(SemanticAnalyzer analyzer, File file, TokenPattern<?> pattern) throws CraftrException {
+    public CraftrFile(SemanticAnalyzer analyzer, File file, TokenPattern<?> pattern) {
         super(pattern);
         this.analyzer = analyzer;
         this.file = file;
@@ -74,12 +74,23 @@ public class CraftrFile extends AbstractFileComponent implements Context {
         return parentPackage;
     }
 
-    public void initImports() throws CraftrException {
+    public void initImports() {
         if(importsInitialized) return;
 
         TokenList importList = (TokenList) pattern.find("IMPORT_LIST");
         if(importList == null) {
             importsInitialized = true;
+
+            for(Symbol sym : parentPackage.getSubSymbolTable()) {
+                if(sym instanceof Unit) {
+                    this.importTable.put(sym);
+                }
+            }
+            this.referenceTable = analyzer.getSymbolTable().mergeWith(importTable);
+
+            for(Unit unit : units) {
+                unit.initUnitActions();
+            }
             //analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.INFO, "No imports found for file '" + file.getName() + "'"));
             return;
         }
@@ -88,33 +99,52 @@ public class CraftrFile extends AbstractFileComponent implements Context {
 
         //analyzer.getCompiler().getReport().addNotice(new Notice("Debug", NoticeType.INFO, "Imports for file '" + file.getName() + "':"));
         for (TokenPattern<?> rawImport : imports) {
-            TokenPattern<?> identifier = rawImport.find("IDENTIFIER");
-            String fullyQualifiedName = identifier.flatten(false);
+            TokenPattern<?> identifier = rawImport.find("IMPORT_IDENTIFIER");
             List<Token> flatTokens = identifier.flattenTokens();
-            String shortName = flatTokens.get(flatTokens.size()-1).value;
+
+            boolean wildcard = flatTokens.get(flatTokens.size()-1).value.equals("*");
+            if(wildcard) flatTokens = flatTokens.subList(0, flatTokens.size()-2);
 
             Symbol itemToImport;
-            try {
-                itemToImport = analyzer.getSymbolTable().getSymbol(flatTokens, this);
-            } catch(CompilerException x) {
-                analyzer.getCompiler().getReport().addNotice(x.getNotice());
-                continue;
-            }
-            if(!(itemToImport instanceof Unit)) {
-                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' isn't an unit", identifier.getFormattedPath()));
-                continue;
-            }
-            this.importTable.put(shortName, itemToImport);
-
-            {
-                //analyzer.getCompiler().getReport().addNotice(new Notice("Debug", NoticeType.INFO, "Saving '" + fullyQualifiedName + "' as '" + shortName + "'", "\b" + file.getPath() + "\b0\b0\b" + file.getName() + ":1:1#0"));
+            itemToImport = analyzer.getSymbolTable().getSymbol(flatTokens, this);
+            if(itemToImport != null) {
+                if(wildcard) {
+                    if(itemToImport.getSubSymbolTable() == null) {
+                        analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' is not a data structure", identifier.getFormattedPath()));
+                    } else {
+                        for(Symbol symbol : itemToImport.getSubSymbolTable()) {
+                            this.importTable.put(symbol);
+                        }
+                    }
+                } else {
+                    if(!(itemToImport instanceof Unit)) {
+                        analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' isn't a unit", identifier.getFormattedPath()));
+                        continue;
+                    }
+                    this.importTable.put(itemToImport);
+                }
             }
         }
         importsInitialized = true;
+
+        for(Symbol sym : parentPackage.getSubSymbolTable()) {
+            if(sym instanceof Unit) {
+                this.importTable.put(sym);
+            }
+        }
+        this.referenceTable = analyzer.getSymbolTable().mergeWith(importTable);
+
+        for(Unit unit : units) {
+            unit.initUnitActions();
+        }
     }
 
-    public SemanticAnalyzer getAnalyzer() {
-        return analyzer;
+    public SymbolTable getImportTable() {
+        return importTable;
+    }
+
+    public SymbolTable getReferenceTable() {
+        return referenceTable;
     }
 
     @Override
@@ -123,7 +153,17 @@ public class CraftrFile extends AbstractFileComponent implements Context {
     }
 
     @Override
-    public ContextType getType() {
+    public Unit getUnit() {
+        return null;
+    }
+
+    @Override
+    public ContextType getContextType() {
         return ContextType.FILE;
+    }
+
+    @Override
+    public SemanticAnalyzer getAnalyzer() {
+        return analyzer;
     }
 }

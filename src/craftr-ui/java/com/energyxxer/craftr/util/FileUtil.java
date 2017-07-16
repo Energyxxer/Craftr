@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.regex.Matcher;
 
 /**
- * Provides utility methods for dealing with files.
+ * Provides utility managers for dealing with files.
  */
 public class FileUtil {
 	/**
@@ -65,7 +65,7 @@ public class FileUtil {
 						stripExtension(
 								getRelativePath(
 										file,
-										associatedProject.getDirectory()
+										associatedProject.getSource()
 								)
 						) : "src"
 		).replace(File.separator,".");

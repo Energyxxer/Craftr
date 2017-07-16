@@ -1,7 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.craftrlang.CraftrUtil;
-import com.energyxxer.craftrlang.compiler.exceptions.CraftrException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -38,7 +37,7 @@ public class Method extends AbstractFileComponent implements Symbol {
 
     private final MethodSignature signature;
 
-    public Method(Unit declaringUnit, TokenStructure pattern) throws CraftrException {
+    public Method(Unit declaringUnit, TokenStructure pattern) {
         super(pattern);
 
         switch(pattern.getContents().getName()) {
@@ -61,7 +60,6 @@ public class Method extends AbstractFileComponent implements Symbol {
         }
 
         this.declaringUnit = declaringUnit;
-        this.modifiers = new ArrayList<>();
         this.returnType = null;
         if(this.type == MethodType.OPERATOR_OVERLOAD) {
             this.name = ((TokenItem) (pattern.find("OPERATOR_REFERENCE").getContents())).getContents().value;
@@ -72,7 +70,7 @@ public class Method extends AbstractFileComponent implements Symbol {
         boolean validConstructor = this.type == MethodType.CONSTRUCTOR;
 
         if(this.type == MethodType.CONSTRUCTOR && !this.name.equals(this.declaringUnit.getName())) {
-            this.declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(
+            this.declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(
                     new Notice(
                             NoticeType.ERROR,
                             "Invalid method declaration; return type required",
@@ -83,7 +81,8 @@ public class Method extends AbstractFileComponent implements Symbol {
         }
 
         TokenList modifierPatterns = (TokenList) pattern.find("MODIFIER_LIST");
-        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()));
+        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), declaringUnit.getAnalyzer());
+        else modifiers = new ArrayList<>();
 
         this.declaringUnit.getSubSymbolTable().put(this);
 
@@ -95,7 +94,7 @@ public class Method extends AbstractFileComponent implements Symbol {
             for(TokenPattern<?> rawParam : parameterPatterns) {
                 boolean isKeyword = rawParam.find("PARAMETER_INITIALIZER") != null;
                 if(!isKeyword && !keywordParams.isEmpty()) {
-                    this.declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(
+                    this.declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(
                             new Notice(
                                     NoticeType.ERROR,
                                     "Positional parameters must not follow keyword parameters",
@@ -111,7 +110,7 @@ public class Method extends AbstractFileComponent implements Symbol {
 
                 for(FormalParameter p : positionalParams) {
                     if(p.getName().equals(paramName)) {
-                        this.declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(
+                        this.declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(
                                 new Notice(
                                         NoticeType.ERROR,
                                         "Variable '" + paramName + "' already defined in the scope",
@@ -124,7 +123,7 @@ public class Method extends AbstractFileComponent implements Symbol {
                 }
                 if(!isDuplicate) for(FormalParameter p : keywordParams) {
                     if(p.getName().equals(paramName)) {
-                        this.declaringUnit.getDeclaringFile().getAnalyzer().getCompiler().getReport().addNotice(
+                        this.declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(
                                 new Notice(
                                         NoticeType.ERROR,
                                         "Variable '" + paramName + "' already defined in the scope",
@@ -149,6 +148,10 @@ public class Method extends AbstractFileComponent implements Symbol {
         System.out.println("signature = " + signature);
     }
 
+    public boolean isStatic() {
+        return modifiers.contains(CraftrUtil.Modifier.STATIC);
+    }
+
     @Override
     public String getName() {
         return name;
@@ -161,8 +164,12 @@ public class Method extends AbstractFileComponent implements Symbol {
 
     public SymbolVisibility getVisibility() {
         return modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL :
-                modifiers.contains(CraftrUtil.Modifier.PROTECTED) ? SymbolVisibility.UNIT :
+                modifiers.contains(CraftrUtil.Modifier.PROTECTED) ? SymbolVisibility.UNIT_INHERITED :
                         modifiers.contains(CraftrUtil.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
                                 SymbolVisibility.PACKAGE;
+    }
+
+    public MethodSignature getSignature() {
+        return signature;
     }
 }

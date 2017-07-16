@@ -30,15 +30,15 @@ public class CraftrScannerProfile extends ScannerProfile {
     /**
      * Contains all the built-in enum headers.
      * */
-    private static final List<String> enums = Arrays.asList("Block", "Item", "Gamemode", "Stat", "Achievement", "Effect", "Particle", "Enchantment", "Dimension"),
+    private static final List<String> enums = Arrays.asList("BlockType", "Item", "Gamemode", "Stat", "Effect", "Particle", "Enchantment", "Dimension"),
     /**
      * Contains all the built-in entity names.
      * */
         entities = new ArrayList<>(MinecraftConstants.entities),
     /**
-     * Contains all the built-in abstract entity names.
+     * Contains all the built-in abstract unit names.
      * */
-        abstract_entities = Arrays.asList("entity_base", "living_base"),
+        abstract_units = Arrays.asList("entity_base", "living_base", "projectile_base", "minecart_base", "item_base"),
     /**
      * Contains special cases for blockstates.
      * */
@@ -50,13 +50,13 @@ public class CraftrScannerProfile extends ScannerProfile {
     private static final String blockstate_end = "|";
 
     static {
-        entities.addAll(abstract_entities);
+        entities.addAll(abstract_units);
     }
 
     /**
      * Contains lists of all inner enum values. Warning: VERY long.
      * */
-    private static final List<List<String>> enum_values = Arrays.asList(MinecraftConstants.block_enums,MinecraftConstants.block_enums,MinecraftConstants.gamemode_enums,MinecraftConstants.block_enums,MinecraftConstants.block_enums,MinecraftConstants.effect_enums,MinecraftConstants.particle_enums,MinecraftConstants.enchantment_enums,MinecraftConstants.dimension_enums);
+    private static final List<List<String>> enum_values = Arrays.asList(MinecraftConstants.block_enums,MinecraftConstants.block_enums,MinecraftConstants.gamemode_enums,MinecraftConstants.block_enums,MinecraftConstants.effect_enums,MinecraftConstants.particle_enums,MinecraftConstants.enchantment_enums,MinecraftConstants.dimension_enums);
 
     /**
      * Creates a Craftr Analysis Profile.

@@ -29,6 +29,8 @@ public class CraftrProductions {
     public static final TokenStructureMatch VARIABLE;
     public static final TokenStructureMatch METHOD;
 
+    public static final TokenStructureMatch METHOD_BODY;
+
     public static final TokenStructureMatch FORMAL_PARAMETER;
 
 	public static final TokenStructureMatch IDENTIFIER;
@@ -75,6 +77,8 @@ public class CraftrProductions {
         VARIABLE = new TokenStructureMatch("VARIABLE");
         METHOD = new TokenStructureMatch("METHOD");
 
+        METHOD_BODY = new TokenStructureMatch("METHOD_BODY");
+
         FORMAL_PARAMETER = new TokenStructureMatch("FORMAL_PARAMETER");
 
 		IDENTIFIER = new TokenStructureMatch("IDENTIFIER");
@@ -99,6 +103,7 @@ public class CraftrProductions {
 		LIST = new TokenGroupMatch().setName("LIST");
 
 		{
+
 			PACKAGE.add(new TokenGroupMatch()
 					.append(new TokenItemMatch(TokenType.KEYWORD,"package"))
 					.append(new TokenGroupMatch().append(IDENTIFIER).setName("PACKAGE_PATH"))
@@ -164,6 +169,12 @@ public class CraftrProductions {
 		//--------------------
 
         {
+            //Method Body
+            METHOD_BODY.add(CODE_BLOCK);
+            METHOD_BODY.add(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+        }
+
+        {
             //Formal Parameter
             TokenGroupMatch g = new TokenGroupMatch().setName("FORMAL_PARAMETER");
             g.append(DATA_TYPE);
@@ -200,7 +211,7 @@ public class CraftrProductions {
 				g.append(g2);
 			}
 
-			g.append(CODE_BLOCK);
+			g.append(METHOD_BODY);
 
 			METHOD.add(g);
 		}
@@ -279,7 +290,7 @@ public class CraftrProductions {
 				g.append(g2);
 			}
 
-			g.append(CODE_BLOCK);
+            g.append(METHOD_BODY);
 
 			METHOD.add(g);
 		}
@@ -309,17 +320,24 @@ public class CraftrProductions {
 		}
 
 		{
+            TokenStructureMatch s = new TokenStructureMatch("IMPORT_POINTER");
+
+            TokenGroupMatch identifierSegment = new TokenGroupMatch().setName("IMPORT_IDENTIFIER").append(new TokenItemMatch(TokenType.IDENTIFIER)).append(new TokenGroupMatch(true).append(new TokenItemMatch(TokenType.DOT)).append(s));
+
+            s.add(identifierSegment);
+            s.add(new TokenItemMatch(TokenType.OPERATOR,"*"));
+
+
 			TokenGroupMatch g = new TokenGroupMatch();
 
 			g.append(new TokenItemMatch(TokenType.KEYWORD,"import"));
-			g.append(IDENTIFIER);
+            g.append(identifierSegment);
 			g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 
 			IMPORT.add(g);
 		}
 
 		{
-			DATA_TYPE.add(new TokenItemMatch(TokenType.UNIT_TYPE));
 			DATA_TYPE.add(new TokenItemMatch(TokenType.DATA_TYPE));
 			DATA_TYPE.add(new TokenItemMatch(TokenType.IDENTIFIER));
 			{
@@ -449,7 +467,7 @@ public class CraftrProductions {
 			VALUE.add(POINTER);
 			VALUE.add(new TokenGroupMatch().append(new TokenItemMatch(TokenType.KEYWORD,"new")).append(METHOD_CALL));
 			VALUE.add(DATA_TYPE);
-
+            VALUE.add(METHOD_CALL);
 			VALUE.add(LAMBDA);
 
 		}
@@ -481,8 +499,13 @@ public class CraftrProductions {
 		{
 			TokenGroupMatch g = new TokenGroupMatch();
 			g.append(VALUE);
-			g.append(new TokenItemMatch(TokenType.DOT));
-			g.append(NESTED_POINTER);
+			{
+				TokenGroupMatch g2 = new TokenGroupMatch(true);
+				g2.append(new TokenItemMatch(TokenType.DOT));
+				g2.append(NESTED_POINTER);
+
+				g.append(g2);
+			}
 			POINTER.add(g);
 		}
 

@@ -4,5 +4,5 @@ package $PACKAGE$;
 * Created by $USER$ on $DATE$/$MONTH$/$YEAR$.
 */
 public class World {
-    $END$
+$INDENT$$END$
 }

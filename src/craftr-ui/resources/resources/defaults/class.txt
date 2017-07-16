@@ -3,6 +3,6 @@ package $PACKAGE$;
 /**
 * Created by $USER$ on $DATE$/$MONTH$/$YEAR$.
 */
-public class $NAME$ {
-    $END$
+public class $NAME$$END$ {
+$INDENT$
 }

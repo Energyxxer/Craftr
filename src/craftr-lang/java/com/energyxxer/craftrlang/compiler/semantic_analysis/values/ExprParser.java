@@ -1,17 +1,19 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.exceptions.CompilerException;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
+import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 
 /**
  * Created by Energyxxer on 07/11/2017.
  */
 public final class ExprParser {
 
-    public static Value parseValue(TokenPattern<?> pattern) {
+    public static Value parseValue(TokenPattern<?> pattern, SemanticAnalyzer analyzer) {
         //System.out.println("pattern = " + pattern);
 
         switch(pattern.getName()) {
@@ -49,15 +51,15 @@ public final class ExprParser {
                 }
                 return new BooleanValue(value);
             } case "VALUE": {
-                return parseValue(((TokenStructure) pattern).getContents());
+                return parseValue(((TokenStructure) pattern).getContents(), analyzer);
             } case "EXPRESSION": {
-                return parseValue(((TokenStructure) pattern).getContents());
+                return parseValue(((TokenStructure) pattern).getContents(), analyzer);
             } case "OPERATION": {
-                return parseValue(((TokenGroup) pattern).getContents()[0]);
+                return parseValue(((TokenGroup) pattern).getContents()[0], analyzer);
             } case "OPERATION_LIST": {
                 TokenList list = (TokenList) pattern;
                 if(list.size() == 1) {
-                    return parseValue(list.getContents()[0]);
+                    return parseValue(list.getContents()[0], analyzer);
                 } else {
                     System.err.println("WHOA WAIT NO, OPERATIONS NOT SUPPORTED YET GEEZ");
                     return null;
@@ -90,9 +92,7 @@ public final class ExprParser {
                                 sb.append("\\\\"); break;
                             }
                             default: {
-                                CompilerException x = new CompilerException("Illegar escape character in a string literal", pattern.getFormattedPath());
-                                x.setErrorCode("ILLEGAL_ESCAPE_CHAR");
-                                throw x;
+                                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal escape character in a string literal", pattern.getFormattedPath()));
                             }
                         }
                     } else {

@@ -10,7 +10,7 @@ import com.energyxxer.util.ImageManager;
 import javax.swing.ImageIcon;
 
 /**
- * Provides methods that create menu components for file and project management.
+ * Provides managers that create menu components for file and project management.
  */
 public class MenuItems {
 	public static StyledMenu newMenu(String title) {
