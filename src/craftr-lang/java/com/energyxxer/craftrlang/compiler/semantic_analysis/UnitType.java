@@ -4,7 +4,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis;
  * Created by Energyxxer on 07/14/2017.
  */
 public enum UnitType {
-    ENTITY("Entity", "Entities"), ITEM("Item", "Items"), FEATURE("Feature", "Features"), CLASS("Class", "Classes"), ENUM("Enum", "Enums");
+    ENTITY("Entity", "Entities"), ITEM("Item", "Items"), FEATURE("Feature", "Features"), CLASS("Class", "Classes"), ENUM("Enum", "Enums"), WORLD("World", "Worlds");
 
     private final String name;
     private final String plural;

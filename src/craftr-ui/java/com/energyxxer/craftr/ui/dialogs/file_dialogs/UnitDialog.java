@@ -123,7 +123,6 @@ public class UnitDialog {
             });
 
             typeDropdown.addChoiceListener(type -> {
-                nameField.setEnabled(type != FileType.WORLD);
                 validateInput();
             });
 
@@ -213,8 +212,7 @@ public class UnitDialog {
         if(!valid) return;
         FileType type = typeDropdown.getValue();
         String filename;
-        if(type == FileType.WORLD) filename = "World";
-        else filename = nameField.getText().trim();
+        filename = nameField.getText().trim();
 
         String path = destination + File.separator + filename + ".craftr";
 
@@ -278,7 +276,6 @@ public class UnitDialog {
 
     private static void validateInput() {
         String str = nameField.getText().trim();
-        if(typeDropdown.getValue() == FileType.WORLD) str = "World";
 
         if(str.length() <= 0) {
             valid = false;

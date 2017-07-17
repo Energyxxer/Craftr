@@ -34,11 +34,7 @@ public class CraftrScannerProfile extends ScannerProfile {
     /**
      * Contains all the built-in entity names.
      * */
-        entities = new ArrayList<>(MinecraftConstants.entities),
-    /**
-     * Contains all the built-in abstract unit names.
-     * */
-        abstract_units = Arrays.asList("entity_base", "living_base", "projectile_base", "minecart_base", "item_base"),
+        entities = new ArrayList<>(CraftrUtil.entities),
     /**
      * Contains special cases for blockstates.
      * */
@@ -50,7 +46,7 @@ public class CraftrScannerProfile extends ScannerProfile {
     private static final String blockstate_end = "|";
 
     static {
-        entities.addAll(abstract_units);
+        entities.addAll(CraftrUtil.abstract_entities);
     }
 
     /**

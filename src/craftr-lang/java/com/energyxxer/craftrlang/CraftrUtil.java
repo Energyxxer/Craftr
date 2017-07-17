@@ -2,6 +2,7 @@ package com.energyxxer.craftrlang;
 
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -11,15 +12,17 @@ import java.util.List;
  */
 public class CraftrUtil {
 
-    private static final List<String>
+    public static final List<String>
         modifiers = Arrays.asList("public", "static", "abstract", "final", "protected", "private", "compilation", "ingame", "native"),
-        unit_types = Arrays.asList("entity", "item", "feature", "class", "enum"),
+        unit_types = Arrays.asList("entity", "item", "feature", "class", "enum", "world"),
         unit_actions = Arrays.asList("extends", "implements", "requires"),
         data_types = Arrays.asList("int", "String", "float", "double", "long", "boolean", "void", "char"),
-        keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import", "operator", "instanceof"),
+        keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import", "operator", "instanceof", "overrides"),
         action_keywords = Arrays.asList("break", "continue", "return"),
         booleans = Arrays.asList("true", "false"),
-        nulls = Collections.singletonList("null");
+        nulls = Collections.singletonList("null"),
+        entities = Arrays.asList("player", "bat", "chicken", "cow", "mooshroom", "pig", "rabbit", "sheep", "squid", "villager", "enderman", "polar_bear", "spider", "cave_spider", "zombie_pigman", "blaze", "creeper", "endermite", "ghast", "guardian", "elder_guardian", "magma_cube", "shulker", "silverfish", "skeleton", "stray", "wither_skeleton", "slime", "witch", "zombie", "husk", "zombie_villager", "horse", "donkey", "mule", "zombie_horse", "skeleton_horse", "ocelot", "wolf", "villager_golem", "snowman", "ender_dragon", "wither", "giant", "falling_block", "tnt", "boat", "minecart", "chest_minecart", "commandblock_minecart", "furnace_minecart", "hopper_minecart", "tnt_minecart", "spawner_minecart", "small_fireball", "dragon_fireball", "fireball", "spectral_arrow", "arrow", "thrown_xp_bottle", "thrown_egg", "thrown_ender_pearl", "eye_of_ender_signal", "thrown_snowball", "shulker_bullet", "thrown_potion", "wither_skull", "armor_stand", "ender_crystal", "item_frame", "leash_knot", "painting", "xp_orb", "item_entity", "lightning_bolt", "fireworks_rocket", "area_effect_cloud", "evocation_illager", "vex", "vindication_illager", "llama", "llama_spit", "evocation_fangs"),
+        abstract_entities = Arrays.asList("entity_base", "living_base", "projectile_base", "minecart_base", "item_base");
 
     /**
      * Contains all pseudo-keywords.
