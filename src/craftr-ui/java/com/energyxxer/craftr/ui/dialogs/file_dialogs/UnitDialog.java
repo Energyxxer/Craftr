@@ -112,19 +112,18 @@ public class UnitDialog {
             kindLabel.setStyle(Font.BOLD);
             entry.add(kindLabel, BorderLayout.WEST);
 
-            typeDropdown = new StyledDropdownMenu<>(new FileType[] {FileType.ENTITY, FileType.ITEM, FileType.CLASS, FileType.FEATURE, FileType.WORLD}, "NewUnitDialog");
+            typeDropdown = new StyledDropdownMenu<>(new FileType[] {FileType.ENTITY, FileType.ITEM, FileType.CLASS, FileType.ENUM, FileType.FEATURE, FileType.WORLD}, "NewUnitDialog");
 
             ThemeChangeListener.addThemeChangeListener(t -> {
                 typeDropdown.setIcon(FileType.ENTITY, Commons.getIcon("entity"));
                 typeDropdown.setIcon(FileType.ITEM, Commons.getIcon("item"));
                 typeDropdown.setIcon(FileType.CLASS, Commons.getIcon("class"));
+                typeDropdown.setIcon(FileType.ENUM, Commons.getIcon("enum"));
                 typeDropdown.setIcon(FileType.FEATURE, Commons.getIcon("feature"));
                 typeDropdown.setIcon(FileType.WORLD, Commons.getIcon("world"));
             });
 
-            typeDropdown.addChoiceListener(type -> {
-                validateInput();
-            });
+            typeDropdown.addChoiceListener(type -> validateInput());
 
             entry.add(typeDropdown,  BorderLayout.CENTER);
             content.add(entry);

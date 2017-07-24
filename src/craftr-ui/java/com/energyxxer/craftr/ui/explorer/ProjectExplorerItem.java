@@ -338,6 +338,13 @@ public class ProjectExplorerItem extends ExplorerElement {
 
                 // --------------------------------------------------
 
+                StyledMenuItem enumItem = new StyledMenuItem("Enum", "enum");
+                enumItem.addActionListener(e -> FileType.ENUM.create(newPath));
+
+                newMenu.add(enumItem);
+
+                // --------------------------------------------------
+
                 StyledMenuItem featureItem = new StyledMenuItem("Feature", "feature");
                 featureItem.addActionListener(e -> FileType.FEATURE.create(newPath));
 

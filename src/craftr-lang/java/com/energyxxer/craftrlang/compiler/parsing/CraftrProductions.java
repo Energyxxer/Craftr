@@ -23,13 +23,18 @@ public class CraftrProductions {
 
 	public static final TokenStructureMatch UNIT;
     public static final TokenStructureMatch UNIT_DECLARATION;
+    public static final TokenStructureMatch ENUM_UNIT_DECLARATION;
     public static final TokenStructureMatch UNIT_BODY;
+    public static final TokenStructureMatch ENUM_UNIT_BODY;
+    public static final TokenStructureMatch WORLD_UNIT_BODY;
     public static final TokenStructureMatch UNIT_COMPONENT;
 
     public static final TokenStructureMatch VARIABLE;
     public static final TokenStructureMatch METHOD;
     public static final TokenStructureMatch OVERRIDE_BLOCK;
     public static final TokenStructureMatch OVERRIDE;
+
+    public static final TokenStructureMatch ENUM_ELEMENT;
 
     public static final TokenStructureMatch METHOD_BODY;
 
@@ -72,14 +77,19 @@ public class CraftrProductions {
 
 		UNIT = new TokenStructureMatch("UNIT");
 
-		UNIT_DECLARATION = new TokenStructureMatch("UNIT_DECLARATION");
+        UNIT_DECLARATION = new TokenStructureMatch("UNIT_DECLARATION");
+        ENUM_UNIT_DECLARATION = new TokenStructureMatch("UNIT_DECLARATION");
         UNIT_BODY = new TokenStructureMatch("UNIT_BODY");
+        ENUM_UNIT_BODY = new TokenStructureMatch("UNIT_BODY");
+        WORLD_UNIT_BODY = new TokenStructureMatch("UNIT_BODY");
         UNIT_COMPONENT = new TokenStructureMatch("UNIT_COMPONENT");
 
         VARIABLE = new TokenStructureMatch("VARIABLE");
         METHOD = new TokenStructureMatch("METHOD");
         OVERRIDE_BLOCK = new TokenStructureMatch("OVERRIDE_BLOCK");
         OVERRIDE = new TokenStructureMatch("OVERRIDE");
+
+        ENUM_ELEMENT = new TokenStructureMatch("ENUM_ELEMENT");
 
         METHOD_BODY = new TokenStructureMatch("METHOD_BODY");
 
@@ -127,6 +137,15 @@ public class CraftrProductions {
 			g.append(new TokenItemMatch(TokenType.END_OF_FILE));
 
 			FILE.add(g);
+        }
+
+        {
+            TokenGroupMatch g = new TokenGroupMatch();
+
+            g.append(ENUM_UNIT_DECLARATION);
+            g.append(ENUM_UNIT_BODY);
+
+            UNIT.add(g);
         }
         {
             TokenGroupMatch g = new TokenGroupMatch();
@@ -188,6 +207,11 @@ public class CraftrProductions {
 
             VARIABLE.add(g);
             EXPRESSION.add(g2);
+        }
+
+        {
+            ENUM_ELEMENT.add(new TokenItemMatch(TokenType.IDENTIFIER));
+            ENUM_ELEMENT.add(METHOD_CALL);
         }
 
 		//--------------------
@@ -336,6 +360,25 @@ public class CraftrProductions {
             UNIT_BODY.add(g);
         }
 
+        {
+            TokenGroupMatch g = new TokenGroupMatch();
+            g.append(new TokenItemMatch(TokenType.BRACE,"{"));
+
+            g.append(new TokenListMatch(ENUM_ELEMENT, new TokenItemMatch(TokenType.COMMA),true).setName("ENUM_ELEMENT_LIST"));
+
+            {
+                TokenGroupMatch g2 = new TokenGroupMatch(true).setName("ENUM_UNIT_COMPONENT_LIST_WRAPPER");
+                g2.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+                g2.append(new TokenListMatch(UNIT_COMPONENT,true).setName("UNIT_COMPONENT_LIST"));
+
+                g.append(g2);
+            }
+
+            g.append(new TokenItemMatch(TokenType.BRACE,"}"));
+
+            ENUM_UNIT_BODY.add(g);
+        }
+
 		{
 			TokenGroupMatch g = new TokenGroupMatch();
 			g.append(new TokenItemMatch(TokenType.BRACE,"{"));
@@ -403,6 +446,24 @@ public class CraftrProductions {
 
 			UNIT_DECLARATION.add(g);
 		}
+
+        {
+            // <-ANNOTATION-> <MODIFIER> [UNIT_TYPE:entity] [IDENTIFIER] <[UNIT_ACTION:base] [IDENTIFIER]>
+            TokenGroupMatch g = new TokenGroupMatch().setName("UNIT_DECLARATION");
+            g.append(new TokenGroupMatch(true).append(ANNOTATION));
+            g.append(new TokenListMatch(new TokenItemMatch(TokenType.MODIFIER).setName("UNIT_MODIFIER"),true).setName("UNIT_MODIFIERS"));
+            g.append(new TokenItemMatch(TokenType.UNIT_TYPE,"enum").setName("UNIT_TYPE"));
+            g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("UNIT_NAME"));
+
+            {
+                TokenGroupMatch g2 = new TokenGroupMatch().setName("UNIT_ACTION");
+                g2.append(new TokenItemMatch(TokenType.UNIT_ACTION).setName("UNIT_ACTION_TYPE"));
+                g2.append(new TokenListMatch(new TokenGroupMatch().append(IDENTIFIER).setName("UNIT_ACTION_REFERENCE"),new TokenItemMatch(TokenType.COMMA),true));
+                g.append(new TokenListMatch(g2,true));
+            }
+
+            ENUM_UNIT_DECLARATION.add(g);
+        }
 		
 		{
 			TokenGroupMatch g = new TokenGroupMatch();

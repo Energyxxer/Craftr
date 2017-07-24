@@ -15,6 +15,7 @@ public enum FileType {
     ENTITY("Entity", UnitDialog::create),
     ITEM("Item", UnitDialog::create),
     CLASS("Class", UnitDialog::create),
+    ENUM("Enum", UnitDialog::create),
     FEATURE("Feature", UnitDialog::create),
     WORLD("World", UnitDialog::create),
     MODEL("Model", ModelDialog::create),
