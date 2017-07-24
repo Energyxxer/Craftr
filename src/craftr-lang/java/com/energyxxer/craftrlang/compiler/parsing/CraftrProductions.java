@@ -28,6 +28,8 @@ public class CraftrProductions {
 
     public static final TokenStructureMatch VARIABLE;
     public static final TokenStructureMatch METHOD;
+    public static final TokenStructureMatch OVERRIDE_BLOCK;
+    public static final TokenStructureMatch OVERRIDE;
 
     public static final TokenStructureMatch METHOD_BODY;
 
@@ -76,6 +78,8 @@ public class CraftrProductions {
 
         VARIABLE = new TokenStructureMatch("VARIABLE");
         METHOD = new TokenStructureMatch("METHOD");
+        OVERRIDE_BLOCK = new TokenStructureMatch("OVERRIDE_BLOCK");
+        OVERRIDE = new TokenStructureMatch("OVERRIDE");
 
         METHOD_BODY = new TokenStructureMatch("METHOD_BODY");
 
@@ -134,8 +138,30 @@ public class CraftrProductions {
         }
 
         {
+            //Overrides
+            TokenGroupMatch g = new TokenGroupMatch();
+            g.append(new TokenItemMatch(TokenType.UNIT_TYPE));
+            g.append(IDENTIFIER);
+            g.append(new TokenItemMatch(TokenType.UNIT_ACTION).setName("OVERRIDE_ACTION_TYPE"));
+            g.append(new TokenListMatch(new TokenGroupMatch().append(IDENTIFIER).setName("OVERRIDE_ACTION_REFERENCE"),new TokenItemMatch(TokenType.COMMA),true));
+            g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+            OVERRIDE.add(g);
+        }
+
+        {
+            //Override Block
+            TokenGroupMatch g = new TokenGroupMatch();
+            g.append(new TokenItemMatch(TokenType.KEYWORD,"overrides"));
+            g.append(new TokenItemMatch(TokenType.BRACE, "{"));
+            g.append(new TokenListMatch(OVERRIDE));
+            g.append(new TokenItemMatch(TokenType.BRACE, "}"));
+            OVERRIDE_BLOCK.add(g);
+        }
+
+        {
             UNIT_COMPONENT.add(VARIABLE);
             UNIT_COMPONENT.add(METHOD);
+            UNIT_COMPONENT.add(OVERRIDE_BLOCK);
         }
 
         {
