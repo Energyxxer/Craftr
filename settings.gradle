@@ -1,2 +1,5 @@
 rootProject.name = 'craftr'
-
+include 'craftr-lang'
+include 'craftr-ui'
+include 'enx-swing'
+include 'enx-util'
