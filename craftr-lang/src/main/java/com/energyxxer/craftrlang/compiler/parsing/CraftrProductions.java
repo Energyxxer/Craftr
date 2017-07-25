@@ -367,7 +367,7 @@ public class CraftrProductions {
             g.append(new TokenListMatch(ENUM_ELEMENT, new TokenItemMatch(TokenType.COMMA),true).setName("ENUM_ELEMENT_LIST"));
 
             {
-                TokenGroupMatch g2 = new TokenGroupMatch(true).setName("ENUM_UNIT_COMPONENT_LIST_WRAPPER");
+                TokenGroupMatch g2 = new TokenGroupMatch(true).setName("UNIT_COMPONENT_LIST_WRAPPER");
                 g2.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
                 g2.append(new TokenListMatch(UNIT_COMPONENT,true).setName("UNIT_COMPONENT_LIST"));
 
