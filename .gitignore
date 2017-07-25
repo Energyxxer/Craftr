@@ -145,7 +145,8 @@ local.properties
 .nfs*
 ### Gradle template
 .gradle
-/build/
+build/
+target/
 
 # Ignore Gradle GUI config
 gradle-app.setting
