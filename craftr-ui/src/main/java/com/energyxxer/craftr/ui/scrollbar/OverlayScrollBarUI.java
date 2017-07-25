@@ -17,19 +17,21 @@ public class OverlayScrollBarUI extends BasicScrollBarUI {
 
     private JScrollPane sp;
 
-    public OverlayScrollBarUI(JScrollPane sp, int size) {
+    public OverlayScrollBarUI(JScrollPane sp) {
         super();
         this.sp = sp;
-        this.thumbSize = size;
+
         ThemeChangeListener.addThemeChangeListener(t -> {
             thumbColor = t.getColor(new Color(0,0,0,50), "General.scrollbar.color");
             thumbRolloverColor = t.getColor(new Color(0,0,0,100), "General.scrollbar.hover.color");
+            thumbSize = t.getInteger(10, "General.scrollbar.thickness");
+            sp.repaint();
         });
     }
 
     @Override
     protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-        // your code
+        // Not doing this
     }
 
     @Override

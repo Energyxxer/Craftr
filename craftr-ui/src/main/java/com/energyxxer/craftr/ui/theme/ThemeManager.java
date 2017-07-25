@@ -126,7 +126,6 @@ public class ThemeManager {
 
     public static Theme getSyntaxForGUITheme(Lang lang, Theme guiTheme) {
         String s = guiTheme.getString("Syntax." + lang.toString().toLowerCase());
-        Console.debug.println(s);
         return getSyntaxTheme(s);
     }
 }

@@ -8,3 +8,5 @@ Syntax Themes:
 -Craftr Syntax Dark
 -JSON Syntax Light
 -JSON Syntax Dark
+-Properties Syntax Dark
+-Properties Syntax Light

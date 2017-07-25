@@ -2,7 +2,7 @@ package com.energyxxer.craftr.ui.explorer.base;
 
 import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerElement;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -71,6 +71,13 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
             this.setSize(new Dimension(contentWidth, offsetY + rowHeight));
             this.getParent().revalidate();
         }
+    }
+
+    @Override
+    public void repaint() {
+        if(this.getParent() instanceof JViewport && this.getParent().getParent() instanceof JScrollPane) {
+            this.getParent().getParent().repaint();
+        } else super.repaint();
     }
 
     private ExplorerElement getElementAtMousePos(MouseEvent e) {

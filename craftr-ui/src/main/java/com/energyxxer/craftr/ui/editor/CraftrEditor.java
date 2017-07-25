@@ -62,12 +62,7 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
         editorComponent = new CraftrEditorComponent(this);
         editorComponent.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
 
-		JPanel temp = new JPanel(new BorderLayout());
-		temp.add(editorComponent);
-
-        super.setViewportView(temp);
-
-
+        super.setViewportView(editorComponent);
 
         tln = new TextLineNumber(editorComponent, this);
         tln.setPadding(10);
@@ -113,8 +108,8 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 
 		this.setRowHeaderView(tln);
 
-		this.getVerticalScrollBar().setUI(new OverlayScrollBarUI(this, 20));
-		this.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(this, 20));
+		this.getVerticalScrollBar().setUI(new OverlayScrollBarUI(this));
+		this.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(this));
 		this.getVerticalScrollBar().setOpaque(false);
 		this.getHorizontalScrollBar().setOpaque(false);
 

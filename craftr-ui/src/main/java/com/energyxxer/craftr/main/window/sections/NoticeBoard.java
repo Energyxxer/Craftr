@@ -78,17 +78,13 @@ public class NoticeBoard extends JPanel {
 
         JScrollPane sp = new JScrollPane(this.explorerMaster = CraftrWindow.noticeExplorer = new NoticeExplorerMaster());
         sp.setBorder(new EmptyBorder(0,0,0,0));
-        sp.getVerticalScrollBar().setUI(new OverlayScrollBarUI(sp, 20));
-        sp.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(sp, 20));
+        sp.getVerticalScrollBar().setUI(new OverlayScrollBarUI(sp));
+        sp.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(sp));
         sp.getVerticalScrollBar().setUnitIncrement(20);
         sp.getHorizontalScrollBar().setUnitIncrement(20);
         sp.getVerticalScrollBar().setOpaque(false);
         sp.getHorizontalScrollBar().setOpaque(false);
         sp.setLayout(new OverlayScrollPaneLayout());
-
-        sp.setComponentZOrder(sp.getVerticalScrollBar(), 0);
-        sp.setComponentZOrder(sp.getHorizontalScrollBar(), 1);
-        sp.setComponentZOrder(sp.getViewport(), 2);
 
         this.add(sp, BorderLayout.CENTER);
 

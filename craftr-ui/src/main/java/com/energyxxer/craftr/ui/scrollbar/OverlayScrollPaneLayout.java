@@ -1,5 +1,7 @@
 package com.energyxxer.craftr.ui.scrollbar;
 
+import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -7,6 +9,14 @@ import java.awt.*;
  * Created by User on 12/13/2016.
  */
 public class OverlayScrollPaneLayout extends ScrollPaneLayout {
+
+    private int thumbSize = 10;
+
+    public OverlayScrollPaneLayout() {
+        ThemeChangeListener.addThemeChangeListener(t -> {
+            thumbSize = t.getInteger(10, "General.scrollbar.thickness");
+        });
+    }
 
     @Override
     public void layoutContainer(Container parent) {
@@ -16,7 +26,6 @@ public class OverlayScrollPaneLayout extends ScrollPaneLayout {
         Rectangle availR = parent.getBounds();
         if(this.rowHead != null) this.rowHead.setSize(this.rowHead.getWidth(),availR.height);
         availR.x = availR.y = 0;
-
 
         // viewport
         Insets insets = parent.getInsets();
@@ -31,23 +40,23 @@ public class OverlayScrollPaneLayout extends ScrollPaneLayout {
         boolean vsbNeeded = isVerticalScrollBarNecessary();
         boolean hsbNeeded = isHorizontalScrollBarNecessary();
 
-        // vertical scroll bar
-        Rectangle vsbR = new Rectangle();
-        vsbR.width = 10;
-        vsbR.height = availR.height - (hsbNeeded ? vsbR.width : 0);
-        vsbR.x = availR.x + availR.width - vsbR.width;
-        vsbR.y = availR.y;
         if (vsb != null) {
+            // vertical scroll bar
+            Rectangle vsbR = new Rectangle();
+            vsbR.width = thumbSize;
+            vsbR.height = availR.height - (hsbNeeded ? vsbR.width : 0);
+            vsbR.x = availR.x + availR.width - vsbR.width;
+            vsbR.y = availR.y;
             vsb.setBounds(vsbR);
         }
 
-        // horizontal scroll bar
-        Rectangle hsbR = new Rectangle();
-        hsbR.height = 10;
-        hsbR.width = availR.width - (vsbNeeded ? hsbR.height : 0);
-        hsbR.x = availR.x;
-        hsbR.y = availR.y + availR.height - hsbR.height;
         if (hsb != null) {
+            // horizontal scroll bar
+            Rectangle hsbR = new Rectangle();
+            hsbR.height = thumbSize;
+            hsbR.width = availR.width - (vsbNeeded ? hsbR.height : 0);
+            hsbR.x = availR.x;
+            hsbR.y = availR.y + availR.height - hsbR.height;
             hsb.setBounds(hsbR);
         }
     }

@@ -9,7 +9,7 @@ import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
 import com.energyxxer.craftr.ui.editor.inspector.Inspector;
 
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
@@ -115,6 +115,13 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
             },"Text Highlighter").start();
             lastEdit = -1;
         }
+    }
+
+    @Override
+    public void repaint() {
+        if(this.getParent() instanceof JViewport && this.getParent().getParent() instanceof JScrollPane) {
+            this.getParent().getParent().repaint();
+        } else super.repaint();
     }
 
     void displayCaretInfo() {

@@ -141,8 +141,8 @@ public class ConsoleArea extends JPanel {
 
         //consoleScrollPane.setLayout(new OverlayScrollPaneLayout());
 
-        consoleScrollPane.getVerticalScrollBar().setUI(new OverlayScrollBarUI(consoleScrollPane, 20));
-        consoleScrollPane.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(consoleScrollPane, 20));
+        consoleScrollPane.getVerticalScrollBar().setUI(new OverlayScrollBarUI(consoleScrollPane));
+        consoleScrollPane.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(consoleScrollPane));
         consoleScrollPane.getVerticalScrollBar().setOpaque(false);
         consoleScrollPane.getHorizontalScrollBar().setOpaque(false);
 
