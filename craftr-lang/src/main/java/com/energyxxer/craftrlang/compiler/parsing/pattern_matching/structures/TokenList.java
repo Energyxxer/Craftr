@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TokenList extends TokenPattern<TokenPattern<?>[]> {
-	private ArrayList<TokenPattern<?>> patterns = new ArrayList<>();
+	private List<TokenPattern<?>> patterns = new ArrayList<>();
 
 	public TokenList() {}
 	
-	public TokenList(ArrayList<TokenPattern<?>> patterns) {
+	public TokenList(List<TokenPattern<?>> patterns) {
 		this.patterns.addAll(patterns);
 	}
 	

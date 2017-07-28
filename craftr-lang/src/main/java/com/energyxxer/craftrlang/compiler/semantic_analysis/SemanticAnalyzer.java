@@ -39,6 +39,10 @@ public class SemanticAnalyzer {
         for(CraftrFile f : files) {
             f.initImports();
         }
+
+        for(CraftrFile f : files) {
+            f.initUnits();
+        }
     }
 
     public SymbolTable getSymbolTable() {

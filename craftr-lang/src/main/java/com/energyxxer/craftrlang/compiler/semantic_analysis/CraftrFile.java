@@ -20,6 +20,7 @@ import java.util.List;
  * Created by User on 2/25/2017.
  */
 public class CraftrFile extends AbstractFileComponent implements Context {
+
     private SemanticAnalyzer analyzer;
     private File file;
 
@@ -58,7 +59,6 @@ public class CraftrFile extends AbstractFileComponent implements Context {
             this.parentPackage = analyzer.getPackageManager().createPackage(packagePathPattern.flatten(false));
         }
 
-
         //analyzer.getCompiler().getReport().addNotice(new Notice("Debug", NoticeType.WARNING, parentPackage.getFullyQualifiedName()));
 
         List<TokenPattern<?>> unitPatterns = pattern.find("UNIT_LIST").searchByName("UNIT");
@@ -76,6 +76,12 @@ public class CraftrFile extends AbstractFileComponent implements Context {
 
     public void initImports() {
         if(importsInitialized) return;
+
+        for(Symbol sym : parentPackage.getSubSymbolTable()) {
+            if(sym instanceof Unit) {
+                this.importTable.put(sym);
+            }
+        }
 
         TokenList importList = (TokenList) pattern.find("IMPORT_LIST");
         if(importList == null) {
@@ -127,15 +133,13 @@ public class CraftrFile extends AbstractFileComponent implements Context {
         }
         importsInitialized = true;
 
-        for(Symbol sym : parentPackage.getSubSymbolTable()) {
-            if(sym instanceof Unit) {
-                this.importTable.put(sym);
-            }
-        }
         this.referenceTable = analyzer.getSymbolTable().mergeWith(importTable);
+    }
 
+    public void initUnits() {
         for(Unit unit : units) {
             unit.initUnitActions();
+            unit.initUnitComponents();
         }
     }
 
@@ -165,5 +169,10 @@ public class CraftrFile extends AbstractFileComponent implements Context {
     @Override
     public SemanticAnalyzer getAnalyzer() {
         return analyzer;
+    }
+
+    @Override
+    public boolean isStatic() {
+        return true;
     }
 }

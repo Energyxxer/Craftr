@@ -10,6 +10,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.AbstractFileComponen
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
@@ -68,7 +69,7 @@ public class Variable extends AbstractFileComponent implements Symbol {
         this.block = block;
         this.table = block.getSymbolTable();
 
-        if(block.findVariable(this.name) == null) {
+        if(block.findVariable(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
             block.getSymbolTable().put(this);
         } else {
             analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
@@ -81,7 +82,7 @@ public class Variable extends AbstractFileComponent implements Symbol {
         this.fieldManager = fieldManager;
         this.table = this.isStatic() ? fieldManager.getStaticFieldTable() : fieldManager.getInstanceFieldTable();
 
-        if(fieldManager.findField(name) == null) {
+        if(fieldManager.findField(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
             table.put(this);
         } else {
             analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
@@ -118,7 +119,7 @@ public class Variable extends AbstractFileComponent implements Symbol {
         return variables;
     }
 
-    public static List<Variable> parseDeclaration(TokenPattern<?> pattern, FieldManager fieldManager) {
+    public static List<Variable> parseDeclaration(TokenPattern<?> pattern, FieldManager fieldManager, Context context) {
         ArrayList<Variable> variables = new ArrayList<>();
 
         //Skipping over annotations
@@ -128,7 +129,7 @@ public class Variable extends AbstractFileComponent implements Symbol {
         TokenList modifierPatterns = (TokenList) pattern.find("INNER.MODIFIER_LIST");
         if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), fieldManager.getParentUnit().getAnalyzer());
 
-        DataType dataType = DataType.parseType((pattern.find("INNER.DATA_TYPE")).flatten(false), fieldManager.getParentUnit().getSubSymbolTable());
+        DataType dataType = DataType.parseType((pattern.find("INNER.DATA_TYPE")).flattenTokens(), fieldManager.getParentUnit().getDeclaringFile().getReferenceTable(), context);
 
         TokenPattern<?>[] declarationList = ((TokenList) pattern.find("INNER.VARIABLE_DECLARATION_LIST")).getContents();
 

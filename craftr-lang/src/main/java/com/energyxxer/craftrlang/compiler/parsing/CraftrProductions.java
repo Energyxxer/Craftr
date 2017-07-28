@@ -246,7 +246,7 @@ public class CraftrProductions {
 			TokenGroupMatch g = new TokenGroupMatch().setName("METHOD_METHOD");
 			g.append(new TokenGroupMatch(true).append(ANNOTATION));
 			g.append(new TokenListMatch(TokenType.MODIFIER,true).setName("MODIFIER_LIST"));
-			g.append(DATA_TYPE);
+			g.append(new TokenGroupMatch().append(DATA_TYPE).setName("RETURN_TYPE"));
 			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME"));
 
             g.append(new TokenItemMatch(TokenType.BRACE,"("));
@@ -295,7 +295,7 @@ public class CraftrProductions {
 			TokenGroupMatch g = new TokenGroupMatch().setName("METHOD_OPERATOR");
 			g.append(new TokenGroupMatch(true).append(ANNOTATION));
 			g.append(new TokenItemMatch(TokenType.KEYWORD,"operator"));
-			g.append(DATA_TYPE);
+			g.append(new TokenGroupMatch().append(DATA_TYPE).setName("RETURN_TYPE"));
 			{
 				TokenStructureMatch s = new TokenStructureMatch("OPERATOR_REFERENCE");
 
@@ -412,11 +412,8 @@ public class CraftrProductions {
 			{
 				TokenGroupMatch g = new TokenGroupMatch();
 				g.append(DATA_TYPE);
-				TokenGroupMatch g2 = new TokenGroupMatch();
-				g2.append(new TokenItemMatch(TokenType.BRACE,"["));
-				g2.append(new TokenItemMatch(TokenType.BRACE,"]"));
-				g.append(new TokenListMatch(g2,true));
-
+				g.append(new TokenItemMatch(TokenType.BRACE,"["));
+				g.append(new TokenItemMatch(TokenType.BRACE,"]"));
 				DATA_TYPE.add(g);
 			}
 		}
@@ -440,7 +437,7 @@ public class CraftrProductions {
 			{
 				TokenGroupMatch g2 = new TokenGroupMatch().setName("UNIT_ACTION");
 				g2.append(new TokenItemMatch(TokenType.UNIT_ACTION).setName("UNIT_ACTION_TYPE"));
-				g2.append(new TokenListMatch(new TokenGroupMatch().append(IDENTIFIER).setName("UNIT_ACTION_REFERENCE"),new TokenItemMatch(TokenType.COMMA),true));
+				g2.append(new TokenListMatch(new TokenGroupMatch().append(IDENTIFIER).setName("UNIT_ACTION_REFERENCE"),new TokenItemMatch(TokenType.COMMA)));
 				g.append(new TokenListMatch(g2,true));
 			}
 

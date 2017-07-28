@@ -2,7 +2,7 @@ package com.energyxxer.craftr.ui.explorer.base.elements;
 
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
 
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 
 /**
@@ -22,6 +22,9 @@ public class ExplorerSeparator extends ExplorerElement {
 
         g.setColor((this.rollover || this.selected) ? master.getColors().get("item.rollover.background") : master.getColors().get("item.background"));
         g.fillRect(0, master.getOffsetY(), master.getWidth(), this.getHeight());
+
+        g.setColor(master.getColors().get("item.foreground"));
+        g.fillRect(master.getWidth() / 10, master.getOffsetY() + ((this.getHeight() / 2) - 1), 8 * (master.getWidth() / 10), 2);
 
         master.setOffsetY(master.getOffsetY() + getHeight());
     }

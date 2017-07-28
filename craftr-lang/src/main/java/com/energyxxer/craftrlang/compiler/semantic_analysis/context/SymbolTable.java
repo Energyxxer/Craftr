@@ -6,6 +6,7 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -44,7 +45,7 @@ public class SymbolTable implements Iterable<Symbol> {
 
     @Override
     public String toString() {
-        return visibility.name() + ":" + getLevel();
+        return visibility.name() + ":" + getLevel() + ":" + table;
     }
 
     public void put(Symbol symbol) {
@@ -108,48 +109,8 @@ public class SymbolTable implements Iterable<Symbol> {
         return null;
     }
 
-    @Deprecated
-    public Symbol getSymbol(String path, Context context) {
-        String[] sections = path.split("\\.",2);
-        Symbol next = this.table.get(sections[0]);
-        if(next != null) {
-            switch(next.getVisibility()) {
-                case PACKAGE: {
-                    if(context.getDeclaringFile().getPackage() != next.getPackage()) {
-                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + sections[0] + "' from current context"));
-                    }
-                    break;
-                }
-                case UNIT: {
-                    if(context.getContextType() != ContextType.UNIT || context != next.getUnit()) {
-                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + sections[0] + "' from current context"));
-                    }
-                    break;
-                }
-                case UNIT_INHERITED: {
-                    //TODO
-                    break;
-                }
-                case METHOD: {
-                    //TODO
-                    break;
-                }
-                case BLOCK: {
-                    //TODO
-                    break;
-                }
-            }
-            if(sections.length > 1) {
-                SymbolTable subTable = next.getSubSymbolTable();
-                if(subTable != null) {
-                    return next.getSubSymbolTable().getSymbol(sections[1], context);
-                }
-                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, next + " is not a data structure"));
-            }
-            return next;
-        }
-        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + sections[0] + "'"));
-        return null;
+    public Symbol getSymbol(Token singleToken, Context context) {
+        return getSymbol(Collections.singletonList(singleToken), context);
     }
 
     public HashMap<String, Symbol> getMap() {

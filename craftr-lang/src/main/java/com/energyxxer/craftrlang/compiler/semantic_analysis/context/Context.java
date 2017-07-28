@@ -13,4 +13,5 @@ public interface Context {
     Unit getUnit();
     ContextType getContextType();
     SemanticAnalyzer getAnalyzer();
+    boolean isStatic();
 }

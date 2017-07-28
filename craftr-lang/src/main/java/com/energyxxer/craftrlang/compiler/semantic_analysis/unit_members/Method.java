@@ -14,6 +14,8 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUt
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,7 +62,7 @@ public class Method extends AbstractFileComponent implements Symbol {
         }
 
         this.declaringUnit = declaringUnit;
-        this.returnType = null;
+
         if(this.type == MethodType.OPERATOR_OVERLOAD) {
             this.name = ((TokenItem) (pattern.find("OPERATOR_REFERENCE").getContents())).getContents().value;
         } else {
@@ -81,7 +83,9 @@ public class Method extends AbstractFileComponent implements Symbol {
         }
 
         TokenList modifierPatterns = (TokenList) pattern.find("MODIFIER_LIST");
-        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), declaringUnit.getAnalyzer());
+        if(modifierPatterns != null) {
+            modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), declaringUnit.getAnalyzer());
+        }
         else modifiers = new ArrayList<>();
 
         this.declaringUnit.getSubSymbolTable().put(this);
@@ -103,17 +107,16 @@ public class Method extends AbstractFileComponent implements Symbol {
                     );
                 }
 
-                String dataType = (rawParam.find("DATA_TYPE")).flatten(false);
-                String paramName = ((TokenItem) rawParam.find("PARAMETER_NAME")).getContents().value;
+                FormalParameter param = new FormalParameter(this, rawParam);
 
                 boolean isDuplicate = false;
 
                 for(FormalParameter p : positionalParams) {
-                    if(p.getName().equals(paramName)) {
+                    if(p.getName().equals(param.getName())) {
                         this.declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(
                                 new Notice(
                                         NoticeType.ERROR,
-                                        "Variable '" + paramName + "' already defined in the scope",
+                                        "Variable '" + param.getName() + "' already defined in the scope",
                                         rawParam.find("PARAMETER_NAME").getFormattedPath()
                                 )
                         );
@@ -122,11 +125,11 @@ public class Method extends AbstractFileComponent implements Symbol {
                     }
                 }
                 if(!isDuplicate) for(FormalParameter p : keywordParams) {
-                    if(p.getName().equals(paramName)) {
+                    if(p.getName().equals(param.getName())) {
                         this.declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(
                                 new Notice(
                                         NoticeType.ERROR,
-                                        "Variable '" + paramName + "' already defined in the scope",
+                                        "Variable '" + param.getName() + "' already defined in the scope",
                                         rawParam.find("PARAMETER_NAME").getFormattedPath()
                                 )
                         );
@@ -136,16 +139,21 @@ public class Method extends AbstractFileComponent implements Symbol {
                 }
 
                 if(!isDuplicate) {
-                    FormalParameter param = new FormalParameter(new DataType(dataType, false), paramName);
                     ((isKeyword) ? keywordParams : positionalParams).add(param);
                 }
 
             }
         }
 
+        if(type == MethodType.CONSTRUCTOR) this.returnType = new DataType(declaringUnit);
+        else if(type == MethodType.EVENT) this.returnType = DataType.VOID;
+        else this.returnType = DataType.parseType(pattern.find("RETURN_TYPE").flattenTokens(), declaringUnit.getDeclaringFile().getReferenceTable(), declaringUnit);
+
         this.signature = new MethodSignature(declaringUnit, name, positionalParams);
 
-        System.out.println("signature = " + signature);
+        if(modifierPatterns != null && modifiers.contains(CraftrUtil.Modifier.NATIVE)) {
+            declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Native Methods", NoticeType.INFO, "Require native implementation for '" + getSignature().toString() + "'", modifierPatterns.getFormattedPath()));
+        }
     }
 
     public boolean isStatic() {
@@ -156,8 +164,13 @@ public class Method extends AbstractFileComponent implements Symbol {
     public String getName() {
         return name;
     }
-    @Override
 
+    @Override
+    public @NotNull Unit getUnit() {
+        return declaringUnit;
+    }
+
+    @Override
     public String toString() {
         return modifiers + " " + this.name;
     }
@@ -167,6 +180,10 @@ public class Method extends AbstractFileComponent implements Symbol {
                 modifiers.contains(CraftrUtil.Modifier.PROTECTED) ? SymbolVisibility.UNIT_INHERITED :
                         modifiers.contains(CraftrUtil.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
                                 SymbolVisibility.PACKAGE;
+    }
+
+    public String getFullyQualifiedName() {
+        return declaringUnit.getFullyQualifiedName() + "::" + this.name;
     }
 
     public MethodSignature getSignature() {

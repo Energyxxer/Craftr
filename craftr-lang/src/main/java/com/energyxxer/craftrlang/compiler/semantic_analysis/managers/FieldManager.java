@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.managers;
 
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
@@ -22,16 +23,17 @@ public class FieldManager {
         this.instanceFields = new SymbolTable(parentUnit.getVisibility(), parentUnit.getDeclaringFile().getPackage().getSubSymbolTable());
     }
 
-    public Variable findField(String name) {
-        Symbol symbol = staticFields.getMap().get(name);
+    public Variable findField(Token name) {
+        Symbol symbol;
+        symbol = staticFields.getMap().get(name.value);
         if(symbol != null && symbol instanceof Variable) return (Variable) symbol;
-        symbol = instanceFields.getMap().get(name);
+        symbol = instanceFields.getMap().get(name.value);
         if(symbol != null && symbol instanceof Variable) return (Variable) symbol;
         return null;
     }
 
     public void insertField(TokenStructure component) {
-        Variable.parseDeclaration(component, this);
+        Variable.parseDeclaration(component, this, parentUnit);
     }
 
     public Unit getParentUnit() {

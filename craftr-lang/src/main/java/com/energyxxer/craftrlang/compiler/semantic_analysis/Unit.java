@@ -24,6 +24,7 @@ import java.util.List;
  */
 public class Unit extends AbstractFileComponent implements Symbol, Context {
     private final CraftrFile declaringFile;
+    private final Context instanceContext;
     private List<CraftrUtil.Modifier> modifiers;
     private final SymbolVisibility visibility;
     private final String name;
@@ -57,8 +58,6 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
 
         this.modifiers = SemanticUtils.getModifiers(header.deepSearchByName("UNIT_MODIFIER"), file.getAnalyzer());
 
-        Console.debug.println(modifiers);
-
         List<TokenPattern<?>> actionPatterns = header.deepSearchByName("UNIT_ACTION");
         for(TokenPattern<?> p : actionPatterns) {
             String actionType = ((TokenItem) p.find("UNIT_ACTION_TYPE")).getContents().value;
@@ -87,7 +86,6 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
                     List<TokenPattern<?>> references = p.deepSearchByName("UNIT_ACTION_REFERENCE");
                     for(TokenPattern<?> reference : references) {
                         List<Token> flat = reference.flattenTokens();
-                        System.out.println("flat = " + flat);
                         if(!rawUnitImplements.contains(flat)) rawUnitImplements.add(flat);
                         else file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit '" + reference.flatten(false) + "'", p.getFormattedPath()));
                     }
@@ -121,21 +119,32 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         this.fieldManager = new FieldManager(this);
         this.methodManager = new MethodManager(this);
 
-        //Parse body
-
-        TokenPattern<?> componentList = (type == UnitType.ENUM) ? pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST_WRAPPER.UNIT_COMPONENT_LIST") : pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST");
-        if(componentList != null) {
-            for (TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
-                TokenStructure component = (TokenStructure) p.getContents();
-                if (component.getName().equals("VARIABLE")) {
-                    fieldManager.insertField(component);
-                } else if(component.getName().equals("METHOD")) {
-                    methodManager.insertMethod(component);
-                }
+        this.instanceContext = new Context() {
+            @Override
+            public CraftrFile getDeclaringFile() {
+                return file;
             }
-        }
 
-        Console.debug.println(this.toString());
+            @Override
+            public Unit getUnit() {
+                return Unit.this;
+            }
+
+            @Override
+            public ContextType getContextType() {
+                return ContextType.UNIT;
+            }
+
+            @Override
+            public SemanticAnalyzer getAnalyzer() {
+                return Unit.this.getAnalyzer();
+            }
+
+            @Override
+            public boolean isStatic() {
+                return false;
+            }
+        };
     }
 
     public void initUnitActions() {
@@ -154,11 +163,8 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
 
         this.features = new ArrayList<>();
 
-        System.out.println("rawUnitImplements for " + this.name + " = " + rawUnitImplements);
-
         if(rawUnitImplements != null) {
             for(List<Token> path : rawUnitImplements) {
-                System.out.println("path = " + path);
                 Symbol symbol = declaringFile.getReferenceTable().getSymbol(path, this);
                 if(symbol != null) {
                     if(symbol instanceof Unit && ((Unit) symbol).type == UnitType.FEATURE) {
@@ -171,6 +177,20 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         }
 
         unitActionsInitialized = true;
+    }
+
+    public void initUnitComponents() {
+        TokenPattern<?> componentList = (type == UnitType.ENUM) ? pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST_WRAPPER.UNIT_COMPONENT_LIST") : pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST");
+        if(componentList != null) {
+            for (TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
+                TokenStructure component = (TokenStructure) p.getContents();
+                if (component.getName().equals("VARIABLE")) {
+                    fieldManager.insertField(component);
+                } else if(component.getName().equals("METHOD")) {
+                    methodManager.insertMethod(component);
+                }
+            }
+        }
     }
 
     @Override
@@ -198,7 +218,8 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         return fieldManager.getStaticFieldTable();
     }
 
-    public CraftrFile getDeclaringFile() {
+    @Override
+    public @NotNull CraftrFile getDeclaringFile() {
         return declaringFile;
     }
 
@@ -208,7 +229,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
     }
 
     @Override
-    public SemanticAnalyzer getAnalyzer() {
+    public @NotNull SemanticAnalyzer getAnalyzer() {
         return declaringFile.getAnalyzer();
     }
 
@@ -222,6 +243,15 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
 
     public MethodManager getMethodManager() {
         return methodManager;
+    }
+
+    @Override
+    public boolean isStatic() {
+        return true;
+    }
+
+    public Context getInstanceContext() {
+        return this.instanceContext;
     }
 
     @Override

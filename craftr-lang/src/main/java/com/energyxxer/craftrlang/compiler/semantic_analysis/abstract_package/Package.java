@@ -7,6 +7,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -48,6 +49,21 @@ public class Package implements Symbol {
     public void addUnit(Unit unit) {
         this.units.put(unit.getName(), unit);
         symbolTable.put(unit);
+    }
+
+    public Collection<Symbol> getAllSubSymbols() {
+        HashMap<String, Symbol> map = new HashMap<>();
+        getAllSubSymbols(map);
+        return map.values();
+    }
+
+    private void getAllSubSymbols(HashMap<String, Symbol> map) {
+        for(Symbol sym : this.symbolTable.getMap().values()) {
+            if(!(sym instanceof Package) && !map.containsKey(sym.getName())) map.put(sym.getName(), sym);
+        }
+        for(Package subPackage : this.subPackages.values()) {
+            subPackage.getAllSubSymbols(map);
+        }
     }
 
     @Override

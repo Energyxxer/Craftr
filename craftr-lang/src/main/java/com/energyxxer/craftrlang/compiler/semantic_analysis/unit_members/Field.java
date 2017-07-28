@@ -40,7 +40,7 @@ public class Field extends AbstractFileComponent implements Symbol {
 
         this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
         if(this.name.equalsIgnoreCase("debug")) {
-            Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime", declaringUnit));
+            //Console.info.println("Pointer test: " + this.declaringUnit.getSubSymbolTable().getRoot().getSymbol("com.energyxxer.aetherii.entities.living.hostile.tempest.shootTime", declaringUnit));
         }
 
         if(!this.declaringUnit.getSubSymbolTable().getMap().containsKey(this.name)) {
