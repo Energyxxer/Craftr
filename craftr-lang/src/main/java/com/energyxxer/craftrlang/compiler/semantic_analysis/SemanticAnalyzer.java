@@ -36,13 +36,10 @@ public class SemanticAnalyzer {
             files.add(new CraftrFile(this, f, filePatterns.get(f)));
         }
 
-        for(CraftrFile f : files) {
-            f.initImports();
-        }
-
-        for(CraftrFile f : files) {
-            f.initUnits();
-        }
+        files.forEach(CraftrFile::initImports);
+        files.forEach(CraftrFile::initActions);
+        files.forEach(CraftrFile::catchCyclicInheritance);
+        files.forEach(CraftrFile::initComponents);
     }
 
     public SymbolTable getSymbolTable() {

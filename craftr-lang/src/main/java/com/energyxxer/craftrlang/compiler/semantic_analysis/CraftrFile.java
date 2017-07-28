@@ -93,10 +93,6 @@ public class CraftrFile extends AbstractFileComponent implements Context {
                 }
             }
             this.referenceTable = analyzer.getSymbolTable().mergeWith(importTable);
-
-            for(Unit unit : units) {
-                unit.initUnitActions();
-            }
             //analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.INFO, "No imports found for file '" + file.getName() + "'"));
             return;
         }
@@ -136,11 +132,16 @@ public class CraftrFile extends AbstractFileComponent implements Context {
         this.referenceTable = analyzer.getSymbolTable().mergeWith(importTable);
     }
 
-    public void initUnits() {
-        for(Unit unit : units) {
-            unit.initUnitActions();
-            unit.initUnitComponents();
-        }
+    public void initActions() {
+        units.forEach(Unit::initUnitActions);
+    }
+
+    public void catchCyclicInheritance() {
+        units.forEach(Unit::catchCyclicInheritance);
+    }
+
+    public void initComponents() {
+        units.forEach(Unit::initUnitComponents);
     }
 
     public SymbolTable getImportTable() {

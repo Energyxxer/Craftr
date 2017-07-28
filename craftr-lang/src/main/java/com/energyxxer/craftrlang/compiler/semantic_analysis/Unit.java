@@ -147,7 +147,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         };
     }
 
-    public void initUnitActions() {
+    void initUnitActions() {
         if(unitActionsInitialized) return;
 
         if(rawUnitExtends != null) {
@@ -179,7 +179,22 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         unitActionsInitialized = true;
     }
 
-    public void initUnitComponents() {
+    void catchCyclicInheritance() {
+        if(!unitActionsInitialized) return;
+        ArrayList<Unit> knownParents = new ArrayList<>();
+        Unit current = this;
+        while(current != null) {
+            if(knownParents.contains(current)) {
+                declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cyclic inheritance involving '" + this.getFullyQualifiedName() + "'", this.pattern.find("UNIT_DECLARATION").getFormattedPath()));
+                break;
+            } else {
+                knownParents.add(current);
+            }
+            current = current.superUnit;
+        }
+    }
+
+    void initUnitComponents() {
         TokenPattern<?> componentList = (type == UnitType.ENUM) ? pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST_WRAPPER.UNIT_COMPONENT_LIST") : pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST");
         if(componentList != null) {
             for (TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
