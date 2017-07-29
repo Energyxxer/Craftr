@@ -12,11 +12,14 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUt
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.*;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodManager;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodSignature;
 import com.energyxxer.util.out.Console;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -31,6 +34,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
     private final UnitType type;
 
     private Unit superUnit = null;
+    private List<Unit> inheritanceMap = null;
     private List<Unit> features = null;
 
     private List<Token> rawUnitExtends = null;
@@ -179,18 +183,42 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         unitActionsInitialized = true;
     }
 
-    void catchCyclicInheritance() {
-        if(!unitActionsInitialized) return;
+    void buildInheritanceMap() {
+        if(inheritanceMap != null || !unitActionsInitialized) return;
+        inheritanceMap = new ArrayList<>();
+        inheritanceMap.addAll(features);
+
         ArrayList<Unit> knownParents = new ArrayList<>();
         Unit current = this;
         while(current != null) {
             if(knownParents.contains(current)) {
-                declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cyclic inheritance involving '" + this.getFullyQualifiedName() + "'", this.pattern.find("UNIT_DECLARATION").getFormattedPath()));
+                declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cyclic inheritance involving '" + current.getFullyQualifiedName() + "'", this.pattern.find("UNIT_DECLARATION").getFormattedPath()));
                 break;
             } else {
                 knownParents.add(current);
+                if(current != this) inheritanceMap.add(current);
             }
             current = current.superUnit;
+        }
+    }
+
+    void checkActionCompatibility() {
+        HashMap<MethodSignature, Method> allMethods = new HashMap<>();
+
+        for(Unit inherited : inheritanceMap) {
+            for(Method method : inherited.methodManager.getAllMethods()) {
+                Method clashingMethod = allMethods.get(method.getSignature());
+                if(clashingMethod != null) {
+                    if(!clashingMethod.getReturnType().equals(method.getReturnType())) {
+                        declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(
+                                NoticeType.ERROR,
+                                "'" + method.getSignature() + "' in '" + method.getUnit().getFullyQualifiedName() +
+                                        "' clashes with '" + clashingMethod.getSignature() + "' in '" +
+                                        clashingMethod.getUnit().getFullyQualifiedName() +
+                                        "'; attempting to use incompatible return type", this.pattern.find("UNIT_DECLARATION").getFormattedPath()));
+                    }
+                } else allMethods.put(method.getSignature(), method);
+            }
         }
     }
 

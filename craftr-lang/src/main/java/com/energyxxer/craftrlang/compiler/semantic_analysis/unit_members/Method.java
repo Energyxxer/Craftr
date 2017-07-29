@@ -160,6 +160,10 @@ public class Method extends AbstractFileComponent implements Symbol {
         return modifiers.contains(CraftrUtil.Modifier.STATIC);
     }
 
+    public DataType getReturnType() {
+        return returnType;
+    }
+
     @Override
     public String getName() {
         return name;
@@ -188,5 +192,20 @@ public class Method extends AbstractFileComponent implements Symbol {
 
     public MethodSignature getSignature() {
         return signature;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Method method = (Method) o;
+
+        return signature.equals(method.signature);
+    }
+
+    @Override
+    public int hashCode() {
+        return signature.hashCode();
     }
 }

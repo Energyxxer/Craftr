@@ -79,4 +79,11 @@ public class MethodManager {
             ));
         }
     }
+
+    public List<Method> getAllMethods() {
+        ArrayList<Method> list = new ArrayList<>();
+        list.addAll(staticMethods);
+        list.addAll(instanceMethods);
+        return list;
+    }
 }

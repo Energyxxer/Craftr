@@ -136,8 +136,12 @@ public class CraftrFile extends AbstractFileComponent implements Context {
         units.forEach(Unit::initUnitActions);
     }
 
-    public void catchCyclicInheritance() {
-        units.forEach(Unit::catchCyclicInheritance);
+    public void buildInheritanceMap() {
+        units.forEach(Unit::buildInheritanceMap);
+    }
+
+    public void checkActionCompatibility() {
+        units.forEach(Unit::checkActionCompatibility);
     }
 
     public void initComponents() {

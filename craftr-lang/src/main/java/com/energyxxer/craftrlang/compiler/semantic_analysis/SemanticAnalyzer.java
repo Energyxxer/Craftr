@@ -38,8 +38,9 @@ public class SemanticAnalyzer {
 
         files.forEach(CraftrFile::initImports);
         files.forEach(CraftrFile::initActions);
-        files.forEach(CraftrFile::catchCyclicInheritance);
+        files.forEach(CraftrFile::buildInheritanceMap);
         files.forEach(CraftrFile::initComponents);
+        files.forEach(CraftrFile::checkActionCompatibility);
     }
 
     public SymbolTable getSymbolTable() {

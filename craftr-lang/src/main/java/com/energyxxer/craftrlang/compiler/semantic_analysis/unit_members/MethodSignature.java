@@ -25,7 +25,14 @@ public class MethodSignature {
 
         MethodSignature that = (MethodSignature) o;
 
-        return name.equals(that.name) && positionalParams.equals(that.positionalParams);
+        return (name.equals(that.name) && positionalParams.equals(that.positionalParams));
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + positionalParams.hashCode();
+        return result;
     }
 
     @Override

@@ -1,13 +1,10 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
-
-import java.util.List;
 
 /**
  * Created by User on 5/16/2017.
