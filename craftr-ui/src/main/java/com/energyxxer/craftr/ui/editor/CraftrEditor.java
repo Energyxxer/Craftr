@@ -108,24 +108,15 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 
 		this.setRowHeaderView(tln);
 
-		this.getVerticalScrollBar().setUI(new OverlayScrollBarUI(this));
-		this.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(this));
-		this.getVerticalScrollBar().setOpaque(false);
-		this.getHorizontalScrollBar().setOpaque(false);
+		this.setLayout(new OverlayScrollPaneLayout(this));
 
-		this.setLayout(new OverlayScrollPaneLayout());
-
-		this.getVerticalScrollBar().setUnitIncrement(25);
-		this.getHorizontalScrollBar().setUnitIncrement(25);
+		this.getVerticalScrollBar().setUnitIncrement(17);
+		this.getHorizontalScrollBar().setUnitIncrement(17);
 
 		/*linePainter.addPaintListener(() -> {
 			this.getVerticalScrollBar().repaint();
 			this.getHorizontalScrollBar().repaint();
 		});*/
-
-		setComponentZOrder(getVerticalScrollBar(), 0);
-		setComponentZOrder(getHorizontalScrollBar(), 1);
-		setComponentZOrder(getViewport(), 2);
 
 		addThemeChangeListener();
 

@@ -56,17 +56,7 @@ public class Sidebar extends JPanel {
 
         JScrollPane sp = new JScrollPane(CraftrWindow.projectExplorer = new ProjectExplorerMaster(new File(Preferences.get("workspace_dir"))));
         sp.setBorder(new EmptyBorder(0,0,0,0));
-        sp.getVerticalScrollBar().setUI(new OverlayScrollBarUI(sp));
-        sp.getHorizontalScrollBar().setUI(new OverlayScrollBarUI(sp));
-        sp.getVerticalScrollBar().setUnitIncrement(20);
-        sp.getHorizontalScrollBar().setUnitIncrement(20);
-        sp.getVerticalScrollBar().setOpaque(false);
-        sp.getHorizontalScrollBar().setOpaque(false);
-        sp.setLayout(new OverlayScrollPaneLayout());
-
-        sp.setComponentZOrder(sp.getVerticalScrollBar(), 0);
-        sp.setComponentZOrder(sp.getHorizontalScrollBar(), 1);
-        sp.setComponentZOrder(sp.getViewport(), 2);
+        sp.setLayout(new OverlayScrollPaneLayout(sp));
 
         this.add(sp, BorderLayout.CENTER);
     }
