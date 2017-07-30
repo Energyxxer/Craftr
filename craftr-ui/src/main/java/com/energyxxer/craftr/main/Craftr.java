@@ -19,8 +19,6 @@ public class Craftr {
 	public static Craftr craftr;
 	public static final Version VERSION = new Version("ALPHA",0,0,0);
 
-	public static final boolean PRINT_CONSOLE_CALLS = false;
-
 	public static CraftrWindow window;
 
 	private Craftr() {
