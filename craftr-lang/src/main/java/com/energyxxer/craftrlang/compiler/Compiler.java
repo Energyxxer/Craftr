@@ -34,6 +34,7 @@ public class Compiler {
 	private Thread thread = null;
 
 	private final ThreadLock lock = new ThreadLock();
+	private CraftrLibrary library = null;
 	
 	public Compiler(Project project) {
 		this.project = project;
@@ -98,23 +99,26 @@ public class Compiler {
 		this.setProgress("Analyzing code... [" + projectName + "]");
 
 		HashMap<File, TokenPattern<?>> allPatterns = new HashMap<>();
+
 		allPatterns.putAll(parser.getFilePatterns());
 
-		LibraryLoad callback = allPatterns::putAll;
-
-		NativeLib.awaitLib(callback, lock);
-
-		try {
-			synchronized (lock) {
-				while (!lock.condition) {
-					lock.wait();
-				}
-			}
-		} catch(InterruptedException x) {
-			x.printStackTrace();
-		}
-
 		analyzer = new SemanticAnalyzer(this, allPatterns, source);
+		if(library != null) {
+			LibraryLoad callback = c -> analyzer.join(c.analyzer);
+
+			library.awaitLib(callback, lock);
+
+			try {
+				synchronized (lock) {
+					while (!lock.condition) {
+						lock.wait();
+					}
+				}
+			} catch (InterruptedException x) {
+				x.printStackTrace();
+			}
+		}
+		analyzer.start();
 		point++;
 		if(point == breakpoint) {
 			finalizeCompilation();
@@ -182,5 +186,13 @@ public class Compiler {
 
 	public File getSource() {
 		return source;
+	}
+
+	public CraftrLibrary getLibrary() {
+		return library;
+	}
+
+	public void setLibrary(CraftrLibrary library) {
+		this.library = library;
 	}
 }

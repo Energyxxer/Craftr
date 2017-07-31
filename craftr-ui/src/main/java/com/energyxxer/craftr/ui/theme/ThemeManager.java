@@ -25,6 +25,7 @@ public class ThemeManager {
 
     public static void loadAll() {
         gui_themes.clear();
+        syntax_themes.clear();
 
         ThemeReader tr = new ThemeReader();
         for(String file : Resources.indexes.get("GUI Themes")) {

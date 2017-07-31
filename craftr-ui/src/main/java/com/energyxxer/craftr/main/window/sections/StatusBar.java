@@ -1,5 +1,6 @@
 package com.energyxxer.craftr.main.window.sections;
 
+import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.global.Status;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
@@ -54,11 +55,11 @@ public class StatusBar extends JPanel {
 
 
 
-        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK), "reloadThemes");
-        this.getActionMap().put("reloadThemes", new AbstractAction() {
+        this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK), "reloadResources");
+        this.getActionMap().put("reloadResources", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ThemeManager.loadAll();
+                Resources.load();
             }
         });
     }

@@ -3,7 +3,7 @@ package com.energyxxer.craftr.global;
 import com.energyxxer.craftr.files.FileDefaults;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.util.LineReader;
-import com.energyxxer.craftrlang.compiler.NativeLib;
+import com.energyxxer.craftrlang.compiler.CraftrLibrary;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +15,8 @@ import java.util.HashMap;
  */
 public class Resources {
     public static final HashMap<String, ArrayList<String>> indexes = new HashMap<>();
+
+    public static CraftrLibrary nativeLib = null;
 
     public static void load() {
         indexes.clear();
@@ -44,6 +46,6 @@ public class Resources {
 
         File nativesFolder = new File(System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "natives" + File.separator);
         if(!nativesFolder.exists()) nativesFolder.mkdirs();
-        else NativeLib.setLib(nativesFolder);
+        else nativeLib = new CraftrLibrary(nativesFolder);
     }
 }

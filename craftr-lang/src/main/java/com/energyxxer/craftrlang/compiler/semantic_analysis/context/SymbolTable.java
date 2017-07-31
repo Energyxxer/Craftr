@@ -56,6 +56,12 @@ public class SymbolTable implements Iterable<Symbol> {
         table.put(name, symbol);
     }
 
+    public void putAll(SymbolTable other) {
+        for(Symbol symbol : other.table.values()) {
+            this.put(symbol);
+        }
+    }
+
     public boolean isRoot() {
         return parent == null;
     }

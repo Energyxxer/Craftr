@@ -2,6 +2,7 @@ package com.energyxxer.craftr.main.window.sections;
 
 import com.energyxxer.craftr.files.FileType;
 import com.energyxxer.craftr.global.Commons;
+import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.ToolbarSeparator;
@@ -103,6 +104,7 @@ public class Toolbar extends JPanel {
             button.setToolTipText("Generate Structure");
             button.addActionListener(e -> {
                 Compiler c = new Compiler(Commons.getSelectedProject());
+                c.setLibrary(Resources.nativeLib);
                 c.addProgressListener(CraftrWindow::setStatus);
                 c.addCompletionListener(() -> {
                     CraftrWindow.noticeBoard.explorerMaster.setNotices(c.getReport().groupByLabel());
