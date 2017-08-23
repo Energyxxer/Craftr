@@ -10,6 +10,7 @@ import com.energyxxer.craftr.main.window.sections.StatusBar;
 import com.energyxxer.craftr.main.window.sections.Toolbar;
 import com.energyxxer.craftr.ui.explorer.NoticeExplorerMaster;
 import com.energyxxer.craftr.ui.explorer.ProjectExplorerMaster;
+import com.energyxxer.craftr.ui.tablist.TabListMaster;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
@@ -50,6 +51,7 @@ public class CraftrWindow {
 	public static StatusBar statusBar;
 
 	private static final Dimension defaultSize = new Dimension(1200, 800);
+	public static TabListMaster tabList;
 
 
     public CraftrWindow() {
@@ -69,6 +71,8 @@ public class CraftrWindow {
 		jframe.setJMenuBar(menuBar = new MenuBar());
 
 		jframe.setLayout(new BorderLayout());
+
+		tabList = new TabListMaster();
 
 		jframe.getContentPane().add(toolbar = new Toolbar(), BorderLayout.NORTH);
 

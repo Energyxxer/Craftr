@@ -234,7 +234,7 @@ public class MinecraftConstants {
 			if(OS.contains("MAC")) workingDirectory += "/Library/Application Support";
 		}
 
-		workingDirectory += File.separator + ".minecraft";
+		workingDirectory += File.separator + (!OS.contains("MAC") ? "." : "") + "minecraft";
 
 		return workingDirectory;
 	}

@@ -26,9 +26,9 @@ public class ProjectExplorerMaster extends ExplorerMaster {
             colors.put("item.background",t.getColor(new Color(0,0,0,0), "Explorer.item.background"));
             colors.put("item.foreground",t.getColor(Color.BLACK, "Explorer.item.foreground","General.foreground"));
             colors.put("item.selected.background",t.getColor(Color.BLUE, "Explorer.item.selected.background","Explorer.item.background"));
-            colors.put("item.selected.foreground",t.getColor(Color.BLACK, "Explorer.item.selected.foreground","Explorer.item.rollover.foreground","Explorer.item.foreground","General.foreground"));
-            colors.put("item.rollover.background",t.getColor(new Color(0,0,0,0), "Explorer.item.rollover.background","Explorer.item.background"));
-            colors.put("item.rollover.foreground",t.getColor(Color.BLACK, "Explorer.item.rollover.foreground","Explorer.item.foreground","General.foreground"));
+            colors.put("item.selected.foreground",t.getColor(Color.BLACK, "Explorer.item.selected.foreground","Explorer.item.hover.foreground","Explorer.item.foreground","General.foreground"));
+            colors.put("item.rollover.background",t.getColor(new Color(0,0,0,0), "Explorer.item.hover.background","Explorer.item.background"));
+            colors.put("item.rollover.foreground",t.getColor(Color.BLACK, "Explorer.item.hover.foreground","Explorer.item.foreground","General.foreground"));
 
             rowHeight = Math.max(t.getInteger(20,"Explorer.item.height"), 1);
             indentPerLevel = Math.max(t.getInteger(20,"Explorer.item.indent"), 0);

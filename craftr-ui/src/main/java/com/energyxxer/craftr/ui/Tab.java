@@ -1,11 +1,11 @@
 package com.energyxxer.craftr.ui;
 
-import com.energyxxer.craftrlang.projects.ProjectManager;
-import com.energyxxer.craftr.global.TabManager;
-import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftr.ui.display.DisplayModule;
 import com.energyxxer.craftr.ui.editor.CraftrEditor;
 import com.energyxxer.craftr.ui.image_viewer.ImageViewer;
+import com.energyxxer.craftr.ui.tablist.TabItem;
+import com.energyxxer.craftrlang.projects.Project;
+import com.energyxxer.craftrlang.projects.ProjectManager;
 
 import javax.swing.JComponent;
 import javax.swing.text.BadLocationException;
@@ -20,18 +20,20 @@ import java.util.Date;
  * the clickable tab element.
  */
 public class Tab {
-	private TabComponent linkedTabComponent;
 	private Project linkedProject;
 	public String path;
 	public DisplayModule module;
-	public Object savedValue;
+	private Object savedValue;
 	public boolean visible = true;
 
 	public long openedTimeStamp;
+	private boolean saved = true;
+	private String name;
+	private TabItem tabItem;
 
 	@Override
 	public String toString() {
-		return "Tab [title=" + linkedTabComponent.getName() + ", path=" + path + ", visible=" + visible + "]";
+		return "Tab [title=" + getName() + ", path=" + path + ", visible=" + visible + "]";
 	}
 
 	public Tab(String path) {
@@ -44,23 +46,13 @@ public class Tab {
 		}
 		savedValue = module.getValue();
 
-		associate(new TabComponent(this));
-
-		TabManager.addTabComponent(getLinkedTabComponent());
-
 		openedTimeStamp = new Date().getTime();
-	}
 
-	public void associate(TabComponent tc) {
-		linkedTabComponent = tc;
+		this.name = new File(path).getName();
 	}
 
 	private File getFile() {
 		return new File(path);
-	}
-
-	public TabComponent getLinkedTabComponent() {
-		return linkedTabComponent;
 	}
 
 	public void onSelect() {
@@ -70,14 +62,11 @@ public class Tab {
 	}
 
 	public void onEdit() {
-		if (linkedTabComponent != null) {
-			boolean newIsSaved = savedValue == null || module.getValue() == savedValue;
-			linkedTabComponent.setSaved(newIsSaved);
-		}
+		this.saved = savedValue == null || module.getValue() == savedValue;
 	}
 
 	public void updateName() {
-		linkedTabComponent.setName(getFile().getName());
+		tabItem.updateName();
 	}
 	
 	public boolean isVisible() {
@@ -89,7 +78,7 @@ public class Tab {
 	}
 
 	public boolean isActive() {
-		return this.linkedTabComponent.selected;
+		return this.tabItem.isSelected();
 	}
 
 	public void save() {
@@ -114,7 +103,7 @@ public class Tab {
 			writer.print(text);
 			writer.close();
 			savedValue = text;
-			linkedTabComponent.setSaved(true);
+			saved = true;
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -126,5 +115,25 @@ public class Tab {
 
 	public JComponent getModuleComponent() {
 		return (JComponent) module;
+	}
+
+	public boolean isSaved() {
+		return saved;
+	}
+
+	public void setSaved(boolean saved) {
+		this.saved = saved;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public TabItem getLinkedTabItem() {
+		return tabItem;
+	}
+
+	public void linkTabItem(TabItem tabItem) {
+		this.tabItem = tabItem;
 	}
 }

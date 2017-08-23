@@ -1,0 +1,39 @@
+package com.energyxxer.craftr.ui.tablist;
+
+import java.awt.Graphics;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+
+public abstract class TabListElement implements MouseListener, MouseMotionListener {
+    protected final TabListMaster master;
+    protected boolean selected;
+    protected boolean rollover;
+
+    public TabListElement(TabListMaster master) {
+        this.master = master;
+    }
+
+    public abstract void render(Graphics g);
+    public abstract int getWidth();
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    public boolean isRollover() {
+        return rollover;
+    }
+
+    public void setRollover(boolean rollover) {
+        this.rollover = rollover;
+    }
+
+    public abstract boolean select(MouseEvent e);
+
+    public abstract String getToolTipText();
+}

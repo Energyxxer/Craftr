@@ -3,10 +3,14 @@ package com.energyxxer.craftr.main.window.sections;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.ToolbarButton;
+import com.energyxxer.craftr.ui.scrollbar.InvisibleScrollPaneLayout;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -19,7 +23,7 @@ public class EditArea extends JPanel {
 
     private static final boolean useConsole = true;
 
-    public JPanel tabList;
+    private JPanel tabList;
 
     {
         this.setLayout(new BorderLayout());
@@ -55,7 +59,13 @@ public class EditArea extends JPanel {
             tabList.setPreferredSize(new Dimension(1, t.getInteger(30, "TabList.height")));
             tabList.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"TabList.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "TabList.border.color")));
         });
-        tabListHolder.add(tabList, BorderLayout.CENTER);
+
+        JScrollPane tabSP = new JScrollPane(CraftrWindow.tabList);
+        tabSP.setBorder(BorderFactory.createEmptyBorder());
+        tabSP.setLayout(new InvisibleScrollPaneLayout(tabSP));
+        tabSP.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+
+        tabListHolder.add(tabSP, BorderLayout.CENTER);
 
         if (useConsole) this.add(new ConsoleArea(), BorderLayout.SOUTH);
         this.add(CraftrWindow.noticeBoard = new NoticeBoard(), BorderLayout.SOUTH);

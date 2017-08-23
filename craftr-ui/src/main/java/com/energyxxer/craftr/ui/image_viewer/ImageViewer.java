@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.image_viewer;
 
-import com.energyxxer.util.out.Console;
+import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.display.DisplayModule;
@@ -8,15 +8,20 @@ import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftr.util.MathUtil;
 import com.energyxxer.util.ImageManager;
 import com.energyxxer.util.StringUtil;
+import com.energyxxer.util.out.Console;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -65,6 +70,17 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
         ThemeChangeListener.addThemeChangeListener(t -> {
             this.setBackground(t.getColor(Color.WHITE, "ImageViewer.background"));
             this.crosshairColor = t.getColor(new Color(0,0,0,64), "ImageViewer.crosshair");
+        });
+
+        KeyStroke closeKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK);
+
+        this.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(closeKeystroke, "closeKeystroke");
+
+        this.getActionMap().put("closeKeystroke", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TabManager.closeSelectedTab();
+            }
         });
     }
 

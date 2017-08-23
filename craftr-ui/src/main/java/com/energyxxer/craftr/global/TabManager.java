@@ -2,7 +2,6 @@ package com.energyxxer.craftr.global;
 
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
-import com.energyxxer.craftr.ui.TabComponent;
 import com.energyxxer.craftr.ui.dialogs.OptionDialog;
 import com.energyxxer.craftr.ui.editor.CraftrEditor;
 import com.energyxxer.craftr.ui.editor.behavior.caret.CaretProfile;
@@ -27,18 +26,18 @@ public class TabManager {
 
 	public static ArrayList<Tab> openTabs = new ArrayList<>();
 
-	private static TabComponent selectedTab = null;
+	private static Tab selectedTab = null;
 	
 	private static JPopupMenu menu = new JPopupMenu();
 
 	public static void openTab(String path, int index) {
 		openTab(path);
-		selectLocation(selectedTab.getLinkedTab(), index, 0);
+		selectLocation(selectedTab, index, 0);
 	}
 
 	public static void openTab(String path, int index, int length) {
 		openTab(path);
-		selectLocation(selectedTab.getLinkedTab(), index, length);
+		selectLocation(selectedTab, index, length);
 	}
 
 	public static void openTab(String path) {
@@ -48,8 +47,10 @@ public class TabManager {
 				return;
 			}
 		}
-		openTabs.add(new Tab(path));
-		setSelectedTab(openTabs.get(openTabs.size() - 1));
+		Tab nt = new Tab(path);
+		openTabs.add(nt);
+		CraftrWindow.tabList.addTab(nt);
+		setSelectedTab(nt);
 	}
 
 	private static void selectLocation(Tab tab, int index, int length) {
@@ -73,8 +74,8 @@ public class TabManager {
 	public static void closeTab(Tab tab, boolean force) {
 		if(tab == null) return;
 		if(!force) {
-			if(!tab.getLinkedTabComponent().isSaved()) {
-				String confirmation = new OptionDialog("Unsaved changes", "'" + tab.getLinkedTabComponent().getName() + "' has changes; do you want to save them?", new String[] {"Save", "Don't Save", "Cancel"}).result;
+			if(!tab.isSaved()) {
+				String confirmation = new OptionDialog("Unsaved changes", "'" + tab.getName() + "' has changes; do you want to save them?", new String[] {"Save", "Don't Save", "Cancel"}).result;
 				if("Save".equals(confirmation)) {
 					tab.save();
 				}
@@ -83,32 +84,11 @@ public class TabManager {
 		}
 		for (int i = 0; i < openTabs.size(); i++) {
 			if (openTabs.get(i) == tab) {
-				boolean closedActive = false;
-				if (selectedTab == openTabs.get(i).getLinkedTabComponent())
-					closedActive = true;
-				openTabs.get(i).getLinkedTabComponent().getParent().remove(openTabs.get(i).getLinkedTabComponent());
-				CraftrWindow.editArea.tabList.revalidate();
-				CraftrWindow.editArea.tabList.repaint();
+				if (selectedTab == openTabs.get(i)) setSelectedTab(CraftrWindow.tabList.getFallbackTab(tab));
+
+				CraftrWindow.tabList.removeTab(tab);
 				openTabs.remove(i);
-				if (closedActive) {
-					if (openTabs.size() == 0) {
-						setSelectedTab(null);
-					} else if (openTabs.size() == 1) {
-						setSelectedTab(openTabs.get(0));
-					} else if (openTabs.size() > 1) {
-						if (i >= openTabs.size()) {
-							setSelectedTab(openTabs.get(i - 1));
-						} else if (i <= 0) {
-							setSelectedTab(openTabs.get(i));
-						} else {
-							if (openTabs.get(i - 1).openedTimeStamp >= openTabs.get(i).openedTimeStamp) {
-								setSelectedTab(openTabs.get(i - 1));
-							} else {
-								setSelectedTab(openTabs.get(i));
-							}
-						}
-					}
-				}
+
 				return;
 			}
 		}
@@ -126,17 +106,14 @@ public class TabManager {
 		}
 		for(int i = 0; i < TabManager.openTabs.size(); i++) {
 			Tab tab = TabManager.openTabs.get(i);
-			JMenuItem item = new JMenuItem(((!tab.getLinkedTabComponent().isSaved()) ? "*" : "") + tab.getLinkedTabComponent().getName());
-			item.setIcon(tab.getLinkedTabComponent().getIcon());
+			JMenuItem item = new JMenuItem(((!tab.isSaved()) ? "*" : "") + tab.getName());
+			item.setIcon(new ImageIcon(tab.getLinkedTabItem().getIcon()));
 			if(!tab.visible) {
 				item.setFont(item.getFont().deriveFont(Font.BOLD));
 			}
 			item.addMouseListener(new MouseAdapter() {
 				public void mousePressed(MouseEvent e) {
-					tab.getLinkedTabComponent().mousePressed(e);
-				}
-				public void mouseReleased(MouseEvent e) {
-					tab.getLinkedTabComponent().mouseReleased(e);
+					setSelectedTab(tab);
 				}
 			});
 			menu.add(item);
@@ -144,32 +121,21 @@ public class TabManager {
 	}
 	
 	public static JPopupMenu getMenu() {
-		updateTabVisibility();
 		updateMenu();
 		return menu;
 	}
 
 	public static void setSelectedTab(Tab tab) {
+		CraftrWindow.tabList.selectTab(tab);
 		if (selectedTab != null) {
-			selectedTab.selected = false;
-			CraftrWindow.editArea.remove(selectedTab.getLinkedTab().getModuleComponent());
+			CraftrWindow.editArea.remove(selectedTab.getModuleComponent());
 			selectedTab = null;
 		}
 		if (tab != null) {
-			selectedTab = tab.getLinkedTabComponent();
-			
-			if(!tab.visible) {
-				openTabs.indexOf(tab);
-				if(openTabs.indexOf(tab) >= 0) {
-					openTabs.remove(openTabs.indexOf(tab));
-					openTabs.add(0,tab);
-					CraftrWindow.editArea.tabList.add(tab.getLinkedTabComponent(), 0);
-				}
-			}
-			tab.getLinkedTabComponent().selected = true;
+			selectedTab = tab;
 			
 			Project linkedProject = tab.getLinkedProject();
-			CraftrWindow.setTitle(((linkedProject != null) ? linkedProject.getName() + " - " : "") + tab.getLinkedTabComponent().getName());
+			CraftrWindow.setTitle(((linkedProject != null) ? linkedProject.getName() + " - " : "") + tab.getName());
 			CraftrWindow.editArea.add(tab.getModuleComponent(), BorderLayout.CENTER);
 			tab.onSelect();
 		} else {
@@ -182,23 +148,8 @@ public class TabManager {
 		CraftrWindow.editArea.repaint();
 	}
 
-	public static void addTabComponent(TabComponent tab) {
-		CraftrWindow.editArea.tabList.add(tab);
-		CraftrWindow.editArea.tabList.revalidate();
-		CraftrWindow.editArea.tabList.repaint();
-	}
-	
-	private static void updateTabVisibility() {
-		for(Tab tab : openTabs) {
-			TabComponent tabComponent = tab.getLinkedTabComponent();
-			tab.visible = tabComponent.getY() <= 0;
-		}
-	}
-
 	public static Tab getSelectedTab() {
-		if (selectedTab == null)
-			return null;
-		return selectedTab.getLinkedTab();
+		return selectedTab;
 	}
 
 	public static void renameTab(String oldPath, String newPath) {
