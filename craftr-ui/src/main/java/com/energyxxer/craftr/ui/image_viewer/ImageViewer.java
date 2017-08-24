@@ -183,10 +183,6 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
 
     }
 
-    private void onGenericMouseEvent(Point p, boolean controlDown) {
-
-    }
-
     @Override
     public void displayCaretInfo() {
         CraftrWindow.statusBar.setSelectionInfo("Pixel pos: " + posOnImage.x + ", " + posOnImage.y);

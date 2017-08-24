@@ -9,15 +9,18 @@ import com.energyxxer.util.ImageManager;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.RenderingHints;
 
 public class Craftr {
 	public static Craftr craftr;
-	public static final Version VERSION = new Version("ALPHA",0,0,0);
+	public static final Version VERSION = new Version(0,0,0);
 
 	public static CraftrWindow window;
 
@@ -27,17 +30,24 @@ public class Craftr {
 
 	public static void main(String[] args) {
 		JFrame splash = new JFrame();
-		splash.setSize(new Dimension(512, 256));
+		splash.setSize(new Dimension(700, 410));
 		splash.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		Point center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
-		center.x -= 256;
-		center.y -= 128;
+		center.x -= 700/2;
+		center.y -= 410/2;
 		splash.setLocation(center);
 		splash.setUndecorated(true);
 		splash.setContentPane(new JPanel() {
 			@Override
 			protected void paintComponent(Graphics g) {
-				g.drawImage(ImageManager.load("/assets/logo/splash.png").getScaledInstance(512, 256, Image.SCALE_SMOOTH), 0,0,this.getWidth(),this.getHeight(), null);
+				g.drawImage(ImageManager.load("/assets/logo/splash.png"), 0,0,this.getWidth(),this.getHeight(), null);
+
+				Graphics2D g2d = (Graphics2D) g;
+				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				g.setColor(new Color(187, 187, 187));
+				g.setFont(g.getFont().deriveFont(32f));
+				g.drawString(VERSION.toString(), 470, 320);
+				g.dispose();
 			}
 		});
 		splash.setVisible(true);
