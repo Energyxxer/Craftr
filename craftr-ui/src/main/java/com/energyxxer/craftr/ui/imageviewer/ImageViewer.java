@@ -1,10 +1,10 @@
-package com.energyxxer.craftr.ui.image_viewer;
+package com.energyxxer.craftr.ui.imageviewer;
 
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.display.DisplayModule;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftr.util.MathUtil;
 import com.energyxxer.util.ImageManager;
 import com.energyxxer.util.StringUtil;
@@ -57,6 +57,8 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
 
     private Color crosshairColor = new Color(0, 0, 0, 64);
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     public ImageViewer(Tab tab) {
         try {
             this.img = ImageIO.read(new File(tab.path));
@@ -67,7 +69,7 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
         this.addMouseWheelListener(this);
         this.addMouseMotionListener(this);
         this.addKeyListener(this);
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             this.setBackground(t.getColor(Color.WHITE, "ImageViewer.background"));
             this.crosshairColor = t.getColor(new Color(0,0,0,64), "ImageViewer.crosshair");
         });

@@ -1,22 +1,28 @@
 package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.files.FileType;
-import com.energyxxer.craftr.global.*;
+import com.energyxxer.craftr.global.Commons;
+import com.energyxxer.craftr.global.FileManager;
+import com.energyxxer.craftr.global.Preferences;
+import com.energyxxer.craftr.global.TabManager;
+import com.energyxxer.craftr.ui.common.MenuItems;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
 import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerElement;
-import com.energyxxer.craftrlang.projects.Project;
-import com.energyxxer.craftr.ui.common.MenuItems;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.ui.styledcomponents.StyledPopupMenu;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
+import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,6 +45,8 @@ public class ProjectExplorerItem extends ExplorerElement {
     private Image icon = null;
 
     private int x = 0;
+
+    private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public ProjectExplorerItem(ExplorerMaster master, File file, ArrayList<String> toOpen) {
         this.path = file.getPath();
@@ -94,7 +102,7 @@ public class ProjectExplorerItem extends ExplorerElement {
     }
 
     private void addThemeListener() {
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             boolean useFileIcon = false;
             if(path.endsWith(".png")) {
                 try {
@@ -311,6 +319,8 @@ public class ProjectExplorerItem extends ExplorerElement {
 
             // --------------------------------------------------
 
+            boolean hasElements = false;
+
             Project project = ProjectManager.getAssociatedProject(new File(path));
 
             String projectDir = (project != null) ? project.getDirectory().getPath() + File.separator : null;
@@ -361,6 +371,7 @@ public class ProjectExplorerItem extends ExplorerElement {
 
                 newMenu.add(worldItem);
 
+                hasElements = true;
             } else if(projectDir != null && (path + File.separator).startsWith(projectDir + "resources" + File.separator)) {
 
                 // --------------------------------------------------
@@ -384,12 +395,13 @@ public class ProjectExplorerItem extends ExplorerElement {
 
                 newMenu.add(mcmetaItem);
 
+                hasElements = true;
                 // --------------------------------------------------
             }
 
             // --------------------------------------------------
 
-            newMenu.addSeparator();
+            if(hasElements) newMenu.addSeparator();
 
             // --------------------------------------------------
 

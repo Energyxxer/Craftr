@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.styledcomponents;
 
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.XList;
 
 import javax.swing.BorderFactory;
@@ -14,6 +14,8 @@ public class StyledList<T> extends XList<T> {
 
     private String namespace = null;
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     public StyledList() {
         this(null, null);
     }
@@ -26,7 +28,7 @@ public class StyledList<T> extends XList<T> {
         if(options != null) setOptions(options);
         if(namespace != null) this.setNamespace(namespace);
 
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             if(this.namespace != null) {
                 setBackground               (t.getColor(Color.WHITE, this.namespace + ".list.background","General.list.background"));
                 setForeground               (t.getColor(Color.BLACK, this.namespace + ".list.cell.foreground","General.list.cell.foreground","General.foreground"));

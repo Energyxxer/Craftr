@@ -4,7 +4,7 @@ import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollBarUI;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.util.out.Console;
 import com.energyxxer.util.out.ConsoleOutputStream;
 
@@ -32,13 +32,15 @@ public class ConsoleArea extends JPanel {
 
     private static final int CONSOLE_HEIGHT = 200;
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     {
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(0, CONSOLE_HEIGHT));
-        ThemeChangeListener.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger(1, "Console.header.border.thickness"),0), 0, 0, 0, t.getColor(new Color(200, 200, 200), "Console.header.border.color"))));
+        tlm.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger(1, "Console.header.border.thickness"),0), 0, 0, 0, t.getColor(new Color(200, 200, 200), "Console.header.border.color"))));
 
         JPanel consoleHeader = new JPanel(new BorderLayout());
-        ThemeChangeListener.addThemeChangeListener(t -> consoleHeader.setBackground(t.getColor(new Color(235, 235, 235), "Console.header.background")));
+        tlm.addThemeChangeListener(t -> consoleHeader.setBackground(t.getColor(new Color(235, 235, 235), "Console.header.background")));
         consoleHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         consoleHeader.setPreferredSize(new Dimension(0, 25));
 
@@ -75,7 +77,7 @@ public class ConsoleArea extends JPanel {
         this.add(consoleHeader, BorderLayout.NORTH);
 
         JTextPane console = new JTextPane();
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             console.setBackground(t.getColor(Color.WHITE, "Console.background"));
             console.setSelectionColor(t.getColor(new Color(50, 100, 175), "Console.selection.background","General.textfield.selection.background"));
             console.setSelectedTextColor(t.getColor(Color.BLACK, "Console.selection.foreground","General.textfield.selection.foreground","Console.foreground","General.foreground"));
@@ -126,7 +128,7 @@ public class ConsoleArea extends JPanel {
 
         //console.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
 
-        //ThemeChangeListener.addThemeChangeListener(t -> textConsoleOut.update());
+        //tlm.addThemeChangeListener(t -> textConsoleOut.update());
 
         Console.addInfoStream(new ConsoleOutputStream(console));
         Console.addWarnStream(new ConsoleOutputStream(console,"warning"));
@@ -146,7 +148,7 @@ public class ConsoleArea extends JPanel {
         consoleScrollPane.getVerticalScrollBar().setOpaque(false);
         consoleScrollPane.getHorizontalScrollBar().setOpaque(false);
 
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             consoleScrollPane.setBackground(console.getBackground());
             consoleScrollPane.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger("Console.header.border.thickness"),0), 0, 0, 0, t.getColor(new Color(200, 200, 200), "Console.header.border.color")));
         });

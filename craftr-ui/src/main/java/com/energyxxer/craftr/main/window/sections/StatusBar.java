@@ -5,8 +5,7 @@ import com.energyxxer.craftr.global.Status;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.theme.Theme;
-import com.energyxxer.craftr.ui.theme.ThemeManager;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -33,11 +32,13 @@ public class StatusBar extends JPanel {
 
     private ExtendedStatusBar extension = new ExtendedStatusBar();
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     {
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(1, 25));
 
-        ThemeChangeListener.addThemeChangeListener(t ->
+        tlm.addThemeChangeListener(t ->
             SwingUtilities.invokeLater(() -> {
                 this.setBackground(t.getColor(new Color(235, 235, 235), "Status.background"));
                 this.setBorder(

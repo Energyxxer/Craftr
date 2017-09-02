@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.tablist;
 
 import com.energyxxer.craftr.ui.Tab;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -29,8 +29,10 @@ public class TabListMaster extends JPanel implements MouseListener, MouseMotionL
     float dragPivot = -1;
     TabListElement draggedElement = null;
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     public TabListMaster() {
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             colors.put("background",t.getColor(Color.WHITE, "TabList.background"));
             colors.put("tab.background",t.getColor(new Color(0,0,0,0), "TabList.tab.background"));
             colors.put("tab.foreground",t.getColor(Color.BLACK, "TabList.tab.foreground","General.foreground"));

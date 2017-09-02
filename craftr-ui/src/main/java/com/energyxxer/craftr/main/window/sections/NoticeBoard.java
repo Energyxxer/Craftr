@@ -3,10 +3,9 @@ package com.energyxxer.craftr.main.window.sections;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.explorer.NoticeExplorerMaster;
-import com.energyxxer.craftr.ui.scrollbar.OverlayScrollBarUI;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollPaneLayout;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -26,6 +25,8 @@ public class NoticeBoard extends JPanel {
 
     public final NoticeExplorerMaster explorerMaster;
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     public void expand() {
         this.setPreferredSize(new Dimension(0, BOARD_HEIGHT));
         this.revalidate();
@@ -41,10 +42,10 @@ public class NoticeBoard extends JPanel {
     public NoticeBoard() {
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(0, 25));
-        ThemeChangeListener.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger(1, "NoticeBoard.header.border.thickness"),0), 0, 0, 0, t.getColor(new Color(200, 200, 200), "NoticeBoard.header.border.color"))));
+        tlm.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger(1, "NoticeBoard.header.border.thickness"),0), 0, 0, 0, t.getColor(new Color(200, 200, 200), "NoticeBoard.header.border.color"))));
 
         JPanel boardHeader = new JPanel(new BorderLayout());
-        ThemeChangeListener.addThemeChangeListener(t -> boardHeader.setBackground(t.getColor(new Color(235, 235, 235), "NoticeBoard.header.background")));
+        tlm.addThemeChangeListener(t -> boardHeader.setBackground(t.getColor(new Color(235, 235, 235), "NoticeBoard.header.background")));
         boardHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
         boardHeader.setPreferredSize(new Dimension(0, 25));
 

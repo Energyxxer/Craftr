@@ -10,7 +10,7 @@ import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
 import com.energyxxer.craftr.ui.styledcomponents.StyledDropdownMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.styledcomponents.StyledTextField;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftr.util.FileUtil;
 import com.energyxxer.craftrlang.CraftrUtil;
 import com.energyxxer.craftrlang.projects.ProjectManager;
@@ -65,10 +65,12 @@ public class UnitDialog {
 
     private static String destination;
 
+    private static ThemeListenerManager tlm = new ThemeListenerManager();
+
     static {
         pane = new JPanel(new BorderLayout());
         pane.setPreferredSize(new Dimension(WIDTH,HEIGHT));
-        ThemeChangeListener.addThemeChangeListener(t ->
+        tlm.addThemeChangeListener(t ->
             pane.setBackground(t.getColor(new Color(235, 235, 235), "NewUnitDialog.background"))
         );
 
@@ -114,7 +116,7 @@ public class UnitDialog {
 
             typeDropdown = new StyledDropdownMenu<>(new FileType[] {FileType.ENTITY, FileType.ITEM, FileType.CLASS, FileType.ENUM, FileType.FEATURE, FileType.WORLD}, "NewUnitDialog");
 
-            ThemeChangeListener.addThemeChangeListener(t -> {
+            tlm.addThemeChangeListener(t -> {
                 typeDropdown.setIcon(FileType.ENTITY, Commons.getIcon("entity"));
                 typeDropdown.setIcon(FileType.ITEM, Commons.getIcon("item"));
                 typeDropdown.setIcon(FileType.CLASS, Commons.getIcon("class"));

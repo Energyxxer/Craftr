@@ -7,7 +7,7 @@ import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.styledcomponents.StyledList;
 import com.energyxxer.craftr.ui.styledcomponents.StyledTextField;
 import com.energyxxer.craftr.ui.theme.Theme;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftrlang.minecraft.MinecraftConstants;
 import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.util.ImageManager;
@@ -37,12 +37,13 @@ public class ProjectProperties {
 
 	private static Theme t;
 
+	private static ThemeListenerManager tlm = new ThemeListenerManager();
+
 	public static void show(Project project) {
 
 		JDialog dialog = new JDialog(CraftrWindow.jframe);
 
-
-		ThemeChangeListener.addThemeChangeListener(th -> t = th);
+		tlm.addThemeChangeListener(th -> t = th);
 		
 		StyledTextField cPrefix;
 		StyledFileField cWorld;

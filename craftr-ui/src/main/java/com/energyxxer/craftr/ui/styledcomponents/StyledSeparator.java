@@ -1,16 +1,19 @@
 package com.energyxxer.craftr.ui.styledcomponents;
 
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.common.Disposable;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JSeparator;
+import java.awt.Color;
 
 /**
  * Separator that reacts to window theme changes.
  */
-public class StyledSeparator extends JSeparator {
+public class StyledSeparator extends JSeparator implements Disposable {
 
     private String namespace = null;
+
+    private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public StyledSeparator() {
         this(null);
@@ -20,7 +23,7 @@ public class StyledSeparator extends JSeparator {
         if(namespace != null) setNamespace(namespace);
         this.setOpaque(false);
         this.setBackground(new Color(0,0,0,0));
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             if(this.namespace != null) {
                 this.setForeground(t.getColor(new Color(150, 150, 150), this.namespace + ".menu.separator","General.menu.separator"));
             } else {
@@ -35,5 +38,10 @@ public class StyledSeparator extends JSeparator {
 
     public String getNamespace() {
         return this.namespace;
+    }
+
+    @Override
+    public void dispose() {
+        tlm.dispose();
     }
 }

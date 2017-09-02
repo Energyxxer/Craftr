@@ -1,19 +1,18 @@
 package com.energyxxer.craftr.ui;
 
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 
 /**
  * It's literally just a line.
  */
 public class ToolbarSeparator extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7278983722607671260L;
+	private ThemeListenerManager tlm = new ThemeListenerManager();
 
 	public ToolbarSeparator() {
 		super();
@@ -35,7 +34,7 @@ public class ToolbarSeparator extends JPanel {
 			//lightLine.setBackground(CraftrWindow.theme.p2);
 			separatorLine.add(lightLine, BorderLayout.EAST);
 
-			ThemeChangeListener.addThemeChangeListener(t -> {
+			tlm.addThemeChangeListener(t -> {
 				lightLine.setBackground(t.getColor(new Color(235, 235, 235), "Toolbar.separator.light"));
 				separatorLine.setBackground(t.getColor(new Color(150, 150, 150), "Toolbar.separator.dark"));
 			});

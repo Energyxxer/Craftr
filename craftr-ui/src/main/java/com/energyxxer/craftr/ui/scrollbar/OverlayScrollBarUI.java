@@ -1,10 +1,17 @@
 package com.energyxxer.craftr.ui.scrollbar;
 
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 /**
  * Created by User on 12/13/2016.
@@ -17,11 +24,13 @@ public class OverlayScrollBarUI extends BasicScrollBarUI {
 
     private JScrollPane sp;
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     public OverlayScrollBarUI(JScrollPane sp) {
         super();
         this.sp = sp;
 
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             thumbColor = t.getColor(new Color(0,0,0,50), "General.scrollbar.color");
             thumbRolloverColor = t.getColor(new Color(0,0,0,100), "General.scrollbar.hover.color");
             thumbSize = t.getInteger(10, "General.scrollbar.thickness");

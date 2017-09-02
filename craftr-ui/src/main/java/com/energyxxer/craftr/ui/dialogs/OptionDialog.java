@@ -3,7 +3,7 @@ package com.energyxxer.craftr.ui.dialogs;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.Padding;
 
 import javax.swing.AbstractAction;
@@ -32,12 +32,14 @@ public class OptionDialog {
 
     public String result = null;
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     public OptionDialog(String title, String query, String[] options) {
         JDialog dialog = new JDialog(CraftrWindow.jframe);
 
         JPanel pane = new JPanel(new BorderLayout());
         pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        ThemeChangeListener.addThemeChangeListener(t ->
+        tlm.addThemeChangeListener(t ->
                 pane.setBackground(t.getColor(new Color(235, 235, 235), "OptionDialog.background"))
         );
 

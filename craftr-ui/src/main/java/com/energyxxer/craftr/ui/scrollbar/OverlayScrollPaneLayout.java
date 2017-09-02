@@ -1,9 +1,13 @@
 package com.energyxxer.craftr.ui.scrollbar;
 
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Rectangle;
 
 /**
  * Created by User on 12/13/2016.
@@ -13,9 +17,11 @@ public class OverlayScrollPaneLayout extends ScrollPaneLayout {
     private int thumbSize = 10;
     private final JScrollPane sp;
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     public OverlayScrollPaneLayout(JScrollPane sp) {
         this.sp = sp;
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             thumbSize = t.getInteger(10, "General.scrollbar.thickness");
         });
 

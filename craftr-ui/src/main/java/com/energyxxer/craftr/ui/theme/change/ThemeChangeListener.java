@@ -1,11 +1,12 @@
 package com.energyxxer.craftr.ui.theme.change;
 
 import com.energyxxer.craftr.main.window.CraftrWindow;
+import com.energyxxer.craftr.ui.common.Disposable;
 import com.energyxxer.craftr.ui.theme.Theme;
 
 import java.util.ArrayList;
 
-public interface ThemeChangeListener {
+public interface ThemeChangeListener extends Disposable {
 	
 	ArrayList<ThemeChangeListener> listeners = new ArrayList<ThemeChangeListener>();
 
@@ -31,4 +32,8 @@ public interface ThemeChangeListener {
 	}
 	
 	void themeChanged(Theme t);
+
+	default void dispose() {
+		listeners.remove(this);
+	}
 }

@@ -14,6 +14,7 @@ import com.energyxxer.craftr.ui.tablist.TabListMaster;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.util.ImageManager;
 
 import javax.swing.BorderFactory;
@@ -53,20 +54,14 @@ public class CraftrWindow {
 	private static final Dimension defaultSize = new Dimension(1200, 800);
 	public static TabListMaster tabList;
 
+	private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public CraftrWindow() {
 		jframe = new JFrame();
 		setTitle("");
 		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-		ThemeChangeListener.addThemeChangeListener(t -> jframe.getContentPane().setBackground(t.getColor(new Color(215, 215, 215), "Window.background")));
-
-		/*try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}*/
+		tlm.addThemeChangeListener(t -> jframe.getContentPane().setBackground(t.getColor(new Color(215, 215, 215), "Window.background")));
 
 		jframe.setJMenuBar(menuBar = new MenuBar());
 
@@ -99,7 +94,7 @@ public class CraftrWindow {
 		center.y -= jframe.getHeight() / 2;
 		jframe.setLocation(center);
 
-		ThemeChangeListener.addThemeChangeListener(t -> {
+		tlm.addThemeChangeListener(t -> {
 			UIManager.put("ToolTip.background",t.getColor(Color.WHITE, "Tooltip.background"));
 			UIManager.put("ToolTip.foreground",t.getColor(Color.BLACK, "Tooltip.foreground"));
 			int borderThickness = Math.max(t.getInteger(1,"Tooltip.border.thickness"),0);

@@ -3,7 +3,7 @@ package com.energyxxer.craftr.ui.dialogs.settings;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
 import com.energyxxer.craftr.ui.styledcomponents.StyledList;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.util.ImageManager;
 import com.energyxxer.xswing.ComponentResizer;
 import com.energyxxer.xswing.Padding;
@@ -31,10 +31,12 @@ public class Settings {
 
 	private static JPanel currentSection;
 
+	private static ThemeListenerManager tlm = new ThemeListenerManager();
+
 	static {
 		JPanel pane = new JPanel(new BorderLayout());
 		pane.setPreferredSize(new Dimension(900,600));
-		ThemeChangeListener.addThemeChangeListener(t ->
+		tlm.addThemeChangeListener(t ->
 				pane.setBackground(t.getColor(new Color(235, 235, 235), "Settings.background"))
 		);
 
@@ -51,7 +53,7 @@ public class Settings {
 
 			StyledList<String> navigator = new StyledList<>(sections, "Settings");
 			sidebar.setBackground(navigator.getBackground());
-			ThemeChangeListener.addThemeChangeListener(t ->
+			tlm.addThemeChangeListener(t ->
 					sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, Math.max(t.getInteger(1,"Settings.content.border.thickness"),0), t.getColor(new Color(200, 200, 200), "Settings.content.border.color")))
 			);
 			navigator.setPreferredSize(new Dimension(200,500));
@@ -68,7 +70,7 @@ public class Settings {
 			pane.add(sidebar, BorderLayout.WEST);
 		}
 
-		ThemeChangeListener.addThemeChangeListener(t ->
+		tlm.addThemeChangeListener(t ->
 				contentPane.setBackground(t.getColor(new Color(235, 235, 235), "Settings.content.background"))
 		);
 		pane.add(contentPane, BorderLayout.CENTER);
@@ -89,13 +91,13 @@ public class Settings {
 		{
 			JPanel buttons = new JPanel(new FlowLayout(FlowLayout.LEFT));
 			buttons.setPreferredSize(new Dimension(0,60));
-			ThemeChangeListener.addThemeChangeListener(t -> buttons.setBackground(contentPane.getBackground()));
+			tlm.addThemeChangeListener(t -> buttons.setBackground(contentPane.getBackground()));
 
 			buttons.add(new Padding(25));
 
 			{
 				StyledButton okay = new StyledButton("OK", "Settings");
-				ThemeChangeListener.addThemeChangeListener(t -> okay.setPreferredSize(new Dimension(Math.max(t.getInteger(75,"Settings.okButton.width"),10), Math.max(t.getInteger(25,"Settings.okButton.height"),10))));
+				tlm.addThemeChangeListener(t -> okay.setPreferredSize(new Dimension(Math.max(t.getInteger(75,"Settings.okButton.width"),10), Math.max(t.getInteger(25,"Settings.okButton.height"),10))));
 				buttons.add(okay);
 
 				okay.addActionListener(e -> {
@@ -107,7 +109,7 @@ public class Settings {
 
 			{
 				StyledButton cancel = new StyledButton("Cancel", "Settings");
-				ThemeChangeListener.addThemeChangeListener(t -> cancel.setPreferredSize(new Dimension(Math.max(t.getInteger(75,"Settings.cancelButton.width"),10), Math.max(t.getInteger(25,"Settings.cancelButton.height"),10))));
+				tlm.addThemeChangeListener(t -> cancel.setPreferredSize(new Dimension(Math.max(t.getInteger(75,"Settings.cancelButton.width"),10), Math.max(t.getInteger(25,"Settings.cancelButton.height"),10))));
 				buttons.add(cancel);
 
 				cancel.addActionListener(e -> {

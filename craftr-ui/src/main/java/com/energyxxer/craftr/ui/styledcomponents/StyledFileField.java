@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.styledcomponents;
 
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.XButton;
 import com.energyxxer.xswing.XFileField;
 import com.energyxxer.xswing.XTextField;
@@ -18,6 +18,8 @@ import java.io.File;
 public class StyledFileField extends XFileField {
 
     private String namespace = null;
+
+    private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public StyledFileField() {
         this((byte) -1, null, null);
@@ -52,7 +54,7 @@ public class StyledFileField extends XFileField {
         if(file != null) setFile(file);
         if(namespace != null) this.setNamespace(namespace);
 
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
 
             XTextField field = this.getField();
             XButton button = this.getButton();

@@ -7,7 +7,7 @@ import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.ui.styledcomponents.StyledPopupMenu;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -22,6 +22,8 @@ import java.awt.Font;
  * Created by User on 1/21/2017.
  */
 class SettingsAppearance extends JPanel {
+
+    private ThemeListenerManager tlm = new ThemeListenerManager();
 
     {
         {
@@ -39,7 +41,7 @@ class SettingsAppearance extends JPanel {
             JLabel label = new JLabel("Appearance");
             header.add(label, BorderLayout.CENTER);
 
-            ThemeChangeListener.addThemeChangeListener(t -> {
+            tlm.addThemeChangeListener(t -> {
                 setBackground(t.getColor(new Color(235, 235, 235), "Settings.content.background"));
                 header.setBackground(t.getColor(new Color(235, 235, 235), "Settings.content.header.background"));
                 header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Settings.content.header.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "Settings.content.header.border.color")));

@@ -3,7 +3,7 @@ package com.energyxxer.craftr.ui.dialogs;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.Padding;
 
 import javax.swing.AbstractAction;
@@ -32,14 +32,15 @@ public class ConfirmDialog {
 
     public boolean result = false;
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     public ConfirmDialog(String title, String query) {
         JDialog dialog = new JDialog(CraftrWindow.jframe);
 
         JPanel pane = new JPanel(new BorderLayout());
         pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        ThemeChangeListener.addThemeChangeListener(t ->
-                pane.setBackground(t.getColor(new Color(235, 235, 235), "ConfirmDialog.background"))
-        );
+
+        tlm.addThemeChangeListener(t -> pane.setBackground(t.getColor(new Color(235, 235, 235), "ConfirmDialog.background")));
 
         pane.add(new Padding(10), BorderLayout.NORTH);
         pane.add(new Padding(25), BorderLayout.WEST);
@@ -85,6 +86,8 @@ public class ConfirmDialog {
             public void actionPerformed(ActionEvent e) {
                 result = true;
                 dialog.setVisible(false);
+                tlm.dispose();
+                dialog.dispose();
             }
         });
 

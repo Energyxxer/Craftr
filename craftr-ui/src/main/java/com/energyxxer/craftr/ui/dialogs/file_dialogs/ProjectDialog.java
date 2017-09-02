@@ -7,7 +7,7 @@ import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
 import com.energyxxer.craftr.ui.styledcomponents.StyledIcon;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.styledcomponents.StyledTextField;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftr.util.FileUtil;
 import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.xswing.Padding;
@@ -55,10 +55,12 @@ public class ProjectDialog {
 
     private static boolean valid = false;
 
+    private static ThemeListenerManager tlm = new ThemeListenerManager();
+
     static {
         pane = new JPanel(new BorderLayout());
         pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        ThemeChangeListener.addThemeChangeListener(t ->
+        tlm.addThemeChangeListener(t ->
                 pane.setBackground(t.getColor(new Color(235, 235, 235), "NewProjectDialog.background"))
         );
 

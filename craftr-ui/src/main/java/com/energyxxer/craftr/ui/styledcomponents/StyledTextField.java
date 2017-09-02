@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.styledcomponents;
 
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.XTextField;
 
 import java.awt.Color;
@@ -15,6 +15,8 @@ import java.awt.Font;
 public class StyledTextField extends XTextField {
 
     private String namespace = null;
+
+    private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public StyledTextField() {
         this(null,null,-1);
@@ -41,7 +43,7 @@ public class StyledTextField extends XTextField {
         if(namespace != null) this.setNamespace(namespace);
         if(columns >= 0) this.setColumns(columns);
 
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             if(this.namespace != null) {
                 setBackground       (t.getColor(new Color(220, 220, 220), this.namespace + ".textfield.background","General.textfield.background"));
                 setForeground       (t.getColor(Color.BLACK, this.namespace + ".textfield.foreground","General.textfield.foreground","General.foreground"));

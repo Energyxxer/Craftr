@@ -8,7 +8,7 @@ import com.energyxxer.craftr.ui.dialogs.ProjectProperties;
 import com.energyxxer.craftr.ui.dialogs.settings.Settings;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftrlang.projects.Project;
 
 import javax.swing.BorderFactory;
@@ -26,8 +26,10 @@ import java.io.File;
  */
 public class MenuBar extends JMenuBar {
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     {
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             this.setBackground(t.getColor(new Color(215, 215, 215), "MenuBar.background"));
             this.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"MenuBar.border.thickness"),0), 0, t.getColor(new Color(150, 150, 150), "MenuBar.border.color")));
         });
@@ -278,6 +280,22 @@ public class MenuBar extends JMenuBar {
                 StyledMenuItem item = new StyledMenuItem("Settings");
 
                 item.addActionListener(e -> Settings.show());
+                menu.add(item);
+            }
+
+            this.add(menu);
+        }
+
+        {
+            StyledMenu menu = new StyledMenu("Help");
+            menu.setMnemonic(KeyEvent.VK_H);
+
+            // --------------------------------------------------
+
+            {
+                StyledMenuItem item = new StyledMenuItem("About");
+
+                item.addActionListener(e -> AboutPane.INSTANCE.setVisible(true));
                 menu.add(item);
             }
 

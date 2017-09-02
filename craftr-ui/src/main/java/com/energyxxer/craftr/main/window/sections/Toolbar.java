@@ -6,7 +6,7 @@ import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.ToolbarSeparator;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftrlang.compiler.Compiler;
 import com.energyxxer.util.out.Console;
 
@@ -20,10 +20,13 @@ import java.awt.Dimension;
  * Created by User on 12/15/2016.
  */
 public class Toolbar extends JPanel {
+
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+    
     {
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.setPreferredSize(new Dimension(1, 30));
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             this.setBackground(t.getColor(new Color(235, 235, 235), "Toolbar.background"));
             this.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Toolbar.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "Toolbar.border.color")));
         });

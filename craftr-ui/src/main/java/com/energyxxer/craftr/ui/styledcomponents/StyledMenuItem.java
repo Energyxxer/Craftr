@@ -1,7 +1,8 @@
 package com.energyxxer.craftr.ui.styledcomponents;
 
 import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.common.Disposable;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.menu.XMenuItem;
 
 import javax.swing.ImageIcon;
@@ -12,10 +13,13 @@ import java.awt.Image;
 /**
  * Menu item that reacts to window theme changes.
  */
-public class StyledMenuItem extends XMenuItem {
+public class StyledMenuItem extends XMenuItem implements Disposable {
+
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     public StyledMenuItem(String text, String icon) {
         if(text != null) setText(text);
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             this.setRolloverBackground(t.getColor(new Color(190, 190, 190), "General.menu.selected.background"));
             this.setForeground(t.getColor(Color.BLACK, "General.menu.foreground","General.foreground"));
             this.setFont(new Font(t.getString("General.menu.font","General.font","default:Tahoma"), 0, 12));
@@ -26,4 +30,9 @@ public class StyledMenuItem extends XMenuItem {
         this(text, null);
     }
     public StyledMenuItem() {this(null,null);}
+
+    @Override
+    public void dispose() {
+        tlm.dispose();
+    }
 }

@@ -2,7 +2,7 @@ package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 
 import java.awt.Color;
@@ -16,8 +16,10 @@ import java.util.List;
  */
 public class NoticeExplorerMaster extends ExplorerMaster {
 
+    private ThemeListenerManager tlm = new ThemeListenerManager();
+
     public NoticeExplorerMaster() {
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             colors.put("background",t.getColor(Color.WHITE, "Explorer.background"));
             colors.put("item.background",t.getColor(new Color(0,0,0,0), "Explorer.item.background"));
             colors.put("item.foreground",t.getColor(Color.BLACK, "Explorer.item.foreground","General.foreground"));

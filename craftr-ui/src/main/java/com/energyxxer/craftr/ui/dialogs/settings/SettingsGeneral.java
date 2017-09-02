@@ -3,7 +3,7 @@ package com.energyxxer.craftr.ui.dialogs.settings;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.styledcomponents.StyledTextField;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -19,6 +19,8 @@ import java.awt.Font;
  * Created by User on 1/21/2017.
  */
 class SettingsGeneral extends JPanel {
+
+    private ThemeListenerManager tlm = new ThemeListenerManager();
 
     {
         {
@@ -36,7 +38,7 @@ class SettingsGeneral extends JPanel {
             JLabel label = new JLabel("General");
             header.add(label, BorderLayout.CENTER);
 
-            ThemeChangeListener.addThemeChangeListener(t -> {
+            tlm.addThemeChangeListener(t -> {
                 setBackground(t.getColor(new Color(235, 235, 235), "Settings.content.background"));
                 header.setBackground(t.getColor(new Color(235, 235, 235), "Settings.content.header.background"));
                 header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Settings.content.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "Settings.content.header.border.color")));

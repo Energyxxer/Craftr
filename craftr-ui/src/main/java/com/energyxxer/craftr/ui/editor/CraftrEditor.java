@@ -37,11 +37,6 @@ import java.util.ArrayList;
  */
 public class CraftrEditor extends JScrollPane implements DisplayModule, UndoableEditListener, MouseListener, ThemeChangeListener {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8584609859858654496L;
-
     Tab associatedTab;
 
     public CraftrEditorComponent editorComponent;
@@ -284,6 +279,4 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 	public void focus() {
 		editorComponent.requestFocus();
 	}
-
-
 }

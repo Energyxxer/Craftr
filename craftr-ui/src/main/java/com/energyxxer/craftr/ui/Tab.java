@@ -2,7 +2,7 @@ package com.energyxxer.craftr.ui;
 
 import com.energyxxer.craftr.ui.display.DisplayModule;
 import com.energyxxer.craftr.ui.editor.CraftrEditor;
-import com.energyxxer.craftr.ui.image_viewer.ImageViewer;
+import com.energyxxer.craftr.ui.imageviewer.ImageViewer;
 import com.energyxxer.craftr.ui.tablist.TabItem;
 import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftrlang.projects.ProjectManager;

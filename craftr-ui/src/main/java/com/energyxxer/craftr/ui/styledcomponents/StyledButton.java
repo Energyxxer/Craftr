@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.styledcomponents;
 
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.XButton;
 
 import javax.swing.ImageIcon;
@@ -16,6 +16,8 @@ import java.awt.Font;
 public class StyledButton extends XButton {
 
     private String namespace = null;
+
+    private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public StyledButton(String label) {
         this(label, null, null);
@@ -33,7 +35,7 @@ public class StyledButton extends XButton {
         super(label, icon);
         if(namespace != null) this.setNamespace(namespace);
 
-        ThemeChangeListener.addThemeChangeListener(t -> {
+        tlm.addThemeChangeListener(t -> {
             if(this.namespace != null) {
                 setBackground       (t.getColor(new Color(215, 215, 215), this.namespace + ".button.background","General.button.background"));
                 setForeground       (t.getColor(Color.BLACK, this.namespace + ".button.foreground","General.button.foreground","General.foreground"));

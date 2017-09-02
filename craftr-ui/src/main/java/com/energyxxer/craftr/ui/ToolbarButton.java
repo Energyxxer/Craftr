@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui;
 
 import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.util.ImageManager;
 
 import javax.swing.BorderFactory;
@@ -20,14 +20,11 @@ import java.awt.RenderingHints;
  * Represents a single button in the toolbar.
  */
 public class ToolbarButton extends JButton {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3354785558861039404L;
 	
 	public boolean scale = false;
 	private String icon = null;
+
+	private ThemeListenerManager tlm = new ThemeListenerManager();
 
 	public ToolbarButton() {
 		this(null, false);
@@ -53,7 +50,7 @@ public class ToolbarButton extends JButton {
 		this.setPreferredSize(new Dimension(25, 25));
 		this.setBorder(BorderFactory.createEmptyBorder());
 
-		ThemeChangeListener.addThemeChangeListener(t -> {
+		tlm.addThemeChangeListener(t -> {
 			if(icon != null) this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
 		});
 
