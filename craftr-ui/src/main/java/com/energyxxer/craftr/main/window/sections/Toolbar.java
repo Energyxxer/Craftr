@@ -106,6 +106,7 @@ public class Toolbar extends JPanel {
             ToolbarButton button = new ToolbarButton("export");
             button.setToolTipText("Generate Structure");
             button.addActionListener(e -> {
+                if(Commons.getSelectedProject() == null) return;
                 Compiler c = new Compiler(Commons.getSelectedProject());
                 c.setLibrary(Resources.nativeLib);
                 c.addProgressListener(CraftrWindow::setStatus);

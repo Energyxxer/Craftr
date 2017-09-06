@@ -64,7 +64,7 @@ public class TabListMaster extends JPanel implements MouseListener, MouseMotionL
 
         for(TabListElement element : children) {
             if(element != draggedElement) {
-                element.render(g);
+                element.render(g.create());
             } else draggedX = x;
             this.x += element.getWidth();
         }
@@ -77,7 +77,7 @@ public class TabListMaster extends JPanel implements MouseListener, MouseMotionL
 
         if(draggedElement != null) {
             this.x = draggedX;
-            draggedElement.render(g);
+            draggedElement.render(g.create());
         }
     }
 

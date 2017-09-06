@@ -104,7 +104,10 @@ public class Compiler {
 
 		analyzer = new SemanticAnalyzer(this, allPatterns, source);
 		if(library != null) {
-			LibraryLoad callback = c -> analyzer.join(c.analyzer);
+			LibraryLoad callback = c -> {
+				analyzer.join(c.analyzer);
+				report.addNotices(c.report.getAllNotices());
+			};
 
 			library.awaitLib(callback, lock);
 

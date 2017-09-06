@@ -79,7 +79,7 @@ public class ProjectExplorerMaster extends ExplorerMaster {
 
         this.children.add(new ExplorerSeparator(this));
 
-        File[] resourceFiles = new File(System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "resources").listFiles();
+        File[] resourceFiles = new File(System.getProperty("user.home") + File.separator + "Craftr").listFiles();
         if(resourceFiles != null) {
             for(File f : resourceFiles) {
                 this.children.add(new ProjectExplorerItem(this, f, toOpen));

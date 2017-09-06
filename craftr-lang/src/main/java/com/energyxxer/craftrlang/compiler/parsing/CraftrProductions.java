@@ -697,6 +697,7 @@ public class CraftrProductions {
 
 				CONSTRUCTOR_BODY.add(g);
 			}
+			CONSTRUCTOR_BODY.add(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 		}
 		
 		IF_STATEMENT = new TokenGroupMatch();

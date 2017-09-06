@@ -2,6 +2,7 @@ package com.energyxxer.craftr.main.window.sections;
 
 import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.global.Preferences;
+import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.dialogs.ProjectProperties;
@@ -261,6 +262,16 @@ public class MenuBar extends JMenuBar {
                 StyledMenuItem item = new StyledMenuItem("Edit Electron Theme");
                 item.addActionListener(e -> {
                     TabManager.openTab(System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "resources" + File.separator + "themes" + File.separator + "gui" + File.separator + "Electron Dark.properties");
+                });
+                menu.add(item);
+            }
+
+            // --------------------------------------------------
+
+            {
+                StyledMenuItem item = new StyledMenuItem("Refresh Native Library");
+                item.addActionListener(e -> {
+                    Resources.nativeLib.refresh();
                 });
                 menu.add(item);
             }

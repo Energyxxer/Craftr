@@ -45,6 +45,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
     private MethodManager methodManager;
 
     private boolean unitActionsInitialized = false;
+    private boolean unitComponentsInitialized = false;
 
     public Unit(CraftrFile file, TokenPattern<?> pattern) {
         super(pattern);
@@ -223,6 +224,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
     }
 
     void initUnitComponents() {
+        if(unitComponentsInitialized) return;
         TokenPattern<?> componentList = (type == UnitType.ENUM) ? pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST_WRAPPER.UNIT_COMPONENT_LIST") : pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST");
         if(componentList != null) {
             for (TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
@@ -234,6 +236,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
                 }
             }
         }
+        unitComponentsInitialized = true;
     }
 
     @Override

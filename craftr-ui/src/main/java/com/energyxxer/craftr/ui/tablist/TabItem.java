@@ -11,7 +11,9 @@ import com.energyxxer.util.StringUtil;
 import javax.imageio.ImageIO;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -119,8 +121,14 @@ public class TabItem extends TabListElement {
         } else {
             g.setColor(master.getColors().get("tab.close.color"));
         }
-        g.drawLine(offsetX, (h-6)/2, offsetX + 6, (h+6)/2);
-        g.drawLine(offsetX, (h+6)/2, offsetX + 6, (h-6)/2);
+        if(associatedTab.isSaved()) {
+            g.drawLine(offsetX, (h - 6) / 2, offsetX + 6, (h + 6) / 2);
+            g.drawLine(offsetX, (h + 6) / 2, offsetX + 6, (h - 6) / 2);
+        } else {
+            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.fillOval(offsetX, (h - 6) / 2, 6, 6);
+        }
+        g.dispose();
     }
 
     private boolean isOverCloseButton(MouseEvent e) {

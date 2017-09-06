@@ -4,6 +4,7 @@ import com.energyxxer.craftr.files.FileType;
 import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.global.FileManager;
 import com.energyxxer.craftr.global.Preferences;
+import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.common.MenuItems;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
@@ -117,7 +118,8 @@ public class ProjectExplorerItem extends ExplorerElement {
                 String iconName = ProjectManager.getIconFor(new File(path));
                 if (iconName == null) {
                     if (this.isDirectory) {
-                        if (new File(this.path).getParent().equals(Preferences.get("workspace_dir"))) {
+                        File file = new File(this.path);
+                        if (file.getParent().equals(Preferences.get("workspace_dir")) || file.equals(Resources.nativeLib.getDir())) {
                             iconName = "project";
                         } else {
                             iconName = "package";
@@ -325,7 +327,7 @@ public class ProjectExplorerItem extends ExplorerElement {
 
             String projectDir = (project != null) ? project.getDirectory().getPath() + File.separator : null;
 
-            if(projectDir != null && (path + File.separator).startsWith(projectDir + "src" + File.separator)) {
+            if((projectDir != null && (path + File.separator).startsWith(projectDir + "src" + File.separator)) || (path + File.separator).startsWith(Resources.nativeLib.getDir().getPath() + File.separator)) {
 
                 StyledMenuItem entityItem = new StyledMenuItem("Entity", "entity");
                 entityItem.addActionListener(e -> FileType.ENTITY.create(newPath));

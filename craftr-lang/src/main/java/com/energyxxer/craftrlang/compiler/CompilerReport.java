@@ -5,6 +5,7 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by User on 5/15/2017.
@@ -81,5 +82,13 @@ public class CompilerReport {
 
     public int getTotal() {
         return info.size() + warnings.size() + errors.size();
+    }
+
+    public List<Notice> getAllNotices() {
+        ArrayList<Notice> list = new ArrayList<>();
+        list.addAll(errors);
+        list.addAll(warnings);
+        list.addAll(info);
+        return list;
     }
 }

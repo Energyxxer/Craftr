@@ -43,4 +43,12 @@ public class CraftrLibrary {
     public Compiler getCompiler() {
         return compiler;
     }
+
+    public File getDir() {
+        return dir;
+    }
+
+    public void refresh() {
+        compiler = null;
+    }
 }
