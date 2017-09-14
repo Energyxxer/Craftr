@@ -4,6 +4,7 @@ import com.energyxxer.craftrlang.compiler.Compiler;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.PackageManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
+import com.energyxxer.util.vprimitives.VInteger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ public class SemanticAnalyzer {
 
     private final HashMap<File, TokenPattern<?>> filePatterns;
 
+    private int nextID = 0;
+
     public SemanticAnalyzer(Compiler compiler, HashMap<File, TokenPattern<?>> filePatterns, File sourcePath) {
         this.compiler = compiler;
         this.sourcePath = sourcePath;
@@ -36,6 +39,7 @@ public class SemanticAnalyzer {
     public void join(SemanticAnalyzer analyzer) {
         this.files.addAll(analyzer.files);
         this.symbolTable.putAll(analyzer.getSymbolTable());
+        this.nextID = analyzer.nextID;
     }
 
     public void start() {
@@ -46,8 +50,12 @@ public class SemanticAnalyzer {
         files.forEach(CraftrFile::initImports);
         files.forEach(CraftrFile::initActions);
         files.forEach(CraftrFile::buildInheritanceMap);
+        VInteger id = new VInteger(nextID);
+        files.forEach(f->f.assignUnitIDs(id));
+        this.nextID = id.value;
         files.forEach(CraftrFile::initComponents);
         files.forEach(CraftrFile::checkActionCompatibility);
+        files.forEach(CraftrFile::initCodeBlocks);
     }
 
     public SymbolTable getSymbolTable() {

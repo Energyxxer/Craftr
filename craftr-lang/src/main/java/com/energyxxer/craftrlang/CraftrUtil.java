@@ -2,7 +2,6 @@ package com.energyxxer.craftrlang;
 
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -17,7 +16,7 @@ public class CraftrUtil {
         unit_types = Arrays.asList("entity", "item", "feature", "class", "enum", "world"),
         unit_actions = Arrays.asList("extends", "implements", "requires"),
         data_types = Arrays.asList("int", "float", "double", "long", "boolean", "void", "char"),
-        keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "init", "package", "import", "operator", "instanceof", "overrides"),
+        keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "setup", "package", "import", "operator", "instanceof", "overrides"),
         action_keywords = Arrays.asList("break", "continue", "return"),
         booleans = Arrays.asList("true", "false"),
         nulls = Collections.singletonList("null"),
@@ -27,7 +26,7 @@ public class CraftrUtil {
     /**
      * Contains all pseudo-keywords.
      * */
-    public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "compare", "stack", "nbt", "equipment", "multipart");
+    public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "compare", "stack", "nbt", "equipment", "multipart", "passengers");
 
     public enum Modifier {
         PUBLIC, STATIC, ABSTRACT, FINAL, PROTECTED, PRIVATE, COMPILATION, INGAME, NATIVE;

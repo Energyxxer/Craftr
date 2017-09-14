@@ -31,8 +31,9 @@ public class CraftrProductions {
 
     public static final TokenStructureMatch VARIABLE;
     public static final TokenStructureMatch METHOD;
-    public static final TokenStructureMatch OVERRIDE_BLOCK;
+	public static final TokenStructureMatch SETUP_STATEMENT;
     public static final TokenStructureMatch OVERRIDE;
+	public static final TokenStructureMatch OVERRIDE_BLOCK;
 
     public static final TokenStructureMatch ENUM_ELEMENT;
 
@@ -41,7 +42,6 @@ public class CraftrProductions {
     public static final TokenStructureMatch FORMAL_PARAMETER;
 
 	public static final TokenStructureMatch IDENTIFIER;
-	public static final TokenStructureMatch CONSTRUCTOR_KEYWORD;
 
     public static final TokenStructureMatch DATA_TYPE;
 	public static final TokenStructureMatch METHOD_CALL;
@@ -49,7 +49,7 @@ public class CraftrProductions {
 	public static final TokenStructureMatch EXPRESSION;
 	public static final TokenStructureMatch STATEMENT;
 	public static final TokenStructureMatch CODE_BLOCK;
-	public static final TokenStructureMatch CONSTRUCTOR_BODY;
+	public static final TokenStructureMatch DELIMITED_CODE_BLOCK;
 	public static final TokenStructureMatch ANNOTATION;
 
 	public static final TokenStructureMatch LAMBDA;
@@ -58,7 +58,7 @@ public class CraftrProductions {
 	public static final TokenGroupMatch FOR_STATEMENT;
 	public static final TokenGroupMatch WHILE_STATEMENT;
 	public static final TokenGroupMatch SWITCH_STATEMENT;
-	public static final TokenGroupMatch RETURN_EXPRESSION;
+	public static final TokenGroupMatch RETURN_STATEMENT;
 
 	public static final TokenStructureMatch NESTED_POINTER;
 	public static final TokenStructureMatch POINTER;
@@ -86,8 +86,9 @@ public class CraftrProductions {
 
         VARIABLE = new TokenStructureMatch("VARIABLE");
         METHOD = new TokenStructureMatch("METHOD");
-        OVERRIDE_BLOCK = new TokenStructureMatch("OVERRIDE_BLOCK");
-        OVERRIDE = new TokenStructureMatch("OVERRIDE");
+		SETUP_STATEMENT = new TokenStructureMatch("SETUP_STATEMENT");
+		OVERRIDE = new TokenStructureMatch("OVERRIDE");
+		OVERRIDE_BLOCK = new TokenStructureMatch("OVERRIDE_BLOCK");
 
         ENUM_ELEMENT = new TokenStructureMatch("ENUM_ELEMENT");
 
@@ -96,7 +97,6 @@ public class CraftrProductions {
         FORMAL_PARAMETER = new TokenStructureMatch("FORMAL_PARAMETER");
 
 		IDENTIFIER = new TokenStructureMatch("IDENTIFIER");
-		CONSTRUCTOR_KEYWORD = new TokenStructureMatch("CONSTRUCTOR_KEYWORD");
 
 		DATA_TYPE = new TokenStructureMatch("DATA_TYPE");
 		EXPRESSION = new TokenStructureMatch("EXPRESSION");
@@ -104,7 +104,7 @@ public class CraftrProductions {
 		METHOD_CALL = new TokenStructureMatch("METHOD_CALL");
 		STATEMENT = new TokenStructureMatch("STATEMENT");
 		CODE_BLOCK = new TokenStructureMatch("CODE_BLOCK");
-		CONSTRUCTOR_BODY = new TokenStructureMatch("CONSTRUCTOR_BODY");
+		DELIMITED_CODE_BLOCK = new TokenStructureMatch("DELIMITED_CODE_BLOCK");
 		ANNOTATION = new TokenStructureMatch("ANNOTATION");
 
 		LAMBDA = new TokenStructureMatch("LAMBDA");
@@ -167,20 +167,26 @@ public class CraftrProductions {
             OVERRIDE.add(g);
         }
 
-        {
-            //Override Block
-            TokenGroupMatch g = new TokenGroupMatch();
-            g.append(new TokenItemMatch(TokenType.KEYWORD,"overrides"));
-            g.append(new TokenItemMatch(TokenType.BRACE, "{"));
-            g.append(new TokenListMatch(OVERRIDE));
-            g.append(new TokenItemMatch(TokenType.BRACE, "}"));
-            OVERRIDE_BLOCK.add(g);
-        }
+		{
+			//Override Block
+			TokenGroupMatch g = new TokenGroupMatch();
+			g.append(new TokenItemMatch(TokenType.KEYWORD,"overrides"));
+			g.append(new TokenItemMatch(TokenType.BRACE, "{"));
+			g.append(new TokenListMatch(OVERRIDE));
+			g.append(new TokenItemMatch(TokenType.BRACE, "}"));
+			OVERRIDE_BLOCK.add(g);
+		}
 
         {
             UNIT_COMPONENT.add(VARIABLE);
             UNIT_COMPONENT.add(METHOD);
-            UNIT_COMPONENT.add(OVERRIDE_BLOCK);
+			UNIT_COMPONENT.add(new TokenGroupMatch().setName("ANONYMOUS_BLOCK")
+							.append(new TokenItemMatch(TokenType.MODIFIER,"static", true))
+							.append(new TokenItemMatch(TokenType.BRACE,"{"))
+							.append(new TokenListMatch(STATEMENT, true))
+							.append(new TokenItemMatch(TokenType.BRACE,"}"))
+			);
+			UNIT_COMPONENT.add(OVERRIDE_BLOCK);
         }
 
         {
@@ -220,8 +226,8 @@ public class CraftrProductions {
 
         {
             //Method Body
-            METHOD_BODY.add(CODE_BLOCK);
-            METHOD_BODY.add(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+            METHOD_BODY.add(DELIMITED_CODE_BLOCK);
+            METHOD_BODY.add(new TokenItemMatch(TokenType.END_OF_STATEMENT).setName("OMITTED_BODY"));
         }
 
         {
@@ -285,7 +291,7 @@ public class CraftrProductions {
 				g.append(g2);
 			}
 
-            g.append(CONSTRUCTOR_BODY);
+            g.append(METHOD_BODY);
 
             METHOD.add(g);
         }
@@ -316,7 +322,7 @@ public class CraftrProductions {
 				g.append(g2);
 			}
 
-			g.append(CODE_BLOCK);
+			g.append(METHOD_BODY);
 
 			METHOD.add(g);
 		}
@@ -549,7 +555,7 @@ public class CraftrProductions {
 			// [-EXPRESSION-]
 			VALUE.add(EXPRESSION);
 			VALUE.add(POINTER);
-			VALUE.add(new TokenGroupMatch().append(new TokenItemMatch(TokenType.KEYWORD,"new")).append(METHOD_CALL));
+			VALUE.add(new TokenGroupMatch().append(new TokenItemMatch(TokenType.KEYWORD,"new")).append(METHOD_CALL).append(new TokenGroupMatch(true).append(UNIT_BODY)));
 			VALUE.add(DATA_TYPE);
             VALUE.add(METHOD_CALL);
 			VALUE.add(LAMBDA);
@@ -610,27 +616,8 @@ public class CraftrProductions {
 			g.append(new TokenItemMatch(TokenType.LAMBDA_ARROW));
 			{
 				TokenStructureMatch b = new TokenStructureMatch("LAMBDA_BLOCK");
-				{
-					TokenGroupMatch g2 = new TokenGroupMatch();
-					g2.append(new TokenItemMatch(TokenType.BRACE,"{"));
-					g2.append(new TokenListMatch(STATEMENT,true));
-					g2.append(new TokenItemMatch(TokenType.BRACE,"}"));
-
-					b.add(g2);
-				}/*
-				{
-					TokenGroupMatch g2 = new TokenGroupMatch();
-					g.append(new TokenItemMatch(TokenType.BRACE,"{"));
-					g.append(new TokenItemMatch(TokenType.BRACE,"}"));
-
-					b.add(g);
-				}*/
-				{
-					TokenGroupMatch g2 = new TokenGroupMatch();
-					g2.append(EXPRESSION);
-
-					b.add(g2);
-				}
+				b.add(DELIMITED_CODE_BLOCK);
+				b.add(EXPRESSION);
 				g.append(b);
 			}
 			LAMBDA.add(g);
@@ -639,16 +626,15 @@ public class CraftrProductions {
 		
 		{
 			{
-				TokenGroupMatch g = new TokenGroupMatch();
+				TokenGroupMatch g = new TokenGroupMatch().setName("EXPRESSION_STATEMENT");
 				g.append(EXPRESSION);
 				
 				g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 				STATEMENT.add(g);
 			}
 			{
-				TokenGroupMatch g = new TokenGroupMatch();
+				TokenGroupMatch g = new TokenGroupMatch().setName("ACTION_STATEMENT");
 				g.append(new TokenItemMatch(TokenType.ACTION_KEYWORD));
-			
 				g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 				STATEMENT.add(g);
 			}
@@ -657,47 +643,42 @@ public class CraftrProductions {
 
 		{
 			{
-				TokenGroupMatch g = new TokenGroupMatch();
+				TokenGroupMatch g = new TokenGroupMatch().setName("MULTI_STATEMENT");
 				g.append(new TokenItemMatch(TokenType.BRACE,"{"));
-				g.append(new TokenListMatch(STATEMENT,true));
+				g.append(new TokenListMatch(STATEMENT,true).setName("STATEMENT_LIST"));
 				g.append(new TokenItemMatch(TokenType.BRACE,"}"));
 
 				CODE_BLOCK.add(g);
+				DELIMITED_CODE_BLOCK.add(g);
 			}
 			{
-				TokenGroupMatch g = new TokenGroupMatch();
+				TokenGroupMatch g = new TokenGroupMatch().setName("SINGLE_STATEMENT");
 				g.append(STATEMENT);
 
 				CODE_BLOCK.add(g);
 			}
 
-			STATEMENT.add(CODE_BLOCK);
+			STATEMENT.add(DELIMITED_CODE_BLOCK);
 		}
+
 		{
-			CONSTRUCTOR_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "stack"));
-			CONSTRUCTOR_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "nbt"));
-			CONSTRUCTOR_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "equipment"));
-			CONSTRUCTOR_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "multipart"));
-		}
-		{
-			TokenStructureMatch CONSTRUCTOR_STATEMENT = new TokenStructureMatch("CONSTRUCTOR_STATEMENT");
-			CONSTRUCTOR_STATEMENT.add(STATEMENT);
+			TokenStructureMatch SETUP_STATEMENT_KEYWORD = new TokenStructureMatch("SETUP_STATEMENT_KEYWORD");
+			SETUP_STATEMENT_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "nbt"));
+			SETUP_STATEMENT_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "equipment"));
+			SETUP_STATEMENT_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "stack"));
+			SETUP_STATEMENT_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "passengers"));
+			SETUP_STATEMENT_KEYWORD.add(new TokenItemMatch(TokenType.IDENTIFIER, "multipart"));
+
 			{
 				TokenGroupMatch g = new TokenGroupMatch();
-				g.append(CONSTRUCTOR_KEYWORD);
+				g.append(new TokenItemMatch(TokenType.KEYWORD, "setup"));
+				g.append(SETUP_STATEMENT_KEYWORD);
 				g.append(JSON_OBJECT);
-				CONSTRUCTOR_STATEMENT.add(g);
+				g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+				SETUP_STATEMENT.add(g);
 			}
 
-			{
-				TokenGroupMatch g = new TokenGroupMatch();
-				g.append(new TokenItemMatch(TokenType.BRACE,"{"));
-				g.append(new TokenListMatch(CONSTRUCTOR_STATEMENT,true));
-				g.append(new TokenItemMatch(TokenType.BRACE,"}"));
-
-				CONSTRUCTOR_BODY.add(g);
-			}
-			CONSTRUCTOR_BODY.add(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+			STATEMENT.add(SETUP_STATEMENT);
 		}
 		
 		IF_STATEMENT = new TokenGroupMatch();
@@ -728,12 +709,12 @@ public class CraftrProductions {
 		STATEMENT.add(IF_STATEMENT);
 
         {
-            RETURN_EXPRESSION = new TokenGroupMatch();
-            RETURN_EXPRESSION.append(new TokenItemMatch(TokenType.ACTION_KEYWORD,"return"));
-            RETURN_EXPRESSION.append(VALUE);
-            //RETURN_EXPRESSION.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+            RETURN_STATEMENT = new TokenGroupMatch();
+            RETURN_STATEMENT.append(new TokenItemMatch(TokenType.ACTION_KEYWORD,"return"));
+            RETURN_STATEMENT.append(VALUE);
+            RETURN_STATEMENT.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 
-            EXPRESSION.add(RETURN_EXPRESSION);
+            STATEMENT.add(RETURN_STATEMENT);
         }
 		
 		FOR_STATEMENT = new TokenGroupMatch();

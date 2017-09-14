@@ -9,12 +9,17 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.*;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodSignature;
 import com.energyxxer.util.out.Console;
+import com.energyxxer.util.vprimitives.VInteger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +51,8 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
 
     private boolean unitActionsInitialized = false;
     private boolean unitComponentsInitialized = false;
+
+    private int unitID = -1;
 
     public Unit(CraftrFile file, TokenPattern<?> pattern) {
         super(pattern);
@@ -166,6 +173,11 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
             }
         }
 
+        if(superUnit == null) {
+            if(!this.getFullyQualifiedName().equals("craftr.lang.Object")) superUnit = (Unit) declaringFile.getReferenceTable().getMap().get("craftr").getSubSymbolTable().getMap().get("lang").getSubSymbolTable().getMap().get("Object");
+            System.out.println("superUnit = " + superUnit);
+        }
+
         this.features = new ArrayList<>();
 
         if(rawUnitImplements != null) {
@@ -203,6 +215,22 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         }
     }
 
+    void assignUnitID(VInteger id) {
+        if(this.unitID >= 0) return;
+        Unit trueSuperUnit = null;
+        for(Unit u : inheritanceMap) {
+            if(u.type != UnitType.FEATURE) {
+                trueSuperUnit = u;
+                break;
+            }
+        }
+        if(trueSuperUnit != null) trueSuperUnit.assignUnitID(id);
+        this.unitID = id.value;
+        id.value++;
+
+        getAnalyzer().getCompiler().getReport().addNotice(new Notice("Unit IDs",NoticeType.INFO, this.getFullyQualifiedName() + "#" + this.unitID));
+    }
+
     void checkActionCompatibility() {
         HashMap<MethodSignature, Method> allMethods = new HashMap<>();
 
@@ -237,6 +265,10 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
             }
         }
         unitComponentsInitialized = true;
+    }
+
+    void initCodeBlocks() {
+        methodManager.initCodeBlocks();
     }
 
     @Override
@@ -289,6 +321,14 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
 
     public MethodManager getMethodManager() {
         return methodManager;
+    }
+
+    public boolean instanceOf(Unit unit) {
+        if(this == unit) return true;
+        for(Unit inherited : inheritanceMap) {
+            if(inherited == unit) return true;
+        }
+        return false;
     }
 
     @Override

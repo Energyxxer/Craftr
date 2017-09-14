@@ -1,4 +1,4 @@
-package com.energyxxer.craftr.util.vprimitives;
+package com.energyxxer.util.vprimitives;
 
 public class VCharacter {
 	public volatile char value;

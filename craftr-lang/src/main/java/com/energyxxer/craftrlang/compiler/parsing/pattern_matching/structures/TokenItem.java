@@ -28,7 +28,7 @@ public class TokenItem extends TokenPattern<Token> {
 
 	@Override
 	public String toString() {
-		return "{ " + token + " }";
+		return "(I)" + ((name != null && name.length() > 0) ? name + ": " : "") + "{ " + token + " }";
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class TokenItem extends TokenPattern<Token> {
 
 	@Override
 	public TokenPattern<?> find(String path) {
-		return null;
+		return (this.name != null && name.equals(path)) ? this : null;
 	}
 
 	@Override

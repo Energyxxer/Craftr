@@ -1,4 +1,4 @@
-package com.energyxxer.craftr.util.vprimitives;
+package com.energyxxer.util.vprimitives;
 
 public class VBoolean {
 	public volatile boolean value;

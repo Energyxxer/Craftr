@@ -1,4 +1,4 @@
-package com.energyxxer.craftr.util.vprimitives;
+package com.energyxxer.util.vprimitives;
 
 public class VDouble {
 	public volatile double value;

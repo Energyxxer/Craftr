@@ -1,42 +1,56 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks;
 
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
+import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.*;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.Statement;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Created by Energyxxer on 07/10/2017.
  */
-public class CodeBlock implements Context {
-    private final SemanticAnalyzer analyzer;
-    private final Unit unit;
-    private final CraftrFile declaringFile;
+public class CodeBlock extends Statement implements Context {
     private boolean staticBlock = false;
 
     private CodeBlock parentBlock = null;
     private SymbolTable symbolTable;
 
-    public CodeBlock(Unit unit, SymbolTable parentTable) {
-        this.unit = unit;
-        this.declaringFile = unit.getDeclaringFile();
-        this.analyzer = declaringFile.getAnalyzer();
-        this.symbolTable = new SymbolTable(SymbolVisibility.BLOCK, parentTable);
+    private boolean initialized = false;
+
+    public CodeBlock(TokenPattern<?> pattern, Context context) {
+        super(pattern, context);
+
+        if(context instanceof CodeBlock) this.parentBlock = (CodeBlock) context;
+
+        this.symbolTable = new SymbolTable(SymbolVisibility.BLOCK, (parentBlock != null) ? parentBlock.symbolTable : context.getUnit().getSubSymbolTable());
     }
 
-    public CodeBlock(Unit unit, CodeBlock parentBlock) {
-        this.unit = unit;
-        this.declaringFile = unit.getDeclaringFile();
-        this.analyzer = declaringFile.getAnalyzer();
-        this.parentBlock = parentBlock;
-        this.symbolTable = new SymbolTable(SymbolVisibility.BLOCK, parentBlock.getSymbolTable());
+    public void initialize() {
+        if(initialized) return;
+        TokenPattern<?> inner = (TokenPattern<?>) pattern.getContents();
+
+        TokenList list = (TokenList) inner.find("STATEMENT_LIST");
+        if(list != null) {
+            TokenPattern<?>[] rawStatements = list.getContents();
+            for(TokenPattern<?> rawStatement : rawStatements) {
+                if(!(rawStatement instanceof TokenStructure)) continue;
+
+                Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this);
+
+                if(statement != null) System.out.println(statement.getClass().getSimpleName());
+            }
+        }
+
+        initialized = true;
     }
 
     public SymbolTable getSymbolTable() {
@@ -55,23 +69,23 @@ public class CodeBlock implements Context {
     }
 
     @Override
-    public CraftrFile getDeclaringFile() {
-        return declaringFile;
-    }
-
-    @Override
-    public Unit getUnit() {
-        return unit;
-    }
-
-    @Override
     public ContextType getContextType() {
         return ContextType.BLOCK;
     }
 
     @Override
+    public CraftrFile getDeclaringFile() {
+        return context.getDeclaringFile();
+    }
+
+    @Override
+    public Unit getUnit() {
+        return context.getUnit();
+    }
+
+    @Override
     public SemanticAnalyzer getAnalyzer() {
-        return analyzer;
+        return context.getAnalyzer();
     }
 
     @Override

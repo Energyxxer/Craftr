@@ -29,7 +29,7 @@ public class TokenStructure extends TokenPattern<TokenPattern<?>> {
 
 	@Override
 	public String toString() {
-		return name + ": {" + group.toString() + "}";
+		return "(S)" + name + ": {" + group.toString() + "}";
 	}
 
 	@Override
@@ -58,12 +58,11 @@ public class TokenStructure extends TokenPattern<TokenPattern<?>> {
 	@Override
 	public TokenPattern<?> find(String path) {
 
-		if(true) return group.find(path);
-
 		String[] subPath = path.split("\\.",2);
-		if(subPath.length == 1) return (this.name.equals(path)) ? this : null;
 
-		return (group.name.equals(subPath[0])) ? group.find(subPath[1]) : null;
+		if(subPath.length == 1) return (this.name.equals(path)) ? this : group.find(path);
+
+		return (group.name.equals(subPath[0])) ? group.find(subPath[1]) : group.find(path);
 	}
 
 	@Override

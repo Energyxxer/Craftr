@@ -11,6 +11,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.util.FileUtil;
+import com.energyxxer.util.vprimitives.VInteger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -140,12 +141,20 @@ public class CraftrFile extends AbstractFileComponent implements Context {
         units.forEach(Unit::buildInheritanceMap);
     }
 
+    public void assignUnitIDs(VInteger id) {
+        units.forEach(u -> u.assignUnitID(id));
+    }
+
     public void checkActionCompatibility() {
         units.forEach(Unit::checkActionCompatibility);
     }
 
     public void initComponents() {
         units.forEach(Unit::initUnitComponents);
+    }
+
+    public void initCodeBlocks() {
+        units.forEach(Unit::initCodeBlocks);
     }
 
     public SymbolTable getImportTable() {

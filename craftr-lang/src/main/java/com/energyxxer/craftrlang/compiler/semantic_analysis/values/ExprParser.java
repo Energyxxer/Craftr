@@ -6,14 +6,14 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 
 /**
  * Created by Energyxxer on 07/11/2017.
  */
 public final class ExprParser {
 
-    public static Value parseValue(TokenPattern<?> pattern, SemanticAnalyzer analyzer) {
+    public static Value parseValue(TokenPattern<?> pattern, Context context) {
         //System.out.println("pattern = " + pattern);
 
         switch(pattern.getName()) {
@@ -24,14 +24,14 @@ public final class ExprParser {
                 }
                 if(raw.matches("\\d+\\.\\d+")) { //IS A FLOAT
                     try {
-                        return new FloatValue(Float.parseFloat(raw));
+                        return new FloatValue(Float.parseFloat(raw), context);
                     } catch(NumberFormatException x) {
                         System.err.println("[Something went slightly wrong] Number structure '" + raw + "'is not a valid number. (?)");
                         return null;
                     }
                 } else { //IS AN INTEGER
                     try {
-                        return new IntegerValue(Integer.parseInt(raw));
+                        return new IntegerValue(Integer.parseInt(raw), context);
                     } catch(NumberFormatException x) {
                         System.err.println("[Something went slightly wrong] Number structure '" + raw + "'is not a valid number. (?)");
                         return null;
@@ -49,17 +49,17 @@ public final class ExprParser {
                         return null;
                     }
                 }
-                return new BooleanValue(value);
+                return new BooleanValue(value, context);
             } case "VALUE": {
-                return parseValue(((TokenStructure) pattern).getContents(), analyzer);
+                return parseValue(((TokenStructure) pattern).getContents(), context);
             } case "EXPRESSION": {
-                return parseValue(((TokenStructure) pattern).getContents(), analyzer);
+                return parseValue(((TokenStructure) pattern).getContents(), context);
             } case "OPERATION": {
-                return parseValue(((TokenGroup) pattern).getContents()[0], analyzer);
+                return parseValue(((TokenGroup) pattern).getContents()[0], context);
             } case "OPERATION_LIST": {
                 TokenList list = (TokenList) pattern;
                 if(list.size() == 1) {
-                    return parseValue(list.getContents()[0], analyzer);
+                    return parseValue(list.getContents()[0], context);
                 } else {
                     System.err.println("WHOA WAIT NO, OPERATIONS NOT SUPPORTED YET GEEZ");
                     return null;
@@ -92,7 +92,7 @@ public final class ExprParser {
                                 sb.append("\\\\"); break;
                             }
                             default: {
-                                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal escape character in a string literal", pattern.getFormattedPath()));
+                                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal escape character in a string literal", pattern.getFormattedPath()));
                             }
                         }
                     } else {
@@ -103,10 +103,10 @@ public final class ExprParser {
                         }
                     }
                 }
-                return new StringValue(sb.toString());
+                return new StringValue(sb.toString(), context);
             }
         }
-        System.out.println("Non-registered exit");
+        System.out.println("Non-registered exit: " + pattern.getName());
         return null;
     }
 }

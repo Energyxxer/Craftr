@@ -38,7 +38,7 @@ public class TokenList extends TokenPattern<TokenPattern<?>[]> {
 
 	@Override
 	public String toString() {
-		String o = name + ": [ ";
+		String o = "(L)" + ((name != null && name.length() > 0) ? (name + ": ") : "") + "[ ";
 		
 		for(TokenPattern<?> p : patterns) {
 			o += p.toString();

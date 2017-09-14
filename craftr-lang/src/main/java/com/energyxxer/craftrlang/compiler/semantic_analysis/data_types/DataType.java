@@ -18,6 +18,7 @@ public class DataType {
 
     private final String name;
     private final boolean primitive;
+    private final Unit unit;
 
     public DataType(String name) {
         this(name, false);
@@ -26,10 +27,13 @@ public class DataType {
     public DataType(String name, boolean primitive) {
         this.name = name;
         this.primitive = primitive;
+        this.unit = null;
     }
 
     public DataType(Unit unit) {
-        this(unit.getFullyQualifiedName(), false);
+        this.name = unit.getFullyQualifiedName();
+        this.primitive = false;
+        this.unit = unit;
     }
 
     public String getName() {
@@ -75,12 +79,17 @@ public class DataType {
             return OBJECT;
         }
 
-        return new DataType(((Unit) symbol).getFullyQualifiedName());
+        return new DataType((Unit) symbol);
     }
 
     @Override
     public boolean equals(Object o) {
         return (o instanceof DataType) && this.name.equals(((DataType) o).name);
+    }
+
+    public boolean instanceOf(DataType type) {
+        if(this.primitive || type.primitive) return this.equals(type);
+        return this.unit.instanceOf(type.unit);
     }
 
     @Override

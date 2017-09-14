@@ -7,7 +7,6 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.AbstractFileComponent;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
@@ -29,7 +28,7 @@ import java.util.List;
  * Created by Energyxxer on 07/10/2017.
  */
 public class Variable extends AbstractFileComponent implements Symbol {
-    private final SemanticAnalyzer analyzer;
+    private final Context context;
 
     private SymbolVisibility visibility = SymbolVisibility.BLOCK;
     private List<CraftrUtil.Modifier> modifiers;
@@ -44,27 +43,27 @@ public class Variable extends AbstractFileComponent implements Symbol {
 
     private SymbolTable table;
 
-    private Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, SemanticAnalyzer analyzer) {
+    private Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, Context context) {
         super(pattern);
         this.modifiers = new ArrayList<>();
         this.modifiers.addAll(modifiers);
         this.dataType = dataType;
-        this.analyzer = analyzer;
+        this.context = context;
 
         this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
 
         TokenPattern<?> initialization = this.pattern.find("VARIABLE_INITIALIZATION");
 
         if(initialization != null) {
-            this.value = ExprParser.parseValue(initialization.find("VALUE"), analyzer);
+            this.value = ExprParser.parseValue(initialization.find("VALUE"), context);
             if(this.value != null && this.dataType != this.value.getDataType()) {
-                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
             }
         }
     }
 
     public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, CodeBlock block) {
-        this(pattern, modifiers, dataType, block.getAnalyzer());
+        this(pattern, modifiers, dataType, (Context) block);
 
         this.block = block;
         this.table = block.getSymbolTable();
@@ -72,12 +71,12 @@ public class Variable extends AbstractFileComponent implements Symbol {
         if(block.findVariable(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
             block.getSymbolTable().put(this);
         } else {
-            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
+            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
         }
     }
 
     public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, FieldManager fieldManager) {
-        this(pattern, modifiers, dataType, fieldManager.getParentUnit().getAnalyzer());
+        this(pattern, modifiers, dataType, fieldManager.getParentUnit());
 
         this.fieldManager = fieldManager;
         this.table = this.isStatic() ? fieldManager.getStaticFieldTable() : fieldManager.getInstanceFieldTable();
@@ -85,10 +84,10 @@ public class Variable extends AbstractFileComponent implements Symbol {
         if(fieldManager.findField(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
             table.put(this);
         } else {
-            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
+            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
         }
 
-        analyzer.getCompiler().getReport().addNotice(new Notice("Value Report: ", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
+        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report: ", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
     }
 
     /*

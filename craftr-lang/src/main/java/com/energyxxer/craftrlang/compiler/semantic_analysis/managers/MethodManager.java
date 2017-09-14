@@ -64,6 +64,7 @@ public class MethodManager {
                 )
         );
         //I can't believe after all this error checking I'm returning the method anyways...
+        //It's as if I'm airport security, you have contraband, I reported you yet I'm obligated to give it back to you.
         return method;
     }
 
@@ -85,5 +86,10 @@ public class MethodManager {
         list.addAll(staticMethods);
         list.addAll(instanceMethods);
         return list;
+    }
+
+    public void initCodeBlocks() {
+        staticMethods.forEach(Method::initCodeBlock);
+        instanceMethods.forEach(Method::initCodeBlock);
     }
 }

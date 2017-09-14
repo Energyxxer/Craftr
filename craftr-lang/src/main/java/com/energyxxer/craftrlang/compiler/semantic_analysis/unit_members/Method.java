@@ -15,7 +15,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -154,6 +153,17 @@ public class Method extends AbstractFileComponent implements Symbol {
         if(modifierPatterns != null && modifiers.contains(CraftrUtil.Modifier.NATIVE)) {
             declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Native Methods", NoticeType.INFO, "Require native implementation for '" + getSignature().toString() + "'", modifierPatterns.getFormattedPath()));
         }
+
+        TokenPattern<?> body = pattern.find("METHOD_BODY");
+        boolean omitted = body.find("OMITTED_BODY") != null;
+        if(omitted) {
+            if(!(modifiers.contains(CraftrUtil.Modifier.NATIVE) || modifiers.contains(CraftrUtil.Modifier.ABSTRACT))) {
+                declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Missing method body", body.getFormattedPath()));
+            }
+        } else {
+            TokenPattern<?> block = body.find("DELIMITED_CODE_BLOCK");
+            this.codeBlock = new CodeBlock(block, declaringUnit);
+        }
     }
 
     public boolean isStatic() {
@@ -207,5 +217,9 @@ public class Method extends AbstractFileComponent implements Symbol {
     @Override
     public int hashCode() {
         return signature.hashCode();
+    }
+
+    public void initCodeBlock() {
+        if(codeBlock != null) codeBlock.initialize();
     }
 }

@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodManager;
@@ -7,12 +8,10 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodManag
 /**
  * Created by Energyxxer on 07/11/2017.
  */
-public class IntegerValue extends Value {
+public class IntegerValue extends NumericalValue<Integer> {
 
-    private int value = 0;
-
-    public IntegerValue(int value) {
-        this.value = value;
+    public IntegerValue(int value, Context context) {
+        super(value, context);
     }
 
     @Override
