@@ -590,7 +590,7 @@ public class CraftrProductions {
 			TokenGroupMatch g = new TokenGroupMatch();
 			g.append(VALUE);
 			{
-				TokenGroupMatch g2 = new TokenGroupMatch(true);
+				TokenGroupMatch g2 = new TokenGroupMatch();
 				g2.append(new TokenItemMatch(TokenType.DOT));
 				g2.append(NESTED_POINTER);
 

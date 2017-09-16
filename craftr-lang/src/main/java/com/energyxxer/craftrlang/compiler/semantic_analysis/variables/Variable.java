@@ -15,7 +15,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldManager;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprParser;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,8 +55,8 @@ public class Variable extends AbstractFileComponent implements Symbol {
         TokenPattern<?> initialization = this.pattern.find("VARIABLE_INITIALIZATION");
 
         if(initialization != null) {
-            this.value = ExprParser.parseValue(initialization.find("VALUE"), context);
-            if(this.value != null && this.dataType != this.value.getDataType()) {
+            this.value = ExprAnalyzer.analyzeValue(initialization.find("VALUE"), context);
+            if(this.value != null && !this.dataType.instanceOf(this.value.getDataType())) {
                 context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
             }
         }

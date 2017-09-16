@@ -175,7 +175,6 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
 
         if(superUnit == null) {
             if(!this.getFullyQualifiedName().equals("craftr.lang.Object")) superUnit = (Unit) declaringFile.getReferenceTable().getMap().get("craftr").getSubSymbolTable().getMap().get("lang").getSubSymbolTable().getMap().get("Object");
-            System.out.println("superUnit = " + superUnit);
         }
 
         this.features = new ArrayList<>();

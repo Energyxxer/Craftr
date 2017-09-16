@@ -6,21 +6,26 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodManager;
 
-/**
- * Created by Energyxxer on 07/11/2017.
- */
-public class StringValue extends Value {
+public class Expression extends Value {
 
-    private String value = null;
+    private Value a;
+    private Operator op;
+    private Value b;
 
-    public StringValue(String value, Context context) {
+    private TokenPattern<?> pattern;
+
+    public Expression(Value a, Operator op, Value b, TokenPattern<?> pattern, Context context) {
         super(context);
-        this.value = value;
+        this.a = a;
+        this.op = op;
+        this.b = b;
+
+        this.pattern = pattern;
     }
 
     @Override
     public DataType getDataType() {
-        return DataType.STRING;
+        return null;
     }
 
     @Override
@@ -44,15 +49,22 @@ public class StringValue extends Value {
     }
 
     @Override
-    public String toString() {
-        return "StringValue{" +
-                "value=" + value +
-                ",explicit=" + this.explicit +
-                '}';
+    public Object getValue() {
+        return null;
     }
 
     @Override
-    public String getValue() {
-        return this.value;
+    public String toString() {
+        return "(" + a + " " + op.getSymbol() + " " + b + ")";
+    }
+
+    public Value simplify() {
+
+        if(a instanceof Expression) a = ((Expression) a).simplify();
+        if(b instanceof Expression) b = ((Expression) b).simplify();
+
+        if(a.explicit && b.explicit) {
+            return a.runOperation(this.op, b, pattern);
+        } return this;
     }
 }

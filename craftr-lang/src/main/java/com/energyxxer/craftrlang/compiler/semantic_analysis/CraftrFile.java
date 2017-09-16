@@ -60,8 +60,6 @@ public class CraftrFile extends AbstractFileComponent implements Context {
             this.parentPackage = analyzer.getPackageManager().createPackage(packagePathPattern.flatten(false));
         }
 
-        //analyzer.getCompiler().getReport().addNotice(new Notice("Debug", NoticeType.WARNING, parentPackage.getFullyQualifiedName()));
-
         List<TokenPattern<?>> unitPatterns = pattern.find("UNIT_LIST").searchByName("UNIT");
 
         for(TokenPattern<?> rawUnit : unitPatterns) {
@@ -94,7 +92,6 @@ public class CraftrFile extends AbstractFileComponent implements Context {
                 }
             }
             this.referenceTable = analyzer.getSymbolTable().mergeWith(importTable);
-            //analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.INFO, "No imports found for file '" + file.getName() + "'"));
             return;
         }
 

@@ -76,11 +76,10 @@ public class TokenListMatch extends TokenPatternMatch {
 	@Override
 	public TokenMatchResponse match(List<Token> tokens, Stack st) {
 		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
-		st.push(thisInvoc);
-		if (tokens.size() <= 0) {
-			st.pop();
+		if(tokens.size() <= 0 || st.find(thisInvoc)) {
 			return new TokenMatchResponse(false, null, 0, this.pattern, null);
 		}
+		st.push(thisInvoc);
 		boolean expectSeparator = false;
 
 		boolean hasMatched = true;
@@ -89,10 +88,16 @@ public class TokenListMatch extends TokenPatternMatch {
 		TokenPatternMatch expected = null;
 		TokenList list = new TokenList().setName(this.name);
 
+		Stack tempStack = st.clone();
+
 		itemLoop: for (int i = 0; i < tokens.size();) {
+			List<Token> subList = tokens.subList(i, tokens.size());
+
+			MethodInvocation tempInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {subList});
+			tempStack.push(tempInvoc);
 
 			if (this.separator != null && expectSeparator) {
-				TokenMatchResponse itemMatch = this.separator.match(tokens.subList(i, tokens.size()), st);
+				TokenMatchResponse itemMatch = this.separator.match(subList, tempStack);
 				expectSeparator = false;
 				switch(itemMatch.getMatchType()) {
 					case NO_MATCH: {
@@ -114,7 +119,7 @@ public class TokenListMatch extends TokenPatternMatch {
 				}
 			} else {
 				if (this.separator != null) {
-					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
+					TokenMatchResponse itemMatch = this.pattern.match(subList, tempStack);
 					switch(itemMatch.getMatchType()) {
 						case NO_MATCH: {
 							hasMatched = false;
@@ -140,7 +145,7 @@ public class TokenListMatch extends TokenPatternMatch {
 						}
 					}
 				} else {
-					TokenMatchResponse itemMatch = this.pattern.match(tokens.subList(i, tokens.size()), st);
+					TokenMatchResponse itemMatch = this.pattern.match(subList, tempStack);
 					length += itemMatch.length;
 					switch(itemMatch.getMatchType()) {
 						case NO_MATCH: {
@@ -169,6 +174,7 @@ public class TokenListMatch extends TokenPatternMatch {
 					}
 				}
 			}
+			tempStack.pop();
 		}
 		st.pop();
 		return new TokenMatchResponse(hasMatched, faultyToken, length, expected, list);

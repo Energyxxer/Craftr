@@ -47,10 +47,14 @@ public class TokenGroupMatch extends TokenPatternMatch {
 
 	@Override
 	public TokenMatchResponse match(List<Token> tokens, Stack st) {
-
-	    if(items.size() == 0) return new TokenMatchResponse(true, null, 0, null, new TokenGroup());
+		if(items.size() == 0) return new TokenMatchResponse(true, null, 0, null, new TokenGroup());
 
 		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
+
+		if(tokens.size() <= 0 || st.find(thisInvoc)) {
+			return new TokenMatchResponse(false, null, 0, this, null);
+		}
+
 		st.push(thisInvoc);
 
 		TokenGroup group = (tokens.size() == 0) ? null : new TokenGroup().setName(this.name);

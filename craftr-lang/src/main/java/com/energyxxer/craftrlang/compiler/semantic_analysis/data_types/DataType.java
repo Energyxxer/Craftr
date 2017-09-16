@@ -53,8 +53,8 @@ public class DataType {
     public static final DataType LONG = new DataType("long", true);
     public static final DataType BOOLEAN = new DataType("boolean", true);
 
-    public static final DataType OBJECT = new DataType("Object", false);
-    public static final DataType STRING = new DataType("String", false);
+    public static final DataType OBJECT = new DataType("craftr.lang.Object", false);
+    public static final DataType STRING = new DataType("craftr.lang.String", false);
     public static final DataType TEMP_ARRAY = new DataType("TempArray", false);
 
     public static final DataType[] PRIMITIVES = new DataType[] {VOID, INT, FLOAT, DOUBLE, CHAR, LONG, BOOLEAN};
@@ -89,7 +89,9 @@ public class DataType {
 
     public boolean instanceOf(DataType type) {
         if(this.primitive || type.primitive) return this.equals(type);
+        if(this.unit != null && type.unit != null)
         return this.unit.instanceOf(type.unit);
+        else return this.name.equals(type.name);
     }
 
     @Override

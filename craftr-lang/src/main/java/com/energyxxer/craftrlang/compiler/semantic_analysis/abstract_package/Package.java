@@ -19,7 +19,6 @@ public class Package implements Symbol {
     private String name;
 
     private HashMap<String, Package> subPackages = new HashMap<>();
-    private HashMap<String, Unit> units = new HashMap<>();
 
     private SymbolTable symbolTable;
 
@@ -47,7 +46,6 @@ public class Package implements Symbol {
     }
 
     public void addUnit(Unit unit) {
-        this.units.put(unit.getName(), unit);
         symbolTable.put(unit);
     }
 
@@ -65,6 +63,23 @@ public class Package implements Symbol {
             subPackage.getAllSubSymbols(map);
         }
     }
+
+    /*void clone(SymbolTable rootTable) {
+        Package clone = new Package(rootTable);
+        clone.addAll(this);
+    }
+
+    TODO
+
+    void clone(@NotNull Package parent) {
+        Package clone = new Package(parent, this.name);
+        clone.addAll(this);
+    }
+
+    void addAll(Package pack) {
+        this.subPackages.putAll(pack.subPackages);
+        this.symbolTable.putAll(this.symbolTable);
+    }*/
 
     @Override
     public String getName() {

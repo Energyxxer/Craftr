@@ -47,6 +47,8 @@ public class BooleanValue extends Value {
                 return new BooleanValue(this.value && ((BooleanValue) operand).value, this.context);
             case OR:
                 return new BooleanValue(this.value || ((BooleanValue) operand).value, this.context);
+            case EQUAL:
+                return new BooleanValue(this.value == ((BooleanValue) operand).value, this.context);
         }
 
         return null;
@@ -58,5 +60,10 @@ public class BooleanValue extends Value {
                 "value=" + value +
                 ",explicit=" + this.explicit +
                 '}';
+    }
+
+    @Override
+    public Boolean getValue() {
+        return this.value;
     }
 }

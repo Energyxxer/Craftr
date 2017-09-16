@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
+import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
@@ -8,12 +9,14 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 
+import java.util.ArrayList;
+
 /**
  * Created by Energyxxer on 07/11/2017.
  */
-public final class ExprParser {
+public final class ExprAnalyzer {
 
-    public static Value parseValue(TokenPattern<?> pattern, Context context) {
+    public static Value analyzeValue(TokenPattern<?> pattern, Context context) {
         //System.out.println("pattern = " + pattern);
 
         switch(pattern.getName()) {
@@ -51,18 +54,63 @@ public final class ExprParser {
                 }
                 return new BooleanValue(value, context);
             } case "VALUE": {
-                return parseValue(((TokenStructure) pattern).getContents(), context);
+                return analyzeValue(((TokenStructure) pattern).getContents(), context);
             } case "EXPRESSION": {
-                return parseValue(((TokenStructure) pattern).getContents(), context);
+                return analyzeValue(((TokenStructure) pattern).getContents(), context);
             } case "OPERATION": {
-                return parseValue(((TokenGroup) pattern).getContents()[0], context);
+                return analyzeValue(((TokenGroup) pattern).getContents()[0], context);
             } case "OPERATION_LIST": {
                 TokenList list = (TokenList) pattern;
+
                 if(list.size() == 1) {
-                    return parseValue(list.getContents()[0], context);
+                    return analyzeValue(list.getContents()[0], context);
                 } else {
-                    System.err.println("WHOA WAIT NO, OPERATIONS NOT SUPPORTED YET GEEZ");
-                    return null;
+
+                    TokenPattern<?>[] contents = list.getContents();
+
+                    ArrayList<Value> flatValues = new ArrayList<>();
+                    ArrayList<Operator> flatOperators = new ArrayList<>();
+
+                    for(int i = 0; i < contents.length; i++) {
+                        if((i & 1) == 0) {
+                            //Operand
+                            flatValues.add(analyzeValue(contents[i], context));
+                        } else {
+                            //Operator
+                            flatOperators.add(Operator.getOperatorForSymbol(((TokenItem) contents[i]).getContents().value));
+                        }
+                    }
+
+                    while(flatOperators.size() >= 1) {
+                        int index = -1;
+                        Operator topOperator = null;
+
+                        for(int i = 0; i < flatOperators.size(); i++) {
+                            Operator op = flatOperators.get(i);
+                            if(topOperator == null) {
+                                index = i;
+                                topOperator = op;
+                            } else if(topOperator.getPrecedence() >= op.getPrecedence()) {
+
+                                if(topOperator.getPrecedence() > op.getPrecedence() || topOperator.isRightToLeft()) {
+                                    index = i;
+                                    topOperator = op;
+                                }
+                            }
+                        }
+
+                        Value a = flatValues.get(index);
+                        Value b = flatValues.get(index+1);
+
+                        flatValues.remove(index);
+                        flatValues.remove(index);
+                        flatValues.add(index, new Expression(a, topOperator, b, pattern, context));
+                        flatOperators.remove(index);
+                    }
+
+                    Expression expr = (Expression) flatValues.get(0);
+
+                    return expr.simplify();
                 }
             } case "STRING": {
                 String raw = pattern.flatten(false);

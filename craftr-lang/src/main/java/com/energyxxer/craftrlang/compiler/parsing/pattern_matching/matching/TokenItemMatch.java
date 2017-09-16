@@ -50,6 +50,10 @@ public class TokenItemMatch extends TokenPatternMatch {
 
 	public TokenMatchResponse match(List<Token> tokens, Stack st) {
 		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
+
+		if(tokens.size() <= 0 || st.find(thisInvoc)) {
+			return new TokenMatchResponse(false, null, 0, this, null);
+		}
 		st.push(thisInvoc);
 		boolean matched;
 		Token faultyToken = null;

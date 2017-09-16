@@ -34,4 +34,14 @@ public class Stack {
 	public int size() {
 		return stack.size();
 	}
+
+	public void add(Stack other) {
+		this.stack.addAll(other.stack);
+	}
+
+	public Stack clone() {
+		Stack st = new Stack();
+		st.add(this);
+		return st;
+	}
 }

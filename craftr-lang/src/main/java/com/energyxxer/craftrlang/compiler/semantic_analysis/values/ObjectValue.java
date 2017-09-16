@@ -43,4 +43,9 @@ public class ObjectValue extends Value {
     protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern) {
         return null;
     }
+
+    @Override
+    public Unit getValue() {
+        return this.unit;
+    }
 }

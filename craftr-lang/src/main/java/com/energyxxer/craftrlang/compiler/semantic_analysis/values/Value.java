@@ -49,4 +49,6 @@ public abstract class Value {
 
     protected abstract Value operation(Operator operator, TokenPattern<?> pattern);
     protected abstract Value operation(Operator operator, Value operand, TokenPattern<?> pattern);
+
+    public abstract Object getValue();
 }

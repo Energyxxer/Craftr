@@ -181,7 +181,7 @@ public class CraftrScannerProfile extends ScannerProfile {
         //Operators
         ScannerContext operatorContext = new ScannerContext() {
             private List<String> identifier_operators = Arrays.asList("++", "--");
-            private List<String> operators = Arrays.asList("+=", "+", "-=", "-", "*=", "*", "/=", "/", "%=", "%", "<=", ">=", "!=", "==", "=", "<", ">", "&&", "||", "&", "|");
+            private List<String> operators = Arrays.asList("+=", "+", "-=", "-", "*=", "*", "/=", "/", "%=", "%", "<=", ">=", "!=", "==", "=", "<", ">", "&&", "||", "&=", "|=", "instanceof");
             private String logical_negation_operator = "!";
 
             @Override

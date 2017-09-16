@@ -39,6 +39,7 @@ public class SemanticAnalyzer {
     public void join(SemanticAnalyzer analyzer) {
         this.files.addAll(analyzer.files);
         this.symbolTable.putAll(analyzer.getSymbolTable());
+        //TODO: Join with the package manager, somehow...
         this.nextID = analyzer.nextID;
     }
 
