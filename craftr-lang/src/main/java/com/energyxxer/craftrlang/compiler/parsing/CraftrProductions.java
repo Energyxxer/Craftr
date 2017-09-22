@@ -1,6 +1,5 @@
 package com.energyxxer.craftrlang.compiler.parsing;
 
-
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenGroupMatch;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenItemMatch;
@@ -216,7 +215,7 @@ public class CraftrProductions {
         }
 
         {
-            ENUM_ELEMENT.add(new TokenItemMatch(TokenType.IDENTIFIER));
+            ENUM_ELEMENT.add(new TokenItemMatch(TokenType.IDENTIFIER).setName("ENUM_ELEMENT_NAME"));
             ENUM_ELEMENT.add(METHOD_CALL);
         }
 
@@ -253,7 +252,7 @@ public class CraftrProductions {
 			g.append(new TokenGroupMatch(true).append(ANNOTATION));
 			g.append(new TokenListMatch(TokenType.MODIFIER,true).setName("MODIFIER_LIST"));
 			g.append(new TokenGroupMatch().append(DATA_TYPE).setName("RETURN_TYPE"));
-			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME"));
+			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME").addTags("method_name"));
 
             g.append(new TokenItemMatch(TokenType.BRACE,"("));
             g.append(new TokenListMatch(FORMAL_PARAMETER,new TokenItemMatch(TokenType.COMMA),true).setName("PARAMETER_LIST"));
@@ -277,7 +276,7 @@ public class CraftrProductions {
             TokenGroupMatch g = new TokenGroupMatch().setName("METHOD_CONSTRUCTOR");
             g.append(new TokenGroupMatch(true).append(ANNOTATION));
             g.append(new TokenListMatch(TokenType.MODIFIER,true).setName("MODIFIER_LIST"));
-            g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME"));
+            g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME").addTags("method_name"));
 
             g.append(new TokenItemMatch(TokenType.BRACE,"("));
             g.append(new TokenListMatch(FORMAL_PARAMETER,new TokenItemMatch(TokenType.COMMA),true).setName("PARAMETER_LIST"));
@@ -332,7 +331,7 @@ public class CraftrProductions {
 			TokenGroupMatch g = new TokenGroupMatch().setName("METHOD_EVENT");
 			g.append(new TokenGroupMatch(true).append(ANNOTATION));
 			g.append(new TokenItemMatch(TokenType.KEYWORD, "event"));
-			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME"));
+			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_NAME").addTags("method_name"));
 
 			g.append(new TokenItemMatch(TokenType.BRACE,"("));
 			g.append(new TokenListMatch(FORMAL_PARAMETER,new TokenItemMatch(TokenType.COMMA),true).setName("PARAMETER_LIST"));
@@ -438,7 +437,7 @@ public class CraftrProductions {
 			g.append(new TokenGroupMatch(true).append(ANNOTATION));
 			g.append(new TokenListMatch(new TokenItemMatch(TokenType.MODIFIER).setName("UNIT_MODIFIER"),true).setName("UNIT_MODIFIERS"));
 			g.append(new TokenItemMatch(TokenType.UNIT_TYPE).setName("UNIT_TYPE"));
-			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("UNIT_NAME"));
+			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("UNIT_NAME").addTags("UNIT_NAME"));
 			
 			{
 				TokenGroupMatch g2 = new TokenGroupMatch().setName("UNIT_ACTION");
@@ -470,7 +469,7 @@ public class CraftrProductions {
 		
 		{
 			TokenGroupMatch g = new TokenGroupMatch();
-			g.append(new TokenItemMatch(TokenType.IDENTIFIER));
+			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_CALL_NAME"));
 			g.append(new TokenItemMatch(TokenType.BRACE,"("));
 			{
 				TokenGroupMatch g2 = new TokenGroupMatch().setName("PARAMETER");
@@ -788,7 +787,7 @@ public class CraftrProductions {
 
 		TokenGroupMatch COMPOUND_ENTRY = new TokenGroupMatch();
 		{
-			COMPOUND_ENTRY.append(new TokenItemMatch(TokenType.IDENTIFIER));
+			COMPOUND_ENTRY.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("JSON_COMPOUND_NAME"));
 			COMPOUND_ENTRY.append(new TokenItemMatch(TokenType.COLON));
 			COMPOUND_ENTRY.append(JSON_VALUE);
 		}

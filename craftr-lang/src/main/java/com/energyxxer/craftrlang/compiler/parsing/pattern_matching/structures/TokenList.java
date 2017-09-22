@@ -173,4 +173,19 @@ public class TokenList extends TokenPattern<TokenPattern<?>[]> {
 	public String getType() {
 		return "LIST";
 	}
+
+	@Override
+	public TokenList addTags(List<String> newTags) {
+		super.addTags(newTags);
+		return this;
+	}
+
+	@Override
+	public void validate() {
+		if(this.name != null && this.name.length() > 0) this.tags.add(name);
+		patterns.forEach(p -> {
+			p.addTags(this.tags);
+			p.validate();
+		});
+	}
 }

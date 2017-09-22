@@ -16,4 +16,13 @@ public class InspectionItem {
         this.message = message;
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "InspectionItem{" +
+                "bounds=" + bounds +
+                ", type=" + type +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

@@ -57,7 +57,7 @@ public class TokenGroupMatch extends TokenPatternMatch {
 
 		st.push(thisInvoc);
 
-		TokenGroup group = (tokens.size() == 0) ? null : new TokenGroup().setName(this.name);
+		TokenGroup group = (tokens.size() == 0) ? null : new TokenGroup().setName(this.name).addTags(this.tags);
 		int currentToken = 0;
 		boolean hasMatched = true;
 		Token faultyToken = null;

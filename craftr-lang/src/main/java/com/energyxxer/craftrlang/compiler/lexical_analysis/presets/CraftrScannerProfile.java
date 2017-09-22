@@ -8,7 +8,6 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.profiles.ScannerProfi
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenSection;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
-import com.energyxxer.craftrlang.minecraft.MinecraftConstants;
 import com.energyxxer.util.StringLocation;
 
 import java.util.ArrayList;
@@ -28,13 +27,9 @@ import static com.energyxxer.util.StringUtil.TRUE;
 public class CraftrScannerProfile extends ScannerProfile {
 
     /**
-     * Contains all the built-in enum headers.
-     * */
-    private static final List<String> enums = Arrays.asList("BlockType", "Item", "Gamemode", "Stat", "Effect", "Particle", "Enchantment", "Dimension"),
-    /**
      * Contains all the built-in entity names.
      * */
-        entities = new ArrayList<>(CraftrUtil.entities),
+    private static final List<String> entities = new ArrayList<>(CraftrUtil.entities),
     /**
      * Contains special cases for blockstates.
      * */
@@ -48,11 +43,6 @@ public class CraftrScannerProfile extends ScannerProfile {
     static {
         entities.addAll(CraftrUtil.abstract_entities);
     }
-
-    /**
-     * Contains lists of all inner enum values. Warning: VERY long.
-     * */
-    private static final List<List<String>> enum_values = Arrays.asList(MinecraftConstants.block_enums,MinecraftConstants.block_enums,MinecraftConstants.gamemode_enums,MinecraftConstants.block_enums,MinecraftConstants.effect_enums,MinecraftConstants.particle_enums,MinecraftConstants.enchantment_enums,MinecraftConstants.dimension_enums);
 
     /**
      * Creates a Craftr Analysis Profile.
@@ -398,14 +388,8 @@ public class CraftrScannerProfile extends ScannerProfile {
     private void giveAttributes(Token token) {
         token.attributes.put(CraftrTokenAttributes.IS_PSEUDO_KEYWORD, CraftrUtil.pseudo_keywords.contains(token.value));
 
-        //Enum and entities
-        boolean isEnum = enums.contains(token.value);
+        //Entities
         if(token.type == TokenType.IDENTIFIER) {
-            token.attributes.put(CraftrTokenAttributes.IS_ENUM, isEnum);
-            if(isEnum) {
-                bufferData.put("ENUM_PHASE","DOT");
-                bufferData.put("ENUM_NAME",token.value);
-            }
             token.attributes.put(CraftrTokenAttributes.IS_ENTITY, entities.contains(token.value));
         }
         //Braces
@@ -416,23 +400,6 @@ public class CraftrScannerProfile extends ScannerProfile {
 
             if("({[".contains(token.value)) token.attributes.put("BRACE_TYPE", CraftrTokenAttributes.OPENING_BRACE);
             if(")}]".contains(token.value)) token.attributes.put("BRACE_TYPE", CraftrTokenAttributes.CLOSING_BRACE);
-        }
-
-        //Enum values
-        if(token.type == TokenType.DOT && bufferData.get("ENUM_PHASE").equals("DOT")) {
-            bufferData.put("ENUM_PHASE","ENUM_VALUE");
-        } else if(token.type == TokenType.IDENTIFIER && bufferData.get("ENUM_PHASE").equals("ENUM_VALUE")) {
-            String enumName = bufferData.get("ENUM_NAME");
-            String enumValue = token.value;
-
-            if(enums.contains(enumName)) {
-                if(enum_values.get(enums.indexOf(enumName)).contains(enumValue)) {
-                    token.attributes.put("IS_ENUM_VALUE", true);
-                }
-            }
-            bufferData.put("ENUM_PHASE","NONE");
-        } else if(!isEnum) {
-            bufferData.put("ENUM_PHASE","NONE");
         }
     }
 

@@ -3,7 +3,6 @@ package com.energyxxer.craftr.ui.editor.inspector;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.editor.CraftrEditorComponent;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
@@ -15,7 +14,6 @@ import javax.swing.text.JTextComponent;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
@@ -102,20 +100,24 @@ public class Inspector implements Highlighter.HighlightPainter {
 
     public void insertNotices(ArrayList<Notice> notices) {
         for(Notice n : notices) {
-            InspectionType type = InspectionType.SUGGESTION;
-            switch(n.getType()) {
-                case ERROR: {
-                    type = InspectionType.ERROR;
-                    break;
-                }
-                case WARNING: {
-                    type = InspectionType.WARNING;
-                    break;
-                }
-            }
-            InspectionItem item = new InspectionItem(type, n.getMessage(), new StringBounds(editor.getLocationForOffset(n.getLocationIndex()), editor.getLocationForOffset(n.getLocationIndex() + n.getLocationLength())));
-            System.out.println("Created item: " + item);
-            items.add(item);
+            insertNotice(n);
         }
+    }
+
+    public void insertNotice(Notice n) {
+        InspectionType type = InspectionType.SUGGESTION;
+        switch(n.getType()) {
+            case ERROR: {
+                type = InspectionType.ERROR;
+                break;
+            }
+            case WARNING: {
+                type = InspectionType.WARNING;
+                break;
+            }
+        }
+        InspectionItem item = new InspectionItem(type, n.getMessage(), new StringBounds(editor.getLocationForOffset(n.getLocationIndex()), editor.getLocationForOffset(n.getLocationIndex() + n.getLocationLength())));
+        System.out.println("Created item: " + item);
+        items.add(item);
     }
 }

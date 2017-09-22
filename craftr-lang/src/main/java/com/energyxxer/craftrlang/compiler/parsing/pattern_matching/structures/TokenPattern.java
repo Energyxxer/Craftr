@@ -11,6 +11,7 @@ import java.util.List;
 public abstract class TokenPattern<T> {
 
 	protected String name = "";
+	protected ArrayList<String> tags = new ArrayList<>();
 	public abstract T getContents();
 	public abstract TokenPattern<T> setName(String name);
 
@@ -54,4 +55,11 @@ public abstract class TokenPattern<T> {
     public String getName() {
         return name;
     }
+
+	public TokenPattern addTags(List<String> newTags) {
+		tags.addAll(newTags);
+		return this;
+	}
+
+	public abstract void validate();
 }

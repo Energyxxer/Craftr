@@ -1,7 +1,5 @@
 package com.energyxxer.craftr.ui.editor;
 
-import com.energyxxer.util.out.Console;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.Lang;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.display.DisplayModule;
@@ -10,6 +8,8 @@ import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftr.util.linenumber.TextLineNumber;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.Lang;
+import com.energyxxer.util.out.Console;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Main text editorComponent of the program. Has support for syntax highlighting, undo,
@@ -44,6 +45,7 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 	protected Theme syntax;
 
 	private ArrayList<String> styles = new ArrayList<>();
+	HashMap<String, String[]> parserStyles = new HashMap<>();
 
     //public long lastToolTip = new Date().getTime();
 
@@ -141,6 +143,7 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 		}
 
 		this.styles.clear();
+		this.parserStyles.clear();
 		syntax = newSyntax;
 		for(String value : syntax.getValues().keySet()) {
 			if(!value.contains(".")) continue;
@@ -151,6 +154,9 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 			if(style == null) {
 				style = editorComponent.addStyle(name, null);
 				this.styles.add(name);
+				if(name.startsWith("$") && name.contains(".")) {
+					parserStyles.put(name, name.substring(1).toUpperCase().split("\\."));
+				}
 			}
 			switch(value.substring(value.lastIndexOf(".")+1)) {
 				case "foreground": {

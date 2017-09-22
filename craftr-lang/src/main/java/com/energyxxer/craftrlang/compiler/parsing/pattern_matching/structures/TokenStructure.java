@@ -92,4 +92,17 @@ public class TokenStructure extends TokenPattern<TokenPattern<?>> {
 	public String getType() {
 		return "STRUCTURE";
 	}
+
+	@Override
+	public TokenStructure addTags(List<String> newTags) {
+		super.addTags(newTags);
+		return this;
+	}
+
+	@Override
+	public void validate() {
+		if(this.name != null && this.name.length() > 0) this.tags.add(name);
+		group.addTags(this.tags);
+		group.validate();
+	}
 }

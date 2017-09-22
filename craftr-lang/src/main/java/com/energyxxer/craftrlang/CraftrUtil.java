@@ -26,7 +26,7 @@ public class CraftrUtil {
     /**
      * Contains all pseudo-keywords.
      * */
-    public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "compare", "stack", "nbt", "equipment", "multipart", "passengers");
+    public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "compare", "instanceof");
 
     public enum Modifier {
         PUBLIC, STATIC, ABSTRACT, FINAL, PROTECTED, PRIVATE, COMPILATION, INGAME, NATIVE;

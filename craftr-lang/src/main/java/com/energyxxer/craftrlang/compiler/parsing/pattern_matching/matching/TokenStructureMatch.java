@@ -67,12 +67,12 @@ public class TokenStructureMatch extends TokenPatternMatch {
 		st.pop();
 
 		if (longestMatch == null || longestMatch.matched) {
-			return new TokenMatchResponse(true, null, (longestMatch == null) ? 0 : longestMatch.length, (longestMatch == null) ? null : new TokenStructure(this.name, longestMatch.pattern));
+			return new TokenMatchResponse(true, null, (longestMatch == null) ? 0 : longestMatch.length, (longestMatch == null) ? null : new TokenStructure(this.name, longestMatch.pattern).addTags(this.tags));
 		} else {
 			if (longestMatch.length <= 0 && entries.size() > 1) {
-				return new TokenMatchResponse(false, longestMatch.faultyToken, longestMatch.length, this, new TokenStructure(this.name, longestMatch.pattern));
+				return new TokenMatchResponse(false, longestMatch.faultyToken, longestMatch.length, this, new TokenStructure(this.name, longestMatch.pattern).addTags(this.tags));
 			} else {
-				return new TokenMatchResponse(false, longestMatch.faultyToken, longestMatch.length, longestMatch.expected, new TokenStructure(this.name, longestMatch.pattern));
+				return new TokenMatchResponse(false, longestMatch.faultyToken, longestMatch.length, longestMatch.expected, new TokenStructure(this.name, longestMatch.pattern).addTags(this.tags));
 			}
 		}
 

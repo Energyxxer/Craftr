@@ -92,4 +92,16 @@ public class TokenItem extends TokenPattern<Token> {
 	public String getType() {
 		return "ITEM";
 	}
+
+	@Override
+	public TokenItem addTags(List<String> newTags) {
+		super.addTags(newTags);
+		return this;
+	}
+
+	@Override
+	public void validate() {
+		if(this.name != null && this.name.length() > 0) this.tags.add(name);
+		this.token.tags.addAll(this.tags);
+	}
 }

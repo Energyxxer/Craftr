@@ -73,7 +73,7 @@ public class TokenItemMatch extends TokenPatternMatch {
 		int length = (matched) ? 1 : 0;
 		
 		TokenItem item = null;
-		if(tokens.size() > 0) item = new TokenItem(tokens.get(0)).setName(this.name);
+		if(tokens.size() > 0) item = new TokenItem(tokens.get(0)).setName(this.name).addTags(this.tags);
 
 		st.pop();
 		return new TokenMatchResponse(matched, faultyToken, length, (matched) ? null : this, item);

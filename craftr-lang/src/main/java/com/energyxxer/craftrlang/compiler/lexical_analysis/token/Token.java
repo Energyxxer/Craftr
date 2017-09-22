@@ -3,6 +3,7 @@ package com.energyxxer.craftrlang.compiler.lexical_analysis.token;
 import com.energyxxer.util.StringLocation;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -19,8 +20,9 @@ public class Token {
 	public HashMap<TokenSection, String> subSections;
 
 	private static final boolean VERBOSE = false;
+	public ArrayList<String> tags = new ArrayList<>();
 
-	public Token(String value, File file, StringLocation loc) {
+    public Token(String value, File file, StringLocation loc) {
 		this.value = value;
 		this.type = TokenType.IDENTIFIER;
 		this.file = file.getAbsolutePath();
