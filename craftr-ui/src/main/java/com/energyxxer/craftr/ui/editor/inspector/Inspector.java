@@ -1,8 +1,9 @@
 package com.energyxxer.craftr.ui.editor.inspector;
 
+import com.energyxxer.craftr.global.hints.TextHint;
 import com.energyxxer.craftr.main.window.CraftrWindow;
-import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.editor.CraftrEditorComponent;
+import com.energyxxer.craftr.ui.editor.behavior.editmanager.CharacterDriftHandler;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
@@ -14,22 +15,27 @@ import javax.swing.text.JTextComponent;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
 /**
  * Created by User on 1/1/2017.
  */
-public class Inspector implements Highlighter.HighlightPainter {
+public class Inspector implements Highlighter.HighlightPainter, MouseMotionListener {
 
     private volatile ArrayList<InspectionItem> items = new ArrayList<>();
 
-    private Tab tab;
     private CraftrEditorComponent editor;
 
-    public Inspector(Tab tab, CraftrEditorComponent editor) {
-        this.tab = tab;
+    private TextHint hint = CraftrWindow.hintManager.createTextHint("Test Text This Is");
+
+    private InspectionItem rolloverItem = null;
+
+    public Inspector(CraftrEditorComponent editor) {
         this.editor = editor;
+        editor.addMouseMotionListener(this);
 
         try
         {
@@ -98,6 +104,31 @@ public class Inspector implements Highlighter.HighlightPainter {
         } catch(ConcurrentModificationException e) {}
     }
 
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        int index = editor.viewToModel(e.getPoint());
+        for(InspectionItem item : items) {
+            if(index >= item.bounds.start.index && index < item.bounds.end.index) {
+                if(rolloverItem != item) {
+                    rolloverItem = item;
+                    if(!hint.isShowing()) {
+                        hint.setText(item.message);
+                        hint.show(e.getLocationOnScreen(), () -> rolloverItem != null);
+                    }
+                } else if(!hint.isShowing()) {
+                    hint.updateLocation(e.getLocationOnScreen());
+                }
+                return;
+            }
+        }
+        rolloverItem = null;
+    }
+
     public void insertNotices(ArrayList<Notice> notices) {
         for(Notice n : notices) {
             insertNotice(n);
@@ -119,5 +150,12 @@ public class Inspector implements Highlighter.HighlightPainter {
         InspectionItem item = new InspectionItem(type, n.getMessage(), new StringBounds(editor.getLocationForOffset(n.getLocationIndex()), editor.getLocationForOffset(n.getLocationIndex() + n.getLocationLength())));
         System.out.println("Created item: " + item);
         items.add(item);
+    }
+
+    public void registerCharacterDrift(CharacterDriftHandler h) {
+        for(InspectionItem item : items) {
+            item.bounds.start = editor.getLocationForOffset(h.shift(item.bounds.start.index));
+            item.bounds.end = editor.getLocationForOffset(h.shift(item.bounds.end.index));
+        }
     }
 }

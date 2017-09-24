@@ -54,8 +54,13 @@ public class InsertionEdit extends Edit {
                 ((AbstractDocument) doc).replace(start, end - start, value, null);
 
                 characterDrift += value.length() - (end - start);
-            }
 
+                final int fstart = start;
+                final int fend = end;
+                final int flen = value.length();
+
+                editor.registerCharacterDrift(o -> (o >= fstart) ? ((o <= fend) ? fstart + flen : o + value.length() - (fend - fstart)): o);
+            }
             caret.setProfile(nextProfile);
 
         } catch(BadLocationException e) {
@@ -88,6 +93,12 @@ public class InsertionEdit extends Edit {
                 str = str.substring(0, start) + previousValue + str.substring(resultEnd);
 
                 ((AbstractDocument) doc).replace(start, resultEnd - start, previousValue, null);
+
+                final int fstart = start;
+                final int flen = value.length();
+                final int fplen = previousValue.length();
+
+                editor.registerCharacterDrift(o -> (o >= fstart) ? ((o <= fstart + flen) ? fstart + fplen : o + (fplen - flen)): o);
             }
 
             caret.setProfile(previousProfile);

@@ -5,6 +5,7 @@ import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.craftr.ui.editor.behavior.caret.Dot;
 import com.energyxxer.craftr.ui.editor.behavior.caret.EditorCaret;
+import com.energyxxer.craftr.ui.editor.behavior.editmanager.CharacterDriftHandler;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.EditManager;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.DeletionEdit;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.edits.IndentEdit;
@@ -121,7 +122,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             e.consume();
 
             CaretProfile profile = caret.getProfile();
-            if(profile.getSelectedCharCount() == 0) {
+            if(profile.getSelectedCharCount() == 0 && !e.isShiftDown()) {
                 editManager.insertEdit(new TabInsertionEdit(this));
             } else {
                 editManager.insertEdit(new IndentEdit(this, e.isShiftDown()));
@@ -286,6 +287,10 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             index++;
         }
         return index;
+    }
+
+    public void registerCharacterDrift(CharacterDriftHandler h) {
+
     }
 
     //Delegates and deprecated managers

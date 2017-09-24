@@ -57,6 +57,10 @@ public class TabInsertionEdit extends Edit {
                 actionPerformed = true;
 
                 characterDrift += spacesToAdd;
+
+                int fsta = spacesToAdd;
+
+                editor.registerCharacterDrift(o -> (o >= selectionStart) ? o + fsta : o);
             }
         } catch(BadLocationException x) {
             x.printStackTrace();
@@ -76,6 +80,8 @@ public class TabInsertionEdit extends Edit {
                 int spacesToRemove = spacesAdded.get(i/2);
 
                 doc.remove(selectionStart, spacesToRemove);
+
+                editor.registerCharacterDrift(o -> (o >= selectionStart) ? o - spacesToRemove : o);
             }
         } catch(BadLocationException x) {
             x.printStackTrace();

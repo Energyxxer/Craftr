@@ -4,7 +4,6 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenPatternMatch;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.util.StringUtil;
 
 public class TokenMatchResponse {
 	public final boolean matched;
@@ -53,37 +52,12 @@ public class TokenMatchResponse {
 	public String getErrorMessage() {
 		if (!matched) {
 			if(faultyToken == null) {
-				return "Unexpected end of input. Expected " + expected.toTrimmedString();
+				return "Expected " + expected.toTrimmedString();
 			}
 			if(faultyToken.type == TokenType.END_OF_FILE) {
-				return "Unexpected end of input. Expected " + expected.toTrimmedString();
+				return "Expected " + expected.toTrimmedString();
 			}
-			return "Unexpected token " + faultyToken.value + ". Expected " + expected.toTrimmedString()
-					+ ", instead got " + faultyToken.type;
-		}
-		return null;
-	}
-
-	public String getFormattedErrorMessage() {
-		if (!matched) {
-			if(faultyToken == null) {
-				return "Uncaught Syntax Error: Unexpected end of input. Expected "
-						+ expected + ".\n";
-			}
-			if(expected == null) {
-				return "Uncaught Syntax Error: Unexpected token " + faultyToken.value
-						+ ".\n\tat "
-						+ faultyToken.getFormattedPath() + "";
-			}
-			if(faultyToken.type == TokenType.END_OF_FILE) {
-				return "Uncaught Syntax Error: Unexpected end of input. Expected "
-						+ StringUtil.escapeHTML(expected.toTrimmedString()) + ".\n\tat "
-						+ faultyToken.getFormattedPath() + "";
-			}
-			return "Uncaught Syntax Error: Unexpected token " + faultyToken.value
-					+ ". Expected " + StringUtil.escapeHTML(expected.toTrimmedString())
-					+ ", instead got " + faultyToken.type + "\n\tat "
-					+ faultyToken.getFormattedPath() + "";
+			return "Unexpected token '" + faultyToken.value + "'. " + expected.toTrimmedString() + " expected";
 		}
 		return null;
 	}

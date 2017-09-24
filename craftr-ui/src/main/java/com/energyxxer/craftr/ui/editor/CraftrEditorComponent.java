@@ -2,6 +2,7 @@ package com.energyxxer.craftr.ui.editor;
 
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
+import com.energyxxer.craftr.ui.editor.behavior.editmanager.CharacterDriftHandler;
 import com.energyxxer.craftr.ui.editor.inspector.Inspector;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.Lang;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
@@ -52,7 +53,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
 
         sd = this.getStyledDocument();
 
-        if(Lang.getLangForFile(parent.associatedTab.path) != null) this.inspector = new Inspector(parent.associatedTab, this);
+        if(Lang.getLangForFile(parent.associatedTab.path) != null) this.inspector = new Inspector(this);
 
         this.addCaretListener(this);
 
@@ -140,6 +141,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
         }
 
         if(match != null && !match.matched) {
+            CraftrWindow.setStatus(match.getErrorMessage());
             newNotices.add(new Notice(NoticeType.ERROR, match.getErrorMessage(), match.faultyToken.getFormattedPath()));
             sd.setCharacterAttributes(match.faultyToken.loc.index, match.faultyToken.value.length(), CraftrEditorComponent.this.getStyle("error"), true);
         }
@@ -166,6 +168,13 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
                 }
             },"Text Highlighter").start();
         }
+    }
+
+    @Override
+    public void registerCharacterDrift(CharacterDriftHandler h) {
+        super.registerCharacterDrift(h);
+
+        this.inspector.registerCharacterDrift(h);
     }
 
     @Override

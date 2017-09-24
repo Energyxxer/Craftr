@@ -57,9 +57,10 @@ public class IndentEdit extends Edit {
                 int start = new Dot(Math.min(selectionStart,selectionEnd),editor).getRowStart();
                 int end = new Dot(Math.max(selectionStart,selectionEnd),editor).getRowEnd();
 
+                int spacesChanged = 0;
+
                 for(int l = start; l <= end + characterDrift; l = new Dot(l, editor).getPositionBelow()) {
                     int spaces = StringUtil.getSequenceCount(text," ", l - characterDrift);
-                    //Console.debug.println(spaces);
                     if(!reverse) {
                         int spacesToAdd = 4 - (spaces % 4);
                         spacesToAdd = (spacesToAdd > 0) ? spacesToAdd : 4;
@@ -70,13 +71,14 @@ public class IndentEdit extends Edit {
                         actionPerformed = true;
                         if(l == end + characterDrift) break;
                         characterDrift += spacesToAdd;
+                        spacesChanged += spacesToAdd;
                     } else {
                         if(spaces == 0) {
                             if(l == end + characterDrift) break; continue;
                         }
                         int spacesToRemove = (spaces % 4 == 0) ? 4 : spaces % 4;
                         if(spacesToRemove != 0) {
-                            nextProfile.pushFrom(l,-spacesToRemove);
+                            nextProfile.pushFrom(l,Math.min(0,spaces - (Math.min(selectionStart, selectionEnd) - start) - spacesToRemove));
                         }
                         actionPerformed = true;
                         doc.remove(l,spacesToRemove);
@@ -84,8 +86,13 @@ public class IndentEdit extends Edit {
                         modifications.add(spacesToRemove);
                         if(l == end + characterDrift) break;
                         characterDrift -= spacesToRemove;
+                        spacesChanged -= spacesToRemove;
                     }
                 }
+
+                final int fsc = spacesChanged;
+
+                editor.registerCharacterDrift(o -> (o >= start) ? o + fsc : o);
             }
 
             caret.setProfile(nextProfile);
@@ -107,6 +114,8 @@ public class IndentEdit extends Edit {
 
                 if(!reverse) doc.remove(index, spaces);
                 else doc.insertString(index, StringUtil.repeat(" ", spaces), null);
+
+                editor.registerCharacterDrift(o -> (o >= index) ? o - ((!reverse) ? spaces : -spaces) : o);
             }
         } catch(BadLocationException x) {
             x.printStackTrace();

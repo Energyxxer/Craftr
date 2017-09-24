@@ -80,6 +80,11 @@ public class DeletionEdit extends Edit {
                 doc.remove(start, end - start);
 
                 characterDrift += start - end;
+
+                final int fstart = start;
+                final int fend = end;
+
+                editor.registerCharacterDrift(o -> (o >= fstart) ? ((o <= fend) ? fstart : o + (fstart-fend)): o);
             }
 
             if(actionPerformed) caret.setProfile(nextProfile);
@@ -111,6 +116,11 @@ public class DeletionEdit extends Edit {
                 if(previousValue.length() != 0) actionPerformed = true;
 
                 doc.insertString(start, previousValue, null);
+
+                final int fstart = start;
+                final int fplen = previousValue.length();
+
+                editor.registerCharacterDrift(o -> (o >= fstart) ? o + fplen: o);
             }
 
             if(actionPerformed) caret.setProfile(previousProfile);

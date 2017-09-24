@@ -78,6 +78,10 @@ public class NewlineEdit extends Edit {
                 if(pushCaret) nextProfile.add(start + str.length(), start + str.length());
                 else nextProfile.pushFrom(start+1, str.length());
                 characterDrift += (end - start) + (tabs * 4) + 1;
+
+                int ftabs = tabs;
+
+                editor.registerCharacterDrift(o -> (o >= start) ? ((o <= end) ? start + (ftabs * 4) + 1 : o + (ftabs * 4) + 1 - (end - start)) : o);
             }
         } catch(BadLocationException x) {
             x.printStackTrace();
@@ -97,6 +101,11 @@ public class NewlineEdit extends Edit {
                 int start = modificationIndices.get(i);
                 doc.remove(start, nextValues.get(i).length());
                 doc.insertString(start, previousValues.get(i), null);
+
+                final int fnlen = nextValues.get(i).length();
+                final int fplen = previousValues.get(i).length();
+
+                editor.registerCharacterDrift(o -> (o >= start) ? ((o <= start + fnlen) ? start + fplen : o - fnlen + fplen) : o);
             }
         } catch(BadLocationException x) {
             x.printStackTrace();
