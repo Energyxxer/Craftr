@@ -1,4 +1,4 @@
-package com.energyxxer.craftr.ui.common;
+package com.energyxxer.util;
 
 public interface Disposable {
     void dispose();

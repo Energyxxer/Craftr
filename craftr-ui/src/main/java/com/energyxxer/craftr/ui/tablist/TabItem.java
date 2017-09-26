@@ -64,6 +64,7 @@ public class TabItem extends TabListElement {
         FontMetrics fm = g.getFontMetrics();
 
         this.x = master.getOffsetX();
+        this.lastRecordedOffset = x;
         int w = 8 + 16 + 2 + fm.stringWidth(this.name) + 10 + 6 + 15;
         this.width = w;
         int h = master.getHeight();
@@ -135,6 +136,8 @@ public class TabItem extends TabListElement {
         int padding = 5;
         return (e.getX() >= this.x + this.width - 12 - 6 - padding && e.getX() <= this.x + this.width - 12 + padding);
     }
+
+
 
     @Override
     public boolean select(MouseEvent e) {

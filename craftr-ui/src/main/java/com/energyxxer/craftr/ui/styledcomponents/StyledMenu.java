@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.styledcomponents;
 
 import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.craftr.ui.common.Disposable;
+import com.energyxxer.util.Disposable;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.menu.XMenu;
 

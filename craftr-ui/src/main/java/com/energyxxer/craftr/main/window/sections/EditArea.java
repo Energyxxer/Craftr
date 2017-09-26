@@ -5,6 +5,7 @@ import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.scrollbar.InvisibleScrollPaneLayout;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
+import com.energyxxer.xswing.hints.Hint;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -42,8 +43,9 @@ public class EditArea extends JPanel {
         tlm.addThemeChangeListener(t -> tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"TabList.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "TabList.border.color"))));
 
         {
-            ToolbarButton more = new ToolbarButton("more");
-            more.setToolTipText("View all tabs");
+            ToolbarButton more = new ToolbarButton("more", tlm);
+            more.setHintText("View all tabs");
+            more.setPreferredPos(Hint.LEFT);
             more.setPreferredSize(new Dimension(25,25));
             tabActionPanel.add(more);
 

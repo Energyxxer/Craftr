@@ -1,7 +1,9 @@
 package com.energyxxer.craftr.ui.tablist;
 
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
+import com.energyxxer.xswing.hints.TextHint;
 
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -29,6 +31,8 @@ public class TabListMaster extends JPanel implements MouseListener, MouseMotionL
     float dragPivot = -1;
     TabListElement draggedElement = null;
 
+    private TextHint hint = CraftrWindow.hintManager.createTextHint("a");
+
     private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public TabListMaster() {
@@ -46,6 +50,8 @@ public class TabListMaster extends JPanel implements MouseListener, MouseMotionL
             selectionStyle = t.getString("TabList.tab.selectionStyle","default:FULL");
             selectionLineThickness = Math.max(t.getInteger(2,"TabList.tab.selectionLineThickness"), 0);
         });
+
+        hint.setOutDelay(1);
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -204,11 +210,13 @@ public class TabListMaster extends JPanel implements MouseListener, MouseMotionL
             element.setRollover(true);
             if(rolloverElement != element) {
                 element.mouseEntered(e);
-                this.setToolTipText(element.getToolTipText());
+                String text = element.getToolTipText();
+                if(text != null && (rolloverElement != null || !hint.isShowing())) {
+                    hint.setText(text);
+                    hint.show(new Point(this.getLocationOnScreen().x+element.getLastRecordedOffset()+element.getWidth()/2,this.getLocationOnScreen().y+this.getHeight()/2), () -> rolloverElement == element);
+                }
             }
             element.mouseMoved(e);
-        } else {
-            this.setToolTipText(null);
         }
         repaint();
         rolloverElement = element;

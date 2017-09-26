@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.ui.editor.inspector;
 
-import com.energyxxer.craftr.global.hints.TextHint;
+import com.energyxxer.craftr.ui.HintStylizer;
+import com.energyxxer.xswing.hints.TextHint;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.editor.CraftrEditorComponent;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.CharacterDriftHandler;
@@ -29,7 +30,7 @@ public class Inspector implements Highlighter.HighlightPainter, MouseMotionListe
 
     private CraftrEditorComponent editor;
 
-    private TextHint hint = CraftrWindow.hintManager.createTextHint("Test Text This Is");
+    private TextHint hint = CraftrWindow.hintManager.createTextHint("a");
 
     private InspectionItem rolloverItem = null;
 
@@ -42,6 +43,8 @@ public class Inspector implements Highlighter.HighlightPainter, MouseMotionListe
             editor.getHighlighter().addHighlight(0, 0, this);
         }
         catch(BadLocationException ble) {}
+
+        hint.setInteractive(true);
     }
 
     public void inspect(TokenStream ts) {
@@ -61,7 +64,7 @@ public class Inspector implements Highlighter.HighlightPainter, MouseMotionListe
         try {
             for (InspectionItem item : items) {
 
-                g.setColor(CraftrWindow.getTheme().getColor(item.type.colorKey));
+                g.setColor(CraftrWindow.getTheme().getColor("Inspector." + item.type.key));
 
                 try {
 
@@ -118,6 +121,7 @@ public class Inspector implements Highlighter.HighlightPainter, MouseMotionListe
                     rolloverItem = item;
                     if(!hint.isShowing()) {
                         hint.setText(item.message);
+                        HintStylizer.style(hint, item.type.key);
                         hint.show(e.getLocationOnScreen(), () -> rolloverItem != null);
                     }
                 } else if(!hint.isShowing()) {

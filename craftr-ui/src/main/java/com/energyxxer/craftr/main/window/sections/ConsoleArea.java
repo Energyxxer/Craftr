@@ -7,6 +7,7 @@ import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.util.out.Console;
 import com.energyxxer.util.out.ConsoleOutputStream;
+import com.energyxxer.xswing.hints.Hint;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -50,8 +51,9 @@ public class ConsoleArea extends JPanel {
         JPanel consoleActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
         consoleActionPanel.setOpaque(false);
 
-        ToolbarButton toggle = new ToolbarButton("toggle", true);
-        toggle.setToolTipText("Toggle Console");
+        ToolbarButton toggle = new ToolbarButton("toggle", tlm);
+        toggle.setHintText("Toggle Console");
+        toggle.setPreferredPos(Hint.LEFT);
         toggle.setPreferredSize(new Dimension(20,20));
 
         toggle.addActionListener(e -> {
@@ -65,10 +67,10 @@ public class ConsoleArea extends JPanel {
         });
 
 
-        ToolbarButton clear = new ToolbarButton("clear", true);
-        clear.setToolTipText("Clear Console");
+        ToolbarButton clear = new ToolbarButton("clear", tlm);
+        clear.setHintText("Clear Console");
+        clear.setPreferredPos(Hint.LEFT);
         clear.setPreferredSize(new Dimension(20,20));
-
 
         consoleActionPanel.add(clear);
         consoleActionPanel.add(toggle);

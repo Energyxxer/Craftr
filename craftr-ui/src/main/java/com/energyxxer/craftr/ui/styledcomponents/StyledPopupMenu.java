@@ -1,6 +1,6 @@
 package com.energyxxer.craftr.ui.styledcomponents;
 
-import com.energyxxer.craftr.ui.common.Disposable;
+import com.energyxxer.util.Disposable;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
 import javax.swing.BorderFactory;

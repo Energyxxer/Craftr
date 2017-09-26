@@ -9,6 +9,7 @@ import com.energyxxer.craftr.ui.ToolbarSeparator;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftrlang.compiler.Compiler;
 import com.energyxxer.util.out.Console;
+import com.energyxxer.xswing.hints.TextHint;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -21,9 +22,14 @@ import java.awt.Dimension;
  */
 public class Toolbar extends JPanel {
 
-    private ThemeListenerManager tlm = new ThemeListenerManager();
+    public TextHint hint = CraftrWindow.hintManager.createTextHint("");
+
+    public ThemeListenerManager tlm;
     
     {
+        this.tlm = new ThemeListenerManager();
+        this.hint.setOutDelay(1);
+
         this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         this.setPreferredSize(new Dimension(1, 30));
         tlm.addThemeChangeListener(t -> {
@@ -34,77 +40,77 @@ public class Toolbar extends JPanel {
         this.add(new ToolbarSeparator());
 
         {
-            ToolbarButton button = new ToolbarButton("project");
-            button.setToolTipText("New Project");
+            ToolbarButton button = new ToolbarButton("project",tlm);
+            button.setHintText("New Project");
             button.addActionListener(e -> FileType.PROJECT.create(null));
             this.add(button);
         }
 
         {
-            ToolbarButton button = new ToolbarButton("save");
-            button.setToolTipText("Save File");
+            ToolbarButton button = new ToolbarButton("save",tlm);
+            button.setHintText("Save File");
             this.add(button);
         }
 
         {
-            ToolbarButton button = new ToolbarButton("save_all");
-            button.setToolTipText("Save All Files");
-            this.add(button);
-        }
-
-        this.add(new ToolbarSeparator());
-
-        {
-            ToolbarButton button = new ToolbarButton("undo");
-            button.setToolTipText("Undo");
-            this.add(button);
-        }
-
-        {
-            ToolbarButton button = new ToolbarButton("redo");
-            button.setToolTipText("Redo");
+            ToolbarButton button = new ToolbarButton("save_all",tlm);
+            button.setHintText("Save All Files");
             this.add(button);
         }
 
         this.add(new ToolbarSeparator());
 
         {
-            ToolbarButton button = new ToolbarButton("world");
-            button.setToolTipText("New Global File");
+            ToolbarButton button = new ToolbarButton("undo",tlm);
+            button.setHintText("Undo");
+            this.add(button);
+        }
+
+        {
+            ToolbarButton button = new ToolbarButton("redo",tlm);
+            button.setHintText("Redo");
             this.add(button);
         }
 
         this.add(new ToolbarSeparator());
 
         {
-            ToolbarButton button = new ToolbarButton("entity");
-            button.setToolTipText("New Entity");
-            this.add(button);
-        }
-
-        {
-            ToolbarButton button = new ToolbarButton("item");
-            button.setToolTipText("New Item");
-            this.add(button);
-        }
-
-        {
-            ToolbarButton button = new ToolbarButton("feature");
-            button.setToolTipText("New Feature");
-            this.add(button);
-        }
-
-        {
-            ToolbarButton button = new ToolbarButton("class");
-            button.setToolTipText("New Class");
+            ToolbarButton button = new ToolbarButton("world",tlm);
+            button.setHintText("New Global File");
             this.add(button);
         }
 
         this.add(new ToolbarSeparator());
 
         {
-            ToolbarButton button = new ToolbarButton("export");
-            button.setToolTipText("Generate Structure");
+            ToolbarButton button = new ToolbarButton("entity",tlm);
+            button.setHintText("New Entity");
+            this.add(button);
+        }
+
+        {
+            ToolbarButton button = new ToolbarButton("item",tlm);
+            button.setHintText("New Item");
+            this.add(button);
+        }
+
+        {
+            ToolbarButton button = new ToolbarButton("feature",tlm);
+            button.setHintText("New Feature");
+            this.add(button);
+        }
+
+        {
+            ToolbarButton button = new ToolbarButton("class",tlm);
+            button.setHintText("New Class");
+            this.add(button);
+        }
+
+        this.add(new ToolbarSeparator());
+
+        {
+            ToolbarButton button = new ToolbarButton("export",tlm);
+            button.setHintText("Generate Structure");
             button.addActionListener(e -> {
                 if(Commons.getSelectedProject() == null) return;
                 Compiler c = new Compiler(Commons.getSelectedProject());

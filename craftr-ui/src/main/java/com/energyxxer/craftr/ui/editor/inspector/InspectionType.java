@@ -5,18 +5,18 @@ package com.energyxxer.craftr.ui.editor.inspector;
  */
 public enum InspectionType {
 
-    SUGGESTION("Inspector.suggestion"), WARNING("Inspector.warning", true), ERROR("Inspector.error", true);
+    SUGGESTION("suggestion"), WARNING("warning", true), ERROR("error", true);
 
-    public String colorKey;
+    public String key;
     public boolean line;
 
-    InspectionType(String colorKey) {
-        this.colorKey = colorKey;
+    InspectionType(String key) {
+        this.key = key;
         line = false;
     }
 
-    InspectionType(String colorKey, boolean line) {
-        this.colorKey = colorKey;
+    InspectionType(String key, boolean line) {
+        this.key = key;
         this.line = line;
     }
 }

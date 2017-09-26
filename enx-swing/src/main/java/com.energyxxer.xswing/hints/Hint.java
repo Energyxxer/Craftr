@@ -1,8 +1,8 @@
-package com.energyxxer.craftr.global.hints;
+package com.energyxxer.xswing.hints;
 
-import com.energyxxer.craftr.ui.common.Disposable;
 import com.energyxxer.util.Confirmation;
 import com.energyxxer.util.Constant;
+import com.energyxxer.util.Disposable;
 import com.energyxxer.xswing.Padding;
 
 import javax.swing.JDialog;
@@ -34,20 +34,21 @@ public class Hint extends JDialog implements MouseListener, Disposable {
 
     private Confirmation visibilityCheck = null;
 
-    int IN_DELAY = 20;
-    int OUT_DELAY = 60;
+    boolean disposed = false;
+
+    int inDelay = 20;
+    int outDelay = 60;
 
     int timer = 0;
-
-    boolean disposed = false;
 
     private int x,y;
     private Component content;
     private boolean rollover = false;
+    private int arrowOffset = 0;
 
     private Constant preferredPos = BELOW;
     private Constant realPos = BELOW;
-    private int arrowOffset = 0;
+    private boolean interactive = false;
 
     private Color background = new Color(60, 63, 65);
     private Color border = new Color(91, 93, 95);
@@ -56,7 +57,6 @@ public class Hint extends JDialog implements MouseListener, Disposable {
 
     public Hint(JFrame owner) {
         super(owner);
-
         this.setUndecorated(true);
         this.setBackground(new Color(0,0,0,0));
         this.setContentPane(new JPanel(new BorderLayout()) {
@@ -212,7 +212,9 @@ public class Hint extends JDialog implements MouseListener, Disposable {
 
     public void forceShow() {
         this.update();
+        this.setFocusableWindowState(false);
         this.setVisible(true);
+        this.setFocusableWindowState(interactive);
     }
 
     public void show(Point loc, Confirmation visibilityCheck) {
@@ -220,7 +222,7 @@ public class Hint extends JDialog implements MouseListener, Disposable {
         this.y = loc.y;
         this.visibilityCheck = visibilityCheck;
         if(timer >= 0) dismiss();
-        timer = -IN_DELAY;
+        timer = -inDelay;
 
     }
 
@@ -234,9 +236,18 @@ public class Hint extends JDialog implements MouseListener, Disposable {
         this.visibilityCheck = visibilityCheck;
     }
 
+    public boolean isInteractive() {
+        return interactive;
+    }
+
+    public void setInteractive(boolean interactive) {
+        this.interactive = interactive;
+    }
+
     public void dismiss() {
         this.setVisible(false);
         this.rollover = false;
+        this.timer = 0;
     }
 
     public void setContent(Component content) {
@@ -261,8 +272,50 @@ public class Hint extends JDialog implements MouseListener, Disposable {
         this.revalidate();
     }
 
+    public Constant getPreferredPos() {
+        return preferredPos;
+    }
+
+    public void setPreferredPos(Constant preferredPos) {
+        this.preferredPos = preferredPos;
+    }
+
+    public int getInDelay() {
+        return inDelay;
+    }
+
+    public void setInDelay(int inDelay) {
+        if(inDelay <= 0) throw new IllegalArgumentException("Hint in-delay must be positive.");
+        this.inDelay = inDelay;
+    }
+
+    public int getOutDelay() {
+        return outDelay;
+    }
+
+    public void setOutDelay(int outDelay) {
+        if(outDelay <= 0) throw new IllegalArgumentException("Hint out-delay must be positive.");
+        this.outDelay = outDelay;
+    }
+
     public boolean shouldContinueShowing() {
         return rollover || (this.visibilityCheck != null && this.visibilityCheck.confirm());
+    }
+
+    public Color getBackgroundColor() {
+        return background;
+    }
+
+    public Color getBorderColor() {
+        return border;
+    }
+
+    public void setBackgroundColor(Color background) {
+        this.background = background;
+    }
+
+    public void setBorderColor(Color border) {
+        this.border = border;
     }
 
     @Override

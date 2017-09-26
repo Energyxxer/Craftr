@@ -10,12 +10,17 @@ public abstract class TabListElement implements MouseListener, MouseMotionListen
     protected boolean selected;
     protected boolean rollover;
 
+    protected int lastRecordedOffset = 0;
+
     public TabListElement(TabListMaster master) {
         this.master = master;
     }
 
     public abstract void render(Graphics g);
     public abstract int getWidth();
+    public int getLastRecordedOffset() {
+        return lastRecordedOffset;
+    }
 
     public boolean isSelected() {
         return selected;

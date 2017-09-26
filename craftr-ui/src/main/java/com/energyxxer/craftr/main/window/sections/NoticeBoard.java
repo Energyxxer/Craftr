@@ -6,6 +6,7 @@ import com.energyxxer.craftr.ui.explorer.NoticeExplorerMaster;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollPaneLayout;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
+import com.energyxxer.xswing.hints.Hint;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -55,8 +56,9 @@ public class NoticeBoard extends JPanel {
         JPanel consoleActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
         consoleActionPanel.setOpaque(false);
 
-        ToolbarButton toggle = new ToolbarButton("toggle", true);
-        toggle.setToolTipText("Toggle Board");
+        ToolbarButton toggle = new ToolbarButton("toggle", tlm);
+        toggle.setHintText("Toggle Board");
+        toggle.setPreferredPos(Hint.LEFT);
         toggle.setPreferredSize(new Dimension(20,20));
 
         toggle.addActionListener(e -> {
@@ -67,8 +69,9 @@ public class NoticeBoard extends JPanel {
             }
         });
 
-        ToolbarButton clear = new ToolbarButton("clear", true);
-        clear.setToolTipText("Clear Board");
+        ToolbarButton clear = new ToolbarButton("clear", tlm);
+        clear.setHintText("Clear Board");
+        clear.setPreferredPos(Hint.LEFT);
         clear.setPreferredSize(new Dimension(20,20));
 
         consoleActionPanel.add(clear);

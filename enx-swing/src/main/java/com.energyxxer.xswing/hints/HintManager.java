@@ -1,6 +1,4 @@
-package com.energyxxer.craftr.global.hints;
-
-import com.energyxxer.craftr.main.window.CraftrWindow;
+package com.energyxxer.xswing.hints;
 
 import javax.swing.JFrame;
 import java.awt.MouseInfo;
@@ -31,40 +29,34 @@ public class HintManager {
                     if(hint.timer < 0) {
                         hint.timer++;
                         if(!hint.shouldContinueShowing()) {
-                            CraftrWindow.setStatus("Canceled fade-in");
                             hint.timer = 0;
                             continue;
                         }
                         if(hint.timer == 0) {
-                            CraftrWindow.setStatus("Force showing");
                             hint.forceShow();
                         }
                     } else if(hint.timer == 0) {
                         if(hint.isShowing()) {
-                            double distance = hint.getDistanceFromPoint(MouseInfo.getPointerInfo().getLocation());
-                            if(distance >= FADE_DISTANCE) {
+                            double distance = (hint.isInteractive()) ? hint.getDistanceFromPoint(MouseInfo.getPointerInfo().getLocation()) : 0;
+                            if(!hint.isInteractive() || distance >= FADE_DISTANCE) {
                                 if(!hint.shouldContinueShowing()) {
-                                    CraftrWindow.setStatus("Started fade-out");
-                                    hint.timer = hint.OUT_DELAY;
+                                    hint.timer = hint.outDelay;
                                 }
                             }
                         }
                     } else {
                         double distance = hint.getDistanceFromPoint(MouseInfo.getPointerInfo().getLocation());
                         if(distance >= FORCE_HIDE_DISTANCE) {
-                            CraftrWindow.setStatus("Dismissed due to distance");
                             hint.timer = 0;
                             hint.dismiss();
                             continue;
                         }
                         if(hint.shouldContinueShowing()) {
-                            CraftrWindow.setStatus("Canceled fade-out");
                             hint.timer = 0;
                             continue;
                         }
                         hint.timer--;
                         if(hint.timer == 0) {
-                            CraftrWindow.setStatus("Dismissed due to timeout");
                             hint.dismiss();
                         }
                     }

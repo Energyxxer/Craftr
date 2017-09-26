@@ -1,6 +1,5 @@
 package com.energyxxer.craftr.main.window;
 
-import com.energyxxer.craftr.global.hints.HintManager;
 import com.energyxxer.craftr.global.Status;
 import com.energyxxer.craftr.main.Craftr;
 import com.energyxxer.craftr.main.window.sections.EditArea;
@@ -17,6 +16,7 @@ import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.util.ImageManager;
+import com.energyxxer.xswing.hints.HintManager;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;

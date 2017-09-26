@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.theme.change;
 
 import com.energyxxer.craftr.main.window.CraftrWindow;
-import com.energyxxer.craftr.ui.common.Disposable;
+import com.energyxxer.util.Disposable;
 import com.energyxxer.craftr.ui.theme.Theme;
 
 import java.util.ArrayList;

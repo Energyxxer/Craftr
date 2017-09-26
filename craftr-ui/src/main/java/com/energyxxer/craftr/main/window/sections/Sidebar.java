@@ -7,7 +7,6 @@ import com.energyxxer.craftr.ui.explorer.ProjectExplorerMaster;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollPaneLayout;
 import com.energyxxer.craftr.ui.styledcomponents.Padding;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
-import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
 import javax.swing.BorderFactory;
@@ -48,8 +47,8 @@ public class Sidebar extends JPanel {
             label.setPreferredSize(new Dimension(500, t.getInteger(25, "Explorer.header.height")));
         });
 
-        ToolbarButton refresh = new ToolbarButton("reload");
-        refresh.setToolTipText("Refresh Explorer");
+        ToolbarButton refresh = new ToolbarButton("reload", tlm);
+        refresh.setHintText("Refresh Explorer");
 
         refresh.addActionListener(e -> CraftrWindow.projectExplorer.refresh());
 
