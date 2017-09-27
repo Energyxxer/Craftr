@@ -82,7 +82,7 @@ class SettingsGeneral extends JPanel {
             }
 
             {
-                StyledTextField nameField = new StyledTextField(Preferences.get("username","User"),"Settings.content");
+                StyledTextField nameField = new StyledTextField("","Settings.content");
                 nameField.setMaximumSize(new Dimension(300,25));
                 nameField.setAlignmentX(Component.LEFT_ALIGNMENT);
                 Settings.addOpenEvent(() -> nameField.setText(Preferences.get("username","User")));
@@ -92,6 +92,25 @@ class SettingsGeneral extends JPanel {
                         Preferences.put("username",nameField.getText().trim());
                 });
                 content.add(nameField);
+            }
+
+            {
+                StyledLabel label = new StyledLabel("Native Library Path (ADVANCED):","Settings.content");
+                label.setStyle(Font.BOLD);
+                content.add(label);
+            }
+
+            {
+                StyledTextField libField = new StyledTextField("","Settings.content");
+                libField.setMaximumSize(new Dimension(300,25));
+                libField.setAlignmentX(Component.LEFT_ALIGNMENT);
+                Settings.addOpenEvent(() -> libField.setText(Preferences.get("nativelib","null")));
+                Settings.addApplyEvent(() -> {
+                    String text = libField.getText();
+                    if(text.trim().length() > 0)
+                        Preferences.put("nativelib",libField.getText().trim());
+                });
+                content.add(libField);
             }
         }
     }

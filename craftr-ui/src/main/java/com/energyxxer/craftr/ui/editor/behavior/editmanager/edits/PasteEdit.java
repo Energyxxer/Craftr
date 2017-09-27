@@ -10,17 +10,40 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.util.ArrayList;
 
-/**
- * Created by User on 1/10/2017.
- */
-public class InsertionEdit extends Edit {
-    private String value;
+public class PasteEdit extends Edit {
+    private String[] values;
     private ArrayList<String> previousValues = new ArrayList<>();
     private CaretProfile previousProfile;
 
-    public InsertionEdit(String value, AdvancedEditor editor) {
-        this.value = value;
+    public PasteEdit(String value, AdvancedEditor editor) {
+        this.values = new String[] {value};
         this.previousProfile = editor.getCaret().getProfile();
+        if(this.values.length == 1) {
+            String[] newValues = new String[previousProfile.size()];
+            for(int i = 0; i < newValues.length; i++) {
+                newValues[i] = value;
+            }
+            this.values = newValues;
+        }
+    }
+
+    public PasteEdit(String[] values, AdvancedEditor editor) {
+        this.values = values;
+        this.previousProfile = editor.getCaret().getProfile();
+
+        if(this.previousProfile.size()/2 <= 1) {
+            StringBuilder sb = new StringBuilder();
+            for(String str : this.values) {
+                sb.append(str);
+            }
+            this.values = new String[] {sb.toString()};
+        } else if(this.values.length == 1) {
+            String[] newValues = new String[previousProfile.size()];
+            for(int i = 0; i < newValues.length; i++) {
+                newValues[i] = this.values[0];
+            }
+            this.values = newValues;
+        }
     }
 
     @Override
@@ -29,14 +52,14 @@ public class InsertionEdit extends Edit {
         Document doc = editor.getDocument();
         EditorCaret caret = editor.getCaret();
         try {
-            String result = doc.getText(0, doc.getLength()); //Result
-
             int characterDrift = 0;
 
             previousValues.clear();
             CaretProfile nextProfile = new CaretProfile();
 
-            for (int i = 0; i < previousProfile.size() - 1; i += 2) {
+            int i = 0;
+            for(String value : values) {
+                if(i >= previousProfile.size()-1) break;
                 int start = previousProfile.get(i) + characterDrift;
                 int end = previousProfile.get(i + 1) + characterDrift;
                 if(end < start) {
@@ -44,8 +67,7 @@ public class InsertionEdit extends Edit {
                     start = end;
                     end = temp;
                 }
-                previousValues.add(result.substring(start, end));
-                result = result.substring(0, start) + value + result.substring(end);
+                previousValues.add(doc.getText(start, end-start));
 
                 nextProfile.add(start+value.length(),start+value.length());
 
@@ -58,12 +80,20 @@ public class InsertionEdit extends Edit {
                 final int flen = value.length();
 
                 editor.registerCharacterDrift(o -> (o >= fstart) ? ((o <= fend) ? fstart + flen : o + value.length() - (fend - fstart)): o);
+
+                i += 2;
+            }
+            for(; i < previousProfile.size()-1; i++) {
+                int start = previousProfile.get(i) + characterDrift;
+                int end = previousProfile.get(i + 1) + characterDrift;
+                nextProfile.add(start, end);
             }
             caret.setProfile(nextProfile);
-
-        } catch(BadLocationException e) {
-            e.printStackTrace();
+        } catch(BadLocationException x) {
+            x.printStackTrace();
+            return false;
         }
+
         return true;
     }
 
@@ -73,34 +103,32 @@ public class InsertionEdit extends Edit {
         Document doc = editor.getDocument();
         EditorCaret caret = editor.getCaret();
         try {
-            String str = doc.getText(0, doc.getLength());
 
-            for (int i = 0; i < previousProfile.size() - 1; i += 2) {
-                int start = Math.min(previousProfile.get(i), previousProfile.get(i+1));
-                int resultEnd = start + value.length();
-                if(resultEnd < start) {
-                    int temp = start;
-                    start = resultEnd;
-                    resultEnd = temp;
+            int i = 0;
+            for(String value : values) {
+                if(i >= previousProfile.size()-1) break;
+                int start = previousProfile.get(i);
+                int end = previousProfile.get(i + 1);
+                if(end < start) {
+                    start = end;
+                    //No further use of end
                 }
 
-                String previousValue = previousValues.get(i / 2);
-
-                str = str.substring(0, start) + previousValue + str.substring(resultEnd);
-
-                ((AbstractDocument) doc).replace(start, resultEnd - start, previousValue, null);
+                ((AbstractDocument) doc).replace(start, value.length(), previousValues.get(i/2), null);
 
                 final int fstart = start;
+                final int fplen = previousValues.get(i/2).length();
                 final int flen = value.length();
-                final int fplen = previousValue.length();
 
                 editor.registerCharacterDrift(o -> (o >= fstart) ? ((o <= fstart + flen) ? fstart + fplen : o + (fplen - flen)): o);
+
+                i += 2;
             }
 
             caret.setProfile(previousProfile);
-
-        } catch(BadLocationException e) {
-            e.printStackTrace();
+        } catch(BadLocationException x) {
+            x.printStackTrace();
+            return false;
         }
         return true;
     }

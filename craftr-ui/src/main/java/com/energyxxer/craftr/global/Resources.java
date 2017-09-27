@@ -44,7 +44,7 @@ public class Resources {
         ThemeManager.loadAll();
         FileDefaults.loadAll();
 
-        File nativesFolder = new File(System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "natives" + File.separator);
+        File nativesFolder = new File(Preferences.get("nativelib"));
         if(!nativesFolder.exists()) nativesFolder.mkdirs();
         else nativeLib = new CraftrLibrary(nativesFolder);
     }

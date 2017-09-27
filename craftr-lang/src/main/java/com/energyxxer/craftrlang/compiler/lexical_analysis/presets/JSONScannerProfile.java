@@ -6,6 +6,7 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.profiles.ScannerProfi
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenSection;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
+import com.energyxxer.util.StringLocation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +47,9 @@ public class JSONScannerProfile extends ScannerProfile {
                         char c = str.charAt(i);
 
                         if(c == '\n') {
-                            throw new RuntimeException("Illegal line end in string literal");
+                            ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), new StringLocation(i,0,i), TokenType.STRING_LITERAL, escapedChars);
+                            response.setError("Illegal line end in string literal", i, 1);
+                            return response;
                         }
                         token.append(c);
                         if(c == '\\') {
@@ -58,7 +61,9 @@ public class JSONScannerProfile extends ScannerProfile {
                         }
                     }
                     //Unexpected end of input
-                    throw new RuntimeException("Unexpected end of input");
+                    ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), new StringLocation(str.length(), 0, str.length()), TokenType.STRING_LITERAL, escapedChars);
+                    response.setError("Unexpected end of input", str.length()-1, 1);
+                    return response;
                 } else return new ScannerContextResponse(false);
             }
         };

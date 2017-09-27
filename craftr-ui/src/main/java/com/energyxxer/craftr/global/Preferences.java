@@ -12,11 +12,12 @@ public class Preferences {
             .userNodeForPackage(Preferences.class);
 
     static {
-        if(prefs.get("theme",null) == null) prefs.put("theme", "Craftr Light");
+        if(prefs.get("theme",null) == null) prefs.put("theme", "Electron Dark");
         if (prefs.get("workspace_dir", null) == null) {
             prefs.put("workspace_dir", WorkspaceSelector.prompt());
         }
         if(prefs.get("username",null) == null) prefs.put("username", "User");
+        if(prefs.get("nativelib",null) == null) prefs.put("nativelib",System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "natives" + File.separator);
     }
 
     public static void reset() {

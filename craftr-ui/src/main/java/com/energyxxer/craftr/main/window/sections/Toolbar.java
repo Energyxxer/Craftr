@@ -61,22 +61,8 @@ public class Toolbar extends JPanel {
         this.add(new ToolbarSeparator());
 
         {
-            ToolbarButton button = new ToolbarButton("undo",tlm);
-            button.setHintText("Undo");
-            this.add(button);
-        }
-
-        {
-            ToolbarButton button = new ToolbarButton("redo",tlm);
-            button.setHintText("Redo");
-            this.add(button);
-        }
-
-        this.add(new ToolbarSeparator());
-
-        {
             ToolbarButton button = new ToolbarButton("world",tlm);
-            button.setHintText("New Global File");
+            button.setHintText("New Global Unit");
             this.add(button);
         }
 
@@ -110,7 +96,7 @@ public class Toolbar extends JPanel {
 
         {
             ToolbarButton button = new ToolbarButton("export",tlm);
-            button.setHintText("Generate Structure");
+            button.setHintText("Compile");
             button.addActionListener(e -> {
                 if(Commons.getSelectedProject() == null) return;
                 Compiler c = new Compiler(Commons.getSelectedProject());
@@ -123,7 +109,6 @@ public class Toolbar extends JPanel {
                     c.getReport().getErrors().forEach(Console.err::println);
                 });
                 c.compile();
-
             });
             this.add(button);
         }
