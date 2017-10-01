@@ -17,7 +17,7 @@ public class Preferences {
             prefs.put("workspace_dir", WorkspaceSelector.prompt());
         }
         if(prefs.get("username",null) == null) prefs.put("username", "User");
-        if(prefs.get("nativelib",null) == null) prefs.put("nativelib",System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "natives" + File.separator);
+        if(prefs.get("nativelib",null) == null) prefs.put("nativelib",System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "natives" + File.separator + "src" + File.separator);
     }
 
     public static void reset() {

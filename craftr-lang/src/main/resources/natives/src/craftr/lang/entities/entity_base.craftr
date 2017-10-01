@@ -1,0 +1,84 @@
+package craftr.lang.entities;
+
+/**
+* Created by Energyxxer on 27/9/2017.
+*/
+public entity entity_base {
+    
+    //Getters for NBT Data
+    public native Vector3D getPos();
+    public native Vector3D getMotion();
+    public native Rotation getRotation();
+    public native float getFallDistance();
+    public native int getFire();
+    public native int getAir();
+    public native boolean isOnGround();
+    public native boolean isGravityEnabled();
+    public native Dimension getDimension();
+    public native boolean isInvulnerable();
+    public native int getPortalCooldown();
+    public native String getCustomName();
+    public native boolean isCustomNameVisible();
+    public native boolean isSilent();
+    public native entity_base[] getPassengers();
+    public native String[] getTags();
+    
+    //Setters for NBT Data
+    public native void setPos(Vector3D pos);
+    public native void setPos(double x, double y, double z);
+    public native void setMotion(Vector3D motion);
+    public native void setRotation(Rotation rotation);
+    public native void setRotation(float yaw, float pitch);
+    public native void setFallDistance(float distance);
+    public native void setFire(int ticks);
+    public native void setAir(int ticks);
+    public native void setGravityEnabled(boolean enabled);
+    public native void setInvulnerable(boolean invulnerable);
+    public native void setPortalCooldown(int ticks);
+    public native void setCustomNameVisible(boolean visible);
+    public native void setSilent(boolean silent);
+    public native void setGlowing(boolean glowing);
+    
+    //Helper procedures
+    public native void print(String message);
+    // execute
+    public native void execute(String rawCommand); //wait...
+    // tp
+    public native void move(Vector3D offset);
+    public native void move(double x, double y, double z);
+    public native void movePolar(double x, double y, double z); //When ^ ^ ^ coordinates get added
+    public native void rotate(double yaw, double pitch);
+    // kill
+    public native void kill(boolean seamless);
+    public void kill() {
+        this.kill(false);
+    }
+    // particle
+    public native void playParticle(Particle particle, double x, double y, double z, double dx, double dy, double dz, double speed, int count, boolean force, player[] players, String param1, String param2);
+    public native void playParticle(Particle particle, double x, double y, double z, double dx, double dy, double dz, double speed, int count, boolean force);
+    public native void playParticle(Particle particle, Vector3D offset = null, double x = 0, double y = 0, double z = 0, Vector3D size = null, double dx = 0, double dy = 0, double dz = 0, double speed = 0, int count = 1, boolean force = false, player[] players = null, String param1 = null, String param2 = null);
+    public native void playParticle(Particle particle, double x, double y, double z, Color tint);
+    public native void playParticle(Particle particle, Vector3D offset, Vector3D size, double speed, int count, boolean force, player[] players, String param1, String param2);
+    public native void playParticle(Particle particle, Vector3D offset, Vector3D size, double speed, int count, boolean force);
+    public native void playParticle(Particle particle, Vector3D offset, Color tint);
+    // playsound
+    public native void playSound(String sound, SoundSource source, player[] players, Vector3D offset, float volume, float pitch, float minVolume);
+    public native void playSound(String sound, SoundSource source = SoundSource.MASTER, player[] players = null, Vector3D offset = null, float volume = 1, float pitch = 1, float minVolume = 0);
+    // stopsound
+    public native void stopSound(player[] players, SoundSource source, String sound);
+    public native void stopSound(player[] players, SoundSource source = null, String sound = null);
+    // setblock
+    public native void setBlock(Block block, Vector3D offset);
+    // fill
+    public native void fillBlocks(Block block, Vector3D offset0, Vector3D offset1);
+    
+    
+    //Getters for Craftr-custom Data
+    public native boolean isFallDamageEnabled();
+    public native boolean isDrowningEnabled();
+    
+    //Setters for Craftr-custom Data
+    public native void setFallDamageEnabled(boolean enabled);
+    public native void setDrowningEnabled(boolean enabled);
+    
+}

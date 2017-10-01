@@ -3,13 +3,16 @@ package com.energyxxer.craftr.main.window.sections;
 import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.global.Resources;
+import com.energyxxer.craftr.global.Status;
 import com.energyxxer.craftr.global.TabManager;
+import com.energyxxer.craftr.main.Craftr;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.dialogs.ProjectProperties;
 import com.energyxxer.craftr.ui.dialogs.settings.Settings;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenu;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
+import com.energyxxer.craftr.util.FileUtil;
 import com.energyxxer.craftrlang.projects.Project;
 
 import javax.swing.BorderFactory;
@@ -21,6 +24,19 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
+import static java.nio.file.FileVisitResult.CONTINUE;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * Created by User on 12/15/2016.
@@ -272,6 +288,72 @@ public class MenuBar extends JMenuBar {
                 StyledMenuItem item = new StyledMenuItem("Refresh Native Library");
                 item.addActionListener(e -> {
                     Resources.nativeLib.refresh();
+                });
+                menu.add(item);
+            }
+
+            // --------------------------------------------------
+
+            {
+                StyledMenuItem item = new StyledMenuItem("Extract Native Library");
+                item.addActionListener(e -> {
+                    try {
+                        URL url = Craftr.class.getResource("/natives/");
+
+                        File extractedNatives = new File(System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "natives" + File.separator);
+                        FileUtil.deleteFolder(extractedNatives);
+                        extractedNatives.mkdir();
+
+                        String protocol = url.getProtocol();
+                        if (protocol.equals("file")) {
+                            File packagedNatives = new File(url.getFile());
+
+                            Files.walkFileTree(packagedNatives.toPath(), new FileVisitor<Path>() {
+                                @Override
+                                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                                    return CONTINUE;
+                                }
+
+                                @Override
+                                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                                    File newFile = new File(System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "natives" + File.separator + (packagedNatives.toPath().relativize(file)));
+                                    newFile.mkdirs();
+                                    Files.copy(file, newFile.toPath(), REPLACE_EXISTING);
+                                    CraftrWindow.setStatus("Created file '" + newFile + "'");
+                                    return CONTINUE;
+                                }
+
+                                @Override
+                                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                                    return CONTINUE;
+                                }
+
+                                @Override
+                                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                                    return CONTINUE;
+                                }
+                            });
+                        } else if (protocol.equals("jar")) {
+                            String file = url.getFile();
+                            int bangIndex = file.indexOf('!');
+                            file = new URL(file.substring(0, bangIndex)).getFile();
+                            ZipFile zip = new ZipFile(file);
+                            Enumeration<? extends ZipEntry> entries = zip.entries();
+                            while(entries.hasMoreElements()) {
+                                ZipEntry entry = entries.nextElement();
+                                if(entry.getName().startsWith("natives/") && !entry.isDirectory()) {
+                                    File newFile = new File(extractedNatives.getPath() + entry.getName().substring(7));
+                                    newFile.mkdirs();
+                                    Files.copy(zip.getInputStream(entry), newFile.toPath(), REPLACE_EXISTING);
+                                    CraftrWindow.setStatus("Created file '" + newFile + "'");
+                                }
+                            }
+                        }
+                        CraftrWindow.setStatus("Native Library extraction completed successfully at '" + extractedNatives.getPath() + "'");
+                    } catch (IOException x) {
+                        CraftrWindow.setStatus(new Status(Status.ERROR, "An error occurred during extraction: " + x.getMessage()));
+                        x.printStackTrace();
+                    }
                 });
                 menu.add(item);
             }

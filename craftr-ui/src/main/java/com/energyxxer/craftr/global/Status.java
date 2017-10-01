@@ -17,9 +17,9 @@ public class Status {
         this.message = message;
     }
 
-    public Status(String message, String type) {
-        this.message = message;
+    public Status(String type, String message) {
         this.type = type;
+        this.message = message;
     }
 
     public String getMessage() {

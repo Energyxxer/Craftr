@@ -1,0 +1,10 @@
+package craftr.lang.util;
+
+/**
+* Created by Energyxxer on 30/9/2017.
+*/
+public class Block {
+    BlockType id;
+    //HOW DO I DO THE BLOCKSTATE DDDDD:::::
+    String nbt;
+}

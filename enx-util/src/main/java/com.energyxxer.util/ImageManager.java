@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 /**
- * Loads images and remembers them.
+ * Loads images and caches them.
  */
 public class ImageManager {
 	private static HashMap<String, BufferedImage> loadedImages = new HashMap<>();

@@ -1,0 +1,14 @@
+package craftr.lang;
+
+/**
+* Created by Energyxxer on 26/9/2017.
+*/
+public class String {
+    
+    public native String substring(int start, int end);
+    public native String substring(int start);
+    
+    public native int length();
+    
+    public native String();
+}

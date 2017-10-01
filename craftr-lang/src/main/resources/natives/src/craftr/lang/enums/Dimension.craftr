@@ -1,0 +1,14 @@
+package craftr.lang.enums;
+
+/**
+* Created by Energyxxer on 27/9/2017.
+*/
+public enum Dimension {
+    NETHER(-1), OVERWORLD(0), END(1);
+    
+    int id;
+    
+    private Dimension(int id) {
+        this.id = id;
+    }
+}

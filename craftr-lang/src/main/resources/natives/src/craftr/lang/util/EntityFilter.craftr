@@ -1,0 +1,8 @@
+package craftr.lang.util;
+
+/**
+* Created by Energyxxer on 30/9/2017.
+*/
+public feature EntityFilter {
+    public abstract boolean filter(entity_base ent);
+}

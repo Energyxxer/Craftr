@@ -1,0 +1,11 @@
+package craftr.lang;
+
+/**
+* Created by Energyxxer on 26/9/2017.
+*/
+public native class Object {
+    
+    public native boolean equals(Object o);
+    
+    public native World getWorld();
+}

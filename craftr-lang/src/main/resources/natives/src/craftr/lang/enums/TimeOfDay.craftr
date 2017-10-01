@@ -1,0 +1,8 @@
+package craftr.lang.enums;
+
+/**
+* Created by Energyxxer on 30/9/2017.
+*/
+public enum TimeOfDay {
+    DAY, NIGHT
+}

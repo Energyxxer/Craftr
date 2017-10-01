@@ -1,0 +1,8 @@
+package craftr.lang.enums;
+
+/**
+* Created by Energyxxer on 27/9/2017.
+*/
+public enum SoundSource {
+    MASTER, MUSIC, RECORD, WEATHER, BLOCK, HOSTILE, NEUTRAL, PLAYER, AMBIENT, VOICE
+}

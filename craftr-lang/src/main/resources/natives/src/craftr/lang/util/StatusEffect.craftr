@@ -1,0 +1,40 @@
+package craftr.lang.util;
+
+/**
+* Created by Energyxxer on 30/9/2017.
+*/
+public class StatusEffect {
+    private Effect id;
+    private int duration;
+    private int amplifier;
+    private int visibilityFlag = SHOWN;
+    
+    public static final int SHOWN = 0;
+    public static final int AMBIENT = 1;
+    public static final int HIDDEN = 2;
+    
+    public StatusEffect(Effect id) {
+        this(id,30);
+    }
+    
+    public StatusEffect(Effect id, int duration) {
+        this(id, duration, 0);
+    }
+    
+    public StatusEffect(Effect id, int duration, int amplifier) {
+        this(id, duration, amplifier, SHOWN);
+    }
+    
+    public StatusEffect(Effect id, int duration, int amplifier, int visibilityFlag) {
+        this.id = id;
+        this.duration = duration;
+        this.amplifier = amplifier;
+        
+        if(visibilityFlag >= SHOWN && visibilityFlag <= HIDDEN) {
+            this.visibilityFlag = visibilityFlag;
+        } else {
+            getWorld().print("Illegal visibility flag: " + visibilityFlag);
+            this.visibilityFlag = SHOWN;
+        }
+    }
+}

@@ -1,0 +1,17 @@
+package craftr.lang.util;
+
+/**
+* Created by Energyxxer on 27/9/2017.
+*/
+public class Rotation {
+    public double yaw, pitch;
+    
+    public Rotation() {
+        this(0,0);
+    }
+    
+    public Rotation(double yaw, double pitch) {
+        this.yaw = yaw;
+        this.pitch = pitch;
+    }
+}
