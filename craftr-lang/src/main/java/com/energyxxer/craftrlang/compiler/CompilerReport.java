@@ -91,4 +91,10 @@ public class CompilerReport {
         list.addAll(info);
         return list;
     }
+
+    public void clearNotices() {
+        errors.clear();
+        warnings.clear();
+        info.clear();
+    }
 }

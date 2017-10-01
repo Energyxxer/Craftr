@@ -76,6 +76,18 @@ public class CraftrFile extends AbstractFileComponent implements Context {
     public void initImports() {
         if(importsInitialized) return;
 
+        for(Symbol sym : analyzer.getLangPackage().getSubSymbolTable()) {
+            if(sym instanceof Unit) {
+                this.importTable.put(sym);
+            } else if(sym instanceof Package) {
+                for(Symbol sym2 : ((Package) sym).getSubSymbolTable()) {
+                    if(sym2 instanceof Unit) {
+                        this.importTable.put(sym2);
+                    }
+                }
+            }
+        }
+
         for(Symbol sym : parentPackage.getSubSymbolTable()) {
             if(sym instanceof Unit) {
                 this.importTable.put(sym);
@@ -83,45 +95,37 @@ public class CraftrFile extends AbstractFileComponent implements Context {
         }
 
         TokenList importList = (TokenList) pattern.find("IMPORT_LIST");
-        if(importList == null) {
-            importsInitialized = true;
 
-            for(Symbol sym : parentPackage.getSubSymbolTable()) {
-                if(sym instanceof Unit) {
-                    this.importTable.put(sym);
-                }
-            }
-            this.referenceTable = analyzer.getSymbolTable().mergeWith(importTable);
-            return;
-        }
+        if(importList != null) {
 
-        TokenPattern<?>[] imports = importList.getContents();
+            TokenPattern<?>[] imports = importList.getContents();
 
-        //analyzer.getCompiler().getReport().addNotice(new Notice("Debug", NoticeType.INFO, "Imports for file '" + file.getName() + "':"));
-        for (TokenPattern<?> rawImport : imports) {
-            TokenPattern<?> identifier = rawImport.find("IMPORT_IDENTIFIER");
-            List<Token> flatTokens = identifier.flattenTokens();
+            //analyzer.getCompiler().getReport().addNotice(new Notice("Debug", NoticeType.INFO, "Imports for file '" + file.getName() + "':"));
+            for(TokenPattern<?> rawImport : imports) {
+                TokenPattern<?> identifier = rawImport.find("IMPORT_IDENTIFIER");
+                List<Token> flatTokens = identifier.flattenTokens();
 
-            boolean wildcard = flatTokens.get(flatTokens.size()-1).value.equals("*");
-            if(wildcard) flatTokens = flatTokens.subList(0, flatTokens.size()-2);
+                boolean wildcard = flatTokens.get(flatTokens.size()-1).value.equals("*");
+                if(wildcard) flatTokens = flatTokens.subList(0, flatTokens.size()-2);
 
-            Symbol itemToImport;
-            itemToImport = analyzer.getSymbolTable().getSymbol(flatTokens, this);
-            if(itemToImport != null) {
-                if(wildcard) {
-                    if(itemToImport.getSubSymbolTable() == null) {
-                        analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' is not a data structure", identifier.getFormattedPath()));
-                    } else {
-                        for(Symbol symbol : itemToImport.getSubSymbolTable()) {
-                            this.importTable.put(symbol);
+                Symbol itemToImport;
+                itemToImport = analyzer.getSymbolTable().getSymbol(flatTokens, this);
+                if(itemToImport != null) {
+                    if(wildcard) {
+                        if(itemToImport.getSubSymbolTable() == null) {
+                            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' is not a data structure", identifier.getFormattedPath()));
+                        } else {
+                            for(Symbol symbol : itemToImport.getSubSymbolTable()) {
+                                this.importTable.put(symbol);
+                            }
                         }
+                    } else {
+                        if(!(itemToImport instanceof Unit)) {
+                            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' isn't a unit", identifier.getFormattedPath()));
+                            continue;
+                        }
+                        this.importTable.put(itemToImport);
                     }
-                } else {
-                    if(!(itemToImport instanceof Unit)) {
-                        analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' isn't a unit", identifier.getFormattedPath()));
-                        continue;
-                    }
-                    this.importTable.put(itemToImport);
                 }
             }
         }
@@ -138,6 +142,10 @@ public class CraftrFile extends AbstractFileComponent implements Context {
         units.forEach(Unit::buildInheritanceMap);
     }
 
+    public void resetUnitIDs() {
+        units.forEach(Unit::resetUnitID);
+    }
+
     public void assignUnitIDs(VInteger id) {
         units.forEach(u -> u.assignUnitID(id));
     }
@@ -152,10 +160,6 @@ public class CraftrFile extends AbstractFileComponent implements Context {
 
     public void initCodeBlocks() {
         units.forEach(Unit::initCodeBlocks);
-    }
-
-    public SymbolTable getImportTable() {
-        return importTable;
     }
 
     public SymbolTable getReferenceTable() {

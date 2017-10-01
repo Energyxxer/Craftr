@@ -46,7 +46,7 @@ public class CodeBlock extends Statement implements Context {
 
                 Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this);
 
-                //if(statement != null) System.out.println(statement.getClass().getSimpleName());
+                if(statement != null) System.out.println(statement.getClass().getSimpleName());
             }
         }
 

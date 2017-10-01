@@ -174,18 +174,38 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         }
 
         if(superUnit == null) {
-            if(!this.getFullyQualifiedName().equals("craftr.lang.Object")) superUnit = (Unit)
-                    declaringFile
-                            .getReferenceTable()
-                            .getMap()
-                            .get("craftr")
-                            .getSubSymbolTable()
-                            .getMap()
-                            .get("lang")
-                            .getSubSymbolTable()
-                            .getMap()
-                            .get("Object");
-            //Just in case a NullPointerException happens without my consent
+            if(!this.getFullyQualifiedName().equals("craftr.lang.Object")) {
+                if(type == UnitType.ENTITY && !this.getFullyQualifiedName().equals("craftr.lang.entities.entity_base")) {
+                    superUnit = (Unit)
+                            getAnalyzer().getLangPackage()
+                                    .getSubSymbolTable()
+                                    .getMap()
+                                    .get("entities")
+                                    .getSubSymbolTable()
+                                    .getMap()
+                                    .get("entity_base");
+                } else if(type == UnitType.ENUM && !this.getFullyQualifiedName().equals("craftr.lang.Enum")) {
+                    superUnit = (Unit)
+                            getAnalyzer().getLangPackage()
+                                    .getSubSymbolTable()
+                                    .getMap()
+                                    .get("Enum");
+                } else if(type == UnitType.WORLD && !this.getFullyQualifiedName().equals("craftr.lang.World")) {
+                    superUnit = (Unit)
+                            getAnalyzer().getLangPackage()
+                                    .getSubSymbolTable()
+                                    .getMap()
+                                    .get("World");
+                } else {
+                    superUnit = (Unit)
+                            getAnalyzer().getLangPackage()
+                                    .getSubSymbolTable()
+                                    .getMap()
+                                    .get("Object");
+                }
+            }
+
+
         }
 
         this.features = new ArrayList<>();
@@ -223,6 +243,22 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
             }
             current = current.superUnit;
         }
+    }
+
+    void resetUnitID() {
+        Unit trueSuperUnit = null;
+        for(Unit u : inheritanceMap) {
+            if(u.type != UnitType.FEATURE) {
+                trueSuperUnit = u;
+                break;
+            }
+        }
+        if(trueSuperUnit != null) trueSuperUnit.resetUnitID();
+
+        if(this.unitID >= 0) {
+            getAnalyzer().getCompiler().getReport().addNotice(new Notice("ID Reset",NoticeType.INFO,this.getFullyQualifiedName() + " reset"));
+        }
+        this.unitID = -1;
     }
 
     void assignUnitID(VInteger id) {

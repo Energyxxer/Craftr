@@ -14,8 +14,7 @@ import java.util.HashMap;
  * Created by User on 4/9/2017.
  */
 public class Package implements Symbol {
-    //Null if root
-    private Package parent;
+    private Package parent; //Null if root
     private String name;
 
     private HashMap<String, Package> subPackages = new HashMap<>();

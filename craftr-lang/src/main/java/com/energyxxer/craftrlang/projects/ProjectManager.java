@@ -59,7 +59,7 @@ public class ProjectManager {
 				} else return "model";
 			} else if(filename.endsWith(".lang")) {
 				return "lang";
-			} else if(filename.endsWith(".mcmeta")) {
+			} else if(filename.endsWith(".mcmeta") || filename.endsWith(".project")) {
 				return "meta";
 			} else if(filename.endsWith(".ogg")) {
 				return "audio";

@@ -110,7 +110,12 @@ public final class ExprAnalyzer {
 
                     Expression expr = (Expression) flatValues.get(0);
 
-                    return expr.simplify();
+                    try {
+                        return expr.simplify();
+                    } catch(NullPointerException npe) {
+                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("NullPointerException", NoticeType.INFO, list.toString()));
+                        return null;
+                    }
                 }
             } case "STRING": {
                 String raw = pattern.flatten(false);

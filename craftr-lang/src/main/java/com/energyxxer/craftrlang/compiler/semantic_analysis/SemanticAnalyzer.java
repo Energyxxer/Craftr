@@ -2,6 +2,9 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
 import com.energyxxer.craftrlang.compiler.Compiler;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.PackageManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.util.vprimitives.VInteger;
@@ -25,6 +28,8 @@ public class SemanticAnalyzer {
 
     private final HashMap<File, TokenPattern<?>> filePatterns;
 
+    private Package langPackage = null;
+
     private int nextID = 0;
 
     public SemanticAnalyzer(Compiler compiler, HashMap<File, TokenPattern<?>> filePatterns, File sourcePath) {
@@ -32,13 +37,14 @@ public class SemanticAnalyzer {
         this.sourcePath = sourcePath;
         this.files = new ArrayList<>();
         this.symbolTable = new SymbolTable(compiler);
-        this.packageManager = new PackageManager(this.symbolTable);
+        this.packageManager = new PackageManager(this.symbolTable, this);
         this.filePatterns = filePatterns;
     }
 
     public void join(SemanticAnalyzer analyzer) {
         this.files.addAll(analyzer.files);
         this.symbolTable.putAll(analyzer.getSymbolTable());
+        this.langPackage = analyzer.langPackage;
         //TODO: Join with the package manager, somehow...
         this.nextID = analyzer.nextID;
     }
@@ -51,7 +57,9 @@ public class SemanticAnalyzer {
         files.forEach(CraftrFile::initImports);
         files.forEach(CraftrFile::initActions);
         files.forEach(CraftrFile::buildInheritanceMap);
-        VInteger id = new VInteger(nextID);
+        VInteger id = new VInteger(0);
+        files.forEach(CraftrFile::resetUnitIDs);
+        getCompiler().getReport().addNotice(new Notice("Unit IDs", NoticeType.INFO,"IDs Reset"));
         files.forEach(f->f.assignUnitIDs(id));
         this.nextID = id.value;
         files.forEach(CraftrFile::initComponents);
@@ -69,5 +77,13 @@ public class SemanticAnalyzer {
 
     public Compiler getCompiler() {
         return compiler;
+    }
+
+    public Package getLangPackage() {
+        return langPackage;
+    }
+
+    public void setLangPackage(Package langPackage) {
+        this.langPackage = langPackage;
     }
 }

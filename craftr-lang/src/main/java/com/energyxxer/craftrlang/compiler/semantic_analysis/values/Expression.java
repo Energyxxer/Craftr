@@ -60,6 +60,8 @@ public class Expression extends Value {
 
     public Value simplify() {
 
+        if(a == null || b == null) return this;
+
         if(a instanceof Expression) a = ((Expression) a).simplify();
         if(b instanceof Expression) b = ((Expression) b).simplify();
 

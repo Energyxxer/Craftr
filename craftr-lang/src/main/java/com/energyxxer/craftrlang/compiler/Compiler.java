@@ -35,6 +35,8 @@ public class Compiler {
 
 	private final ThreadLock lock = new ThreadLock();
 	private CraftrLibrary library = null;
+
+	private Compiler libCompiler = null;
 	
 	public Compiler(Project project) {
 		this.project = project;
@@ -104,9 +106,11 @@ public class Compiler {
 
 		analyzer = new SemanticAnalyzer(this, allPatterns, source);
 		if(library != null) {
-			LibraryLoad callback = c -> {
+			LibraryLoad callback = (c,r) -> {
 				analyzer.join(c.analyzer);
-				report.addNotices(c.report.getAllNotices());
+				report.addNotices(r.getAllNotices());
+				c.setReport(report);
+				libCompiler = c;
 			};
 
 			library.awaitLib(callback, lock);
@@ -121,6 +125,7 @@ public class Compiler {
 				x.printStackTrace();
 			}
 		}
+		System.out.println("\n\n\n");
 		analyzer.start();
 		point++;
 		if(point == breakpoint) {
@@ -153,6 +158,10 @@ public class Compiler {
 
 	public CompilerReport getReport() {
 		return report;
+	}
+
+	public void setReport(CompilerReport report) {
+		this.report = report;
 	}
 
 	public void addCompletionListener(Runnable r) {

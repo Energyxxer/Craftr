@@ -12,6 +12,8 @@ public class CraftrLibrary {
     private final File dir;
     private Compiler compiler = null;
 
+    private CompilerReport report = null;
+
     public CraftrLibrary(@NotNull File dir) {
         if(!dir.isDirectory()) throw new IllegalArgumentException("ERROR: File '" + dir + "' is not a directory. Native libraries must be contained inside a folder");
         this.dir = dir;
@@ -23,7 +25,11 @@ public class CraftrLibrary {
             if(compiler == null) {
                 compiler = new Compiler(dir);
                 compiler.setBreakpoint(3);
-                compiler.addCompletionListener(() -> callback.onLoad(compiler));
+                compiler.addCompletionListener(() -> {
+                    report = compiler.getReport();
+                    compiler.setReport(new CompilerReport());
+                    callback.onLoad(compiler, report);
+                });
                 try {
                     compiler.compile();
                     compiler.getThread().join();
@@ -35,7 +41,8 @@ public class CraftrLibrary {
             } else {
                 lock.condition = true;
                 lock.notifyAll();
-                callback.onLoad(compiler);
+                compiler.setReport(new CompilerReport());
+                callback.onLoad(compiler, report);
             }
         }
     }
@@ -50,5 +57,6 @@ public class CraftrLibrary {
 
     public void refresh() {
         compiler = null;
+        report = null;
     }
 }
