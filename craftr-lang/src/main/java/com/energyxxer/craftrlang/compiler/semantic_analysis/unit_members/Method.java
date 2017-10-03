@@ -8,10 +8,15 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.AbstractFileComponent;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +28,7 @@ import java.util.List;
 /**
  * Created by User on 5/16/2017.
  */
-public class Method extends AbstractFileComponent implements Symbol {
+public class Method extends AbstractFileComponent implements Symbol, Context {
     private Unit declaringUnit;
 
     private MethodType type;
@@ -162,7 +167,7 @@ public class Method extends AbstractFileComponent implements Symbol {
             }
         } else {
             TokenPattern<?> block = body.find("DELIMITED_CODE_BLOCK");
-            this.codeBlock = new CodeBlock(block, declaringUnit);
+            this.codeBlock = new CodeBlock(block, this);
         }
     }
 
@@ -204,6 +209,42 @@ public class Method extends AbstractFileComponent implements Symbol {
         return signature;
     }
 
+    public void initCodeBlock() {
+        if(codeBlock != null) {
+            codeBlock.initialize();
+            System.out.println(codeBlock.getFunction());
+        }
+    }
+
+    public CodeBlock getCodeBlock() {
+        return codeBlock;
+    }
+
+    @Override
+    public CraftrFile getDeclaringFile() {
+        return declaringUnit.getDeclaringFile();
+    }
+
+    @Override
+    public ContextType getContextType() {
+        return ContextType.BLOCK;
+    }
+
+    @Override
+    public SemanticAnalyzer getAnalyzer() {
+        return declaringUnit.getAnalyzer();
+    }
+
+    @Override
+    public Context getParent() {
+        return declaringUnit;
+    }
+
+    @Override
+    public SymbolTable getReferenceTable() {
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -217,9 +258,5 @@ public class Method extends AbstractFileComponent implements Symbol {
     @Override
     public int hashCode() {
         return signature.hashCode();
-    }
-
-    public void initCodeBlock() {
-        if(codeBlock != null) codeBlock.initialize();
     }
 }

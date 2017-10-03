@@ -468,7 +468,7 @@ public class CraftrProductions {
         }
 		
 		{
-			TokenGroupMatch g = new TokenGroupMatch();
+			TokenGroupMatch g = new TokenGroupMatch().setName("METHOD_CALL_INNER");
 			g.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("METHOD_CALL_NAME"));
 			g.append(new TokenItemMatch(TokenType.BRACE,"("));
 			{

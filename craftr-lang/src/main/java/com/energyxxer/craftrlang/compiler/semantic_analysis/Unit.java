@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
 import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -51,6 +52,9 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
 
     private boolean unitActionsInitialized = false;
     private boolean unitComponentsInitialized = false;
+
+    private MCFunction staticInitializer = null;
+    private MCFunction instanceInitializer = null;
 
     private int unitID = -1;
 
@@ -156,7 +160,20 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
             public boolean isStatic() {
                 return false;
             }
+
+            @Override
+            public Context getParent() {
+                return Unit.this;
+            }
+
+            @Override
+            public SymbolTable getReferenceTable() {
+                return null; //WHAT TO DO
+            }
         };
+
+        staticInitializer = new MCFunction(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$initStatic");
+        instanceInitializer = new MCFunction(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$init");
     }
 
     void initUnitActions() {
@@ -314,6 +331,9 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
     }
 
     void initCodeBlocks() {
+        System.out.println(staticInitializer);
+        System.out.println(instanceInitializer);
+
         methodManager.initCodeBlocks();
     }
 
@@ -369,6 +389,14 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         return methodManager;
     }
 
+    public MCFunction getStaticInitializer() {
+        return staticInitializer;
+    }
+
+    public MCFunction getInstanceInitializer() {
+        return instanceInitializer;
+    }
+
     public boolean instanceOf(Unit unit) {
         if(this == unit) return true;
         for(Unit inherited : inheritanceMap) {
@@ -384,6 +412,16 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
 
     public Context getInstanceContext() {
         return this.instanceContext;
+    }
+
+    @Override
+    public Context getParent() {
+        return declaringFile;
+    }
+
+    @Override
+    public SymbolTable getReferenceTable() {
+        return null;
     }
 
     @Override

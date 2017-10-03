@@ -162,8 +162,13 @@ public class CraftrFile extends AbstractFileComponent implements Context {
         units.forEach(Unit::initCodeBlocks);
     }
 
+    @Override
     public SymbolTable getReferenceTable() {
         return referenceTable;
+    }
+
+    public File getIOFile() {
+        return file;
     }
 
     @Override
@@ -189,5 +194,10 @@ public class CraftrFile extends AbstractFileComponent implements Context {
     @Override
     public boolean isStatic() {
         return true;
+    }
+
+    @Override
+    public Context getParent() {
+        return null;
     }
 }

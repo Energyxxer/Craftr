@@ -1,5 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
+import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
@@ -8,15 +10,17 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 
 import java.util.ArrayList;
 
 /**
  * Created by Energyxxer on 07/11/2017.
  */
-public final class ExprAnalyzer {
+public final class ExprResolver {
 
-    public static Value analyzeValue(TokenPattern<?> pattern, Context context) {
+    public static Value analyzeValue(TokenPattern<?> pattern, Context context, MCFunction function) {
         //System.out.println("pattern = " + pattern);
 
         switch(pattern.getName()) {
@@ -54,16 +58,16 @@ public final class ExprAnalyzer {
                 }
                 return new BooleanValue(value, context);
             } case "VALUE": {
-                return analyzeValue(((TokenStructure) pattern).getContents(), context);
+                return analyzeValue(((TokenStructure) pattern).getContents(), context, function);
             } case "EXPRESSION": {
-                return analyzeValue(((TokenStructure) pattern).getContents(), context);
+                return analyzeValue(((TokenStructure) pattern).getContents(), context, function);
             } case "OPERATION": {
-                return analyzeValue(((TokenGroup) pattern).getContents()[0], context);
+                return analyzeValue(((TokenGroup) pattern).getContents()[0], context, function);
             } case "OPERATION_LIST": {
                 TokenList list = (TokenList) pattern;
 
                 if(list.size() == 1) {
-                    return analyzeValue(list.getContents()[0], context);
+                    return analyzeValue(list.getContents()[0], context, function);
                 } else {
 
                     TokenPattern<?>[] contents = list.getContents();
@@ -74,7 +78,7 @@ public final class ExprAnalyzer {
                     for(int i = 0; i < contents.length; i++) {
                         if((i & 1) == 0) {
                             //Operand
-                            flatValues.add(analyzeValue(contents[i], context));
+                            flatValues.add(analyzeValue(contents[i], context, function));
                         } else {
                             //Operator
                             flatOperators.add(Operator.getOperatorForSymbol(((TokenItem) contents[i]).getContents().value));
@@ -157,6 +161,18 @@ public final class ExprAnalyzer {
                     }
                 }
                 return new StringValue(sb.toString(), context);
+            } case "METHOD_CALL": {
+                return analyzeValue(((TokenStructure) pattern).getContents(), context, function);
+            } case "METHOD_CALL_INNER": {
+                Token methodNameToken = ((TokenItem) pattern.find("METHOD_CALL_NAME")).getContents();
+
+                Symbol ref = context.findSymbol(methodNameToken, true);
+                if(ref != null && ref instanceof Method) {
+                    ((Method) ref).getCodeBlock().writeToFunction(function);
+                    // THIS IS OBVIOUSLY IGNORING ALL ACTUAL PARAMETERS, TODO.
+                } else {
+                    context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method '" + methodNameToken.value + "'", pattern.getFormattedPath()));
+                }
             }
         }
         System.out.println("Non-registered exit: " + pattern.getName());

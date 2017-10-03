@@ -10,7 +10,7 @@ import java.util.List;
  * Created by Energyxxer on 07/14/2017.
  */
 public enum UnitType {
-    ENTITY("Entity", "Entities"), ITEM("Item", "Items"), FEATURE("Feature", "Features"), CLASS("Class", "Classes"), ENUM("Enum", "Enums"), WORLD("World", "Worlds");
+    ENTITY("Entity", "Entities"), ITEM("Item", "Items"), FEATURE("Feature", "Features"), CLASS("Class", "Classes"), ENUM("Enum", "Enums"), WORLD("World", "Worlds", new CraftrUtil.Modifier[] {CraftrUtil.Modifier.STATIC});
 
     private final String name;
     private final String plural;

@@ -72,6 +72,10 @@ public class SymbolTable implements Iterable<Symbol> {
     }
 
     public Symbol getSymbol(List<Token> flatTokens, Context context) {
+        return getSymbol(flatTokens, context, false);
+    }
+
+    public Symbol getSymbol(List<Token> flatTokens, Context context, boolean silent) {
         Token token = flatTokens.get(0);
         String raw = token.value;
         Symbol next = this.table.get(raw);
@@ -79,13 +83,13 @@ public class SymbolTable implements Iterable<Symbol> {
             switch(next.getVisibility()) {
                 case PACKAGE: {
                     if(context.getDeclaringFile().getPackage() != next.getPackage()) {
-                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
+                        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
                     }
                     break;
                 }
                 case UNIT: {
                     if(context.getContextType() != ContextType.UNIT || context != next.getUnit()) {
-                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
+                        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
                     }
                     break;
                 }
@@ -105,18 +109,22 @@ public class SymbolTable implements Iterable<Symbol> {
             if(flatTokens.size() > 1) {
                 SymbolTable subTable = next.getSubSymbolTable();
                 if(subTable != null) {
-                    return next.getSubSymbolTable().getSymbol(flatTokens.subList(2, flatTokens.size()), context);
+                    return next.getSubSymbolTable().getSymbol(flatTokens.subList(2, flatTokens.size()), context, silent);
                 }
-                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, raw + " is not a data structure", token.getFormattedPath()));
+                if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, raw + " is not a data structure", token.getFormattedPath()));
             }
             return next;
         }
-        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + raw + "'", token.getFormattedPath()));
+        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + raw + "'", token.getFormattedPath()));
         return null;
     }
 
     public Symbol getSymbol(Token singleToken, Context context) {
         return getSymbol(Collections.singletonList(singleToken), context);
+    }
+
+    public Symbol getSymbol(Token singleToken, Context context, boolean silent) {
+        return getSymbol(Collections.singletonList(singleToken), context, silent);
     }
 
     public HashMap<String, Symbol> getMap() {

@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks;
 
+import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -13,6 +14,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.Statement;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 /**
@@ -27,7 +29,7 @@ public class CodeBlock extends Statement implements Context {
     private boolean initialized = false;
 
     public CodeBlock(TokenPattern<?> pattern, Context context) {
-        super(pattern, context);
+        super(pattern, context, new MCFunction((context instanceof Method) ? "func@" + ((Method) context).getName() : ((context instanceof CodeBlock) ? ((CodeBlock) context).function.getName() : "func@" + context.getDeclaringFile().getIOFile().getName())));
 
         if(context instanceof CodeBlock) this.parentBlock = (CodeBlock) context;
 
@@ -44,9 +46,13 @@ public class CodeBlock extends Statement implements Context {
             for(TokenPattern<?> rawStatement : rawStatements) {
                 if(!(rawStatement instanceof TokenStructure)) continue;
 
-                Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this);
+                Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this, function);
 
-                if(statement != null) System.out.println(statement.getClass().getSimpleName());
+
+                if(statement != null) {
+                    statement.writeToFunction(function);
+                    System.out.println(statement.getClass().getSimpleName());
+                }
             }
         }
 
@@ -66,6 +72,15 @@ public class CodeBlock extends Statement implements Context {
 
     public void setStatic(boolean staticBlock) {
         this.staticBlock = staticBlock;
+    }
+
+    public MCFunction getFunction() {
+        return function;
+    }
+
+    @Override
+    public void writeToFunction(MCFunction function) {
+        function.addFunction(this.function);
     }
 
     @Override
@@ -91,5 +106,15 @@ public class CodeBlock extends Statement implements Context {
     @Override
     public boolean isStatic() {
         return staticBlock;
+    }
+
+    @Override
+    public Context getParent() {
+        return context;
+    }
+
+    @Override
+    public SymbolTable getReferenceTable() {
+        return null;
     }
 }
