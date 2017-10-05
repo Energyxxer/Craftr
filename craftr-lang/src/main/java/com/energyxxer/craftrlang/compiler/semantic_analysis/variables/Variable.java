@@ -16,7 +16,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import org.jetbrains.annotations.Nullable;
@@ -37,14 +36,23 @@ public class Variable extends AbstractFileComponent implements Symbol {
 
     private DataType dataType;
     private String name;
-    private final boolean validName;
+    private boolean validName;
 
     private CodeBlock block = null;
-    private FieldManager fieldManager = null;
 
     private Value value = null;
 
-    private SymbolTable table;
+    public Variable(TokenPattern<?> pattern, Context context, SymbolVisibility visibility, List<CraftrUtil.Modifier> modifiers, DataType dataType, String name, boolean validName, CodeBlock block, Value value) {
+        super(pattern);
+        this.context = context;
+        this.visibility = visibility;
+        this.modifiers = modifiers;
+        this.dataType = dataType;
+        this.name = name;
+        this.validName = validName;
+        this.block = block;
+        this.value = value;
+    }
 
     private Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, Context context) {
         super(pattern);
@@ -89,7 +97,6 @@ public class Variable extends AbstractFileComponent implements Symbol {
         this(pattern, modifiers, dataType, (Context) block);
 
         this.block = block;
-        this.table = block.getSymbolTable();
 
         if(validName) {
             if(block.findVariable(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
@@ -100,18 +107,15 @@ public class Variable extends AbstractFileComponent implements Symbol {
         }
     }
 
-    public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, FieldManager fieldManager) {
-        this(pattern, modifiers, dataType, fieldManager.getParentUnit());
-
-        this.fieldManager = fieldManager;
-        this.table = this.isStatic() ? fieldManager.getStaticFieldTable() : fieldManager.getInstanceFieldTable();
+    public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, Unit parentUnit) {
+        this(pattern, modifiers, dataType, (Context) parentUnit);
 
         if(validName) {
-            if(fieldManager.findField(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
+            /*if(fieldLog.findField(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
                 table.put(this);
             } else {
                 context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
-            }
+            }*/
         }
 
         context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report: ", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
@@ -134,10 +138,10 @@ public class Variable extends AbstractFileComponent implements Symbol {
 
         List<CraftrUtil.Modifier> modifiers = Collections.emptyList();
 
-        TokenList modifierPatterns = (TokenList) pattern.find("INNER.MODIFIER_LIST");
+        TokenList modifierPatterns = (TokenList) pattern.find("VARIABLE_INNER.MODIFIER_LIST");
         if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), block.getAnalyzer());
 
-        TokenPattern<?>[] declarationList = ((TokenList) pattern.find("INNER.VARIABLE_DECLARATION_LIST")).getContents();
+        TokenPattern<?>[] declarationList = ((TokenList) pattern.find("VARIABLE_INNER.VARIABLE_DECLARATION_LIST")).getContents();
 
         for(TokenPattern<?> p : declarationList) {
             if(!p.getName().equals("VARIABLE_DECLARATION")) continue;
@@ -147,26 +151,30 @@ public class Variable extends AbstractFileComponent implements Symbol {
         return variables;
     }
 
-    public static List<Variable> parseDeclaration(TokenPattern<?> pattern, FieldManager fieldManager, Context context) {
+    public static List<Variable> parseDeclaration(TokenPattern<?> pattern, Unit unit) {
         ArrayList<Variable> variables = new ArrayList<>();
 
         //Skipping over annotations
 
         List<CraftrUtil.Modifier> modifiers = Collections.emptyList();
 
-        TokenList modifierPatterns = (TokenList) pattern.find("INNER.MODIFIER_LIST");
-        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), fieldManager.getParentUnit().getAnalyzer());
+        TokenList modifierPatterns = (TokenList) pattern.find("VARIABLE_INNER.MODIFIER_LIST");
+        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), unit.getAnalyzer());
 
-        DataType dataType = DataType.parseType((pattern.find("INNER.DATA_TYPE")).flattenTokens(), fieldManager.getParentUnit().getDeclaringFile().getReferenceTable(), context);
+        DataType dataType = DataType.parseType((pattern.find("VARIABLE_INNER.DATA_TYPE")).flattenTokens(), unit.getDeclaringFile().getReferenceTable(), unit);
 
-        TokenPattern<?>[] declarationList = ((TokenList) pattern.find("INNER.VARIABLE_DECLARATION_LIST")).getContents();
+        TokenPattern<?>[] declarationList = ((TokenList) pattern.find("VARIABLE_INNER.VARIABLE_DECLARATION_LIST")).getContents();
 
         for(TokenPattern<?> p : declarationList) {
             if(!p.getName().equals("VARIABLE_DECLARATION")) continue;
-            variables.add(new Variable(p, modifiers, dataType, fieldManager));
+            variables.add(new Variable(p, modifiers, dataType, unit));
         }
 
         return variables;
+    }
+
+    public Variable duplicate() {
+        return new Variable(pattern, context, visibility, modifiers, dataType, name, validName, block, value);
     }
 
     public boolean isStatic() {

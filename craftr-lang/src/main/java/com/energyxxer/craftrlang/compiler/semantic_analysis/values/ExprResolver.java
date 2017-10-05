@@ -166,9 +166,11 @@ public final class ExprResolver {
                 call.writeToFunction(function);
 
                 return call;
+            } case "IDENTIFIER": {
+
             }
         }
-        System.out.println("Non-registered exit: " + pattern.getName());
+        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Unresolved Expressions", NoticeType.INFO, "Non-registered exit: " + pattern.getName(), pattern.getFormattedPath()));
         return null;
     }
 }

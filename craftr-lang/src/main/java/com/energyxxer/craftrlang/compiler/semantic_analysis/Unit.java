@@ -15,10 +15,12 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldManager;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodSignature;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 import com.energyxxer.util.out.Console;
 import com.energyxxer.util.vprimitives.VInteger;
 import org.jetbrains.annotations.NotNull;
@@ -47,8 +49,11 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
     private List<List<Token>> rawUnitImplements = null;
     private List<List<Token>> rawUnitRequires = null;
 
-    private FieldManager fieldManager;
+    private FieldLog staticFieldLog;
     private MethodLog methodLog;
+
+    private ObjectInstance genericInstance = null;
+    private FieldLog instanceFieldLog = null;
 
     private boolean unitActionsInitialized = false;
     private boolean unitComponentsInitialized = false;
@@ -132,7 +137,9 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
 
         file.getPackage().getSubSymbolTable().put(this);
 
-        this.fieldManager = new FieldManager(this);
+        this.staticFieldLog = new FieldLog(this);
+        this.instanceFieldLog = new FieldLog(this);
+
         this.methodLog = new MethodLog(this);
 
         this.instanceContext = new Context() {
@@ -321,12 +328,22 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
             for (TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
                 TokenStructure component = (TokenStructure) p.getContents();
                 if (component.getName().equals("VARIABLE")) {
-                    fieldManager.insertField(component);
+                    List<Variable> newFields = Variable.parseDeclaration(component, this);
+                    for(Variable field : newFields) {
+                        if(!staticFieldLog.getFieldTable().getMap().containsKey(field.getName()) && !instanceFieldLog.getFieldTable().getMap().containsKey(field.getName())) {
+                            ((field.isStatic()) ? staticFieldLog : instanceFieldLog).addField(field);
+                        } else {
+                            getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", field.pattern.find("VARIABLE_NAME").getFormattedPath()));
+                        }
+                    }
                 } else if(component.getName().equals("METHOD")) {
                     methodLog.insertMethod(component);
                 }
             }
         }
+
+        this.genericInstance = new ObjectInstance(this, this.instanceContext);
+
         unitComponentsInitialized = true;
     }
 
@@ -359,7 +376,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
 
     @Override
     public @NotNull SymbolTable getSubSymbolTable() {
-        return fieldManager.getStaticFieldTable();
+        return staticFieldLog.getFieldTable();
     }
 
     @Override
@@ -381,8 +398,12 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         return declaringFile.getPackage().getFullyQualifiedName() + "." + name;
     }
 
-    public FieldManager getFieldManager() {
-        return fieldManager;
+    public FieldLog getStaticFieldLog() {
+        return staticFieldLog;
+    }
+
+    public FieldLog getInstanceFieldLog() {
+        return instanceFieldLog;
     }
 
     public MethodLog getMethodLog() {

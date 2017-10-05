@@ -127,16 +127,6 @@ public class SymbolTable implements Iterable<Symbol> {
         return getSymbol(Collections.singletonList(singleToken), context, silent);
     }
 
-    public HashMap<String, Symbol> getMap() {
-        return table;
-    }
-
-    @NotNull
-    @Override
-    public Iterator<Symbol> iterator() {
-        return table.values().iterator();
-    }
-
     public SymbolTable mergeWith(SymbolTable other) {
         SymbolTable newTable = new SymbolTable();
         for(Symbol symbol : this.table.values()) {
@@ -146,5 +136,23 @@ public class SymbolTable implements Iterable<Symbol> {
             newTable.put(symbol);
         }
         return newTable;
+    }
+
+    public SymbolTable duplicate() {
+        SymbolTable newTable = new SymbolTable();
+        for(Symbol symbol : this.table.values()) {
+            newTable.put(symbol);
+        }
+        return newTable;
+    }
+
+    public HashMap<String, Symbol> getMap() {
+        return table;
+    }
+
+    @NotNull
+    @Override
+    public Iterator<Symbol> iterator() {
+        return table.values().iterator();
     }
 }

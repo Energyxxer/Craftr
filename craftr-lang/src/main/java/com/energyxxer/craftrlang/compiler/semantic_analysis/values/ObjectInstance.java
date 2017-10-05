@@ -5,18 +5,28 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 
 /**
  * Created by Energyxxer on 07/13/2017.
  */
-public class ObjectValue extends Value {
+public class ObjectInstance extends Value {
 
     private Unit unit;
 
-    public ObjectValue(Unit unit, Context context) {
+    private FieldLog fieldLog;
+    private MethodLog methodLog;
+
+    public ObjectInstance(Unit unit, Context context) {
         super(context);
         this.unit = unit;
+
+        this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
+    }
+
+    public Unit getUnit() {
+        return unit;
     }
 
     @Override
@@ -26,7 +36,7 @@ public class ObjectValue extends Value {
 
     @Override
     public SymbolTable getSubSymbolTable() {
-        return unit.getFieldManager().getInstanceFieldTable();
+        return fieldLog.getFieldTable();
     }
 
     @Override

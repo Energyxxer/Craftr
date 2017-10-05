@@ -189,7 +189,7 @@ public class CraftrProductions {
         }
 
         {
-            TokenGroupMatch g2 = new TokenGroupMatch().setName("INNER");
+            TokenGroupMatch g2 = new TokenGroupMatch().setName("VARIABLE_INNER");
             g2.append(new TokenGroupMatch(true).append(ANNOTATION));
             g2.append(new TokenListMatch(TokenType.MODIFIER,true).setName("MODIFIER_LIST"));
             g2.append(DATA_TYPE);
@@ -211,7 +211,6 @@ public class CraftrProductions {
             g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 
             VARIABLE.add(g);
-            EXPRESSION.add(g2);
         }
 
         {
@@ -554,8 +553,7 @@ public class CraftrProductions {
 			// [-EXPRESSION-]
 			VALUE.add(EXPRESSION);
 			VALUE.add(POINTER);
-			VALUE.add(new TokenGroupMatch().append(new TokenItemMatch(TokenType.KEYWORD,"new")).append(METHOD_CALL).append(new TokenGroupMatch(true).append(UNIT_BODY)));
-			VALUE.add(DATA_TYPE);
+			VALUE.add(new TokenGroupMatch().setName("INSTANTIATION").append(new TokenItemMatch(TokenType.KEYWORD,"new")).append(METHOD_CALL).append(new TokenGroupMatch(true).append(UNIT_BODY)));
             VALUE.add(METHOD_CALL);
 			VALUE.add(LAMBDA);
 

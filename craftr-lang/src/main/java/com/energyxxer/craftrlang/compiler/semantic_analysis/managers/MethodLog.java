@@ -8,7 +8,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodSignature;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectValue;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class MethodLog {
         return null;
     }
 
-    public Method findMethod(MethodSignature signature, TokenPattern<?> pattern, Context context, ObjectValue instance) {
+    public Method findMethod(MethodSignature signature, TokenPattern<?> pattern, Context context, ObjectInstance instance) {
         Method method = this.findMethod(signature);
         if(method == null) {
             parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method '" + signature + "'", pattern.getFormattedPath()));

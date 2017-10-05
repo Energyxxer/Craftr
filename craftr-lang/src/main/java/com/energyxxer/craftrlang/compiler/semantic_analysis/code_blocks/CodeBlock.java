@@ -77,6 +77,10 @@ public class CodeBlock extends Statement implements Context {
         return function;
     }
 
+    public int getLevel() {
+        return (parentBlock != null) ? parentBlock.getLevel()+1 : 0;
+    }
+
     @Override
     public void writeToFunction(MCFunction function) {
         function.addFunction(this.function);

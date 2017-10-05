@@ -84,7 +84,8 @@ public class DataType {
     }
 
     public SymbolTable getSubSymbolTable() {
-        return (unit != null) ? unit.getFieldManager().getInstanceFieldTable() : null;
+        //DO SOMETHING ABOUT THE FIELD TABLE THING
+        return (unit != null) ? unit.getStaticFieldLog().getFieldTable() : null;
     }
 
     public MethodLog getMethodLog() {
