@@ -8,6 +8,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodSignature;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +16,13 @@ import java.util.List;
 /**
  * Created by Energyxxer on 07/13/2017.
  */
-public class MethodManager {
+public class MethodLog {
     private final Unit parentUnit;
 
     private List<Method> staticMethods;
     private List<Method> instanceMethods;
 
-    public MethodManager(Unit parentUnit) {
+    public MethodLog(Unit parentUnit) {
         this.parentUnit = parentUnit;
 
         this.staticMethods = new ArrayList<>();
@@ -38,9 +39,15 @@ public class MethodManager {
         return null;
     }
 
-    public Method findMethod(MethodSignature signature, TokenPattern<?> pattern, Context context) {
+    public Method findMethod(MethodSignature signature, TokenPattern<?> pattern, Context context, ObjectValue instance) {
         Method method = this.findMethod(signature);
-        if(method == null) return null;
+        if(method == null) {
+            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method '" + signature + "'", pattern.getFormattedPath()));
+            return null;
+        }
+        if(!method.isStatic() && (instance == null && (context.getUnit() != null && context.getUnit().instanceOf(parentUnit)))) { //DO SOMETHING ABOUT THE INSTANCE PLEASE
+            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-static method '" + method.getSignature() + "' cannot be accessed from a static context", pattern.getFormattedPath()));
+        }
 
         switch(method.getVisibility()) {
             case GLOBAL: return method;
@@ -48,7 +55,7 @@ public class MethodManager {
                 if(parentUnit == context.getUnit()) return method; else break;
             }
             case UNIT_INHERITED: {
-                //OML I HAVEN'T ACTUALLY ADDED UNIT INHERITANCE ALL I HAVE ARE RAW UNIT REFERENCES ARE YOU KIDDING BRB
+                if(instance == null && context.getUnit().instanceOf(parentUnit)) return method; else break;
             }
             case PACKAGE: {
                 if(parentUnit.getPackage().equals(context.getDeclaringFile().getPackage())) return method; else break;
@@ -91,5 +98,9 @@ public class MethodManager {
     public void initCodeBlocks() {
         staticMethods.forEach(Method::initCodeBlock);
         instanceMethods.forEach(Method::initCodeBlock);
+    }
+
+    public Unit getDeclaringUnit() {
+        return parentUnit;
     }
 }

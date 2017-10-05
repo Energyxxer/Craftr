@@ -48,9 +48,8 @@ public class CodeBlock extends Statement implements Context {
 
                 Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this, function);
 
-
                 if(statement != null) {
-                    statement.writeToFunction(function);
+                    statement.writeToFunction(function); //TEMPORARY. DO MORE STUFF OFC
                     System.out.println(statement.getClass().getSimpleName());
                 }
             }

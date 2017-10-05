@@ -1,11 +1,12 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
+import com.energyxxer.craftrlang.compiler.code_generation.functions.FunctionWriter;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 
-public abstract class Statement {
+public abstract class Statement implements FunctionWriter {
     protected final TokenPattern<?> pattern;
     protected final Context context;
     protected final MCFunction function;
@@ -27,6 +28,4 @@ public abstract class Statement {
             default: return null;
         }
     }
-
-    public abstract void writeToFunction(MCFunction function);
 }

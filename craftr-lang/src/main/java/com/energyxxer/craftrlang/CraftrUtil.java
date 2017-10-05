@@ -26,7 +26,7 @@ public class CraftrUtil {
     /**
      * Contains all pseudo-keywords.
      * */
-    public static final List<String> pseudo_keywords = Arrays.asList("this", "that", "compare", "instanceof");
+    public static final List<String> pseudo_keywords = Arrays.asList("this", "super", "compare", "instanceof");
 
     public enum Modifier {
         PUBLIC, STATIC, ABSTRACT, FINAL, PROTECTED, PRIVATE, COMPILATION, INGAME, NATIVE;
@@ -35,8 +35,8 @@ public class CraftrUtil {
         public String toString() {
             return this.name().toLowerCase();
         }
-    }
 
+    }
     public static String classify(String token) {
         for(String p : modifiers) {
             if(token.equals(p)) {
@@ -82,6 +82,10 @@ public class CraftrUtil {
         return TokenType.IDENTIFIER;
     }
 
+    public static boolean isPseudoIdentifier(String name) {
+        return name.equals("this") || name.equals("super");
+    }
+
     public static boolean isValidIdentifier(String str) {
         if(str.length() <= 0) return false;
         for(int i = 0; i < str.length(); i++) {
@@ -89,7 +93,7 @@ public class CraftrUtil {
                 return false;
             }
         }
-        return classify(str) == TokenType.IDENTIFIER;
+        return classify(str) == TokenType.IDENTIFIER && !isPseudoIdentifier(str);
     }
 
     public static boolean isValidIdentifierPath(String str) {

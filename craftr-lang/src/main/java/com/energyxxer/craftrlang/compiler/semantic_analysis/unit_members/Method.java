@@ -35,6 +35,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     private List<CraftrUtil.Modifier> modifiers;
     private DataType returnType;
     private String name;
+    private final boolean validName;
     private List<FormalParameter> positionalParams = new ArrayList<>();
     private List<FormalParameter> keywordParams = new ArrayList<>();
     private String thread;
@@ -72,11 +73,15 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
         } else {
             this.name = ((TokenItem) pattern.find("METHOD_NAME")).getContents().value;
         }
+        this.validName = !CraftrUtil.isPseudoIdentifier(this.name);
+        if(!validName) {
+            getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal method name", pattern.find("METHOD_NAME").getFormattedPath()));
+        }
 
         boolean validConstructor = this.type == MethodType.CONSTRUCTOR;
 
         if(this.type == MethodType.CONSTRUCTOR && !this.name.equals(this.declaringUnit.getName())) {
-            this.declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(
+            getAnalyzer().getCompiler().getReport().addNotice(
                     new Notice(
                             NoticeType.ERROR,
                             "Invalid method declaration; return type required",
@@ -168,6 +173,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
         } else {
             TokenPattern<?> block = body.find("DELIMITED_CODE_BLOCK");
             this.codeBlock = new CodeBlock(block, this);
+            this.codeBlock.setStatic(this.isStatic());
         }
     }
 

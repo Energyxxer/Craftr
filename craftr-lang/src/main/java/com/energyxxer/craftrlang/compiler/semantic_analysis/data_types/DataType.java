@@ -8,6 +8,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 
 import java.util.List;
 
@@ -80,6 +81,14 @@ public class DataType {
         }
 
         return new DataType((Unit) symbol);
+    }
+
+    public SymbolTable getSubSymbolTable() {
+        return (unit != null) ? unit.getFieldManager().getInstanceFieldTable() : null;
+    }
+
+    public MethodLog getMethodLog() {
+        return (unit != null) ? unit.getMethodLog() : null;
     }
 
     @Override

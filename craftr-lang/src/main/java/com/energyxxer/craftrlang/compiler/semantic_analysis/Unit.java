@@ -16,7 +16,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldManager;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodManager;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodSignature;
 import com.energyxxer.util.out.Console;
@@ -48,7 +48,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
     private List<List<Token>> rawUnitRequires = null;
 
     private FieldManager fieldManager;
-    private MethodManager methodManager;
+    private MethodLog methodLog;
 
     private boolean unitActionsInitialized = false;
     private boolean unitComponentsInitialized = false;
@@ -133,7 +133,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         file.getPackage().getSubSymbolTable().put(this);
 
         this.fieldManager = new FieldManager(this);
-        this.methodManager = new MethodManager(this);
+        this.methodLog = new MethodLog(this);
 
         this.instanceContext = new Context() {
             @Override
@@ -298,7 +298,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         HashMap<MethodSignature, Method> allMethods = new HashMap<>();
 
         for(Unit inherited : inheritanceMap) {
-            for(Method method : inherited.methodManager.getAllMethods()) {
+            for(Method method : inherited.methodLog.getAllMethods()) {
                 Method clashingMethod = allMethods.get(method.getSignature());
                 if(clashingMethod != null) {
                     if(!clashingMethod.getReturnType().equals(method.getReturnType())) {
@@ -323,7 +323,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
                 if (component.getName().equals("VARIABLE")) {
                     fieldManager.insertField(component);
                 } else if(component.getName().equals("METHOD")) {
-                    methodManager.insertMethod(component);
+                    methodLog.insertMethod(component);
                 }
             }
         }
@@ -334,7 +334,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         System.out.println(staticInitializer);
         System.out.println(instanceInitializer);
 
-        methodManager.initCodeBlocks();
+        methodLog.initCodeBlocks();
     }
 
     @Override
@@ -385,8 +385,8 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         return fieldManager;
     }
 
-    public MethodManager getMethodManager() {
-        return methodManager;
+    public MethodLog getMethodLog() {
+        return methodLog;
     }
 
     public MCFunction getStaticInitializer() {

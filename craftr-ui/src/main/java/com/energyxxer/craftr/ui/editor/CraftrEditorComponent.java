@@ -31,7 +31,7 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Created by User on 1/1/2017.
@@ -93,9 +93,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
             ArrayList<Token> f = new ArrayList<>(tokens);
             f.removeIf(t -> !t.isSignificant());
 
-            CraftrWindow.setStatus(System.nanoTime() + " : Parsing start");
             match = CraftrProductions.FILE.match(f);
-            CraftrWindow.setStatus(System.nanoTime() + " : Parsing end");
 
             match.pattern.validate();
         }
@@ -107,15 +105,15 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
             else
                 sd.setCharacterAttributes(token.loc.index, token.value.length(), defaultStyle, true);
 
-            Set<String> set = token.attributes.keySet();
-            for(String key : set) {
-                if(!token.attributes.get(key).equals(true)) continue;
-                Style attrStyle = CraftrEditorComponent.this.getStyle("~" + key.toLowerCase());
+            for(Map.Entry<String, Object> entry : token.attributes.entrySet()) {
+                if(!entry.getValue().equals(true)) continue;
+                Style attrStyle = CraftrEditorComponent.this.getStyle("~" + entry.getKey().toLowerCase());
                 if(attrStyle == null) continue;
                 sd.setCharacterAttributes(token.loc.index, token.value.length(), attrStyle, false);
             }
-            for(TokenSection section : token.subSections.keySet()) {
-                Style attrStyle = CraftrEditorComponent.this.getStyle("~" + token.subSections.get(section).toLowerCase());
+            for(Map.Entry<TokenSection, String> entry : token.subSections.entrySet()) {
+                TokenSection section = entry.getKey();
+                Style attrStyle = CraftrEditorComponent.this.getStyle("~" + entry.getValue().toLowerCase());
                 if(attrStyle == null) continue;
                 sd.setCharacterAttributes(token.loc.index + section.start, section.length, attrStyle, false);
             }
@@ -126,14 +124,14 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
             }
 
             if(doParsing) {
-                ps: for(String pskey : parent.parserStyles.keySet()) {
-                    String[] tagList = parent.parserStyles.get(pskey);
+                ps: for(Map.Entry<String, String[]> entry : parent.parserStyles.entrySet()) {
+                    String[] tagList = entry.getValue();
                     int startIndex = token.tags.indexOf(tagList[0]);
                     if(startIndex < 0) continue;
                     for(int i = 0; i < tagList.length; i++) {
                         if(startIndex+i >= token.tags.size() || !tagList[i].equalsIgnoreCase(token.tags.get(startIndex+i))) continue ps;
                     }
-                    Style attrStyle = CraftrEditorComponent.this.getStyle(pskey);
+                    Style attrStyle = CraftrEditorComponent.this.getStyle(entry.getKey());
                     if(attrStyle == null) continue;
                     sd.setCharacterAttributes(token.loc.index, token.value.length(), attrStyle, true);
                 }

@@ -5,7 +5,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodManager;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 
 /**
  * Created by Energyxxer on 07/13/2017.
@@ -14,7 +14,7 @@ public class ObjectValue extends Value {
 
     private Unit unit;
 
-    public ObjectValue(Context context, Unit unit) {
+    public ObjectValue(Unit unit, Context context) {
         super(context);
         this.unit = unit;
     }
@@ -30,8 +30,8 @@ public class ObjectValue extends Value {
     }
 
     @Override
-    public MethodManager getMethodManager() {
-        return unit.getMethodManager();
+    public MethodLog getMethodLog() {
+        return unit.getMethodLog();
     }
 
     @Override

@@ -1,7 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
@@ -10,8 +9,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodCall;
 
 import java.util.ArrayList;
 
@@ -164,15 +162,10 @@ public final class ExprResolver {
             } case "METHOD_CALL": {
                 return analyzeValue(((TokenStructure) pattern).getContents(), context, function);
             } case "METHOD_CALL_INNER": {
-                Token methodNameToken = ((TokenItem) pattern.find("METHOD_CALL_NAME")).getContents();
+                MethodCall call = new MethodCall(pattern, context.getUnit().getMethodLog(), function, context); //REPLACE CONTEXT METHOD LOG BY A MORE SOPHISTICATED SYSTEM AKA AN ACTUAL OBJECT REFERENCE
+                call.writeToFunction(function);
 
-                Symbol ref = context.findSymbol(methodNameToken, true);
-                if(ref != null && ref instanceof Method) {
-                    ((Method) ref).getCodeBlock().writeToFunction(function);
-                    // THIS IS OBVIOUSLY IGNORING ALL ACTUAL PARAMETERS, TODO.
-                } else {
-                    context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method '" + methodNameToken.value + "'", pattern.getFormattedPath()));
-                }
+                return call;
             }
         }
         System.out.println("Non-registered exit: " + pattern.getName());

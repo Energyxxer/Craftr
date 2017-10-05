@@ -37,6 +37,7 @@ public class Variable extends AbstractFileComponent implements Symbol {
 
     private DataType dataType;
     private String name;
+    private final boolean validName;
 
     private CodeBlock block = null;
     private FieldManager fieldManager = null;
@@ -53,6 +54,11 @@ public class Variable extends AbstractFileComponent implements Symbol {
         this.context = context;
 
         this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
+        this.validName = !CraftrUtil.isPseudoIdentifier(this.name);
+
+        if(!validName) {
+            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME").getFormattedPath()));
+        }
 
         TokenPattern<?> initialization = this.pattern.find("VARIABLE_INITIALIZATION");
 
@@ -85,10 +91,12 @@ public class Variable extends AbstractFileComponent implements Symbol {
         this.block = block;
         this.table = block.getSymbolTable();
 
-        if(block.findVariable(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
-            block.getSymbolTable().put(this);
-        } else {
-            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
+        if(validName) {
+            if(block.findVariable(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
+                block.getSymbolTable().put(this);
+            } else {
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
+            }
         }
     }
 
@@ -98,10 +106,12 @@ public class Variable extends AbstractFileComponent implements Symbol {
         this.fieldManager = fieldManager;
         this.table = this.isStatic() ? fieldManager.getStaticFieldTable() : fieldManager.getInstanceFieldTable();
 
-        if(fieldManager.findField(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
-            table.put(this);
-        } else {
-            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
+        if(validName) {
+            if(fieldManager.findField(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
+                table.put(this);
+            } else {
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
+            }
         }
 
         context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report: ", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));

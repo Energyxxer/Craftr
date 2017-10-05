@@ -474,13 +474,13 @@ public class CraftrProductions {
 			{
 				TokenGroupMatch g2 = new TokenGroupMatch().setName("PARAMETER");
 				{
-					TokenGroupMatch g3 = new TokenGroupMatch(true).setName("PARAMETER_LABEL");
-					g3.append(new TokenItemMatch(TokenType.IDENTIFIER));
+					TokenGroupMatch g3 = new TokenGroupMatch(true).setName("PARAMETER_LABEL_WRAPPER");
+					g3.append(new TokenItemMatch(TokenType.IDENTIFIER).setName("PARAMETER_LABEL"));
 					g3.append(new TokenItemMatch(TokenType.COLON));
 					g2.append(g3);
 				}
 				g2.append(VALUE);
-				g.append(new TokenListMatch(g2, new TokenItemMatch(TokenType.COMMA),true));
+				g.append(new TokenListMatch(g2, new TokenItemMatch(TokenType.COMMA),true).setName("PARAMETER_LIST"));
 			}
 			g.append(new TokenItemMatch(TokenType.BRACE,")"));
 

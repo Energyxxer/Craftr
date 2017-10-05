@@ -6,7 +6,7 @@ import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodManager;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 
 /**
  * Created by Energyxxer on 07/11/2017.
@@ -29,7 +29,7 @@ public abstract class Value {
 
     public abstract DataType getDataType();
     public abstract SymbolTable getSubSymbolTable();
-    public abstract MethodManager getMethodManager();
+    public abstract MethodLog getMethodLog();
 
     public final Value runOperation(Operator operator, TokenPattern<?> pattern) {
         Value returnValue = this.operation(operator, pattern);

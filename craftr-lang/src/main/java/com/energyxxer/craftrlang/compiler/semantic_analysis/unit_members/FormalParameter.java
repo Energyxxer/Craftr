@@ -14,6 +14,12 @@ public class FormalParameter {
     private DataType type;
     private String name;
 
+    public FormalParameter(DataType type, String name) {
+        this.parent = null;
+        this.type = type;
+        this.name = name;
+    }
+
     public FormalParameter(Method parent, TokenPattern<?> rawParam) {
         this.parent = parent;
         this.type = DataType.parseType((rawParam.find("DATA_TYPE")).flattenTokens(), parent.getUnit().getDeclaringFile().getReferenceTable(), parent.getUnit());

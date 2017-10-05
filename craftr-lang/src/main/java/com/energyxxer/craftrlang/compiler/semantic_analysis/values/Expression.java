@@ -4,7 +4,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodManager;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 
 public class Expression extends Value {
 
@@ -34,7 +34,7 @@ public class Expression extends Value {
     }
 
     @Override
-    public MethodManager getMethodManager() {
+    public MethodLog getMethodLog() {
         return null;
     }
 
