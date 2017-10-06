@@ -38,11 +38,24 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     private final boolean validName;
     private List<FormalParameter> positionalParams = new ArrayList<>();
     private List<FormalParameter> keywordParams = new ArrayList<>();
-    private String thread;
 
     private CodeBlock codeBlock;
 
     private final MethodSignature signature;
+
+    public Method(TokenPattern<?> pattern, Unit declaringUnit, MethodType type, List<CraftrUtil.Modifier> modifiers, DataType returnType, String name, boolean validName, List<FormalParameter> positionalParams, List<FormalParameter> keywordParams, CodeBlock codeBlock, MethodSignature signature) {
+        super(pattern);
+        this.declaringUnit = declaringUnit;
+        this.type = type;
+        this.modifiers = modifiers;
+        this.returnType = returnType;
+        this.name = name;
+        this.validName = validName;
+        this.positionalParams = positionalParams;
+        this.keywordParams = keywordParams;
+        this.codeBlock = codeBlock;
+        this.signature = signature;
+    }
 
     public Method(Unit declaringUnit, TokenStructure pattern) {
         super(pattern);
@@ -175,6 +188,10 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
             this.codeBlock = new CodeBlock(block, this);
             this.codeBlock.setStatic(this.isStatic());
         }
+    }
+
+    public Method duplicate() {
+        return new Method(pattern, declaringUnit, type, modifiers, returnType, name, validName, positionalParams, keywordParams, codeBlock, signature);
     }
 
     public boolean isStatic() {

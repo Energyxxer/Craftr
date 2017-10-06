@@ -9,7 +9,10 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodCall;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 import java.util.ArrayList;
 
@@ -18,7 +21,7 @@ import java.util.ArrayList;
  */
 public final class ExprResolver {
 
-    public static Value analyzeValue(TokenPattern<?> pattern, Context context, MCFunction function) {
+    public static Value analyzeValue(TokenPattern<?> pattern, Context context, DataHolder dataHolder, MCFunction function) {
         //System.out.println("pattern = " + pattern);
 
         switch(pattern.getName()) {
@@ -56,16 +59,16 @@ public final class ExprResolver {
                 }
                 return new BooleanValue(value, context);
             } case "VALUE": {
-                return analyzeValue(((TokenStructure) pattern).getContents(), context, function);
+                return analyzeValue(((TokenStructure) pattern).getContents(), context, dataHolder, function);
             } case "EXPRESSION": {
-                return analyzeValue(((TokenStructure) pattern).getContents(), context, function);
+                return analyzeValue(((TokenStructure) pattern).getContents(), context, dataHolder, function);
             } case "OPERATION": {
-                return analyzeValue(((TokenGroup) pattern).getContents()[0], context, function);
+                return analyzeValue(((TokenGroup) pattern).getContents()[0], context, dataHolder, function);
             } case "OPERATION_LIST": {
                 TokenList list = (TokenList) pattern;
 
                 if(list.size() == 1) {
-                    return analyzeValue(list.getContents()[0], context, function);
+                    return analyzeValue(list.getContents()[0], context, dataHolder, function);
                 } else {
 
                     TokenPattern<?>[] contents = list.getContents();
@@ -76,7 +79,7 @@ public final class ExprResolver {
                     for(int i = 0; i < contents.length; i++) {
                         if((i & 1) == 0) {
                             //Operand
-                            flatValues.add(analyzeValue(contents[i], context, function));
+                            flatValues.add(analyzeValue(contents[i], context, dataHolder, function));
                         } else {
                             //Operator
                             flatOperators.add(Operator.getOperatorForSymbol(((TokenItem) contents[i]).getContents().value));
@@ -160,14 +163,27 @@ public final class ExprResolver {
                 }
                 return new StringValue(sb.toString(), context);
             } case "METHOD_CALL": {
-                return analyzeValue(((TokenStructure) pattern).getContents(), context, function);
+                return analyzeValue(((TokenStructure) pattern).getContents(), context, dataHolder, function);
             } case "METHOD_CALL_INNER": {
-                MethodCall call = new MethodCall(pattern, context.getUnit().getMethodLog(), function, context); //REPLACE CONTEXT METHOD LOG BY A MORE SOPHISTICATED SYSTEM AKA AN ACTUAL OBJECT REFERENCE
+                if(dataHolder == null) dataHolder = (context.isStatic()) ? context.getUnit() : context.getUnit().getGenericInstance();
+
+                MethodCall call = new MethodCall(pattern, dataHolder, function, context); //REPLACE CONTEXT METHOD LOG BY A MORE SOPHISTICATED SYSTEM AKA AN ACTUAL OBJECT REFERENCE
                 call.writeToFunction(function);
 
                 return call;
             } case "IDENTIFIER": {
+                if(dataHolder == null) dataHolder = (context.isStatic()) ? context.getUnit() : context.getUnit().getGenericInstance();
+                //  CURRENTLY IGNORES LOCAL VARIABLES!!
 
+                if(dataHolder.getSubSymbolTable() != null) {
+                    Symbol symbol = dataHolder.getSubSymbolTable().getSymbol(((TokenItem) pattern).getContents(), context);
+                    if(symbol != null) {
+                        if(symbol instanceof Value) return (Value) symbol;
+                        else if(symbol instanceof Variable) return ((Variable) symbol).getValue();
+                    }
+                } else {
+                    context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                }
             }
         }
         context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Unresolved Expressions", NoticeType.INFO, "Non-registered exit: " + pattern.getName(), pattern.getFormattedPath()));

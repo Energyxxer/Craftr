@@ -1,7 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.managers;
 
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
@@ -17,35 +16,60 @@ import java.util.List;
  * Created by Energyxxer on 07/13/2017.
  */
 public class MethodLog {
-    private final Unit parentUnit;
 
-    private List<Method> staticMethods;
-    private List<Method> instanceMethods;
+    private final Unit parentUnit;
+    private ObjectInstance parentInstance;
+    private MethodLog parentLog;
+
+    private List<Method> methods;
+    //private List<Method> staticMethods;
+    //private List<Method> instanceMethods;
 
     public MethodLog(Unit parentUnit) {
         this.parentUnit = parentUnit;
+        this.parentInstance = null;
+        this.parentLog = null;
 
-        this.staticMethods = new ArrayList<>();
-        this.instanceMethods = new ArrayList<>();
+        this.methods = new ArrayList<>();
+        //this.staticMethods = new ArrayList<>();
+        //this.instanceMethods = new ArrayList<>();
+    }
+
+    public MethodLog(ObjectInstance instance) {
+        this.parentUnit = instance.getUnit();
+        this.parentInstance = instance;
+        this.parentLog = parentUnit.getStaticMethodLog();
+
+        this.methods = new ArrayList<>();
+
+        for(Method method : parentUnit.getInstanceMethodLog().methods) {
+            this.methods.add(method.duplicate());
+        }
     }
 
     public Method findMethod(MethodSignature signature) {
-        for(Method method : instanceMethods) {
+        for(Method method : methods) {
+            if(method.getSignature().equals(signature)) return method;
+        }
+        /*for(Method method : instanceMethods) {
             if(method.getSignature().equals(signature)) return method;
         }
         for(Method method : staticMethods) {
             if(method.getSignature().equals(signature)) return method;
-        }
+        }*/
         return null;
     }
 
     public Method findMethod(MethodSignature signature, TokenPattern<?> pattern, Context context, ObjectInstance instance) {
         Method method = this.findMethod(signature);
         if(method == null) {
-            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method '" + signature + "'", pattern.getFormattedPath()));
-            return null;
+            if(parentLog != null) return parentLog.findMethod(signature, pattern, context, instance);
+            else {
+                parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method '" + signature + "'", pattern.getFormattedPath()));
+                return null;
+            }
         }
-        if(!method.isStatic() && (instance == null && (context.getUnit() != null && context.getUnit().instanceOf(parentUnit)))) { //DO SOMETHING ABOUT THE INSTANCE PLEASE
+        if(!method.isStatic() && instance == null) { //DO SOMETHING ABOUT THE INSTANCE PLEASE
             parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-static method '" + method.getSignature() + "' cannot be accessed from a static context", pattern.getFormattedPath()));
         }
 
@@ -71,11 +95,14 @@ public class MethodLog {
                 )
         );
         //I can't believe after all this error checking I'm returning the method anyways...
-        //It's as if I'm airport security, you have contraband, I reported you yet I'm obligated to give it back to you.
         return method;
     }
 
-    public void insertMethod(TokenStructure component) {
+    public MethodLog createForInstance(ObjectInstance instance) {
+        return new MethodLog(instance);
+    }
+
+    /*public void insertMethod(TokenStructure component) {
         Method method = new Method(parentUnit, component);
         if(this.findMethod(method.getSignature()) == null) {
             (method.isStatic() ? staticMethods : instanceMethods).add(method);
@@ -86,18 +113,18 @@ public class MethodLog {
                     component.getFormattedPath()
             ));
         }
+    }*/
+
+    public void addMethod(Method method) {
+        this.methods.add(method);
     }
 
     public List<Method> getAllMethods() {
-        ArrayList<Method> list = new ArrayList<>();
-        list.addAll(staticMethods);
-        list.addAll(instanceMethods);
-        return list;
+        return new ArrayList<>(methods);
     }
 
     public void initCodeBlocks() {
-        staticMethods.forEach(Method::initCodeBlock);
-        instanceMethods.forEach(Method::initCodeBlock);
+        methods.forEach(Method::initCodeBlock);
     }
 
     public Unit getDeclaringUnit() {

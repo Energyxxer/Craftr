@@ -15,6 +15,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
@@ -33,7 +34,7 @@ import java.util.List;
 /**
  * Created by User on 2/25/2017.
  */
-public class Unit extends AbstractFileComponent implements Symbol, Context {
+public class Unit extends AbstractFileComponent implements Symbol, DataHolder, Context {
     private final CraftrFile declaringFile;
     private final Context instanceContext;
     private List<CraftrUtil.Modifier> modifiers;
@@ -49,11 +50,12 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
     private List<List<Token>> rawUnitImplements = null;
     private List<List<Token>> rawUnitRequires = null;
 
-    private FieldLog staticFieldLog;
-    private MethodLog methodLog;
-
     private ObjectInstance genericInstance = null;
-    private FieldLog instanceFieldLog = null;
+
+    private FieldLog staticFieldLog;
+    private FieldLog instanceFieldLog;
+    private MethodLog staticMethodLog;
+    private MethodLog instanceMethodLog;
 
     private boolean unitActionsInitialized = false;
     private boolean unitComponentsInitialized = false;
@@ -140,7 +142,8 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         this.staticFieldLog = new FieldLog(this);
         this.instanceFieldLog = new FieldLog(this);
 
-        this.methodLog = new MethodLog(this);
+        this.staticMethodLog = new MethodLog(this);
+        this.instanceMethodLog = new MethodLog(this);
 
         this.instanceContext = new Context() {
             @Override
@@ -305,7 +308,7 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         HashMap<MethodSignature, Method> allMethods = new HashMap<>();
 
         for(Unit inherited : inheritanceMap) {
-            for(Method method : inherited.methodLog.getAllMethods()) {
+            for(Method method : inherited.getAllMethods()) {
                 Method clashingMethod = allMethods.get(method.getSignature());
                 if(clashingMethod != null) {
                     if(!clashingMethod.getReturnType().equals(method.getReturnType())) {
@@ -333,14 +336,30 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
                         if(!staticFieldLog.getFieldTable().getMap().containsKey(field.getName()) && !instanceFieldLog.getFieldTable().getMap().containsKey(field.getName())) {
                             ((field.isStatic()) ? staticFieldLog : instanceFieldLog).addField(field);
                         } else {
-                            getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", field.pattern.find("VARIABLE_NAME").getFormattedPath()));
+                            getAnalyzer().getCompiler().getReport().addNotice(new Notice(
+                                    NoticeType.ERROR,
+                                    "Variable '" + name + "' already declared in the scope",
+                                    field.pattern.find("VARIABLE_NAME").getFormattedPath()
+                            ));
                         }
                     }
                 } else if(component.getName().equals("METHOD")) {
-                    methodLog.insertMethod(component);
+                    Method method = new Method(this, component);
+                    if(staticMethodLog.findMethod(method.getSignature()) == null && instanceMethodLog.findMethod(method.getSignature()) == null) {
+                        ((method.isStatic()) ? staticMethodLog : instanceMethodLog).addMethod(method);
+                    } else {
+                        getAnalyzer().getCompiler().getReport().addNotice(new Notice(
+                                NoticeType.ERROR,
+                                "'" + method.getSignature() + "' is already defined in '" + this.getFullyQualifiedName() + "'",
+                                component.getFormattedPath()
+                        ));
+                    }
                 }
             }
         }
+
+        staticFieldLog.forEach(Variable::initializeValue);
+        instanceFieldLog.forEach(Variable::initializeValue);
 
         this.genericInstance = new ObjectInstance(this, this.instanceContext);
 
@@ -351,7 +370,8 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         System.out.println(staticInitializer);
         System.out.println(instanceInitializer);
 
-        methodLog.initCodeBlocks();
+        staticMethodLog.initCodeBlocks();
+        instanceMethodLog.initCodeBlocks();
     }
 
     @Override
@@ -406,8 +426,12 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
         return instanceFieldLog;
     }
 
-    public MethodLog getMethodLog() {
-        return methodLog;
+    public MethodLog getStaticMethodLog() {
+        return staticMethodLog;
+    }
+
+    public MethodLog getInstanceMethodLog() {
+        return instanceMethodLog;
     }
 
     public MCFunction getStaticInitializer() {
@@ -424,6 +448,22 @@ public class Unit extends AbstractFileComponent implements Symbol, Context {
             if(inherited == unit) return true;
         }
         return false;
+    }
+
+    public List<Method> getAllMethods() {
+        ArrayList<Method> all = new ArrayList<>();
+        all.addAll(staticMethodLog.getAllMethods());
+        all.addAll(instanceMethodLog.getAllMethods());
+        return all;
+    }
+
+    @Override
+    public MethodLog getMethodLog() {
+        return staticMethodLog;
+    }
+
+    public ObjectInstance getGenericInstance() {
+        return genericInstance;
     }
 
     @Override

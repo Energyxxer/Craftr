@@ -4,6 +4,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
@@ -11,7 +12,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 /**
  * Created by Energyxxer on 07/13/2017.
  */
-public class ObjectInstance extends Value {
+public class ObjectInstance extends Value implements DataHolder {
 
     private Unit unit;
 
@@ -23,6 +24,7 @@ public class ObjectInstance extends Value {
         this.unit = unit;
 
         this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
+        this.methodLog = unit.getInstanceMethodLog().createForInstance(this);
     }
 
     public Unit getUnit() {
@@ -41,7 +43,7 @@ public class ObjectInstance extends Value {
 
     @Override
     public MethodLog getMethodLog() {
-        return unit.getMethodLog();
+        return methodLog;
     }
 
     @Override

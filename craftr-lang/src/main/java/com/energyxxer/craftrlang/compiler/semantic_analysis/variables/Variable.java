@@ -15,7 +15,9 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import org.jetbrains.annotations.Nullable;
@@ -28,7 +30,7 @@ import java.util.List;
 /**
  * Created by Energyxxer on 07/10/2017.
  */
-public class Variable extends AbstractFileComponent implements Symbol {
+public class Variable extends AbstractFileComponent implements Symbol, DataHolder {
     private final Context context;
 
     private SymbolVisibility visibility = SymbolVisibility.BLOCK;
@@ -67,30 +69,6 @@ public class Variable extends AbstractFileComponent implements Symbol {
         if(!validName) {
             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME").getFormattedPath()));
         }
-
-        TokenPattern<?> initialization = this.pattern.find("VARIABLE_INITIALIZATION");
-
-        if(initialization != null) {
-
-            MCFunction initializerFunction;
-            if(context instanceof Unit) {
-                if(modifiers.contains(CraftrUtil.Modifier.STATIC))
-                    initializerFunction = ((Unit) context).getStaticInitializer();
-                else
-                    initializerFunction = ((Unit) context).getInstanceInitializer();
-            } else if(context instanceof CodeBlock) {
-                initializerFunction = ((CodeBlock) context).getFunction();
-            } else {
-                initializerFunction = null;
-                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Something went wrong: Variable context is of unrecognized type: " + context.getClass().getSimpleName(), pattern.getFormattedPath()));
-                return;
-            }
-
-            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), context, initializerFunction);
-            if(this.value != null && !this.dataType.instanceOf(this.value.getDataType())) {
-                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
-            }
-        }
     }
 
     public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, CodeBlock block) {
@@ -118,7 +96,33 @@ public class Variable extends AbstractFileComponent implements Symbol {
             }*/
         }
 
-        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report: ", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
+        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
+    }
+
+    public void initializeValue() {
+        TokenPattern<?> initialization = this.pattern.find("VARIABLE_INITIALIZATION");
+
+        if(initialization != null) {
+
+            MCFunction initializerFunction;
+            if(context instanceof Unit) {
+                if(modifiers.contains(CraftrUtil.Modifier.STATIC))
+                    initializerFunction = ((Unit) context).getStaticInitializer();
+                else
+                    initializerFunction = ((Unit) context).getInstanceInitializer();
+            } else if(context instanceof CodeBlock) {
+                initializerFunction = ((CodeBlock) context).getFunction();
+            } else {
+                initializerFunction = null;
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Something went wrong: Variable context is of unrecognized type: " + context.getClass().getSimpleName(), pattern.getFormattedPath()));
+                return;
+            }
+
+            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), context, null, initializerFunction);
+            if(this.value != null && !this.dataType.instanceOf(this.value.getDataType())) {
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
+            }
+        }
     }
 
     /*
@@ -177,6 +181,10 @@ public class Variable extends AbstractFileComponent implements Symbol {
         return new Variable(pattern, context, visibility, modifiers, dataType, name, validName, block, value);
     }
 
+    public Value getValue() {
+        return value;
+    }
+
     public boolean isStatic() {
         return modifiers.contains(CraftrUtil.Modifier.STATIC);
     }
@@ -188,7 +196,12 @@ public class Variable extends AbstractFileComponent implements Symbol {
 
     @Override
     public @Nullable SymbolTable getSubSymbolTable() {
-        return null;
+        return (value != null) ? value.getSubSymbolTable() : null;
+    }
+
+    @Override
+    public MethodLog getMethodLog() {
+        return (value != null) ? value.getMethodLog() : null;
     }
 
     @Override

@@ -211,6 +211,7 @@ public class CraftrProductions {
             g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
 
             VARIABLE.add(g);
+            STATEMENT.add(VARIABLE);
         }
 
         {

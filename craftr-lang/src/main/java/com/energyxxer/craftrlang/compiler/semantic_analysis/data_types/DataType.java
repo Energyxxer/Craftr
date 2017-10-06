@@ -89,7 +89,7 @@ public class DataType {
     }
 
     public MethodLog getMethodLog() {
-        return (unit != null) ? unit.getMethodLog() : null;
+        return (unit != null) ? unit.getInstanceMethodLog() : null;
     }
 
     @Override

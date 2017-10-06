@@ -11,9 +11,11 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
@@ -26,9 +28,9 @@ public class MethodCall extends Value implements FunctionWriter {
     private ArrayList<Value> positionalParams = new ArrayList<>();
     private HashMap<String, Value> keywordParams = new HashMap<>();
 
-    private Method method;
+    private Method method = null;
 
-    public MethodCall(TokenPattern<?> pattern, MethodLog log, MCFunction function, Context context) {
+    public MethodCall(TokenPattern<?> pattern, DataHolder dataHolder, MCFunction function, Context context) {
         super(context);
 
         this.methodName = ((TokenItem) pattern.find("METHOD_CALL_NAME")).getContents().value;
@@ -51,7 +53,7 @@ public class MethodCall extends Value implements FunctionWriter {
                         }
                     }
                     TokenPattern<?> rawValue = rawParam.find("VALUE");
-                    Value value = ExprResolver.analyzeValue(rawValue, context, function);
+                    Value value = ExprResolver.analyzeValue(rawValue, context, null, function);
 
                     if(label == null) {
                         positionalParams.add(value);
@@ -71,9 +73,13 @@ public class MethodCall extends Value implements FunctionWriter {
             formalParams.add(new FormalParameter((value != null) ? value.getDataType() : DataType.OBJECT, null));
         }
 
-        MethodSignature signature = new MethodSignature(log.getDeclaringUnit(), methodName, formalParams);
+        if(dataHolder.getMethodLog() == null) {
+            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method from an undefined data holder", pattern.getFormattedPath()));
+        } else {
+            MethodSignature signature = new MethodSignature(dataHolder.getMethodLog().getDeclaringUnit(), methodName, formalParams);
 
-        this.method = log.findMethod(signature, pattern, context, null);
+            this.method = dataHolder.getMethodLog().findMethod(signature, pattern, context, (dataHolder instanceof ObjectInstance) ? ((ObjectInstance) dataHolder) : null);
+        }
     }
 
     public Method getMethod() {

@@ -17,7 +17,7 @@ public class ExpressionStatement extends Statement {
     public ExpressionStatement(TokenPattern<?> pattern, Context context, MCFunction function) {
         super(pattern, context, function);
 
-        Value content = ExprResolver.analyzeValue(pattern.find("EXPRESSION"), context, function);
+        Value content = ExprResolver.analyzeValue(pattern.find("EXPRESSION"), context, null, function);
         if(content instanceof FunctionWriter) {
             this.content = (FunctionWriter) content;
         } else if(content != null) {
@@ -25,6 +25,7 @@ public class ExpressionStatement extends Statement {
             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Not a statement", pattern.getFormattedPath()));
         } else valid = false;
         System.out.println(content + " at " + context);
+        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Expression Report", NoticeType.INFO, content + " at " + context, pattern.getFormattedPath()));
     }
 
     @Override
