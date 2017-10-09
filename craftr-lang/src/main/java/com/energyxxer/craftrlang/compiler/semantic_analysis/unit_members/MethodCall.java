@@ -9,6 +9,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
@@ -22,7 +23,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MethodCall extends Value implements FunctionWriter {
+public class MethodCall extends Value implements FunctionWriter, TraversableStructure {
 
     private String methodName;
     private ArrayList<Value> positionalParams = new ArrayList<>();
@@ -118,7 +119,7 @@ public class MethodCall extends Value implements FunctionWriter {
 
     @Override
     public void writeToFunction(MCFunction function) {
-        if(method != null)
+        if(method != null && method.getCodeBlock() != null)
             method.getCodeBlock().writeToFunction(function);
         //TEMPORARY. DO MORE STUFF TO CHANGE CODE BLOCK VARIABLES AND BLAH BLAH TO OPTIMIZE
     }

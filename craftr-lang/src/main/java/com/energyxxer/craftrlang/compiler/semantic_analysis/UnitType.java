@@ -2,28 +2,42 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
 import com.energyxxer.craftrlang.CraftrUtil;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Energyxxer on 07/14/2017.
  */
 public enum UnitType {
-    ENTITY("Entity", "Entities"), ITEM("Item", "Items"), FEATURE("Feature", "Features"), CLASS("Class", "Classes"), ENUM("Enum", "Enums"), WORLD("World", "Worlds", new CraftrUtil.Modifier[] {CraftrUtil.Modifier.STATIC});
+    ENTITY("name:Entity,plural:Entities"), ITEM("name:Item,plural:Items"), FEATURE("name:Feature,plural:Features"), CLASS("name:Class,plural:Classes"), ENUM("name:Enum,plural:Enums"), WORLD("name:World,plural:Worlds,singleton:true");
 
-    private final String name;
-    private final String plural;
-    private final List<CraftrUtil.Modifier> inferredModifiers;
+    private String name;
+    private String plural;
+    private List<CraftrUtil.Modifier> inferredModifiers;
+    private boolean singleton = false;
 
-    UnitType(String name, String plural) {
-        this(name, plural, null);
-    }
+    UnitType(String raw) {
+        this.inferredModifiers = new ArrayList<>();
 
-    UnitType(String name, String plural, CraftrUtil.Modifier[] inferredModifiers) {
-        this.name = name;
-        this.plural = plural;
-        this.inferredModifiers = (inferredModifiers != null) ? Arrays.asList(inferredModifiers) : Collections.emptyList();
+        String[] params = raw.split(",");
+        for(String param : params) {
+            String[] pair = param.split(":",2);
+            switch(pair[0].trim()) {
+                case "name": {
+                    this.name = pair[1].trim(); break;
+                } case "plural": {
+                    this.plural = pair[1].trim(); break;
+                } case "modifiers": {
+                    String[] rawModifiers = pair[1].trim().split(" ");
+                    for(String modifier : rawModifiers) {
+                        CraftrUtil.Modifier value = CraftrUtil.Modifier.valueOf(modifier.toUpperCase());
+                        inferredModifiers.add(value);
+                    }
+                } case "singleton": {
+                    this.singleton = pair[1].trim().equals("true");
+                }
+            }
+        }
     }
 
     public String getName() {
@@ -36,5 +50,9 @@ public enum UnitType {
 
     public List<CraftrUtil.Modifier> getInferredModifiers() {
         return inferredModifiers;
+    }
+
+    public boolean isSingleton() {
+        return singleton;
     }
 }

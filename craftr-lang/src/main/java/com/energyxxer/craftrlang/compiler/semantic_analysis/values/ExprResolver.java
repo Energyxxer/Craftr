@@ -8,6 +8,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
@@ -20,10 +21,28 @@ import java.util.ArrayList;
  * Created by Energyxxer on 07/11/2017.
  */
 public final class ExprResolver {
-
     public static Value analyzeValue(TokenPattern<?> pattern, Context context, DataHolder dataHolder, MCFunction function) {
-        //System.out.println("pattern = " + pattern);
+        TraversableStructure s = analyzeStructure(pattern, context, dataHolder, function);
+        if(s != null) {
+            if(s instanceof Variable) return ((Variable) s).getValue();
+            if(s instanceof Value) return (Value) s;
+            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Value expected", pattern.getFormattedPath()));
+        }
+        return null;
+    }
 
+    public static Value analyzeValueOrReference(TokenPattern<?> pattern, Context context, DataHolder dataHolder, MCFunction function) {
+        TraversableStructure s = analyzeStructure(pattern, context, dataHolder, function);
+        if(s != null) {
+            if(s instanceof Variable) return (Variable) s;
+            if(s instanceof Value) return (Value) s;
+            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Value expected", pattern.getFormattedPath()));
+        }
+        return null;
+    }
+
+    public static TraversableStructure analyzeStructure(TokenPattern<?> pattern, Context context, DataHolder dataHolder, MCFunction function) {
+        try{
         switch(pattern.getName()) {
             case "NUMBER": {
                 String raw = pattern.flatten(false);
@@ -59,16 +78,16 @@ public final class ExprResolver {
                 }
                 return new BooleanValue(value, context);
             } case "VALUE": {
-                return analyzeValue(((TokenStructure) pattern).getContents(), context, dataHolder, function);
+                return analyzeStructure(((TokenStructure) pattern).getContents(), context, dataHolder, function);
             } case "EXPRESSION": {
-                return analyzeValue(((TokenStructure) pattern).getContents(), context, dataHolder, function);
+                return analyzeStructure(((TokenStructure) pattern).getContents(), context, dataHolder, function);
             } case "OPERATION": {
-                return analyzeValue(((TokenGroup) pattern).getContents()[0], context, dataHolder, function);
+                return analyzeStructure(((TokenGroup) pattern).getContents()[0], context, dataHolder, function);
             } case "OPERATION_LIST": {
                 TokenList list = (TokenList) pattern;
 
                 if(list.size() == 1) {
-                    return analyzeValue(list.getContents()[0], context, dataHolder, function);
+                    return analyzeStructure(list.getContents()[0], context, dataHolder, function);
                 } else {
 
                     TokenPattern<?>[] contents = list.getContents();
@@ -79,7 +98,7 @@ public final class ExprResolver {
                     for(int i = 0; i < contents.length; i++) {
                         if((i & 1) == 0) {
                             //Operand
-                            flatValues.add(analyzeValue(contents[i], context, dataHolder, function));
+                            flatValues.add(analyzeValueOrReference(contents[i], context, dataHolder, function));
                         } else {
                             //Operator
                             flatOperators.add(Operator.getOperatorForSymbol(((TokenItem) contents[i]).getContents().value));
@@ -163,6 +182,7 @@ public final class ExprResolver {
                 }
                 return new StringValue(sb.toString(), context);
             } case "METHOD_CALL": {
+                //Methods can only return values, not other traversable objects
                 return analyzeValue(((TokenStructure) pattern).getContents(), context, dataHolder, function);
             } case "METHOD_CALL_INNER": {
                 if(dataHolder == null) dataHolder = (context.isStatic()) ? context.getUnit() : context.getUnit().getGenericInstance();
@@ -171,21 +191,57 @@ public final class ExprResolver {
                 call.writeToFunction(function);
 
                 return call;
-            } case "IDENTIFIER": {
+            } case "SINGLE_IDENTIFIER": {
                 if(dataHolder == null) dataHolder = (context.isStatic()) ? context.getUnit() : context.getUnit().getGenericInstance();
                 //  CURRENTLY IGNORES LOCAL VARIABLES!!
 
                 if(dataHolder.getSubSymbolTable() != null) {
                     Symbol symbol = dataHolder.getSubSymbolTable().getSymbol(((TokenItem) pattern).getContents(), context);
                     if(symbol != null) {
-                        if(symbol instanceof Value) return (Value) symbol;
-                        else if(symbol instanceof Variable) return ((Variable) symbol).getValue();
+                        if(symbol instanceof TraversableStructure) return (TraversableStructure) symbol;
+                    } return null;
+                }
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                return null;
+            } case "POINTER": {
+                if(dataHolder == null) dataHolder = (context.isStatic()) ? context.getUnit() : context.getUnit().getGenericInstance();
+                //  CURRENTLY IGNORES LOCAL VARIABLES!!
+
+                if(dataHolder.getSubSymbolTable() != null) {
+                    TraversableStructure s = analyzeStructure(pattern.find("VALUE"),context, dataHolder, function);
+
+                    if(s != null) {
+                        if(s instanceof DataHolder) return analyzeStructure(pattern.find("NESTED_POINTER"), context, (DataHolder) s, function);
+                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
                     }
-                } else {
+                    return null;
+                }
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                return null;
+            } case "NESTED_POINTER": {
+                return analyzeStructure(((TokenStructure) pattern).getContents(), context, dataHolder, function);
+            } case "NESTED_POINTER_INNER": {
+                //Promise that dataHolder won't be null in this case;
+                TraversableStructure s = analyzeStructure(pattern.find("POINTER_SEGMENT"), context, dataHolder, function);
+
+                TokenPattern<?> next = pattern.find("POINTER_NEXT");
+                if(next == null) return s;
+                else if(s != null) {
+                    if(s instanceof DataHolder) return analyzeStructure(pattern.find("POINTER_NEXT"), context, (DataHolder) s, function);
                     context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
                 }
+                return null;
+            } case "POINTER_SEGMENT": {
+                return analyzeStructure(((TokenStructure) pattern).getContents(), context, dataHolder, function);
+            } case "POINTER_NEXT": {
+                return analyzeStructure(pattern.find("NESTED_POINTER"), context, dataHolder, function);
             }
         }
+        } catch(NullPointerException npe) {
+            System.out.println("pattern = " + pattern);
+            throw npe;
+        }
+
         context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Unresolved Expressions", NoticeType.INFO, "Non-registered exit: " + pattern.getName(), pattern.getFormattedPath()));
         return null;
     }

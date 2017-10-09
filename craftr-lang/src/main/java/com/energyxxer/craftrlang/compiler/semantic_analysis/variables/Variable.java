@@ -7,7 +7,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.AbstractFileComponent;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
@@ -19,6 +19,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolde
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,8 +31,8 @@ import java.util.List;
 /**
  * Created by Energyxxer on 07/10/2017.
  */
-public class Variable extends AbstractFileComponent implements Symbol, DataHolder {
-    private final Context context;
+public class Variable extends Value implements Symbol, DataHolder, TraversableStructure {
+    public final TokenPattern<?> pattern;
 
     private SymbolVisibility visibility = SymbolVisibility.BLOCK;
     private List<CraftrUtil.Modifier> modifiers;
@@ -45,8 +46,8 @@ public class Variable extends AbstractFileComponent implements Symbol, DataHolde
     private Value value = null;
 
     public Variable(TokenPattern<?> pattern, Context context, SymbolVisibility visibility, List<CraftrUtil.Modifier> modifiers, DataType dataType, String name, boolean validName, CodeBlock block, Value value) {
-        super(pattern);
-        this.context = context;
+        super(context);
+        this.pattern = pattern;
         this.visibility = visibility;
         this.modifiers = modifiers;
         this.dataType = dataType;
@@ -57,11 +58,11 @@ public class Variable extends AbstractFileComponent implements Symbol, DataHolde
     }
 
     private Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, Context context) {
-        super(pattern);
+        super(context);
+        this.pattern = pattern;
         this.modifiers = new ArrayList<>();
         this.modifiers.addAll(modifiers);
         this.dataType = dataType;
-        this.context = context;
 
         this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
         this.validName = !CraftrUtil.isPseudoIdentifier(this.name);
@@ -183,6 +184,21 @@ public class Variable extends AbstractFileComponent implements Symbol, DataHolde
 
     public Value getValue() {
         return value;
+    }
+
+    @Override
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    @Override
+    protected Value operation(Operator operator, TokenPattern<?> pattern) {
+        return null;
+    }
+
+    @Override
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern) {
+        return null;
     }
 
     public boolean isStatic() {

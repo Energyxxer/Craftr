@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Created by User on 2/25/2017.
  */
-public class Unit extends AbstractFileComponent implements Symbol, DataHolder, Context {
+public class Unit extends AbstractFileComponent implements Symbol, DataHolder, Context, TraversableStructure {
     private final CraftrFile declaringFile;
     private final Context instanceContext;
     private List<CraftrUtil.Modifier> modifiers;
@@ -455,6 +455,10 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
         all.addAll(staticMethodLog.getAllMethods());
         all.addAll(instanceMethodLog.getAllMethods());
         return all;
+    }
+
+    public UnitType getType() {
+        return type;
     }
 
     @Override

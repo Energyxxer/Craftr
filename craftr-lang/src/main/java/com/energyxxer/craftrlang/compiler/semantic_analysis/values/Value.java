@@ -3,6 +3,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
@@ -11,7 +12,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 /**
  * Created by Energyxxer on 07/11/2017.
  */
-public abstract class Value {
+public abstract class Value implements TraversableStructure {
     protected final Context context;
     protected boolean explicit = true;
 

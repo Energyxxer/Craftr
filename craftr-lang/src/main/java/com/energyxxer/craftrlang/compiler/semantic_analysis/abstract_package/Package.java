@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package;
 
 import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 /**
  * Created by User on 4/9/2017.
  */
-public class Package implements Symbol {
+public class Package implements Symbol, TraversableStructure {
     private Package parent; //Null if root
     private String name;
 

@@ -156,13 +156,29 @@ public class CraftrProductions {
         }
 
         {
-            //Overrides
+            //Override extends
             TokenGroupMatch g = new TokenGroupMatch();
             g.append(new TokenItemMatch(TokenType.UNIT_TYPE));
             g.append(IDENTIFIER);
-            g.append(new TokenItemMatch(TokenType.UNIT_ACTION).setName("OVERRIDE_ACTION_TYPE"));
-            g.append(new TokenListMatch(new TokenGroupMatch().append(IDENTIFIER).setName("OVERRIDE_ACTION_REFERENCE"),new TokenItemMatch(TokenType.COMMA),true));
-            g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
+			{
+				TokenStructureMatch s = new TokenStructureMatch("OVERRIDE_ACTION");
+
+				{
+					TokenGroupMatch g2 = new TokenGroupMatch().setName("PURE_UNIT_MODIFICATION");
+					g2.append(new TokenItemMatch(TokenType.UNIT_ACTION).setName("OVERRIDE_ACTION_TYPE"));
+					g2.append(new TokenListMatch(new TokenGroupMatch().append(IDENTIFIER).setName("OVERRIDE_ACTION_REFERENCE"),new TokenItemMatch(TokenType.COMMA),true)).setName("OVERRIDE_ACTION_REFERENCE_LIST");
+					s.add(g2);
+				}
+				{
+					TokenGroupMatch g2 = new TokenGroupMatch().setName("PURE_UNIT_REPLACEMENT");
+					g2.append(new TokenItemMatch(TokenType.OPERATOR,"="));
+					g2.append(IDENTIFIER);
+					s.add(g2);
+				}
+
+				g.append(s);
+			}
+			g.append(new TokenItemMatch(TokenType.END_OF_STATEMENT));
             OVERRIDE.add(g);
         }
 
@@ -523,7 +539,7 @@ public class CraftrProductions {
 
 		{
 			// [IDENTIFIER]
-			VALUE.add(new TokenItemMatch(TokenType.IDENTIFIER).setName("IDENTIFIER"));
+			VALUE.add(new TokenItemMatch(TokenType.IDENTIFIER).setName("SINGLE_IDENTIFIER"));
 			// [NUMBER]
 			VALUE.add(new TokenItemMatch(TokenType.NUMBER).setName("NUMBER"));
 			// [BOOLEAN]
@@ -562,20 +578,22 @@ public class CraftrProductions {
 
 		{
 			{
-				TokenGroupMatch g = new TokenGroupMatch();
+				TokenGroupMatch g = new TokenGroupMatch().setName("NESTED_POINTER_INNER");
 				{
 					TokenStructureMatch s = new TokenStructureMatch("POINTER_SEGMENT");
+					s.add(new TokenItemMatch(TokenType.IDENTIFIER).setName("SINGLE_IDENTIFIER"));
 					{
-						TokenGroupMatch g2 = new TokenGroupMatch();
-						g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
-						g2.append(new TokenItemMatch(TokenType.BLOCKSTATE,true));
-						s.add(g2);
+
+						//TokenGroupMatch g2 = new TokenGroupMatch().setName("POINTER_IDENTIFIER");
+						//g2.append(new TokenItemMatch(TokenType.IDENTIFIER));
+						//TODO: BLOCKSTATES PLS: g2.append(new TokenItemMatch(TokenType.BLOCKSTATE,true));
+						//s.add(g2);
 					}
 					s.add(METHOD_CALL);
 					g.append(s);
 				}
 				{
-					TokenGroupMatch g2 = new TokenGroupMatch(true);
+					TokenGroupMatch g2 = new TokenGroupMatch(true).setName("POINTER_NEXT");
 					g2.append(new TokenItemMatch(TokenType.DOT));
 					g2.append(NESTED_POINTER);
 					g.append(g2);
@@ -587,13 +605,8 @@ public class CraftrProductions {
 		{
 			TokenGroupMatch g = new TokenGroupMatch();
 			g.append(VALUE);
-			{
-				TokenGroupMatch g2 = new TokenGroupMatch();
-				g2.append(new TokenItemMatch(TokenType.DOT));
-				g2.append(NESTED_POINTER);
-
-				g.append(g2);
-			}
+			g.append(new TokenItemMatch(TokenType.DOT));
+			g.append(NESTED_POINTER);
 			POINTER.add(g);
 		}
 
