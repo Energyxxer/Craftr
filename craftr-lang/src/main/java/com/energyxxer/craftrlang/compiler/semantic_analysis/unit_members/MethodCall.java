@@ -19,6 +19,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,10 +55,17 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
                         }
                     }
                     TokenPattern<?> rawValue = rawParam.find("VALUE");
-                    Value value = ExprResolver.analyzeValue(rawValue, context, null, function);
+                    Value value = ExprResolver.analyzeValueOrReference(rawValue, context, (!context.isStatic()) ? context.getUnit().getGenericInstance() : null, function);
+                    context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "OBTAINED VALUE IS: " + value, rawValue.getFormattedPath()));
 
                     if(label == null) {
                         positionalParams.add(value);
+                        if(value == null) {
+                            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Actual positional parameter is null: " + rawValue, rawValue.getFormattedPath()));
+                            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... context:" + context, rawValue.getFormattedPath()));
+                            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... context.isStatic():" + context.isStatic(), rawValue.getFormattedPath()));
+                            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... context.getUnit():" + context.getUnit(), rawValue.getFormattedPath()));
+                        }
                     } else {
                         if(keywordParams.keySet().contains(label)) {
                             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate keyword parameter", rawLabel.getFormattedPath()));
@@ -72,6 +80,13 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
 
         for(Value value : positionalParams) {
             formalParams.add(new FormalParameter((value != null) ? value.getDataType() : DataType.OBJECT, null));
+        }
+
+        for(int i = 0; i < positionalParams.size(); i++) {
+            Value param = positionalParams.get(i);
+            if(param instanceof Variable) {
+                positionalParams.set(i, ((Variable) param).getValue());
+            }
         }
 
         if(dataHolder.getMethodLog() == null) {
@@ -109,11 +124,6 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
 
     @Override
     protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern) {
-        return null;
-    }
-
-    @Override
-    public Object getValue() {
         return null;
     }
 

@@ -10,6 +10,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolde
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by Energyxxer on 07/13/2017.
@@ -21,8 +22,6 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     private FieldLog fieldLog;
     private MethodLog methodLog;
 
-    private SymbolTable subSymbolTable;
-
     public ObjectInstance(Unit unit, Context context) {
         super(context);
         this.unit = unit;
@@ -30,22 +29,21 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
         this.methodLog = unit.getInstanceMethodLog().createForInstance(this);
 
-        this.subSymbolTable = fieldLog.getFieldTable().duplicate();
-        this.subSymbolTable.put("this", this);
+        this.fieldLog.put("this", this);
     }
 
-    public Unit getUnit() {
+    public @NotNull Unit getUnit() {
         return unit;
     }
 
     @Override
     public DataType getDataType() {
-        return null;
+        return unit.getDataType();
     }
 
     @Override
     public SymbolTable getSubSymbolTable() {
-        return subSymbolTable;
+        return fieldLog;
     }
 
     @Override
@@ -64,17 +62,12 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     }
 
     @Override
-    public Unit getValue() {
-        return this.unit;
-    }
-
-    @Override
     public String getName() {
         return "<instance of " + unit.getFullyQualifiedName() + ">";
     }
 
     @Override
     public SymbolVisibility getVisibility() {
-        return SymbolVisibility.NONE;
+        return SymbolVisibility.UNIT;
     }
 }

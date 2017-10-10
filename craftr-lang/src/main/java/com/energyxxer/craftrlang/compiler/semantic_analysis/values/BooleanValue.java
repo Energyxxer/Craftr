@@ -61,9 +61,4 @@ public class BooleanValue extends Value {
                 ",explicit=" + this.explicit +
                 '}';
     }
-
-    @Override
-    public Boolean getValue() {
-        return this.value;
-    }
 }

@@ -9,6 +9,7 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
@@ -63,6 +64,12 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.modifiers = new ArrayList<>();
         this.modifiers.addAll(modifiers);
         this.dataType = dataType;
+
+        this.visibility = (
+                (modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL :
+                modifiers.contains(CraftrUtil.Modifier.PROTECTED) ? SymbolVisibility.UNIT_INHERITED :
+                modifiers.contains(CraftrUtil.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
+                context instanceof CodeBlock ? SymbolVisibility.BLOCK : SymbolVisibility.PACKAGE));
 
         this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
         this.validName = !CraftrUtil.isPseudoIdentifier(this.name);
@@ -119,7 +126,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                 return;
             }
 
-            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), context, null, initializerFunction);
+            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), context, (context instanceof Unit && !this.isStatic()) ? getUnit().getGenericInstance() : null, initializerFunction);
             if(this.value != null && !this.dataType.instanceOf(this.value.getDataType())) {
                 context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
             }
@@ -227,5 +234,18 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
     public void setVisibility(SymbolVisibility visibility) {
         this.visibility = visibility;
+    }
+
+    @Override
+    public @Nullable Package getPackage() {
+        if(getUnit() != null) return getUnit().getPackage();
+        return null;
+    }
+
+    @Override
+    public @Nullable Unit getUnit() {
+        if(context instanceof CodeBlock) return context.getUnit(); else if(context instanceof Unit) return ((Unit) context);
+        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Variable with no unit: " + this, pattern.getFormattedPath()));
+        return null;
     }
 }

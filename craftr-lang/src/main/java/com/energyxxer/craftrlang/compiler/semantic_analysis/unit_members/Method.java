@@ -167,7 +167,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
             }
         }
 
-        if(type == MethodType.CONSTRUCTOR) this.returnType = new DataType(declaringUnit);
+        if(type == MethodType.CONSTRUCTOR) this.returnType = (validConstructor) ? declaringUnit.getDataType() : DataType.VOID;
         else if(type == MethodType.EVENT) this.returnType = DataType.VOID;
         else this.returnType = DataType.parseType(pattern.find("RETURN_TYPE").flattenTokens(), declaringUnit.getDeclaringFile().getReferenceTable(), declaringUnit);
 

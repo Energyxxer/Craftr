@@ -74,18 +74,21 @@ public class DataType {
             return TEMP_ARRAY;
         }
         Symbol symbol = table.getSymbol(flatTokens, context);
-        if(symbol == null) return OBJECT;
+        if(symbol == null) {
+            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Symbol not found:" + flatTokens + " at context" + context, flatTokens.get(0).getFormattedPath()));
+            return OBJECT;
+        }
         if(!(symbol instanceof Unit)) {
             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "'" + flatTokens.get(flatTokens.size()-1).value + "' is not a unit",flatTokens.get(flatTokens.size()-1).getFormattedPath()));
             return OBJECT;
         }
 
-        return new DataType((Unit) symbol);
+        return ((Unit) symbol).getDataType();
     }
 
     public SymbolTable getSubSymbolTable() {
         //DO SOMETHING ABOUT THE FIELD TABLE THING
-        return (unit != null) ? unit.getStaticFieldLog().getFieldTable() : null;
+        return (unit != null) ? unit.getStaticFieldLog() : null;
     }
 
     public MethodLog getMethodLog() {

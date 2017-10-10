@@ -83,18 +83,21 @@ public class SymbolTable implements Iterable<Symbol> {
             switch(next.getVisibility()) {
                 case PACKAGE: {
                     if(context.getDeclaringFile().getPackage() != next.getPackage()) {
+
                         if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
                     }
                     break;
                 }
                 case UNIT: {
-                    if(context.getContextType() != ContextType.UNIT || context != next.getUnit()) {
+                    if(context.getUnit() != next.getUnit()) {
                         if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
                     }
                     break;
                 }
                 case UNIT_INHERITED: {
-                    //TODO
+                    if(context.getUnit().instanceOf(next.getUnit())) {
+                        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
+                    }
                     break;
                 }
                 case METHOD: {

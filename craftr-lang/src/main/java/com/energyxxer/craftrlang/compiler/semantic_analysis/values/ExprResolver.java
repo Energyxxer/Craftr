@@ -208,7 +208,7 @@ public final class ExprResolver {
                 //  CURRENTLY IGNORES LOCAL VARIABLES!!
 
                 if(dataHolder.getSubSymbolTable() != null) {
-                    TraversableStructure s = analyzeStructure(pattern.find("VALUE"),context, dataHolder, function);
+                    TraversableStructure s = analyzeStructure(pattern.find("VALUE"), context, dataHolder, function);
 
                     if(s != null) {
                         if(s instanceof DataHolder) return analyzeStructure(pattern.find("NESTED_POINTER"), context, (DataHolder) s, function);

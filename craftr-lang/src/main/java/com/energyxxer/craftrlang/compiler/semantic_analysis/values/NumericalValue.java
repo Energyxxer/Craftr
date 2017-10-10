@@ -10,5 +10,6 @@ public abstract class NumericalValue extends Value {
     public abstract int getWeight();
 
     public abstract NumericalValue coerce(NumericalValue value);
-    public abstract Number getValue();
+
+    public abstract Number getRawValue();
 }

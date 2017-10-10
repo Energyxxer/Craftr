@@ -51,8 +51,7 @@ public class StringValue extends Value {
                 '}';
     }
 
-    @Override
-    public String getValue() {
+    public String getRawValue() {
         return this.value;
     }
 }

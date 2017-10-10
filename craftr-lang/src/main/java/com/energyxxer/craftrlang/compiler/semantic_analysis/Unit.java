@@ -16,6 +16,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
@@ -51,6 +52,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
     private List<List<Token>> rawUnitRequires = null;
 
     private ObjectInstance genericInstance = null;
+    private DataType dataType;
 
     private FieldLog staticFieldLog;
     private FieldLog instanceFieldLog;
@@ -181,6 +183,8 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
                 return null; //WHAT TO DO
             }
         };
+
+        dataType = new DataType(this);
 
         staticInitializer = new MCFunction(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$initStatic");
         instanceInitializer = new MCFunction(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$init");
@@ -333,7 +337,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
                 if (component.getName().equals("VARIABLE")) {
                     List<Variable> newFields = Variable.parseDeclaration(component, this);
                     for(Variable field : newFields) {
-                        if(!staticFieldLog.getFieldTable().getMap().containsKey(field.getName()) && !instanceFieldLog.getFieldTable().getMap().containsKey(field.getName())) {
+                        if(!staticFieldLog.getMap().containsKey(field.getName()) && !instanceFieldLog.getMap().containsKey(field.getName())) {
                             ((field.isStatic()) ? staticFieldLog : instanceFieldLog).addField(field);
                         } else {
                             getAnalyzer().getCompiler().getReport().addNotice(new Notice(
@@ -358,8 +362,8 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
             }
         }
 
-        staticFieldLog.forEach(Variable::initializeValue);
-        instanceFieldLog.forEach(Variable::initializeValue);
+        staticFieldLog.forEachVar(Variable::initializeValue);
+        instanceFieldLog.forEachVar(Variable::initializeValue);
 
         this.genericInstance = new ObjectInstance(this, this.instanceContext);
 
@@ -396,7 +400,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
     @Override
     public @NotNull SymbolTable getSubSymbolTable() {
-        return staticFieldLog.getFieldTable();
+        return staticFieldLog;
     }
 
     @Override
@@ -479,6 +483,10 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
         return this.instanceContext;
     }
 
+    public List<Unit> getInheritanceMap() {
+        return inheritanceMap;
+    }
+
     @Override
     public Context getParent() {
         return declaringFile;
@@ -487,6 +495,10 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
     @Override
     public SymbolTable getReferenceTable() {
         return null;
+    }
+
+    public DataType getDataType() {
+        return dataType;
     }
 
     @Override

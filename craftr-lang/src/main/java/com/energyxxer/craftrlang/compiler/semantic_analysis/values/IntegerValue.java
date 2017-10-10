@@ -56,7 +56,7 @@ public class IntegerValue extends NumericalValue {
                 return null;
             }
         } else if(operand instanceof StringValue && operator == Operator.ADD) {
-            return new StringValue(String.valueOf(this.value)+((StringValue)operand).getValue(), this.context);
+            return new StringValue(String.valueOf(this.value)+((StringValue)operand).getRawValue(), this.context);
         }
         return null;
     }
@@ -87,7 +87,7 @@ public class IntegerValue extends NumericalValue {
     }
 
     @Override
-    public Integer getValue() {
+    public Integer getRawValue() {
         return this.value;
     }
 }

@@ -63,11 +63,6 @@ public class Expression extends Value implements FunctionWriter {
     }
 
     @Override
-    public Object getValue() {
-        return null;
-    }
-
-    @Override
     public String toString() {
         return "(" + a + " " + op.getSymbol() + " " + b + ")";
     }
