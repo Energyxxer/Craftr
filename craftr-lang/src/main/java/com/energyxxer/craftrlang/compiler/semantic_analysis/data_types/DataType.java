@@ -97,7 +97,17 @@ public class DataType {
 
     @Override
     public boolean equals(Object o) {
-        return (o instanceof DataType) && this.name.equals(((DataType) o).name);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DataType dataType = (DataType) o;
+
+        return name.equals(dataType.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
     }
 
     public boolean instanceOf(DataType type) {

@@ -126,7 +126,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                 return;
             }
 
-            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), context, (context instanceof Unit && !this.isStatic()) ? getUnit().getGenericInstance() : null, initializerFunction);
+            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), context, (context instanceof Unit && !this.isStatic()) ? ((Unit) context).getGenericInstance() : null, initializerFunction);
             if(this.value != null && !this.dataType.instanceOf(this.value.getDataType())) {
                 context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
             }

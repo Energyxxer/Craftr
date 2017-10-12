@@ -25,7 +25,6 @@ public class FieldLog extends SymbolTable {
         super(parentUnit.getVisibility(), parentUnit.getDeclaringFile().getPackage().getSubSymbolTable());
         this.parentUnit = parentUnit;
         this.parentInstance = null;
-
         this.isStatic = true;
     }
 
@@ -51,20 +50,10 @@ public class FieldLog extends SymbolTable {
             return super.getSymbol(flatTokens, context, silent);
         }
 
-        boolean track = flatTokens.get(0).value.equals("SHOWN");
-        if(track) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Symbol tracking", NoticeType.INFO, "Tracking symbol '" + flatTokens.get(0).value + "'", flatTokens.get(0).getFormattedPath()));
-
         Symbol sym = super.getSymbol(flatTokens, context, true);
-        if(track) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Symbol tracking", NoticeType.INFO, "First sym: '" + sym + "'", flatTokens.get(0).getFormattedPath()));
         if(sym != null) return sym;
-        if(!isStatic) {
-            sym = parentUnit.getStaticFieldLog().getSymbol(flatTokens, context, true);
-            if(track) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Symbol tracking", NoticeType.INFO, "Not static", flatTokens.get(0).getFormattedPath()));
-            if(track) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Symbol tracking", NoticeType.INFO, "Second sym: '" + sym + "'", flatTokens.get(0).getFormattedPath()));
-        } else if(track) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Symbol tracking", NoticeType.INFO, "Static", flatTokens.get(0).getFormattedPath()));
+        if(!isStatic) sym = parentUnit.getStaticFieldLog().getSymbol(flatTokens, context, true);
         if(sym != null) return sym;
-
-        if(track) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Symbol tracking", NoticeType.INFO, "Not found on parent unit", flatTokens.get(0).getFormattedPath()));
 
         List<Unit> im = parentUnit.getInheritanceMap();
         for(Unit parent : im) {

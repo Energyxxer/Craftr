@@ -36,35 +36,137 @@ import java.util.List;
  * Created by User on 2/25/2017.
  */
 public class Unit extends AbstractFileComponent implements Symbol, DataHolder, Context, TraversableStructure {
+    /**
+     * The <code>CraftrFile</code> that declares this unit.
+     * */
     private final CraftrFile declaringFile;
+    /**
+     * The context used for instance things...? I don't think we even need this.
+     * */
     private final Context instanceContext;
-    private List<CraftrUtil.Modifier> modifiers;
+    /**
+     * The visibility of this unit. Either:
+     * <ul>
+     *     <li><code>SymbolVisibility.GLOBAL</code></li>
+     *     <li><code>SymbolVisibility.PACKAGE</code></li>
+     * </ul>
+     * Other types of visibility are deemed illegal.
+     * */
     private final SymbolVisibility visibility;
+    /**
+     * The simple name of this unit.
+     * */
     private final String name;
+    /**
+     * This unit's type. Either:
+     * <ul>
+     *     <li><code>UnitType.ENTITY</code></li>
+     *     <li><code>UnitType.ITEM</code></li>
+     *     <li><code>UnitType.FEATURE</code></li>
+     *     <li><code>UnitType.CLASS</code></li>
+     *     <li><code>UnitType.ENUM</code></li>
+     *     <li><code>UnitType.WORLD</code></li>
+     * </ul>
+     * */
     private final UnitType type;
 
+    /**
+     * Unit that this unit immediately extends.
+     * <br>
+     * This may or may not be valid and could reflect cyclical inheritance.
+     * */
     private Unit superUnit = null;
+    /**
+     * A list of other units that this unit inherits.
+     * <br><br>
+     * Contains features in the order of the implementation list, if any
+     * <br>
+     * and then a list of all the units this recursively extends,
+     * <br>
+     * from the highest-level superunit to <code>craftr.lang.Object</code>.
+     * <br><br>
+     * This may be null until compilation stage 3.
+     * */
     private List<Unit> inheritanceMap = null;
+    /**
+     * A list of all features this unit implements,
+     * <br>
+     * in the order of the implementation list.
+     * <br><br>
+     *     This may be null until compilation stage 2.
+     * */
     private List<Unit> features = null;
 
+    /**
+     * The flat list of tokens that make up the reference to the extended unit.
+     * <br><br>
+     *     This may be null if there is no explicit extension.
+     * */
     private List<Token> rawUnitExtends = null;
+    /**
+     * A list of the flat lists of tokens that make up the references to the implemented units.
+     * <br><br>
+     *     This may be null if there is no explicit implementation.
+     * */
     private List<List<Token>> rawUnitImplements = null;
-    private List<List<Token>> rawUnitRequires = null;
+    /**
+     * The flat list of tokens that make up the reference to the required unit.
+     * <br><br>
+     *     This may be null if there is no explicit requirement.
+     * */
+    private List<Token> rawUnitRequires = null;
 
+    /**
+     * The generic instance for this unit, used for non-static analysis.
+     * <br><br>
+     *     This may be null until compilation stage 5.
+     * */
     private ObjectInstance genericInstance = null;
+    /**
+     * The data type that represents this unit.
+     * */
     private DataType dataType;
 
+    /**
+     * The field log containing static fields.
+     * */
     private FieldLog staticFieldLog;
+    /**
+     * The field log containing non-static fields.
+     * */
     private FieldLog instanceFieldLog;
+    /**
+     * The field log containing static methods.
+     * */
     private MethodLog staticMethodLog;
+    /**
+     * The field log containing non-static methods.
+     * */
     private MethodLog instanceMethodLog;
 
+    /**
+     * False until compilation stage 2.
+     * */
     private boolean unitActionsInitialized = false;
+    /**
+     * False until compilation stage 5.
+     * */
     private boolean unitComponentsInitialized = false;
 
-    private MCFunction staticInitializer = null;
-    private MCFunction instanceInitializer = null;
+    /**
+     * Function responsible for static initialization of this unit.
+     * */
+    private MCFunction staticInitializer;
+    /**
+     * Function responsible for instantiation of objects of this unit.
+     * */
+    private MCFunction instanceInitializer;
 
+    /**
+     * The numeric ID of this unit type.
+     * <br><br>
+     *     -1 until compilation stage 4.
+     * */
     private int unitID = -1;
 
     public Unit(CraftrFile file, TokenPattern<?> pattern) {
@@ -81,7 +183,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
         if(this.type == UnitType.ENTITY && !Character.isLowerCase(name.charAt(0))) declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Entity name '" + this.name + "' does not follow Craftr naming conventions", header.find("UNIT_NAME").getFormattedPath()));
 
-        this.modifiers = SemanticUtils.getModifiers(header.deepSearchByName("UNIT_MODIFIER"), file.getAnalyzer());
+        List<CraftrUtil.Modifier> modifiers = SemanticUtils.getModifiers(header.deepSearchByName("UNIT_MODIFIER"), file.getAnalyzer());
 
         List<TokenPattern<?>> actionPatterns = header.deepSearchByName("UNIT_ACTION");
         for(TokenPattern<?> p : actionPatterns) {
@@ -121,14 +223,13 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
                         file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit action 'requires'", p.getFormattedPath()));
                         break;
                     }
-                    rawUnitRequires = new ArrayList<>();
 
                     List<TokenPattern<?>> references = p.deepSearchByName("UNIT_ACTION_REFERENCE");
-                    for(TokenPattern<?> reference : references) {
-                        List<Token> flat = reference.flattenTokens();
-                        if(!rawUnitRequires.contains(flat)) rawUnitRequires.add(flat);
-                        else file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit '" + reference.flatten(false) + "'", p.getFormattedPath()));
+                    if(references.size() > 1) {
+                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unit cannot require multiple units", p.getFormattedPath()));
                     }
+
+                    rawUnitRequires = references.get(0).flattenTokens();
                     break;
                 }
                 default: {
@@ -362,10 +463,10 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
             }
         }
 
+        this.genericInstance = new ObjectInstance(this, this.instanceContext);
+
         staticFieldLog.forEachVar(Variable::initializeValue);
         instanceFieldLog.forEachVar(Variable::initializeValue);
-
-        this.genericInstance = new ObjectInstance(this, this.instanceContext);
 
         unitComponentsInitialized = true;
     }
@@ -385,7 +486,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
     @Override
     public SymbolVisibility getVisibility() {
-        return modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL : SymbolVisibility.PACKAGE;
+        return visibility;
     }
 
     @Override

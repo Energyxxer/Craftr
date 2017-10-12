@@ -41,12 +41,12 @@ public class FormalParameter {
 
         FormalParameter that = (FormalParameter) o;
 
-        return type.equals(that.type);
+        return type != null ? type.equals(that.type) : that.type == null;
     }
 
     @Override
     public int hashCode() {
-        return type.hashCode();
+        return type != null ? type.hashCode() : 0;
     }
 
     public DataType getType() {

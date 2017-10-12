@@ -25,7 +25,7 @@ public class MethodSignature {
 
         MethodSignature that = (MethodSignature) o;
 
-        return (name.equals(that.name) && positionalParams.equals(that.positionalParams));
+        return name.equals(that.name) && positionalParams.equals(that.positionalParams);
     }
 
     @Override

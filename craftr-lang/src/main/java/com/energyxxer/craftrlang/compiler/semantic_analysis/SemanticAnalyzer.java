@@ -54,16 +54,23 @@ public class SemanticAnalyzer {
             files.add(new CraftrFile(this, f, filePatterns.get(f)));
         }
 
+        //Stage 1
         files.forEach(CraftrFile::initImports);
+        //Stage 2
         files.forEach(CraftrFile::initActions);
+        //Stage 3
         files.forEach(CraftrFile::buildInheritanceMap);
+        //Stage 4
         VInteger id = new VInteger(0);
         files.forEach(CraftrFile::resetUnitIDs);
         getCompiler().getReport().addNotice(new Notice("Unit IDs", NoticeType.INFO,"IDs Reset"));
         files.forEach(f->f.assignUnitIDs(id));
         this.nextID = id.value;
+        //Stage 5
         files.forEach(CraftrFile::initComponents);
+        //Stage 6
         files.forEach(CraftrFile::checkActionCompatibility);
+        //Stage 7
         files.forEach(CraftrFile::initCodeBlocks);
     }
 
