@@ -13,12 +13,14 @@ import com.energyxxer.util.out.Console;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Event;
 import java.awt.Font;
@@ -33,8 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Main text editorComponent of the program. Has support for syntax highlighting, undo,
- * and is linked to abstract tabs.
+ * Display module for the main text editor of the program.
  */
 public class CraftrEditor extends JScrollPane implements DisplayModule, UndoableEditListener, MouseListener, ThemeChangeListener {
 
@@ -54,9 +55,11 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
         associatedTab = tab;
 
         editorComponent = new CraftrEditorComponent(this);
-        editorComponent.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
+        //editorComponent.setBorder(BorderFactory.createEmptyBorder(0,5,0,0));
 
-        super.setViewportView(editorComponent);
+		JPanel container = new JPanel(new BorderLayout());
+		container.add(editorComponent);
+        super.setViewportView(container);
 
         tln = new TextLineNumber(editorComponent, this);
         tln.setPadding(10);

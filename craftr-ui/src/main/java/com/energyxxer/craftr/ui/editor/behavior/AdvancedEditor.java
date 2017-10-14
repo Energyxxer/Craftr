@@ -24,10 +24,13 @@ import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
+import javax.swing.plaf.ComponentUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.StyledDocument;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.datatransfer.Clipboard;
@@ -85,7 +88,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             lineLocations.clear();
             lineLocations.put(0,0);
         });
-
+        this.setMargin(new Insets(0, 0, 200, 100));
     }
 
     public AdvancedEditor() {
@@ -342,8 +345,10 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
 
     @Override
     public boolean getScrollableTracksViewportWidth() {
-        return getUI().getPreferredSize(this).width + 5
-                <= getParent().getSize().width;
+        Component parent = getParent();
+        ComponentUI ui = getUI();
+
+        return parent == null || ui.getPreferredSize(this).width <= parent.getSize().width;
     }
 
     @Override

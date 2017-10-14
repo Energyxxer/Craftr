@@ -21,7 +21,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,7 +130,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
                     );
                 }
 
-                FormalParameter param = new FormalParameter(this, rawParam);
+                FormalParameter param = new FormalParameter(rawParam, this);
 
                 boolean isDuplicate = false;
 
