@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.variables;
 
-import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
@@ -36,7 +36,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     public final TokenPattern<?> pattern;
 
     private SymbolVisibility visibility = SymbolVisibility.BLOCK;
-    private List<CraftrUtil.Modifier> modifiers;
+    private List<CraftrLang.Modifier> modifiers;
 
     private DataType dataType;
     private String name;
@@ -46,7 +46,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
     private Value value = null;
 
-    public Variable(TokenPattern<?> pattern, Context context, SymbolVisibility visibility, List<CraftrUtil.Modifier> modifiers, DataType dataType, String name, boolean validName, CodeBlock block, Value value) {
+    public Variable(TokenPattern<?> pattern, Context context, SymbolVisibility visibility, List<CraftrLang.Modifier> modifiers, DataType dataType, String name, boolean validName, CodeBlock block, Value value) {
         super(context);
         this.pattern = pattern;
         this.visibility = visibility;
@@ -58,7 +58,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.value = value;
     }
 
-    private Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, Context context) {
+    private Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, Context context) {
         super(context);
         this.pattern = pattern;
         this.modifiers = new ArrayList<>();
@@ -66,20 +66,20 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.dataType = dataType;
 
         this.visibility = (
-                (modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL :
-                modifiers.contains(CraftrUtil.Modifier.PROTECTED) ? SymbolVisibility.UNIT_INHERITED :
-                modifiers.contains(CraftrUtil.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
+                (modifiers.contains(CraftrLang.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL :
+                modifiers.contains(CraftrLang.Modifier.PROTECTED) ? SymbolVisibility.UNIT_INHERITED :
+                modifiers.contains(CraftrLang.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
                 context instanceof CodeBlock ? SymbolVisibility.BLOCK : SymbolVisibility.PACKAGE));
 
         this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
-        this.validName = !CraftrUtil.isPseudoIdentifier(this.name);
+        this.validName = !CraftrLang.isPseudoIdentifier(this.name);
 
         if(!validName) {
             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME").getFormattedPath()));
         }
     }
 
-    public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, CodeBlock block) {
+    public Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, CodeBlock block) {
         this(pattern, modifiers, dataType, (Context) block);
 
         this.block = block;
@@ -93,7 +93,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         }
     }
 
-    public Variable(TokenPattern<?> pattern, List<CraftrUtil.Modifier> modifiers, DataType dataType, Unit parentUnit) {
+    public Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, Unit parentUnit) {
         this(pattern, modifiers, dataType, (Context) parentUnit);
 
         if(validName) {
@@ -114,7 +114,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
             MCFunction initializerFunction;
             if(context instanceof Unit) {
-                if(modifiers.contains(CraftrUtil.Modifier.STATIC))
+                if(modifiers.contains(CraftrLang.Modifier.STATIC))
                     initializerFunction = ((Unit) context).getStaticInitializer();
                 else
                     initializerFunction = ((Unit) context).getInstanceInitializer();
@@ -148,7 +148,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
         //Skipping over annotations
 
-        List<CraftrUtil.Modifier> modifiers = Collections.emptyList();
+        List<CraftrLang.Modifier> modifiers = Collections.emptyList();
 
         TokenList modifierPatterns = (TokenList) pattern.find("VARIABLE_INNER.MODIFIER_LIST");
         if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), block.getAnalyzer());
@@ -168,7 +168,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
         //Skipping over annotations
 
-        List<CraftrUtil.Modifier> modifiers = Collections.emptyList();
+        List<CraftrLang.Modifier> modifiers = Collections.emptyList();
 
         TokenList modifierPatterns = (TokenList) pattern.find("VARIABLE_INNER.MODIFIER_LIST");
         if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), unit.getAnalyzer());
@@ -209,7 +209,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     public boolean isStatic() {
-        return modifiers.contains(CraftrUtil.Modifier.STATIC);
+        return modifiers.contains(CraftrLang.Modifier.STATIC);
     }
 
     @Override

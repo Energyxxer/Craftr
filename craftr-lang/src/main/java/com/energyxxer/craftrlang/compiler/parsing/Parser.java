@@ -37,9 +37,6 @@ public class Parser {
 		for(ArrayList<Token> f : files) {
 			Token fileHeader = f.get(0);
 			if(!fileHeader.attributes.get("TYPE").equals("craftr")) continue;
-			if(new File(fileHeader.file).getParentFile().equals(compiler.getSource())) {
-			    notices.add(new Notice(NoticeType.ERROR, "Files must be under a package", "\b" + fileHeader.file + "\b0\b0"));
-            }
 			f.remove(0);
 
 			TokenMatchResponse match = CraftrProductions.FILE.match(f);

@@ -1,18 +1,14 @@
 package com.energyxxer.craftr.ui;
 
 import com.energyxxer.craftr.ui.display.DisplayModule;
-import com.energyxxer.craftr.ui.editor.CraftrEditor;
+import com.energyxxer.craftr.ui.editor.CraftrEditorModule;
 import com.energyxxer.craftr.ui.imageviewer.ImageViewer;
 import com.energyxxer.craftr.ui.tablist.TabItem;
 import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 
 import javax.swing.JComponent;
-import javax.swing.text.BadLocationException;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 /**
@@ -42,7 +38,7 @@ public class Tab {
 		if(path.endsWith(".png")) {
 			module = new ImageViewer(this);
 		} else {
-			module = new CraftrEditor(this);
+			module = new CraftrEditorModule(this);
 		}
 		savedValue = module.getValue();
 
@@ -62,7 +58,7 @@ public class Tab {
 	}
 
 	public void onEdit() {
-		this.saved = savedValue == null || module.getValue() == savedValue;
+		this.saved = savedValue == null || savedValue.equals(module.getValue());
 	}
 
 	public void updateName() {
@@ -83,29 +79,11 @@ public class Tab {
 
 	public void save() {
 		if(!module.canSave()) return;
-		PrintWriter writer;
-		try {
-			writer = new PrintWriter(path, "UTF-8");
 
-			String text = (String) module.getValue();
-			if(!text.endsWith("\n")) {
-				text = text.concat("\n");
-				try {
-					if(module instanceof CraftrEditor) {
-						((CraftrEditor) module).editorComponent.getDocument().insertString(text.length()-1,"\n",null);
-					}
-				} catch(BadLocationException e) {
-					e.printStackTrace();
-				}
-			}
-			text = text.intern();
-
-			writer.print(text);
-			writer.close();
-			savedValue = text;
+		Object val = module.save();
+		if(val != null) {
+			savedValue = val;
 			saved = true;
-		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			e.printStackTrace();
 		}
 	}
 

@@ -12,7 +12,7 @@ import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.styledcomponents.StyledTextField;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftr.util.FileUtil;
-import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 import com.energyxxer.util.out.Console;
 import com.energyxxer.xswing.Padding;
@@ -291,7 +291,7 @@ public class UnitDialog {
 
         //Check if filename is a valid identifier
         if(valid) {
-            valid = typeDropdown.getValue() == FileType.WORLD || CraftrUtil.isValidIdentifier(str);
+            valid = typeDropdown.getValue() == FileType.WORLD || CraftrLang.isValidIdentifier(str);
             if(!valid) {
                 displayError("Error: Not a valid identifier");
             }

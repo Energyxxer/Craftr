@@ -97,7 +97,9 @@ public class TokenStructureMatch extends TokenPatternMatch {
 
 	@Override
 	public String toTrimmedString() {
-		return name;
+		String humanReadableName = name.toLowerCase().replace('_',' ');
+		humanReadableName = humanReadableName.substring(0,1).toUpperCase() + humanReadableName.substring(1);
+		return humanReadableName;
 	}
 
 	public TokenStructureMatch exclude(TokenPatternMatch entryToExclude) {

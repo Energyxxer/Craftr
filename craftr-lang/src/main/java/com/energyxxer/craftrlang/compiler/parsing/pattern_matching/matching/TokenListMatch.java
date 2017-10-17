@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching;
 
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.util.MethodInvocation;
@@ -19,23 +20,23 @@ public class TokenListMatch extends TokenPatternMatch {
 	protected TokenPatternMatch pattern;
 	protected TokenPatternMatch separator = null;
 
-	public TokenListMatch(String type) {
+	public TokenListMatch(TokenType type) {
 		this.pattern = new TokenItemMatch(type);
 		this.optional = false;
 	}
 
-	public TokenListMatch(String type, String separator) {
+	public TokenListMatch(TokenType type, TokenType separator) {
 		this.pattern = new TokenItemMatch(type);
 		this.optional = false;
 		this.separator = new TokenItemMatch(separator);
 	}
 
-	public TokenListMatch(String type, boolean optional) {
+	public TokenListMatch(TokenType type, boolean optional) {
 		this.pattern = new TokenItemMatch(type);
 		this.optional = optional;
 	}
 
-	public TokenListMatch(String type, String separator, boolean optional) {
+	public TokenListMatch(TokenType type, TokenType separator, boolean optional) {
 		this.pattern = new TokenItemMatch(type);
 		this.optional = optional;
 		this.separator = new TokenItemMatch(separator);
@@ -225,8 +226,7 @@ public class TokenListMatch extends TokenPatternMatch {
 
 	@Override
 	public String toTrimmedString() {
-		String s = "";
-		s += pattern.toTrimmedString();
+		String s = pattern.toTrimmedString();
 		if (separator != null) {
 			s += "," + separator.toTrimmedString();
 		}

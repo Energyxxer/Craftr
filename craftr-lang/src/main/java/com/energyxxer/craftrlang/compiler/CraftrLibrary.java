@@ -10,21 +10,24 @@ import java.io.File;
  */
 public class CraftrLibrary {
     private final File dir;
+    private final String name;
     private Compiler compiler = null;
 
     private CompilerReport report = null;
 
-    public CraftrLibrary(@NotNull File dir) {
+    public CraftrLibrary(@NotNull File dir, String name) {
         if(!dir.isDirectory()) throw new IllegalArgumentException("ERROR: File '" + dir + "' is not a directory. Native libraries must be contained inside a folder");
         this.dir = dir;
+        this.name = name;
     }
 
-    public void awaitLib(LibraryLoad callback, final ThreadLock lock) {
+    public void awaitLib(Compiler parent, LibraryLoad callback, final ThreadLock lock) {
         synchronized(lock) {
             lock.condition = false;
             if(compiler == null) {
-                compiler = new Compiler(dir);
+                compiler = new Compiler(dir, name);
                 compiler.setBreakpoint(3);
+                compiler.addProgressListener(parent::setProgress);
                 compiler.addCompletionListener(() -> {
                     report = compiler.getReport();
                     compiler.setReport(new CompilerReport());

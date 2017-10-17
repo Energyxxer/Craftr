@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
-import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
@@ -183,7 +183,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
         if(this.type == UnitType.ENTITY && !Character.isLowerCase(name.charAt(0))) declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Entity name '" + this.name + "' does not follow Craftr naming conventions", header.find("UNIT_NAME").getFormattedPath()));
 
-        List<CraftrUtil.Modifier> modifiers = SemanticUtils.getModifiers(header.deepSearchByName("UNIT_MODIFIER"), file.getAnalyzer());
+        List<CraftrLang.Modifier> modifiers = SemanticUtils.getModifiers(header.deepSearchByName("UNIT_MODIFIER"), file.getAnalyzer());
 
         List<TokenPattern<?>> actionPatterns = header.deepSearchByName("UNIT_ACTION");
         for(TokenPattern<?> p : actionPatterns) {
@@ -238,7 +238,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
             }
         }
 
-        this.visibility = modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL : SymbolVisibility.PACKAGE;
+        this.visibility = modifiers.contains(CraftrLang.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL : SymbolVisibility.PACKAGE;
 
         file.getPackage().getSubSymbolTable().put(this);
 

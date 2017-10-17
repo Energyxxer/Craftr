@@ -7,11 +7,12 @@ public class StatusEffect {
     private Effect id;
     private int duration;
     private int amplifier;
-    private int visibilityFlag = SHOWN;
     
     public static final int SHOWN = 0;
     public static final int AMBIENT = 1;
     public static final int HIDDEN = 2;
+    
+    private int visibilityFlag = SHOWN;
     
     public StatusEffect(Effect id) {
         this(id,30);

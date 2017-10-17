@@ -46,6 +46,6 @@ public class Resources {
 
         File nativesFolder = new File(Preferences.get("nativelib"));
         if(!nativesFolder.exists()) nativesFolder.mkdirs();
-        else nativeLib = new CraftrLibrary(nativesFolder);
+        else nativeLib = new CraftrLibrary(nativesFolder, "Craftr Native Library");
     }
 }

@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package;
 
-import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
@@ -36,7 +36,7 @@ public class Package implements Symbol, TraversableStructure {
     }
 
     Package createPackage(String path) {
-        if(!CraftrUtil.isValidIdentifierPath(name)) throw new IllegalArgumentException("'" + name + "' is not a valid package identifier path.");
+        if(!CraftrLang.isValidIdentifierPath(name)) throw new IllegalArgumentException("'" + name + "' is not a valid package identifier path.");
         String[] sections = path.split("\\.",2);
         String name = sections[0];
         if(subPackages.containsKey(name)) return (sections.length > 1) ? subPackages.get(name).createPackage(sections[1]) : subPackages.get(name);

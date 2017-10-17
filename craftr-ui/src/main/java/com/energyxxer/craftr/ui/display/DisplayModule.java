@@ -7,5 +7,6 @@ public interface DisplayModule {
     void displayCaretInfo();
     Object getValue();
     boolean canSave();
+    Object save();
     void focus();
 }

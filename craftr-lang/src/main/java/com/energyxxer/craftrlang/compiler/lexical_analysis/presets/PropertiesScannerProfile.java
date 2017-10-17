@@ -4,21 +4,22 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.profiles.ScannerConte
 import com.energyxxer.craftrlang.compiler.lexical_analysis.profiles.ScannerContextResponse;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.profiles.ScannerProfile;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 
 import java.util.ArrayList;
-
-import static com.energyxxer.craftrlang.compiler.lexical_analysis.presets.PropertiesScannerProfile.Stage.*;
 
 /**
  * Created by User on 4/8/2017.
  */
 public class PropertiesScannerProfile extends ScannerProfile {
 
-    enum Stage {
-        COMMENT, KEY, SEPARATOR, VALUE
-    }
+    private static final TokenType
+            COMMENT = new TokenType("COMMENT",false),
+            KEY = new TokenType("KEY"),
+            SEPARATOR = new TokenType("SEPARATOR"),
+            VALUE = new TokenType("VALUE");
 
-    private Stage stage = KEY;
+    private TokenType stage = KEY;
 
     /**
      * Creates a JSON Analysis Profile.
@@ -37,7 +38,7 @@ public class PropertiesScannerProfile extends ScannerProfile {
                         if(ch == '\n') break;
                         comment.append(ch);
                     }
-                    return new ScannerContextResponse(true, comment.toString(), COMMENT.name());
+                    return new ScannerContextResponse(true, comment.toString(), COMMENT);
                 } else {
                     StringBuilder key = new StringBuilder();
                     for(char ch : str.toCharArray()) {
@@ -48,11 +49,11 @@ public class PropertiesScannerProfile extends ScannerProfile {
                             break;
                         } else key.append(ch);
                     }
-                    return new ScannerContextResponse(true, key.toString(), KEY.name());
+                    return new ScannerContextResponse(true, key.toString(), KEY);
                 }
             } else if(stage == SEPARATOR) {
                 stage = VALUE;
-                return new ScannerContextResponse(true, "=", SEPARATOR.name());
+                return new ScannerContextResponse(true, "=", SEPARATOR);
             } else if(stage == VALUE) {
                 StringBuilder value = new StringBuilder();
                 for(char ch : str.toCharArray()) {
@@ -61,7 +62,7 @@ public class PropertiesScannerProfile extends ScannerProfile {
                     } else value.append(ch);
                 }
                 stage = KEY;
-                return new ScannerContextResponse(true, value.toString(), VALUE.name());
+                return new ScannerContextResponse(true, value.toString(), VALUE);
             }
             return null;
         };

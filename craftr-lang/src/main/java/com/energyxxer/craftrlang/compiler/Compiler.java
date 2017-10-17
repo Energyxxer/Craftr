@@ -35,8 +35,6 @@ public class Compiler {
 
 	private final ThreadLock lock = new ThreadLock();
 	private CraftrLibrary library = null;
-
-	private Compiler libCompiler = null;
 	
 	public Compiler(Project project) {
 		this.project = project;
@@ -48,9 +46,9 @@ public class Compiler {
 		silent = false;
 	}
 
-	Compiler(File source) {
+	Compiler(File source, String name) {
 		this.project = null;
-		this.projectName = "<unknown>";
+		this.projectName = name;
 		this.source = source;
 
 		this.thread = new Thread(this::runCompilation,"Craftr-Compiler");
@@ -80,6 +78,7 @@ public class Compiler {
 		this.setProgress("Scanning files... [" + projectName + "]");
 		ts = new TokenStream();
 		sc = new Scanner(source,ts);
+		System.out.println(ts.tokens);
 		this.getReport().addNotices(sc.getNotices());
 		if(sc.getNotices().size() > 0) {
 			finalizeCompilation();
@@ -110,10 +109,9 @@ public class Compiler {
 				analyzer.join(c.analyzer);
 				report.addNotices(r.getAllNotices());
 				c.setReport(report);
-				libCompiler = c;
 			};
 
-			library.awaitLib(callback, lock);
+			library.awaitLib(this, callback, lock);
 
 			try {
 				synchronized (lock) {
@@ -125,7 +123,6 @@ public class Compiler {
 				x.printStackTrace();
 			}
 		}
-		System.out.println("\n\n\n");
 		analyzer.start();
 		point++;
 		if(point == breakpoint) {
@@ -142,13 +139,19 @@ public class Compiler {
 
 	private void finalizeCompilation() {
 		completionListeners.forEach(Runnable::run);
+		progressListeners.clear();
+		completionListeners.clear();
 	}
 
 	public void addProgressListener(ProgressListener l) {
 		progressListeners.add(l);
 	}
 
-	private void setProgress(String message) {
+	private void removeProgressListener(ProgressListener l) {
+		progressListeners.remove(l);
+	}
+
+	void setProgress(String message) {
 		progressListeners.forEach(l -> l.onProgress(message));
 	}
 
@@ -166,6 +169,10 @@ public class Compiler {
 
 	public void addCompletionListener(Runnable r) {
 		completionListeners.add(r);
+	}
+
+	public void removeCompletionListener(Runnable r) {
+		completionListeners.remove(r);
 	}
 
 	public int getBreakpoint() {

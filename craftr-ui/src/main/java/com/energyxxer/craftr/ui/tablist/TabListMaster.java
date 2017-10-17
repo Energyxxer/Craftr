@@ -49,6 +49,8 @@ public class TabListMaster extends JPanel implements MouseListener, MouseMotionL
 
             selectionStyle = t.getString("TabList.tab.selectionStyle","default:FULL");
             selectionLineThickness = Math.max(t.getInteger(2,"TabList.tab.selectionLineThickness"), 0);
+
+            children.forEach(e -> e.themeChanged(t));
         });
 
         hint.setOutDelay(1);

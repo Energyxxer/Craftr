@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching;
 
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.util.MethodInvocation;
@@ -13,26 +14,26 @@ import java.util.List;
  * matching to a token structure.
  */
 public class TokenItemMatch extends TokenPatternMatch {
-	protected String type;
-	protected String stringMatch = null;
+	private TokenType type;
+	private String stringMatch = null;
 
-	public TokenItemMatch(String type) {
+	public TokenItemMatch(TokenType type) {
 		this.type = type;
 		this.optional = false;
 	}
 
-	public TokenItemMatch(String type, String stringMatch) {
+	public TokenItemMatch(TokenType type, String stringMatch) {
 		this.type = type;
 		this.stringMatch = stringMatch;
 		this.optional = false;
 	}
 
-	public TokenItemMatch(String type, boolean optional) {
+	public TokenItemMatch(TokenType type, boolean optional) {
 		this.type = type;
 		this.optional = optional;
 	}
 
-	public TokenItemMatch(String type, String stringMatch, boolean optional) {
+	public TokenItemMatch(TokenType type, String stringMatch, boolean optional) {
 		this.type = type;
 		this.stringMatch = stringMatch;
 		this.optional = optional;
@@ -61,9 +62,9 @@ public class TokenItemMatch extends TokenPatternMatch {
 		if (tokens.size() == 0) {
 			matched = false;
 		} else if (stringMatch != null) {
-			matched = tokens.get(0).type.equals(this.type) && tokens.get(0).value.equals(stringMatch);
+			matched = tokens.get(0).type == this.type && tokens.get(0).value.equals(stringMatch);
 		} else {
-			matched = tokens.get(0).type.equals(this.type);
+			matched = tokens.get(0).type == this.type;
 		}
 
 		if (!matched && tokens.size() > 0) {
@@ -79,7 +80,7 @@ public class TokenItemMatch extends TokenPatternMatch {
 		return new TokenMatchResponse(matched, faultyToken, length, (matched) ? null : this, item);
 	}
 	
-	public String getType() {
+	public TokenType getType() {
 		return type;
 	}
 
@@ -110,6 +111,6 @@ public class TokenItemMatch extends TokenPatternMatch {
 
 	@Override
 	public String toTrimmedString() {
-		return (stringMatch != null) ? "'" + stringMatch + "'" : type;
+		return (stringMatch != null) ? "'" + stringMatch + "'" : type.getHumanReadableName();
 	}
 }

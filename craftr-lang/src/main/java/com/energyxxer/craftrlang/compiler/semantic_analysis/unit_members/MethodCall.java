@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
-import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.FunctionWriter;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
@@ -50,7 +50,7 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
                     TokenPattern<?> rawLabel = rawParam.find("PARAMETER_LABEL_WRAPPER");
                     if(rawLabel != null) {
                         label = ((TokenItem) rawLabel.find("PARAMETER_LABEL")).getContents().value;
-                        if(CraftrUtil.isPseudoIdentifier(label)) {
+                        if(CraftrLang.isPseudoIdentifier(label)) {
                             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal keyword parameter label", rawLabel.getFormattedPath()));
                         }
                     }

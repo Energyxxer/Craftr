@@ -8,7 +8,7 @@ import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.styledcomponents.StyledTextField;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftr.util.FileUtil;
-import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.xswing.Padding;
 
 import javax.swing.AbstractAction;
@@ -207,7 +207,7 @@ public class PackageDialog {
 
         //Check if package name is a valid identifier
         if(valid) {
-            valid = CraftrUtil.isValidIdentifierPath(str);
+            valid = CraftrLang.isValidIdentifierPath(str);
             if(!valid) {
                 displayError("Error: Not a valid identifier");
             }

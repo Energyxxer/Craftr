@@ -76,7 +76,7 @@ public class Scanner {
 	private int column = 0;
 	private int index = 0;
 
-	private String tokenType = null;
+	private TokenType tokenType = null;
 
 	private int tokenLine = 0;
 	private int tokenColumn = 0;

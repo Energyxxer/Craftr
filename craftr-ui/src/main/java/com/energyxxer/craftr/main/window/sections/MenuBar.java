@@ -242,7 +242,7 @@ public class MenuBar extends JMenuBar {
             {
                 StyledMenuItem item = new StyledMenuItem("Properties");
                 item.addActionListener(e -> {
-                    Project selectedProject = Commons.getSelectedProject();
+                    Project selectedProject = Commons.getActiveProject();
                     if(selectedProject != null) ProjectProperties.show(selectedProject);
                 });
                 menu.add(item);

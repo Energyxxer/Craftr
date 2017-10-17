@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import java.awt.BorderLayout;
@@ -28,7 +29,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -37,7 +41,7 @@ import java.util.HashMap;
 /**
  * Display module for the main text editor of the program.
  */
-public class CraftrEditor extends JScrollPane implements DisplayModule, UndoableEditListener, MouseListener, ThemeChangeListener {
+public class CraftrEditorModule extends JScrollPane implements DisplayModule, UndoableEditListener, MouseListener, ThemeChangeListener {
 
     Tab associatedTab;
 
@@ -50,7 +54,7 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 
     //public long lastToolTip = new Date().getTime();
 
-	public CraftrEditor(Tab tab) {
+	public CraftrEditorModule(Tab tab) {
 		super();
         associatedTab = tab;
 
@@ -237,7 +241,7 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 		tln.setBackground(t.getColor(new Color(235, 235, 235), "Editor.lineNumber.background"));
 		tln.setForeground(t.getColor(new Color(150, 150, 150), "Editor.lineNumber.foreground"));
 		//tln current line background
-		tln.setCurrentLineForeground(t.getColor(tln.getForeground(), "CraftrEditor.lineNumber.currentLine.foreground"));
+		tln.setCurrentLineForeground(t.getColor(tln.getForeground(), "CraftrEditorModule.lineNumber.currentLine.foreground"));
 		tln.setBorder(
 				BorderFactory.createCompoundBorder(
 						BorderFactory.createMatteBorder(
@@ -255,7 +259,7 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 						)
 				)
 		);
-		tln.setFont(new Font(t.getString("CraftrEditor.lineNumber.font","default:monospaced"),0,12));
+		tln.setFont(new Font(t.getString("CraftrEditorModule.lineNumber.font","default:monospaced"),0,12));
 
 		for(Lang lang : Lang.values()) {
 			for(String extension : lang.getExtensions()) {
@@ -275,13 +279,36 @@ public class CraftrEditor extends JScrollPane implements DisplayModule, Undoable
 
 	@Override
 	public Object getValue() {
-		String text = getText();
-		return (text != null) ? text.intern() : null;
+		return getText().intern().hashCode();
 	}
 
 	@Override
 	public boolean canSave() {
 		return true;
+	}
+
+	@Override
+	public Object save() {
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter(associatedTab.path, "UTF-8");
+
+			String text = getText();
+			if(!text.endsWith("\n")) {
+				text = text.concat("\n");
+				try {
+					editorComponent.getDocument().insertString(text.length()-1,"\n",null);
+				} catch(BadLocationException e) {
+					e.printStackTrace();
+				}
+			}
+			writer.print(text);
+			writer.close();
+			return getValue();
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override

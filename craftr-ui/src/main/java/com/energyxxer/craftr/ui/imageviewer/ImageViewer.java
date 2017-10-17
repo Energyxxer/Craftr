@@ -212,6 +212,11 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
     }
 
     @Override
+    public Object save() {
+        return null;
+    }
+
+    @Override
     public void focus() {
         this.requestFocus();
     }

@@ -1,11 +1,13 @@
 package com.energyxxer.craftr.ui.tablist;
 
+import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-public abstract class TabListElement implements MouseListener, MouseMotionListener {
+public abstract class TabListElement implements MouseListener, MouseMotionListener, ThemeChangeListener {
     protected final TabListMaster master;
     protected boolean selected;
     protected boolean rollover;

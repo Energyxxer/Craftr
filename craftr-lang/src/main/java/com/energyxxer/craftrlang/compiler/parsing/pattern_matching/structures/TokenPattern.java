@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures;
 
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.util.StringBounds;
 import com.energyxxer.util.StringLocation;
 
@@ -15,8 +16,8 @@ public abstract class TokenPattern<T> {
 	public abstract T getContents();
 	public abstract TokenPattern<T> setName(String name);
 
-	public abstract List<Token> search(String type);
-	public abstract List<Token> deepSearch(String type);
+	public abstract List<Token> search(TokenType type);
+	public abstract List<Token> deepSearch(TokenType type);
 	public abstract List<TokenPattern<?>> searchByName(String name);
 	public abstract List<TokenPattern<?>> deepSearchByName(String name);
 

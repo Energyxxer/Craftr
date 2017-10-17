@@ -51,6 +51,7 @@ public class ProjectExplorerMaster extends ExplorerMaster {
         ProjectManager.setWorkspaceDir(Preferences.get("workspace_dir"));
         ProjectManager.loadWorkspace();
 
+        clearSelected();
         ArrayList<String> copy = new ArrayList<>();
         copy.addAll(this.getExpandedElements());
         refresh(copy);
@@ -87,5 +88,11 @@ public class ProjectExplorerMaster extends ExplorerMaster {
         }
 
         repaint();
+    }
+
+    @Override
+    protected void selectionUpdated() {
+        super.selectionUpdated();
+        Commons.updateActiveProject();
     }
 }

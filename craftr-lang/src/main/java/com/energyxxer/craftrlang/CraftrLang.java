@@ -9,7 +9,33 @@ import java.util.List;
 /**
  * Created by User on 2/11/2017.
  */
-public class CraftrUtil {
+public class CraftrLang {
+
+    public static final TokenType
+            NULL = new TokenType("NULL"), // Literal "null"
+            MODIFIER = new TokenType("MODIFIER"), // public, static,
+            UNIT_TYPE = new TokenType("UNIT_TYPE"), // entity, item
+            UNIT_ACTION = new TokenType("UNIT_ACTION"), // extends, base...
+            BRACE = new TokenType("BRACE"), // (, ), {, }...
+            DATA_TYPE = new TokenType("DATA_TYPE"), // int, float, string,
+            OPERATOR = new TokenType("OPERATOR"), // *,+,++,>,<...
+            IDENTIFIER_OPERATOR = new TokenType("IDENTIFIER_OPERATOR"), // ++,--...
+            LOGICAL_NEGATION_OPERATOR = new TokenType("LOGICAL_NEGATION_OPERATOR"), // !...
+            KEYWORD = new TokenType("KEYWORD"), // if, else...
+            ACTION_KEYWORD = new TokenType("ACTION_KEYWORD"), // continue, break...
+            COMMENT = new TokenType("COMMENT", false), // //stuff
+            DOT = new TokenType("DOT"), // this[.]field...
+            COMMA = new TokenType("COMMA"), // {1[,] 2[,]...}
+            COLON = new TokenType("COLON"), // case 8[:]
+            LAMBDA_ARROW = new TokenType("LAMBDA_ARROW"), // ->
+            NUMBER = new TokenType("NUMBER"), // 0.1f
+            STRING_LITERAL = new TokenType("STRING_LITERAL"), // "STRING LITERAL"
+            ANNOTATION_MARKER = new TokenType("ANNOTATION_MARKER"), // @promise("fixed")
+            BLOCKSTATE_MARKER = new TokenType("BLOCKSTATE_MARKER"), // #
+            BLOCKSTATE = new TokenType("BLOCKSTATE"), // #variant=andesite
+            BOOLEAN = new TokenType("BOOLEAN"), // true, false
+            IDENTIFIER = new TokenType("IDENTIFIER"), // Anything else
+            END_OF_STATEMENT = new TokenType("END_OF_STATEMENT"); // ;
 
     public static final List<String>
         modifiers = Arrays.asList("public", "static", "abstract", "final", "protected", "private", "compilation", "ingame", "native"),
@@ -37,49 +63,49 @@ public class CraftrUtil {
         }
 
     }
-    public static String classify(String token) {
+    public static TokenType classify(String token) {
         for(String p : modifiers) {
             if(token.equals(p)) {
-                return TokenType.MODIFIER;
+                return MODIFIER;
             }
         }
         for(String p : unit_types) {
             if(token.equals(p)) {
-                return TokenType.UNIT_TYPE;
+                return UNIT_TYPE;
             }
         }
         for(String p : unit_actions) {
             if(token.equals(p)) {
-                return TokenType.UNIT_ACTION;
+                return UNIT_ACTION;
             }
         }
         for(String p : data_types) {
             if(token.equals(p)) {
-                return TokenType.DATA_TYPE;
+                return DATA_TYPE;
             }
         }
         for(String p : keywords) {
             if(token.equals(p)) {
-                return TokenType.KEYWORD;
+                return KEYWORD;
             }
         }
         for(String p : action_keywords) {
             if(token.equals(p)) {
-                return TokenType.ACTION_KEYWORD;
+                return ACTION_KEYWORD;
             }
         }
         for(String p : booleans) {
             if(token.equals(p)) {
-                return TokenType.BOOLEAN;
+                return BOOLEAN;
             }
         }
         for(String p : nulls) {
             if(token.equals(p)) {
-                return TokenType.NULL;
+                return NULL;
             }
         }
 
-        return TokenType.IDENTIFIER;
+        return IDENTIFIER;
     }
 
     public static boolean isPseudoIdentifier(String name) {
@@ -93,7 +119,7 @@ public class CraftrUtil {
                 return false;
             }
         }
-        return classify(str) == TokenType.IDENTIFIER && !isPseudoIdentifier(str);
+        return classify(str) == IDENTIFIER && !isPseudoIdentifier(str);
     }
 
     public static boolean isValidIdentifierPath(String str) {

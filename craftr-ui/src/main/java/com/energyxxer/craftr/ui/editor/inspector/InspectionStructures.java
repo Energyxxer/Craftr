@@ -1,7 +1,7 @@
 package com.energyxxer.craftr.ui.editor.inspector;
 
+import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.parsing.CraftrProductions;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenGroupMatch;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenItemMatch;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenListMatch;
@@ -36,8 +36,8 @@ public class InspectionStructures {
 
         {
             TokenGroupMatch g = new TokenGroupMatch();
-            g.append(new TokenItemMatch(TokenType.BRACE,"{"));
-            g.append(new TokenItemMatch(TokenType.BRACE,"}"));
+            g.append(new TokenItemMatch(CraftrLang.BRACE,"{"));
+            g.append(new TokenItemMatch(CraftrLang.BRACE,"}"));
 
             EMPTY_CODE_BLOCK.add(g);
         }

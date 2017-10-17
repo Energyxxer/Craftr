@@ -3,16 +3,16 @@ package com.energyxxer.craftr.global;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.dialogs.OptionDialog;
-import com.energyxxer.craftr.ui.editor.CraftrEditor;
+import com.energyxxer.craftr.ui.editor.CraftrEditorModule;
 import com.energyxxer.craftr.ui.editor.behavior.caret.CaretProfile;
 import com.energyxxer.craftrlang.projects.Project;
-import com.energyxxer.util.ImageManager;
 
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -54,8 +54,8 @@ public class TabManager {
 	}
 
 	private static void selectLocation(Tab tab, int index, int length) {
-		if(tab.module instanceof CraftrEditor) {
-			((CraftrEditor) tab.module).editorComponent.getCaret().setProfile(new CaretProfile(index + length, index));
+		if(tab.module instanceof CraftrEditorModule) {
+			((CraftrEditorModule) tab.module).editorComponent.getCaret().setProfile(new CaretProfile(index + length, index));
 		}
 	}
 
@@ -99,8 +99,7 @@ public class TabManager {
 		if(TabManager.openTabs.size() <= 0) {
 			JMenuItem item = new JMenuItem("No tabs open!");
 			item.setFont(item.getFont().deriveFont(Font.ITALIC));
-			item.setIcon(new ImageIcon(ImageManager.load("/assets/icons/ui/close.png").getScaledInstance(16, 16,
-					java.awt.Image.SCALE_SMOOTH)));
+			item.setIcon(new ImageIcon(Commons.getIcon("info").getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
 			menu.add(item);
 			return;
 		}
@@ -146,6 +145,8 @@ public class TabManager {
 
 		CraftrWindow.editArea.revalidate();
 		CraftrWindow.editArea.repaint();
+
+		Commons.updateActiveProject();
 	}
 
 	public static Tab getSelectedTab() {

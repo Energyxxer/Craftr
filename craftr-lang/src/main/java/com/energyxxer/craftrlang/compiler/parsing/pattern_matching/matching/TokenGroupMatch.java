@@ -153,13 +153,13 @@ public class TokenGroupMatch extends TokenPatternMatch {
 
 	@Override
 	public String toTrimmedString() {
-		String s = "";
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < items.size(); i++) {
-			s += items.get(i).toTrimmedString();
+			sb.append(items.get(i).toTrimmedString());
 			if (i < items.size() - 1) {
-				s += " ";
+				sb.append(' ');
 			}
 		}
-		return s;
+		return sb.toString();
 	}
 }

@@ -104,7 +104,6 @@ public class CraftrWindow {
 		jframe.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		jframe.setSize(defaultSize);
 		jframe.setPreferredSize(defaultSize);
-		jframe.setVisible(true);
 
 		List<Image> icons = new ArrayList<>();
 		icons.add(
@@ -124,7 +123,10 @@ public class CraftrWindow {
 			int borderThickness = Math.max(t.getInteger(1,"Tooltip.border.thickness"),0);
 			UIManager.put("ToolTip.border",BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness, t.getColor(Color.BLACK, "Tooltip.border.color")),BorderFactory.createEmptyBorder(3,5,3,5)));
 		});
+	}
 
+	public static void setVisible(boolean b) {
+		jframe.setVisible(b);
 	}
 
 	public static void setTheme(Theme t) {

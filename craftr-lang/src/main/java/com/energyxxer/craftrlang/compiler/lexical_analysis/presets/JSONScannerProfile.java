@@ -23,6 +23,15 @@ public class JSONScannerProfile extends ScannerProfile {
      * */
     private Token tokenBuffer = null;
 
+    private static final TokenType
+            BRACE = new TokenType("BRACE"), // (, ), {, }...
+            COMMA = new TokenType("COMMA"), // {1[,] 2[,]...}
+            COLON = new TokenType("COLON"), // case 8[:]
+            NUMBER = new TokenType("NUMBER"), // 0.1f
+            STRING_LITERAL = new TokenType("STRING_LITERAL"), // "STRING LITERAL"
+            BOOLEAN = new TokenType("BOOLEAN"), // true, false
+            IDENTIFIER = new TokenType("IDENTIFIER"); // Anything else
+
     /**
      * Creates a JSON Analysis Profile.
      * */
@@ -47,7 +56,7 @@ public class JSONScannerProfile extends ScannerProfile {
                         char c = str.charAt(i);
 
                         if(c == '\n') {
-                            ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), new StringLocation(i,0,i), TokenType.STRING_LITERAL, escapedChars);
+                            ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), new StringLocation(i,0,i), STRING_LITERAL, escapedChars);
                             response.setError("Illegal line end in string literal", i, 1);
                             return response;
                         }
@@ -57,11 +66,11 @@ public class JSONScannerProfile extends ScannerProfile {
                             escapedChars.put(new TokenSection(i,2), "string_literal.escape");
                             i++;
                         } else if(c == startingCharacter) {
-                            return new ScannerContextResponse(true, token.toString(), TokenType.STRING_LITERAL, escapedChars);
+                            return new ScannerContextResponse(true, token.toString(), STRING_LITERAL, escapedChars);
                         }
                     }
                     //Unexpected end of input
-                    ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), new StringLocation(str.length(), 0, str.length()), TokenType.STRING_LITERAL, escapedChars);
+                    ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), new StringLocation(str.length(), 0, str.length()), STRING_LITERAL, escapedChars);
                     response.setError("Unexpected end of input", str.length()-1, 1);
                     return response;
                 } else return new ScannerContextResponse(false);
@@ -78,7 +87,7 @@ public class JSONScannerProfile extends ScannerProfile {
 
                 if(matcher.lookingAt()) {
                     int length = matcher.end();
-                    return new ScannerContextResponse(true, str.substring(0,length), TokenType.NUMBER);
+                    return new ScannerContextResponse(true, str.substring(0,length), NUMBER);
                 } else return new ScannerContextResponse(false);
             }
         };
@@ -86,7 +95,7 @@ public class JSONScannerProfile extends ScannerProfile {
         ScannerContext braceContext = (str) -> {
             if(str.length() <= 0) return new ScannerContextResponse(false);
             if("[]{}".contains(str.substring(0,1))) {
-                return new ScannerContextResponse(true, str.substring(0,1), TokenType.BRACE);
+                return new ScannerContextResponse(true, str.substring(0,1), BRACE);
             }
             return new ScannerContextResponse(false);
         };
@@ -95,7 +104,7 @@ public class JSONScannerProfile extends ScannerProfile {
         ScannerContext miscellaneousContext = new ScannerContext() {
 
             String[] patterns = { ",", ":" };
-            String[] types = { TokenType.COMMA, TokenType.COLON };
+            TokenType[] types = { COMMA, COLON };
 
             @Override
             public ScannerContextResponse analyze(String str) {
@@ -124,17 +133,17 @@ public class JSONScannerProfile extends ScannerProfile {
 
     @Override
     public boolean filter(Token token) {
-        if(token.type == TokenType.IDENTIFIER) {
+        if(token.type == TokenType.UNKNOWN) {
             if(token.value.equals("true") || token.value.equals("false")) {
-                token.type = TokenType.BOOLEAN;
+                token.type = BOOLEAN;
             }
         }
-        if(token.type == TokenType.STRING_LITERAL) {
+        if(token.type == STRING_LITERAL) {
             if(tokenBuffer != null) this.stream.write(tokenBuffer, true);
             tokenBuffer = token;
             return true;
         }
-        if(token.type == TokenType.COLON && tokenBuffer != null) {
+        if(token.type == COLON && tokenBuffer != null) {
             tokenBuffer.attributes.put("IS_PROPERTY",true);
             this.stream.write(tokenBuffer, true);
             tokenBuffer = null;

@@ -20,4 +20,8 @@ public class PackageManager {
         if(path.equals("craftr.lang")) analyzer.setLangPackage(np);
         return np;
     }
+
+    public Package getRoot() {
+        return root;
+    }
 }

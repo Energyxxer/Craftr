@@ -34,11 +34,9 @@ public enum Enchantment {
     MENDING                     ("Mending",                     70      ),
     CURSE_OF_VANISHING          ("Curse of Vanishing",          71      );
 
-    public String id;
     public String name;
     public int numerical_id;
     Enchantment(String name, int numerical_id) {
-        this.id = name().toLowerCase();
         this.name = name;
         this.numerical_id = numerical_id;
     }

@@ -44,17 +44,22 @@ public class Commons {
         return ImageManager.load(getIconPath(name));
     }
 
-    public static Project getSelectedProject() {
+    public static void updateActiveProject() {
+        if(CraftrWindow.toolbar != null && CraftrWindow.projectExplorer != null)
+            CraftrWindow.toolbar.setActiveProject(getActiveProject());
+    }
+
+    public static Project getActiveProject() {
         Project selected = null;
 
         Tab selectedTab = TabManager.getSelectedTab();
 
         List<String> selectedFiles = CraftrWindow.projectExplorer.getSelectedFiles();
 
-        if(selectedFiles.size() > 0) {
-            selected = ProjectManager.getAssociatedProject(new File(selectedFiles.get(0)));
-        } else if(selectedTab != null) {
+        if(selectedTab != null && selectedTab.getLinkedProject() != null) {
             selected = selectedTab.getLinkedProject();
+        } else if(selectedFiles.size() > 0) {
+            selected = ProjectManager.getAssociatedProject(new File(selectedFiles.get(0)));
         }
         return selected;
     }

@@ -25,7 +25,7 @@ public class CraftrFile extends AbstractFileComponent implements Context {
     private SemanticAnalyzer analyzer;
     private File file;
 
-    private Package parentPackage = null;
+    private final Package parentPackage;
     private ArrayList<Unit> units = new ArrayList<>();
 
     private SymbolTable importTable;
@@ -43,18 +43,22 @@ public class CraftrFile extends AbstractFileComponent implements Context {
         if(realPackage.contains(".")) {
             realPackage = realPackage.substring(0,realPackage.lastIndexOf('.'));
         } else {
-            return;
+            realPackage = null;
         }
 
         TokenPattern<?> packagePattern = pattern.find("PACKAGE");
         if(packagePattern == null) {
-            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Missing package statement", pattern.getFormattedPath()));
-            return;
+            if(realPackage != null) {
+                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Missing package statement", pattern.getFormattedPath()));
+            }
+            parentPackage = analyzer.getPackageManager().getRoot();
         } else {
             TokenPattern<?> packagePathPattern = packagePattern.find("PACKAGE_PATH");
 
             String packageStatement = packagePathPattern.flatten(false);
-            if(!realPackage.equals(packageStatement)) {
+            if(realPackage == null) {
+                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Package name '" + packageStatement + "' does not correspond to the file path ''", packagePathPattern.getFormattedPath()));
+            } else if(!realPackage.equals(packageStatement)) {
                 analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Package name '" + packageStatement + "' does not correspond to the file path '" + realPackage + "'", packagePathPattern.getFormattedPath()));
             }
             this.parentPackage = analyzer.getPackageManager().createPackage(packagePathPattern.flatten(false));

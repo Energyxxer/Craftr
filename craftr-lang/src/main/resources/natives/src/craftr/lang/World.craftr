@@ -3,7 +3,7 @@ package craftr.lang;
 /**
 * Created by Energyxxer on 30/9/2017.
 */
-public abstract native class World {
+public abstract native world World {
     
     public final WorldBorder worldBorder = this.instantiateWorldBorder();
     

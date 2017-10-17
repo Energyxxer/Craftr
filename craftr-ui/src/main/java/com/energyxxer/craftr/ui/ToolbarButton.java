@@ -4,14 +4,12 @@ import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.util.Constant;
-import com.energyxxer.util.ImageManager;
 import com.energyxxer.xswing.hints.Hint;
 import com.energyxxer.xswing.hints.TextHint;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
@@ -28,7 +26,18 @@ import java.awt.event.MouseListener;
  */
 public class ToolbarButton extends JButton implements MouseListener {
 
+    private static final int MARGIN = 1;
+    private static final int BORDER_THICKNESS = 1;
+    public static final int SIZE = 25;
+
 	private String icon = null;
+
+    private Color background = Color.GRAY;
+    private Color rolloverBackground = Color.GRAY;
+    private Color pressedBackground = Color.GRAY;
+    private Color border = Color.BLACK;
+    private Color rolloverBorder = Color.BLACK;
+    private Color pressedBorder = Color.BLACK;
 
 	private String hintText = "";
 	private Constant preferredPos = Hint.BELOW;
@@ -47,7 +56,13 @@ public class ToolbarButton extends JButton implements MouseListener {
 
 		tlm.addThemeChangeListener(t -> {
 			if(icon != null) this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
-		});
+            this.background = t.getColor(Color.GRAY, "Toolbar.button.background", "General.button.background");
+            this.rolloverBackground = t.getColor(Color.GRAY, "Toolbar.button.hover.background", "General.button.hover.background", "Toolbar.button.background", "General.button.background");
+            this.pressedBackground = t.getColor(Color.GRAY, "Toolbar.button.pressed.background", "General.button.pressed.background", "Toolbar.button.hover.background", "General.button.hover.background", "Toolbar.button.background", "General.button.background");
+            this.border = t.getColor(Color.BLACK, "Toolbar.button.border.color", "General.button.border.color");
+            this.rolloverBorder = t.getColor(Color.BLACK, "Toolbar.button.hover.border.color", "General.button.hover.border.color", "Toolbar.button.border.color", "General.button.border.color");
+            this.pressedBorder = t.getColor(Color.BLACK, "Toolbar.button.pressed.border.color", "General.button.pressed.border.color", "Toolbar.button.hover.border.color", "General.button.hover.border.color", "Toolbar.button.border.color", "General.button.border.color");
+        });
 
 		this.setFocusPainted(false);
 
@@ -61,19 +76,14 @@ public class ToolbarButton extends JButton implements MouseListener {
 		Composite previousComposite = g2.getComposite();
 
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		if (getModel().isPressed()) {
 
-			AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.9f);
-			g2.setComposite(composite);
-
-			g2.drawImage(ImageManager.load("/assets/ui/button.png"), 0, 0, this.getWidth(), this.getHeight(), null);
-		} else if (getModel().isRollover()) {
-
-			AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
-			g2.setComposite(composite);
-
-			g2.drawImage(ImageManager.load("/assets/ui/button.png"), 0, 0, this.getWidth(), this.getHeight(), null);
-		}
+        g.setColor(getModel().isPressed() ? pressedBackground : getModel().isRollover() ? rolloverBackground : background);
+        g.fillRect(MARGIN+BORDER_THICKNESS,MARGIN+BORDER_THICKNESS,SIZE-2*MARGIN-2*BORDER_THICKNESS,SIZE-2*MARGIN-2*BORDER_THICKNESS);
+        g.setColor(getModel().isPressed() ? pressedBorder : getModel().isRollover() ? rolloverBorder : border);
+        g.fillRect(MARGIN,MARGIN,SIZE-2*MARGIN-BORDER_THICKNESS,BORDER_THICKNESS);
+        g.fillRect(SIZE-MARGIN-BORDER_THICKNESS,MARGIN,BORDER_THICKNESS,SIZE-2*MARGIN-BORDER_THICKNESS);
+        g.fillRect(MARGIN+BORDER_THICKNESS,SIZE-MARGIN-BORDER_THICKNESS,SIZE-2*MARGIN-BORDER_THICKNESS,BORDER_THICKNESS);
+        g.fillRect(MARGIN,MARGIN+BORDER_THICKNESS,BORDER_THICKNESS,SIZE-2*MARGIN-BORDER_THICKNESS);
 
 		g2.setComposite(previousComposite);
 

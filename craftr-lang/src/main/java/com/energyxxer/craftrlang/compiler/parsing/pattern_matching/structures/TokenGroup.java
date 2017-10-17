@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures;
 
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.util.StringBounds;
 import com.energyxxer.util.StringLocation;
 
@@ -44,18 +45,18 @@ public class TokenGroup extends TokenPattern<TokenPattern<?>[]> {
 	}
 
 	@Override
-	public List<Token> search(String type) {
+	public List<Token> search(TokenType type) {
 		ArrayList<Token> list = new ArrayList<>();
 		for(TokenPattern<?> p : patterns) {
 			if(p.getContents() instanceof Token) {
-				if(((Token) p.getContents()).type.equals(type)) list.add((Token) p.getContents());
+				if(((Token) p.getContents()).type == type) list.add((Token) p.getContents());
 			}
 		}
 		return list;
 	}
 
 	@Override
-	public List<Token> deepSearch(String type) {
+	public List<Token> deepSearch(TokenType type) {
 		ArrayList<Token> list = new ArrayList<>();
 		for(TokenPattern<?> p : patterns) {
 			list.addAll(p.deepSearch(type));

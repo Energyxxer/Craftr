@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures;
 
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.util.StringBounds;
 import com.energyxxer.util.StringLocation;
 
@@ -33,12 +34,12 @@ public class TokenStructure extends TokenPattern<TokenPattern<?>> {
 	}
 
 	@Override
-	public List<Token> search(String type) {
+	public List<Token> search(TokenType type) {
 		return group.search(type);
 	}
 
 	@Override
-	public List<Token> deepSearch(String type) {
+	public List<Token> deepSearch(TokenType type) {
 		return group.deepSearch(type);
 	}
 

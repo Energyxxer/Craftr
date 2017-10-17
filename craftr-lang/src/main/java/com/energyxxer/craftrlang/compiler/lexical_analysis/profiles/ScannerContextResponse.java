@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.lexical_analysis.profiles;
 
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenSection;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.util.StringLocation;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ public class ScannerContextResponse {
      * The token type of the return token, if applicable.
      * null if the analysis wasn't successful.
      * */
-    public final String tokenType;
+    public final TokenType tokenType;
     /**
      * The location within the substring passed to the analysis method where
      * the given token ends. Should include the index, line and column changes.
@@ -72,7 +73,7 @@ public class ScannerContextResponse {
      * <li>column: Equal to the length of the value parameter.</li>
      * </ul>
      * */
-    public ScannerContextResponse(boolean success, String value, String tokenType) {
+    public ScannerContextResponse(boolean success, String value, TokenType tokenType) {
         this(success, value, new StringLocation(value.length()), tokenType);
     }
 
@@ -92,7 +93,7 @@ public class ScannerContextResponse {
      * <li>column: Equal to the length of the value parameter.</li>
      * </ul>
      * */
-    public ScannerContextResponse(boolean success, String value, String tokenType, HashMap<TokenSection, String> subSections) {
+    public ScannerContextResponse(boolean success, String value, TokenType tokenType, HashMap<TokenSection, String> subSections) {
         this(success, value, new StringLocation(value.length()), tokenType, subSections);
     }
 
@@ -105,7 +106,7 @@ public class ScannerContextResponse {
      * @param endLoc The location of the end index within the substring.
      * @param tokenType The type of the resulting token.
      * */
-    public ScannerContextResponse(boolean success, String value, StringLocation endLoc, String tokenType) {
+    public ScannerContextResponse(boolean success, String value, StringLocation endLoc, TokenType tokenType) {
         this.success = success;
         this.value = value;
         this.endLocation = endLoc;
@@ -123,7 +124,7 @@ public class ScannerContextResponse {
      * @param tokenType The type of the resulting token.
      * @param subSections Map containing sections of the string to be formatted differently.
      * */
-    public ScannerContextResponse(boolean success, String value, StringLocation endLoc, String tokenType, HashMap<TokenSection, String> subSections) {
+    public ScannerContextResponse(boolean success, String value, StringLocation endLoc, TokenType tokenType, HashMap<TokenSection, String> subSections) {
         this.success = success;
         this.value = value;
         this.endLocation = endLoc;

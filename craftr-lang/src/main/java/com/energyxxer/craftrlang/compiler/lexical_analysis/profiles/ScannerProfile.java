@@ -43,17 +43,6 @@ public abstract class ScannerProfile {
     }
 
     /**
-     * Determines whether a token should be significant or not.
-     *
-     * @param token The token.
-     *
-     * @return true if significant, false otherwise.
-     * */
-    public boolean isSignificant(Token token) {
-        return true;
-    }
-
-    /**
      * Sets the current stream to the given value.
      *
      * @param stream The stream to assign to this profile.

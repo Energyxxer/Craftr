@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
-import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -33,7 +33,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     private Unit declaringUnit;
 
     private MethodType type;
-    private List<CraftrUtil.Modifier> modifiers;
+    private List<CraftrLang.Modifier> modifiers;
     private DataType returnType;
     private String name;
     private final boolean validName;
@@ -44,7 +44,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
 
     private final MethodSignature signature;
 
-    public Method(TokenPattern<?> pattern, Unit declaringUnit, MethodType type, List<CraftrUtil.Modifier> modifiers, DataType returnType, String name, boolean validName, List<FormalParameter> positionalParams, List<FormalParameter> keywordParams, CodeBlock codeBlock, MethodSignature signature) {
+    public Method(TokenPattern<?> pattern, Unit declaringUnit, MethodType type, List<CraftrLang.Modifier> modifiers, DataType returnType, String name, boolean validName, List<FormalParameter> positionalParams, List<FormalParameter> keywordParams, CodeBlock codeBlock, MethodSignature signature) {
         super(pattern);
         this.declaringUnit = declaringUnit;
         this.type = type;
@@ -87,7 +87,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
         } else {
             this.name = ((TokenItem) pattern.find("METHOD_NAME")).getContents().value;
         }
-        this.validName = !CraftrUtil.isPseudoIdentifier(this.name);
+        this.validName = !CraftrLang.isPseudoIdentifier(this.name);
         if(!validName) {
             getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal method name", pattern.find("METHOD_NAME").getFormattedPath()));
         }
@@ -174,14 +174,14 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
 
         this.signature = new MethodSignature(declaringUnit, name, positionalParams);
 
-        if(modifierPatterns != null && modifiers.contains(CraftrUtil.Modifier.NATIVE)) {
+        if(modifierPatterns != null && modifiers.contains(CraftrLang.Modifier.NATIVE)) {
             declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Native Methods", NoticeType.INFO, "Require native implementation for '" + getSignature().toString() + "'", modifierPatterns.getFormattedPath()));
         }
 
         TokenPattern<?> body = pattern.find("METHOD_BODY");
         boolean omitted = body.find("OMITTED_BODY") != null;
         if(omitted) {
-            if(!(modifiers.contains(CraftrUtil.Modifier.NATIVE) || modifiers.contains(CraftrUtil.Modifier.ABSTRACT))) {
+            if(!(modifiers.contains(CraftrLang.Modifier.NATIVE) || modifiers.contains(CraftrLang.Modifier.ABSTRACT))) {
                 declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Missing method body", body.getFormattedPath()));
             }
         } else {
@@ -196,7 +196,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     }
 
     public boolean isStatic() {
-        return modifiers.contains(CraftrUtil.Modifier.STATIC);
+        return modifiers.contains(CraftrLang.Modifier.STATIC);
     }
 
     public DataType getReturnType() {
@@ -219,9 +219,9 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     }
 
     public SymbolVisibility getVisibility() {
-        return modifiers.contains(CraftrUtil.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL :
-                modifiers.contains(CraftrUtil.Modifier.PROTECTED) ? SymbolVisibility.UNIT_INHERITED :
-                        modifiers.contains(CraftrUtil.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
+        return modifiers.contains(CraftrLang.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL :
+                modifiers.contains(CraftrLang.Modifier.PROTECTED) ? SymbolVisibility.UNIT_INHERITED :
+                        modifiers.contains(CraftrLang.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
                                 SymbolVisibility.PACKAGE;
     }
 

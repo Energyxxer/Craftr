@@ -58,6 +58,7 @@ public class Craftr {
 		
 		ProjectManager.loadWorkspace();
 
+		CraftrWindow.setVisible(true);
 		splash.setVisible(false);
 		splash.dispose();
 	}

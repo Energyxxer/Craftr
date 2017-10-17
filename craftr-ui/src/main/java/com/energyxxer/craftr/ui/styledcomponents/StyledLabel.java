@@ -22,6 +22,7 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
 
     private String icon = null;
 
+    private boolean changeable = true;
     private String defaultText = "";
 
     private Theme theme;
@@ -134,6 +135,10 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
         this.update();
     }
 
+    public void setTextChangeable(boolean changeable) {
+        this.changeable = changeable;
+    }
+
     private void update() {
         Theme t = this.theme;
 
@@ -143,14 +148,14 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
                     (t.getBoolean((style & Font.BOLD) > 0,this.namespace + ".label.bold", "General.label.bold") ? Font.BOLD : Font.PLAIN) +
                     (t.getBoolean((style & Font.ITALIC) > 0,this.namespace + ".label.italic","General.label.italic") ? Font.ITALIC : Font.PLAIN),
                     t.getInteger(this.size,this.namespace + ".label.fontSize","General.label.fontSize")));
-            this.setText(t.getString(this.namespace + ".label.text","default:" + defaultText));
+            if(changeable) this.setText(t.getString(this.namespace + ".label.text","default:" + defaultText));
         } else {
             setForeground(t.getColor(Color.BLACK, "General.label.foreground","General.foreground"));
             setFont(new Font(t.getString("General.label.font","General.font", "default:Tahoma"),
                     (t.getBoolean((style & Font.BOLD) > 0, "General.label.bold") ? Font.BOLD : Font.PLAIN) +
                             (t.getBoolean((style & Font.ITALIC) > 0,"General.label.italic") ? Font.ITALIC : Font.PLAIN),
                     t.getInteger(this.size,"General.label.fontSize")));
-            this.setText(t.getString(defaultText));
+            if(changeable) this.setText(defaultText);
         }
         if (icon != null) {
             this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16, 16, Image.SCALE_SMOOTH)));

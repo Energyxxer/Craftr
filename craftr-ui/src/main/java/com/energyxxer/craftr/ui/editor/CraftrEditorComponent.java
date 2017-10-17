@@ -38,7 +38,7 @@ import java.util.Map;
  */
 public class CraftrEditorComponent extends AdvancedEditor implements KeyListener, CaretListener, ActionListener {
 
-    private CraftrEditor parent;
+    private CraftrEditorModule parent;
 
     private StyledDocument sd;
 
@@ -47,7 +47,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
     private long lastEdit;
 
 
-    CraftrEditorComponent(CraftrEditor parent) {
+    CraftrEditorComponent(CraftrEditorModule parent) {
         super(new DefaultStyledDocument());
         this.parent = parent;
 
@@ -99,7 +99,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
         }
 
         for(Token token : tokens) {
-            Style style = CraftrEditorComponent.this.getStyle(token.type.toLowerCase());
+            Style style = CraftrEditorComponent.this.getStyle(token.type.toString().toLowerCase());
             if(style != null)
                 sd.setCharacterAttributes(token.loc.index, token.value.length(), style, true);
             else

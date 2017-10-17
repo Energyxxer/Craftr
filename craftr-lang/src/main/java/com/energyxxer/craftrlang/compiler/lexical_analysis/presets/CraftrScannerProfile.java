@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.lexical_analysis.presets;
 
-import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.presets.data.craftr.CraftrTokenAttributes;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.profiles.ScannerContext;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.profiles.ScannerContextResponse;
@@ -29,7 +29,7 @@ public class CraftrScannerProfile extends ScannerProfile {
     /**
      * Contains all the built-in entity names.
      * */
-    private static final List<String> entities = new ArrayList<>(CraftrUtil.entities),
+    private static final List<String> entities = new ArrayList<>(CraftrLang.entities),
     /**
      * Contains special cases for blockstates.
      * */
@@ -41,7 +41,7 @@ public class CraftrScannerProfile extends ScannerProfile {
     private static final String blockstate_end = "|";
 
     static {
-        entities.addAll(CraftrUtil.abstract_entities);
+        entities.addAll(CraftrLang.abstract_entities);
     }
 
     /**
@@ -79,7 +79,7 @@ public class CraftrScannerProfile extends ScannerProfile {
                         end.index++;
 
                         if(c == '\n' && startingCharacter != multiLineDelimiter) {
-                            ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), end, TokenType.STRING_LITERAL, escapedChars);
+                            ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), end, CraftrLang.STRING_LITERAL, escapedChars);
                             response.setError("Illegal line end in string literal", i, 1);
                             return response;
                         }
@@ -89,11 +89,11 @@ public class CraftrScannerProfile extends ScannerProfile {
                             escapedChars.put(new TokenSection(i,2), "string_literal.escape");
                             i++;
                         } else if(c == startingCharacter) {
-                            return new ScannerContextResponse(true, token.toString(), end, TokenType.STRING_LITERAL, escapedChars);
+                            return new ScannerContextResponse(true, token.toString(), end, CraftrLang.STRING_LITERAL, escapedChars);
                         }
                     }
                     //Unexpected end of input
-                    ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), end, TokenType.STRING_LITERAL, escapedChars);
+                    ScannerContextResponse response = new ScannerContextResponse(true, token.toString(), end, CraftrLang.STRING_LITERAL, escapedChars);
                     response.setError("Unexpected end of input", str.length()-1, 1);
                     return response;
                 } else return new ScannerContextResponse(false);
@@ -134,7 +134,7 @@ public class CraftrScannerProfile extends ScannerProfile {
                             endLoc.index++;
                         }
 
-                        ScannerContextResponse response = new ScannerContextResponse(true, fullComment, endLoc, TokenType.COMMENT);
+                        ScannerContextResponse response = new ScannerContextResponse(true, fullComment, endLoc, CraftrLang.COMMENT);
                         if(unclosed) {
                             response.setError("Unclosed comment", end-1, 1);
                         }
@@ -143,7 +143,7 @@ public class CraftrScannerProfile extends ScannerProfile {
                         int end = str.substring(singleLineComment.length()).indexOf("\n") + singleLineComment.length();
                         if(end < singleLineComment.length()) end = str.length();
                         String fullComment = str.substring(0,end);
-                        return new ScannerContextResponse(true, fullComment, TokenType.COMMENT);
+                        return new ScannerContextResponse(true, fullComment, CraftrLang.COMMENT);
                     }
                 }
                 return new ScannerContextResponse(false);
@@ -154,7 +154,7 @@ public class CraftrScannerProfile extends ScannerProfile {
         ScannerContext miscellaneousContext = new ScannerContext() {
 
             String[] patterns = { "->", ";", ".", ",", ":", "@", "#", "(", ")", "[", "]", "{", "}" };
-            String[] types = { TokenType.LAMBDA_ARROW, TokenType.END_OF_STATEMENT, TokenType.DOT, TokenType.COMMA, TokenType.COLON, TokenType.ANNOTATION_MARKER, TokenType.BLOCKSTATE_MARKER, TokenType.BRACE, TokenType.BRACE, TokenType.BRACE, TokenType.BRACE, TokenType.BRACE, TokenType.BRACE };
+            TokenType[] types = { CraftrLang.LAMBDA_ARROW, CraftrLang.END_OF_STATEMENT, CraftrLang.DOT, CraftrLang.COMMA, CraftrLang.COLON, CraftrLang.ANNOTATION_MARKER, CraftrLang.BLOCKSTATE_MARKER, CraftrLang.BRACE, CraftrLang.BRACE, CraftrLang.BRACE, CraftrLang.BRACE, CraftrLang.BRACE, CraftrLang.BRACE };
 
             @Override
             public ScannerContextResponse analyze(String str) {
@@ -179,16 +179,16 @@ public class CraftrScannerProfile extends ScannerProfile {
                 if(str.length() <= 0) return new ScannerContextResponse(false);
                 for(String o : identifier_operators) {
                     if(str.startsWith(o)) {
-                        return new ScannerContextResponse(true, o, TokenType.IDENTIFIER_OPERATOR);
+                        return new ScannerContextResponse(true, o, CraftrLang.IDENTIFIER_OPERATOR);
                     }
                 }
                 for(String o : operators) {
                     if(str.startsWith(o)) {
-                        return new ScannerContextResponse(true, o, TokenType.OPERATOR);
+                        return new ScannerContextResponse(true, o, CraftrLang.OPERATOR);
                     }
                 }
                 if(str.startsWith(logical_negation_operator)) {
-                    return new ScannerContextResponse(true, logical_negation_operator, TokenType.LOGICAL_NEGATION_OPERATOR);
+                    return new ScannerContextResponse(true, logical_negation_operator, CraftrLang.LOGICAL_NEGATION_OPERATOR);
                 }
                 return new ScannerContextResponse(false);
             }
@@ -205,7 +205,7 @@ public class CraftrScannerProfile extends ScannerProfile {
 
                 if(matcher.lookingAt()) {
                     int length = matcher.end();
-                    return new ScannerContextResponse(true, str.substring(0,length), TokenType.NUMBER);
+                    return new ScannerContextResponse(true, str.substring(0,length), CraftrLang.NUMBER);
                 } else return new ScannerContextResponse(false);
             }
 
@@ -265,18 +265,18 @@ public class CraftrScannerProfile extends ScannerProfile {
 
         boolean cancel = false;
 
-        if(token.type == TokenType.BLOCKSTATE_MARKER && bufferData.get("BLOCKSTATE_PHASE").equals("NONE")) {
+        if(token.type == CraftrLang.BLOCKSTATE_MARKER && bufferData.get("BLOCKSTATE_PHASE").equals("NONE")) {
             bufferData.put("IS_BLOCKSTATE", TRUE);
             bufferData.put("BLOCKSTATE_PHASE", "KEY_FIRST");
             tokenBuffer.add(token);
             cancel = true;
-        } else if((token.type == TokenType.IDENTIFIER && bufferData.get("BLOCKSTATE_PHASE").startsWith("KEY")) || (blockstate_specials.contains(token.value) && bufferData.get("BLOCKSTATE_PHASE").equals("KEY_FIRST"))) {
+        } else if((token.type == CraftrLang.IDENTIFIER && bufferData.get("BLOCKSTATE_PHASE").startsWith("KEY")) || (blockstate_specials.contains(token.value) && bufferData.get("BLOCKSTATE_PHASE").equals("KEY_FIRST"))) {
             tokenBuffer.add(token);
             cancel = true;
             if(blockstate_specials.contains(token.value)) {
                 //Is special (#default...)
-                token.type = TokenType.IDENTIFIER;
-                this.stream.write(Token.merge(TokenType.BLOCKSTATE, tokenBuffer.toArray(new Token[0])),true);
+                token.type = CraftrLang.IDENTIFIER;
+                this.stream.write(Token.merge(CraftrLang.BLOCKSTATE, tokenBuffer.toArray(new Token[0])),true);
                 tokenBuffer.clear();
 
                 bufferData.put("IS_BLOCKSTATE", FALSE);
@@ -290,25 +290,25 @@ public class CraftrScannerProfile extends ScannerProfile {
             tokenBuffer.add(token);
             bufferData.put("BLOCKSTATE_PHASE", "VALUE");
             cancel = true;
-        } else if((token.type == TokenType.IDENTIFIER || token.type == TokenType.BOOLEAN) && bufferData.get("BLOCKSTATE_PHASE").equals("VALUE")) {
+        } else if((token.type == CraftrLang.IDENTIFIER || token.type == CraftrLang.BOOLEAN) && bufferData.get("BLOCKSTATE_PHASE").equals("VALUE")) {
             tokenBuffer.add(token);
             bufferData.put("BLOCKSTATE_PHASE", "NEXT");
             cancel = true;
         } else if(bufferData.get("BLOCKSTATE_PHASE").equals("NEXT")) {
-            if(token.type == TokenType.COMMA) {
+            if(token.type == CraftrLang.COMMA) {
                 tokenBuffer.add(token);
                 bufferData.put("BLOCKSTATE_PHASE", "KEY");
                 cancel = true;
             } else if(token.value.equals(blockstate_end)) {
                 tokenBuffer.add(token);
-                stream.write(Token.merge(TokenType.BLOCKSTATE, tokenBuffer.toArray(new Token[0])),true);
+                stream.write(Token.merge(CraftrLang.BLOCKSTATE, tokenBuffer.toArray(new Token[0])),true);
                 tokenBuffer.clear();
 
                 bufferData.put("IS_BLOCKSTATE", FALSE);
                 bufferData.put("BLOCKSTATE_PHASE", "NONE");
                 cancel = true;
             } else {
-                stream.write(Token.merge(TokenType.BLOCKSTATE, tokenBuffer.toArray(new Token[0])),true);
+                stream.write(Token.merge(CraftrLang.BLOCKSTATE, tokenBuffer.toArray(new Token[0])),true);
                 tokenBuffer.clear();
 
                 bufferData.put("IS_BLOCKSTATE", FALSE);
@@ -317,7 +317,7 @@ public class CraftrScannerProfile extends ScannerProfile {
         } else if(bufferData.get("IS_BLOCKSTATE") == TRUE) {
             //Whoops something went wrong
 
-            stream.write(Token.merge(TokenType.BLOCKSTATE, tokenBuffer.toArray(new Token[0])),true);
+            stream.write(Token.merge(CraftrLang.BLOCKSTATE, tokenBuffer.toArray(new Token[0])),true);
             tokenBuffer.clear();
 
             bufferData.put("IS_BLOCKSTATE", FALSE);
@@ -336,7 +336,7 @@ public class CraftrScannerProfile extends ScannerProfile {
      * @return true if the token should be skipped, false otherwise.
      * */
     private boolean analyzeAnnotation(Token token) {
-        if(token.type == TokenType.ANNOTATION_MARKER && bufferData.get("ANNOTATION_PHASE").equals("NONE")) {
+        if(token.type == CraftrLang.ANNOTATION_MARKER && bufferData.get("ANNOTATION_PHASE").equals("NONE")) {
             bufferData.put("IS_ANNOTATION", TRUE);
             bufferData.put("ANNOTATION_PHASE", "ANNOTATION");
         }
@@ -347,7 +347,7 @@ public class CraftrScannerProfile extends ScannerProfile {
                     bufferData.put("ANNOTATION_PHASE", "IDENTIFIER");
                     break;
                 } case "IDENTIFIER": {
-                    if(token.type == TokenType.IDENTIFIER) {
+                    if(token.type == CraftrLang.IDENTIFIER) {
                         token.attributes.put(CraftrTokenAttributes.IS_ANNOTATION_HEADER, true);
                         bufferData.put("ANNOTATION_PHASE", "BRACE_OPEN");
                     } else {
@@ -356,7 +356,7 @@ public class CraftrScannerProfile extends ScannerProfile {
                     }
                     break;
                 } case "BRACE_OPEN": {
-                    if(token.type == TokenType.BRACE && token.attributes.get("BRACE_STYLE") == CraftrTokenAttributes.PARENTHESES && token.attributes.get("BRACE_TYPE") == CraftrTokenAttributes.OPENING_BRACE) {
+                    if(token.type == CraftrLang.BRACE && token.attributes.get("BRACE_STYLE") == CraftrTokenAttributes.PARENTHESES && token.attributes.get("BRACE_TYPE") == CraftrTokenAttributes.OPENING_BRACE) {
                         bufferData.put("ANNOTATION_PHASE", "BRACE_CLOSE");
                     } else {
                         bufferData.put("IS_ANNOTATION", FALSE);
@@ -364,7 +364,7 @@ public class CraftrScannerProfile extends ScannerProfile {
                     }
                     break;
                 } case "BRACE_CLOSE": {
-                    if(token.type == TokenType.BRACE && token.attributes.get("BRACE_STYLE") == CraftrTokenAttributes.PARENTHESES && token.attributes.get("BRACE_TYPE") == CraftrTokenAttributes.CLOSING_BRACE) {
+                    if(token.type == CraftrLang.BRACE && token.attributes.get("BRACE_STYLE") == CraftrTokenAttributes.PARENTHESES && token.attributes.get("BRACE_TYPE") == CraftrTokenAttributes.CLOSING_BRACE) {
                         bufferData.put("IS_ANNOTATION", FALSE);
                         bufferData.put("ANNOTATION_PHASE", "NONE");
                     }
@@ -386,20 +386,24 @@ public class CraftrScannerProfile extends ScannerProfile {
      * @param token The token to be analyzed.
      * */
     private void giveAttributes(Token token) {
-        token.attributes.put(CraftrTokenAttributes.IS_PSEUDO_KEYWORD, CraftrUtil.pseudo_keywords.contains(token.value));
+        token.attributes.put(CraftrTokenAttributes.IS_PSEUDO_KEYWORD, CraftrLang.pseudo_keywords.contains(token.value));
 
         //Entities
-        if(token.type == TokenType.IDENTIFIER) {
+        if(token.type == CraftrLang.IDENTIFIER) {
             token.attributes.put(CraftrTokenAttributes.IS_ENTITY, entities.contains(token.value));
         }
         //Braces
-        if(token.type == TokenType.BRACE) {
+        if(token.type == CraftrLang.BRACE) {
             if("()".contains(token.value)) token.attributes.put("BRACE_STYLE", CraftrTokenAttributes.PARENTHESES);
             if("{}".contains(token.value)) token.attributes.put("BRACE_STYLE", CraftrTokenAttributes.CURLY_BRACES);
             if("[]".contains(token.value)) token.attributes.put("BRACE_STYLE", CraftrTokenAttributes.SQUARE_BRACES);
 
             if("({[".contains(token.value)) token.attributes.put("BRACE_TYPE", CraftrTokenAttributes.OPENING_BRACE);
             if(")}]".contains(token.value)) token.attributes.put("BRACE_TYPE", CraftrTokenAttributes.CLOSING_BRACE);
+        }
+        //Modifiers
+        if(token.type == CraftrLang.MODIFIER) {
+            token.attributes.put("MODIFIER_VALUE", CraftrLang.Modifier.valueOf(token.value.toUpperCase()));
         }
     }
 
@@ -410,13 +414,8 @@ public class CraftrScannerProfile extends ScannerProfile {
      * @param token The token to be classified.
      * */
     private void classifyKeyword(Token token) {
-        if(token.type != TokenType.IDENTIFIER) return;
-        token.type = CraftrUtil.classify(token.value);
-    }
-
-    @Override
-    public boolean isSignificant(Token token) {
-        return token.type != TokenType.COMMENT;
+        if(token.type != TokenType.UNKNOWN) return;
+        token.type = CraftrLang.classify(token.value);
     }
 
     @Override

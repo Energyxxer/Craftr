@@ -12,19 +12,18 @@ import java.util.HashMap;
  */
 public class Token {
 	public String value;
-	public String type;
+	public TokenType type;
 	public String file;
 	public String filename;
 	public StringLocation loc;
 	public HashMap<String, Object> attributes;
 	public HashMap<TokenSection, String> subSections;
 
-	private static final boolean VERBOSE = false;
 	public ArrayList<String> tags = new ArrayList<>();
 
     public Token(String value, File file, StringLocation loc) {
 		this.value = value;
-		this.type = TokenType.IDENTIFIER;
+		this.type = TokenType.UNKNOWN;
 		this.file = file.getAbsolutePath();
 		this.filename = file.getName();
 		this.loc = loc;
@@ -34,7 +33,7 @@ public class Token {
 
 	public Token(String value, File file, StringLocation loc, HashMap<TokenSection, String> subSections) {
 		this.value = value;
-		this.type = TokenType.IDENTIFIER;
+		this.type = TokenType.UNKNOWN;
 		this.file = file.getAbsolutePath();
 		this.filename = file.getName();
 		this.loc = loc;
@@ -42,9 +41,9 @@ public class Token {
 		this.subSections = (subSections != null) ? subSections : new HashMap<>();
 	}
 
-	public Token(String value, String tokenType, File file, StringLocation loc) {
+	public Token(String value, TokenType tokenType, File file, StringLocation loc) {
 		this.value = value;
-		this.type = (tokenType != null) ? tokenType : TokenType.IDENTIFIER;
+		this.type = (tokenType != null) ? tokenType : TokenType.UNKNOWN;
 		this.file = file.getAbsolutePath();
 		this.filename = file.getName();
 		this.loc = loc;
@@ -52,9 +51,9 @@ public class Token {
 		this.subSections = new HashMap<>();
 	}
 
-	public Token(String value, String tokenType, File file, StringLocation loc, HashMap<TokenSection, String> subSections) {
+	public Token(String value, TokenType tokenType, File file, StringLocation loc, HashMap<TokenSection, String> subSections) {
 		this.value = value;
-		this.type = (tokenType != null) ? tokenType : TokenType.IDENTIFIER;
+		this.type = (tokenType != null) ? tokenType : TokenType.UNKNOWN;
 		this.file = file.getAbsolutePath();
 		this.filename = file.getName();
 		this.loc = loc;
@@ -63,7 +62,7 @@ public class Token {
 	}
 
 	public boolean isSignificant() {
-		return TokenType.isSignificant(type);
+		return type.isSignificant();
 	}
 
 	public String getLocation() {
@@ -77,33 +76,10 @@ public class Token {
 
 	@Override
 	public String toString() {
-		return (!VERBOSE) ? value : getFullString();
-	}
-
-	public String getFullString() {
-		int extraSpaces = 32 - getLocation().length();
-		String o = "";
-		while (o.length() < extraSpaces) {
-			o += " ";
-		}
-		int extraSpaces2 = "END_OF_STATEMENT".length() - type.length() + 4;
-		String o2 = "";
-		while (o2.length() < extraSpaces2) {
-			o2 += " ";
-		}
-		// return "Token#" + type + ": " + o + value;
-		
-		String attr = attributes.toString();
-		attr = attr.substring(1,attr.length()-1).replace("=true","").replaceAll("\\w+=false","").replaceAll(", ,",",").trim();
-		if(attr.length() <= 1) attr = "";
-		if(attr.length() > 0) {
-			attr = "\t#" + attr;
-		}
-		
-		return getLocation() + o + type + o2 + value + attr + "\n";
+		return value;
 	}
 	
-	public static Token merge(String type, Token... tokens) {
+	public static Token merge(TokenType type, Token... tokens) {
 		StringBuilder s = new StringBuilder();
 		for(Token t : tokens) {
 			s.append(t.value);

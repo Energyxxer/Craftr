@@ -28,7 +28,7 @@ public class TokenStream implements Iterable<Token> {
 	public final void write(Token token, boolean skip) {
 		if(skip || (profile == null || !profile.filter(token))) {
 			onWrite(token);
-			if(profile == null || (includeInsignificantTokens || profile.isSignificant(token)))
+			if(profile == null || (includeInsignificantTokens || token.isSignificant()))
 				tokens.add(token);
 		}
 	}

@@ -5,6 +5,7 @@ import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.ui.styledcomponents.StyledPopupMenu;
+import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 import com.energyxxer.util.StringUtil;
 
@@ -39,7 +40,7 @@ public class TabItem extends TabListElement {
         associatedTab.linkTabItem(this);
     }
 
-    private void updateIcon() {
+    void updateIcon() {
         if(associatedTab.path.endsWith(".png")) {
             try {
                 this.icon = ImageIO.read(new File(associatedTab.path)).getScaledInstance(16,16, Image.SCALE_SMOOTH);
@@ -280,5 +281,10 @@ public class TabItem extends TabListElement {
 
     public Tab getAssociatedTab() {
         return associatedTab;
+    }
+
+    @Override
+    public void themeChanged(Theme t) {
+        this.updateIcon();
     }
 }

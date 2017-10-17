@@ -155,18 +155,21 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
         repaint();
     }
 
-    private void clearSelected() {
+    public void clearSelected() {
         for(ExplorerElement item : selectedItems) {
             item.setSelected(false);
         }
         selectedItems.clear();
+        selectionUpdated();
     }
 
-    private void addSelected(ExplorerElement item) {
+    protected void selectionUpdated() {}
+
+    public void addSelected(ExplorerElement item) {
         this.addSelected(item, true);
     }
 
-    private void addSelected(ExplorerElement item, boolean invert) {
+    public void addSelected(ExplorerElement item, boolean invert) {
         if(!selectedItems.contains(item)) {
             item.setSelected(true);
             selectedItems.add(item);
@@ -174,6 +177,7 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
             item.setSelected(false);
             selectedItems.remove(item);
         }
+        selectionUpdated();
     }
 
     public void setSelected(ExplorerElement item, MouseEvent e) {
@@ -195,6 +199,7 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
             addSelected(item);
         }
         repaint();
+        selectionUpdated();
     }
 
     public List<String> getSelectedFiles() {

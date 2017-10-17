@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
-import com.energyxxer.craftrlang.CraftrUtil;
+import com.energyxxer.craftrlang.CraftrLang;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ public enum UnitType {
 
     private String name;
     private String plural;
-    private List<CraftrUtil.Modifier> inferredModifiers;
+    private List<CraftrLang.Modifier> inferredModifiers;
     private boolean singleton = false;
 
     UnitType(String raw) {
@@ -30,7 +30,7 @@ public enum UnitType {
                 } case "modifiers": {
                     String[] rawModifiers = pair[1].trim().split(" ");
                     for(String modifier : rawModifiers) {
-                        CraftrUtil.Modifier value = CraftrUtil.Modifier.valueOf(modifier.toUpperCase());
+                        CraftrLang.Modifier value = CraftrLang.Modifier.valueOf(modifier.toUpperCase());
                         inferredModifiers.add(value);
                     }
                 } case "singleton": {
@@ -48,7 +48,7 @@ public enum UnitType {
         return plural;
     }
 
-    public List<CraftrUtil.Modifier> getInferredModifiers() {
+    public List<CraftrLang.Modifier> getInferredModifiers() {
         return inferredModifiers;
     }
 
