@@ -39,8 +39,8 @@ public class ProjectExplorerMaster extends ExplorerMaster {
             selectionStyle = t.getString("Explorer.item.selectionStyle","default:FULL");
             selectionLineThickness = Math.max(t.getInteger(2,"Explorer.item.selectionLineThickness"), 0);
 
-            assets.put("expand", Commons.getIcon("expand").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
-            assets.put("collapse",Commons.getIcon("collapse").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
+            assets.put("expand", Commons.getIcon("triangle_right").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
+            assets.put("collapse",Commons.getIcon("triangle_down").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
         });
 
         refresh();

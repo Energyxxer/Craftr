@@ -138,8 +138,6 @@ public class TabItem extends TabListElement {
         return (e.getX() >= this.x + this.width - 12 - 6 - padding && e.getX() <= this.x + this.width - 12 + padding);
     }
 
-
-
     @Override
     public boolean select(MouseEvent e) {
         return !isOverCloseButton(e);

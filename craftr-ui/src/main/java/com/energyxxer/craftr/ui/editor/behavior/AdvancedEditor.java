@@ -88,7 +88,7 @@ public class AdvancedEditor extends JTextPane implements KeyListener, CaretListe
             lineLocations.clear();
             lineLocations.put(0,0);
         });
-        this.setMargin(new Insets(0, 5, 200, 100));
+        this.setMargin(new Insets(0, 5, 100, 100));
     }
 
     public AdvancedEditor() {

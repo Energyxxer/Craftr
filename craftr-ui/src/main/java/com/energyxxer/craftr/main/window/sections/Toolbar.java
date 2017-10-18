@@ -27,7 +27,7 @@ import java.awt.FlowLayout;
 public class Toolbar extends JPanel {
 
     public TextHint hint = CraftrWindow.hintManager.createTextHint("");
-    public StyledLabel projectLabel;
+    private StyledLabel projectLabel;
 
     public ThemeListenerManager tlm;
 

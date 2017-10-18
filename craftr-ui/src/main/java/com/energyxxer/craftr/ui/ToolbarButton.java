@@ -20,17 +20,16 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 /**
  * Represents a single button in the toolbar.
  */
-public class ToolbarButton extends JButton implements MouseListener {
+public class ToolbarButton extends JButton implements MouseListener, MouseMotionListener {
 
     private static final int MARGIN = 1;
     private static final int BORDER_THICKNESS = 1;
     public static final int SIZE = 25;
-
-	private String icon = null;
 
     private Color background = Color.GRAY;
     private Color rolloverBackground = Color.GRAY;
@@ -42,9 +41,9 @@ public class ToolbarButton extends JButton implements MouseListener {
 	private String hintText = "";
 	private Constant preferredPos = Hint.BELOW;
 
+	private boolean rollover = false;
+
 	public ToolbarButton(String icon, ThemeListenerManager tlm) {
-		super();
-		this.icon = icon;
 		this.setContentAreaFilled(false);
 		this.setOpaque(false);
 		this.setBackground(new Color(0,0,0,0));
@@ -67,6 +66,7 @@ public class ToolbarButton extends JButton implements MouseListener {
 		this.setFocusPainted(false);
 
 		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
 	}
 
 	@Override
@@ -123,18 +123,30 @@ public class ToolbarButton extends JButton implements MouseListener {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		TextHint hint = CraftrWindow.toolbar.hint;
-
-		hint.setText(hintText);
-		hint.setPreferredPos(this.preferredPos);
-		Point point = this.getLocationOnScreen();
-		point.x += this.getWidth()/2;
-		point.y += this.getHeight()/2;
-		hint.show(point, this.getModel()::isRollover);
+		rollover = true;
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
+		rollover = false;
+	}
 
+	@Override
+	public void mouseDragged(MouseEvent e) {
+
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		rollover = true;
+		TextHint hint = CraftrWindow.toolbar.hint;
+		if(!hint.isShowing()) {
+			hint.setText(hintText);
+			hint.setPreferredPos(this.preferredPos);
+			Point point = this.getLocationOnScreen();
+			point.x += this.getWidth()/2;
+			point.y += this.getHeight()/2;
+			hint.show(point, () -> rollover);
+		}
 	}
 }
