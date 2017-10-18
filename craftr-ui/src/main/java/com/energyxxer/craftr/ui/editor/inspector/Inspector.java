@@ -122,7 +122,7 @@ public class Inspector implements Highlighter.HighlightPainter, MouseMotionListe
                     if(!hint.isShowing()) {
                         hint.setText(item.message);
                         HintStylizer.style(hint, item.type.key);
-                        hint.show(e.getLocationOnScreen(), () -> rolloverItem != null);
+                        hint.show(e.getLocationOnScreen(), () -> rolloverItem != null && editor.isShowing());
                     }
                 } else if(!hint.isShowing()) {
                     hint.updateLocation(e.getLocationOnScreen());

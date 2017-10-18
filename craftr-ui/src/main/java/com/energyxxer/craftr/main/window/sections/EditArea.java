@@ -49,7 +49,7 @@ public class EditArea extends JPanel {
             more.setPreferredSize(new Dimension(25,25));
             tabActionPanel.add(more);
 
-            more.addActionListener(e -> TabManager.getMenu().show(more, more.getX(), more.getY() + more.getHeight()));
+            more.addActionListener(e -> TabManager.getMenu().show(more, more.getWidth()/2, more.getHeight()));
 
         }
 

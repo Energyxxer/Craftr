@@ -140,7 +140,7 @@ public class Toolbar extends JPanel {
                 c.setLibrary(Resources.nativeLib);
                 c.addProgressListener(CraftrWindow::setStatus);
                 c.addCompletionListener(() -> {
-                    CraftrWindow.noticeBoard.explorerMaster.setNotices(c.getReport().groupByLabel());
+                    CraftrWindow.noticeExplorer.setNotices(c.getReport().groupByLabel());
                     if(c.getReport().getTotal() > 0) CraftrWindow.noticeBoard.expand();
                     c.getReport().getWarnings().forEach(Console.warn::println);
                     c.getReport().getErrors().forEach(Console.err::println);

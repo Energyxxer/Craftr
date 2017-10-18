@@ -12,7 +12,7 @@ import com.energyxxer.util.out.Console;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -35,7 +35,7 @@ import java.io.IOException;
 /**
  * Created by User on 2/8/2017.
  */
-public class ImageViewer extends JPanel implements DisplayModule, MouseWheelListener, MouseMotionListener, KeyListener {
+public class ImageViewer extends JComponent implements DisplayModule, MouseWheelListener, MouseMotionListener, KeyListener {
 
     private static final double MIN_SCALE = 0.25;
     private static final double MAX_SCALE = 50;

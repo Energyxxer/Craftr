@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Created by User on 2/7/2017.
  */
-public class ExplorerMaster extends JPanel implements MouseListener, MouseMotionListener {
+public class ExplorerMaster extends JComponent implements MouseListener, MouseMotionListener {
     protected HashMap<ExplorerFlag, Boolean> explorerFlags = new HashMap<>();
 
     protected ArrayList<ExplorerElement> children = new ArrayList<>();
@@ -46,9 +46,8 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
 
-        explorerFlags.put(ExplorerFlag.FLATTEN_EMPTY_PACKAGES, true);
-        explorerFlags.put(ExplorerFlag.SHOW_PROJECT_FILES, true);
         explorerFlags.put(ExplorerFlag.DYNAMIC_ROW_HEIGHT, false);
+        explorerFlags.put(ExplorerFlag.DEBUG_WIDTH, false);
     }
 
     public void refresh() {}
@@ -58,6 +57,7 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
         super.paintComponent(g);
         ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
+        contentWidth = 0;
         offsetY = 0;
         flatList.clear();
         g.setColor(colors.get("background"));
@@ -66,9 +66,9 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
             i.render(g);
         }
 
-        if(this.getPreferredSize().height != offsetY + rowHeight) {
-            this.setPreferredSize(new Dimension(contentWidth, offsetY + rowHeight));
-            this.setSize(new Dimension(contentWidth, offsetY + rowHeight));
+        Dimension newSize = new Dimension(contentWidth, offsetY + rowHeight);
+        if(!newSize.equals(this.getPreferredSize())) {
+            this.setPreferredSize(newSize);
             this.getParent().revalidate();
         }
     }
@@ -213,6 +213,10 @@ public class ExplorerMaster extends JPanel implements MouseListener, MouseMotion
 
     public boolean getFlag(ExplorerFlag flag) {
         return this.explorerFlags.get(flag);
+    }
+
+    public void toggleFlag(ExplorerFlag flag) {
+        this.explorerFlags.put(flag, !getFlag(flag));
     }
 
     public ArrayList<ExplorerElement> getFlatList() {

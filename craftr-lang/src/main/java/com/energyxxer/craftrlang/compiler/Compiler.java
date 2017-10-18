@@ -78,7 +78,7 @@ public class Compiler {
 		this.setProgress("Scanning files... [" + projectName + "]");
 		ts = new TokenStream();
 		sc = new Scanner(source,ts);
-		System.out.println(ts.tokens);
+
 		this.getReport().addNotices(sc.getNotices());
 		if(sc.getNotices().size() > 0) {
 			finalizeCompilation();
@@ -97,7 +97,6 @@ public class Compiler {
 			finalizeCompilation();
 			return;
 		}
-		this.setProgress("Analyzing code... [" + projectName + "]");
 
 		HashMap<File, TokenPattern<?>> allPatterns = new HashMap<>();
 
@@ -123,6 +122,7 @@ public class Compiler {
 				x.printStackTrace();
 			}
 		}
+		this.setProgress("Analyzing code... [" + projectName + "]");
 		analyzer.start();
 		point++;
 		if(point == breakpoint) {

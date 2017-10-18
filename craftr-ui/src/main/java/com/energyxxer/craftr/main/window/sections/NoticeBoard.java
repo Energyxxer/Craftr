@@ -24,8 +24,6 @@ public class NoticeBoard extends JPanel {
 
     private static final int BOARD_HEIGHT = 300;
 
-    public final NoticeExplorerMaster explorerMaster;
-
     private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public void expand() {
@@ -80,12 +78,12 @@ public class NoticeBoard extends JPanel {
 
         this.add(boardHeader, BorderLayout.NORTH);
 
-        JScrollPane sp = new JScrollPane(this.explorerMaster = CraftrWindow.noticeExplorer = new NoticeExplorerMaster());
+        JScrollPane sp = new JScrollPane(CraftrWindow.noticeExplorer = new NoticeExplorerMaster());
         sp.setBorder(new EmptyBorder(0,0,0,0));
         sp.setLayout(new OverlayScrollPaneLayout(sp));
 
         this.add(sp, BorderLayout.CENTER);
 
-        clear.addActionListener(e -> explorerMaster.clear());
+        clear.addActionListener(e -> CraftrWindow.noticeExplorer.clear());
     }
 }

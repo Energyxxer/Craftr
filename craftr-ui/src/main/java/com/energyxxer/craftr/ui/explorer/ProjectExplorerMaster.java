@@ -2,6 +2,7 @@ package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.global.Preferences;
+import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
 import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerSeparator;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
@@ -19,6 +20,10 @@ public class ProjectExplorerMaster extends ExplorerMaster {
     private final File root;
 
     private ThemeListenerManager tlm = new ThemeListenerManager();
+
+    public static final ExplorerFlag
+            FLATTEN_EMPTY_PACKAGES = new ExplorerFlag("Flatten Empty Packages"),
+            SHOW_PROJECT_FILES = new ExplorerFlag("Show Project Files");
 
     public ProjectExplorerMaster(File root) {
         this.root = root;
@@ -42,6 +47,10 @@ public class ProjectExplorerMaster extends ExplorerMaster {
             assets.put("expand", Commons.getIcon("triangle_right").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
             assets.put("collapse",Commons.getIcon("triangle_down").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
         });
+
+        explorerFlags.put(FLATTEN_EMPTY_PACKAGES, Preferences.get("explorer.flatten_empty_packages","true").equals("true"));
+        explorerFlags.put(SHOW_PROJECT_FILES, Preferences.get("explorer.show_project_files","false").equals("true"));
+        explorerFlags.put(ExplorerFlag.DEBUG_WIDTH, Preferences.get("explorer.debug_width","false").equals("true"));
 
         refresh();
     }

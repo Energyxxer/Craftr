@@ -146,7 +146,7 @@ public class ToolbarButton extends JButton implements MouseListener, MouseMotion
 			Point point = this.getLocationOnScreen();
 			point.x += this.getWidth()/2;
 			point.y += this.getHeight()/2;
-			hint.show(point, () -> rollover);
+			hint.show(point, () -> rollover && this.isShowing());
 		}
 	}
 }

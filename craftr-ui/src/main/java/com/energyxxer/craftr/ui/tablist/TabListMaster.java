@@ -5,7 +5,7 @@ import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.hints.TextHint;
 
-import javax.swing.JPanel;
+import javax.swing.JComponent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -16,7 +16,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class TabListMaster extends JPanel implements MouseListener, MouseMotionListener {
+public class TabListMaster extends JComponent implements MouseListener, MouseMotionListener {
     ArrayList<TabListElement> children = new ArrayList<>();
     private int x = 0;
 

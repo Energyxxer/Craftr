@@ -73,7 +73,7 @@ public class ProjectExplorerItem extends ExplorerElement {
 
         File[] subfiles;
         StringBuilder filenameBuilder = new StringBuilder(file.getName());
-        while(this.master.getFlag(ExplorerFlag.FLATTEN_EMPTY_PACKAGES) && canFlatten(file) && (subfiles = file.listFiles()) != null && subfiles.length == 1 && subfiles[0].isDirectory()) {
+        while(this.master.getFlag(ProjectExplorerMaster.FLATTEN_EMPTY_PACKAGES) && canFlatten(file) && (subfiles = file.listFiles()) != null && subfiles.length == 1 && subfiles[0].isDirectory()) {
             file = subfiles[0];
             filenameBuilder.append('.');
             filenameBuilder.append(file.getName());
@@ -148,6 +148,7 @@ public class ProjectExplorerItem extends ExplorerElement {
             }
         }
         for(File f : subfiles1) {
+            if(!f.getName().equals(".project") || this.master.getFlag(ProjectExplorerMaster.SHOW_PROJECT_FILES))
             this.children.add(new ProjectExplorerItem(this, f, toOpen));
         }
 
@@ -238,8 +239,15 @@ public class ProjectExplorerItem extends ExplorerElement {
         g.drawString(filename, x, master.getOffsetY() + metrics.getAscent() + ((master.getRowHeight() - metrics.getHeight())/2));
         x += metrics.stringWidth(filename);
 
+        if(master.getFlag(ExplorerFlag.DEBUG_WIDTH)) {
+            g.setColor(Color.YELLOW);
+            g.fillRect(master.getContentWidth()-2, master.getOffsetY(), 2, master.getRowHeight());
+            g.setColor(Color.GREEN);
+            g.fillRect(x-2, master.getOffsetY(), 2, master.getRowHeight());
+        }
+
         master.setOffsetY(master.getOffsetY() + master.getRowHeight());
-        master.setContentWidth(Math.max(master.getWidth(), x));
+        master.setContentWidth(Math.max(master.getContentWidth(), x));
         for(ExplorerElement i : children) {
             i.render(g);
         }

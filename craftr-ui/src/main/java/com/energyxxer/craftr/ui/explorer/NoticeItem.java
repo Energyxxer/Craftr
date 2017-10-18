@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.global.TabManager;
+import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
 import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerElement;
 import com.energyxxer.craftrlang.compiler.report.Notice;
@@ -90,8 +91,15 @@ public class NoticeItem extends ExplorerElement {
         g.drawString(notice.getMessage(), x, master.getOffsetY() + metrics.getAscent() + ((master.getRowHeight() - metrics.getHeight())/2));
         x += metrics.stringWidth(notice.getMessage());
 
+        if(master.getFlag(ExplorerFlag.DEBUG_WIDTH)) {
+            g.setColor(Color.YELLOW);
+            g.fillRect(master.getContentWidth()-2, master.getOffsetY(), 2, master.getRowHeight());
+            g.setColor(Color.GREEN);
+            g.fillRect(x-2, master.getOffsetY(), 2, master.getRowHeight());
+        }
+
         master.setOffsetY(master.getOffsetY() + master.getRowHeight());
-        master.setContentWidth(Math.max(master.getWidth(), x));
+        master.setContentWidth(Math.max(master.getContentWidth(), x));
         for(ExplorerElement i : children) {
             i.render(g);
         }
