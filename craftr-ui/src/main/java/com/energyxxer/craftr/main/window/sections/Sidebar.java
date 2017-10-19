@@ -20,6 +20,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 import java.io.File;
 
 /**
@@ -57,10 +58,10 @@ public class Sidebar extends JPanel {
             label.setPreferredSize(new Dimension(500, t.getInteger(25, "Explorer.header.height")));
         });
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel buttonPanel = new JPanel(new GridBagLayout());
         buttonPanel.setOpaque(false);
 
-        ((FlowLayout) buttonPanel.getLayout()).setHgap(2);
+        //((FlowLayout) buttonPanel.getLayout()).setHgap(2);
 
         header.add(buttonPanel, BorderLayout.EAST);
 
@@ -192,5 +193,10 @@ public class Sidebar extends JPanel {
     private void update() {
         this.revalidate();
         this.repaint();
+
+        if(CraftrWindow.welcomePane != null) {
+            CraftrWindow.welcomePane.revalidate();
+            CraftrWindow.welcomePane.repaint();
+        }
     }
 }

@@ -8,6 +8,7 @@ import com.energyxxer.craftr.main.window.sections.NoticeBoard;
 import com.energyxxer.craftr.main.window.sections.Sidebar;
 import com.energyxxer.craftr.main.window.sections.StatusBar;
 import com.energyxxer.craftr.main.window.sections.Toolbar;
+import com.energyxxer.craftr.main.window.sections.WelcomePane;
 import com.energyxxer.craftr.ui.explorer.NoticeExplorerMaster;
 import com.energyxxer.craftr.ui.explorer.ProjectExplorerMaster;
 import com.energyxxer.craftr.ui.tablist.TabListMaster;
@@ -49,6 +50,7 @@ public class CraftrWindow {
 	public static Toolbar toolbar;
 	public static Sidebar sidebar;
 	public static EditArea editArea;
+	public static WelcomePane welcomePane;
 
 	public static StatusBar statusBar;
 
@@ -71,6 +73,8 @@ public class CraftrWindow {
 		jframe.setLayout(new BorderLayout());
 
 		tabList = new TabListMaster();
+
+		welcomePane = new WelcomePane();
 
 		jframe.getContentPane().add(toolbar = new Toolbar(), BorderLayout.NORTH);
 

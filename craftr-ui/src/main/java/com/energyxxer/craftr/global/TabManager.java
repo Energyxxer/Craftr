@@ -10,7 +10,6 @@ import com.energyxxer.craftrlang.projects.Project;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -127,7 +126,6 @@ public class TabManager {
 	public static void setSelectedTab(Tab tab) {
 		CraftrWindow.tabList.selectTab(tab);
 		if (selectedTab != null) {
-			CraftrWindow.editArea.remove(selectedTab.getModuleComponent());
 			selectedTab = null;
 		}
 		if (tab != null) {
@@ -135,16 +133,14 @@ public class TabManager {
 			
 			Project linkedProject = tab.getLinkedProject();
 			CraftrWindow.setTitle(((linkedProject != null) ? linkedProject.getName() + " - " : "") + tab.getName());
-			CraftrWindow.editArea.add(tab.getModuleComponent(), BorderLayout.CENTER);
+			CraftrWindow.editArea.setContent(tab.getModuleComponent());
 			tab.onSelect();
 		} else {
 			CraftrWindow.statusBar.setCaretInfo(Commons.DEFAULT_CARET_DISPLAY_TEXT);
 			CraftrWindow.statusBar.setSelectionInfo(" ");
             CraftrWindow.clearTitle();
+            CraftrWindow.editArea.setContent(null);
 		}
-
-		CraftrWindow.editArea.revalidate();
-		CraftrWindow.editArea.repaint();
 
 		Commons.updateActiveProject();
 	}

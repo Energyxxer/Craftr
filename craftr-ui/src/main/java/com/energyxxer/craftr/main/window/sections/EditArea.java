@@ -5,9 +5,11 @@ import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.scrollbar.InvisibleScrollPaneLayout;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
+import com.energyxxer.xswing.Padding;
 import com.energyxxer.xswing.hints.Hint;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -15,6 +17,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 
 /**
  * Created by User on 12/15/2016.
@@ -27,6 +30,8 @@ public class EditArea extends JPanel {
     
     private ThemeListenerManager tlm = new ThemeListenerManager();
 
+    private JComponent content = null;
+
     {
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(500, 500));
@@ -38,7 +43,7 @@ public class EditArea extends JPanel {
             tabListHolder.setPreferredSize(new Dimension(1, t.getInteger(30, "TabList.height")));
         });
 
-        JPanel tabActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
+        JPanel tabActionPanel = new JPanel(new GridBagLayout());
         tabActionPanel.setOpaque(false);
         tlm.addThemeChangeListener(t -> tabActionPanel.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"TabList.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "TabList.border.color"))));
 
@@ -50,12 +55,13 @@ public class EditArea extends JPanel {
             tabActionPanel.add(more);
 
             more.addActionListener(e -> TabManager.getMenu().show(more, more.getWidth()/2, more.getHeight()));
-
         }
+        tabActionPanel.add(new Padding(5));
 
         tabListHolder.add(tabActionPanel, BorderLayout.EAST);
 
         this.add(tabListHolder, BorderLayout.NORTH);
+
         tabList = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         tlm.addThemeChangeListener(t -> {
             tabList.setBackground(t.getColor(new Color(200, 202, 205), "TabList.background"));
@@ -72,5 +78,18 @@ public class EditArea extends JPanel {
 
         if (useConsole) this.add(new ConsoleArea(), BorderLayout.SOUTH);
         this.add(CraftrWindow.noticeBoard = new NoticeBoard(), BorderLayout.SOUTH);
+
+        this.setContent(CraftrWindow.welcomePane);
+    }
+
+    public void setContent(JComponent content) {
+        if(this.content != null) this.remove(this.content);
+        if(content == null) content = CraftrWindow.welcomePane;
+
+        this.add(content, BorderLayout.CENTER);
+        this.content = content;
+
+        this.revalidate();
+        this.repaint();
     }
 }

@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 
 /**
  * Created by User on 12/15/2016.
@@ -50,17 +50,19 @@ public class Toolbar extends JPanel {
         this.setPreferredSize(new Dimension(1, defaultHeight));
         this.setLayout(new BorderLayout());
 
-        JPanel projectIndicator = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, (defaultHeight-16)/2-2));
+        JPanel projectIndicator = new JPanel(new GridBagLayout());
         projectIndicator.setOpaque(false);
-        this.add(projectIndicator, BorderLayout.CENTER);
+
+        this.add(projectIndicator, BorderLayout.WEST);
 
         projectIndicator.add(new Padding(10));
+
         projectLabel = new StyledLabel("", "Toolbar.projectIndicator");
         projectLabel.setTextChangeable(false);
         projectIndicator.add(projectLabel);
 
         JPanel buttonBar = new JPanel();
-        buttonBar.setLayout(new FlowLayout(FlowLayout.RIGHT, 2, (defaultHeight-ToolbarButton.SIZE)/2-2));
+        buttonBar.setLayout(new GridBagLayout());
         tlm.addThemeChangeListener(t -> {
             this.setBackground(t.getColor(new Color(235, 235, 235), "Toolbar.background"));
             this.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Toolbar.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "Toolbar.border.color")));
@@ -68,8 +70,6 @@ public class Toolbar extends JPanel {
             int height = t.getInteger(29, "Toolbar.height");
 
             this.setPreferredSize(new Dimension(1, height));
-            ((FlowLayout) buttonBar.getLayout()).setVgap((height-ToolbarButton.SIZE)/2-2);
-            ((FlowLayout) projectIndicator.getLayout()).setVgap((height-16)/2-2);
         });
         buttonBar.setOpaque(false);
         this.add(buttonBar, BorderLayout.EAST);

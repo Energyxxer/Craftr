@@ -1,5 +1,6 @@
 package com.energyxxer.craftr.ui;
 
+import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.display.DisplayModule;
 import com.energyxxer.craftr.ui.editor.CraftrEditorModule;
 import com.energyxxer.craftr.ui.imageviewer.ImageViewer;
@@ -58,7 +59,7 @@ public class Tab {
 	}
 
 	public void onEdit() {
-		this.saved = savedValue == null || savedValue.equals(module.getValue());
+		this.setSaved(savedValue == null || savedValue.equals(module.getValue()));
 	}
 
 	public void updateName() {
@@ -83,7 +84,7 @@ public class Tab {
 		Object val = module.save();
 		if(val != null) {
 			savedValue = val;
-			saved = true;
+			setSaved(true);
 		}
 	}
 
@@ -100,7 +101,14 @@ public class Tab {
 	}
 
 	public void setSaved(boolean saved) {
-		this.saved = saved;
+		if(this.saved != saved) {
+			this.saved = saved;
+			updateList();
+		}
+	}
+
+	private void updateList() {
+		CraftrWindow.tabList.repaint();
 	}
 
 	public String getName() {

@@ -29,16 +29,19 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
 
     public StyledLabel(String text, Icon icon, int horizontalAlignment) {
         super(text, icon, horizontalAlignment);
+        this.defaultText = text;
         setNamespaceInit(null);
     }
 
     public StyledLabel(String text, int horizontalAlignment) {
         super(text, horizontalAlignment);
+        this.defaultText = text;
         setNamespaceInit(null);
     }
 
     public StyledLabel(String text) {
         super(text);
+        this.defaultText = text;
         setNamespaceInit(null);
     }
 

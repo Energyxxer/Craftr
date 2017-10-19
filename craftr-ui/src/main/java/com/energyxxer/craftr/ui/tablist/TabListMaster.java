@@ -30,6 +30,7 @@ public class TabListMaster extends JComponent implements MouseListener, MouseMot
     Point dragPoint = null;
     float dragPivot = -1;
     TabListElement draggedElement = null;
+    int height = 5;
 
     private TextHint hint = CraftrWindow.hintManager.createTextHint("a");
 
@@ -49,6 +50,7 @@ public class TabListMaster extends JComponent implements MouseListener, MouseMot
 
             selectionStyle = t.getString("TabList.tab.selectionStyle","default:FULL");
             selectionLineThickness = Math.max(t.getInteger(2,"TabList.tab.selectionLineThickness"), 0);
+            height = Math.max(t.getInteger(5,"TabList.height"),5);
 
             children.forEach(e -> e.themeChanged(t));
         });
@@ -77,9 +79,10 @@ public class TabListMaster extends JComponent implements MouseListener, MouseMot
             this.x += element.getWidth();
         }
 
-        if(this.getPreferredSize().height != this.x) {
-            this.setPreferredSize(new Dimension(this.x, this.getHeight()));
-            this.setSize(new Dimension(this.x, this.getHeight()));
+        Dimension newSize = new Dimension(this.x, height);
+
+        if(!newSize.equals(this.getPreferredSize())) {
+            this.setPreferredSize(newSize);
             this.getParent().revalidate();
         }
 

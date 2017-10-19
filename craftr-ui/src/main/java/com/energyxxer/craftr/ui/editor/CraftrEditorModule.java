@@ -23,9 +23,9 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Event;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -70,9 +70,9 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 
 		this.setBorder(BorderFactory.createEmptyBorder());
 
-		KeyStroke closeKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK);
+		KeyStroke closeKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_MASK);
 
-		KeyStroke saveKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK);
+		KeyStroke saveKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK);
 
 		//editorComponent.getInputMap().put(undoKeystroke, "undoKeystroke");
 		//editorComponent.getInputMap().put(redoKeystroke, "redoKeystroke");

@@ -6,8 +6,8 @@ import com.energyxxer.craftr.util.Version;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 import com.energyxxer.util.ImageManager;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -36,7 +36,7 @@ public class Craftr {
 		splash.setLocation(center);
 		splash.setUndecorated(true);
 		splash.setVisible(true);
-		splash.setContentPane(new JPanel() {
+		splash.setContentPane(new JComponent() {
 			@Override
 			protected void paintComponent(Graphics g) {
 				g.drawImage(ImageManager.load("/assets/logo/splash.png"), 0,0,this.getWidth(),this.getHeight(), null);

@@ -29,7 +29,7 @@ public class ToolbarButton extends JButton implements MouseListener, MouseMotion
 
     private static final int MARGIN = 1;
     private static final int BORDER_THICKNESS = 1;
-    public static final int SIZE = 25;
+    //public static final int SIZE = 25;
 
     private Color background = Color.GRAY;
     private Color rolloverBackground = Color.GRAY;
@@ -78,12 +78,12 @@ public class ToolbarButton extends JButton implements MouseListener, MouseMotion
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         g.setColor(getModel().isPressed() ? pressedBackground : getModel().isRollover() ? rolloverBackground : background);
-        g.fillRect(MARGIN+BORDER_THICKNESS,MARGIN+BORDER_THICKNESS,SIZE-2*MARGIN-2*BORDER_THICKNESS,SIZE-2*MARGIN-2*BORDER_THICKNESS);
+        g.fillRect(MARGIN+BORDER_THICKNESS,MARGIN+BORDER_THICKNESS,this.getWidth()-2*MARGIN-2*BORDER_THICKNESS,this.getHeight()-2*MARGIN-2*BORDER_THICKNESS);
         g.setColor(getModel().isPressed() ? pressedBorder : getModel().isRollover() ? rolloverBorder : border);
-        g.fillRect(MARGIN,MARGIN,SIZE-2*MARGIN-BORDER_THICKNESS,BORDER_THICKNESS);
-        g.fillRect(SIZE-MARGIN-BORDER_THICKNESS,MARGIN,BORDER_THICKNESS,SIZE-2*MARGIN-BORDER_THICKNESS);
-        g.fillRect(MARGIN+BORDER_THICKNESS,SIZE-MARGIN-BORDER_THICKNESS,SIZE-2*MARGIN-BORDER_THICKNESS,BORDER_THICKNESS);
-        g.fillRect(MARGIN,MARGIN+BORDER_THICKNESS,BORDER_THICKNESS,SIZE-2*MARGIN-BORDER_THICKNESS);
+        g.fillRect(MARGIN,MARGIN,this.getWidth()-2*MARGIN-BORDER_THICKNESS,BORDER_THICKNESS);
+        g.fillRect(this.getWidth()-MARGIN-BORDER_THICKNESS,MARGIN,BORDER_THICKNESS,this.getHeight()-2*MARGIN-BORDER_THICKNESS);
+        g.fillRect(MARGIN+BORDER_THICKNESS,this.getHeight()-MARGIN-BORDER_THICKNESS,this.getWidth()-2*MARGIN-BORDER_THICKNESS,BORDER_THICKNESS);
+        g.fillRect(MARGIN,MARGIN+BORDER_THICKNESS,BORDER_THICKNESS,this.getHeight()-2*MARGIN-BORDER_THICKNESS);
 
 		g2.setComposite(previousComposite);
 

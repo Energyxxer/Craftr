@@ -228,7 +228,7 @@ public class MenuBar extends JMenuBar {
             // --------------------------------------------------
 
             {
-                StyledMenuItem item = new StyledMenuItem("Generate                    ", "export");
+                StyledMenuItem item = new StyledMenuItem("Generate", "export");
                 item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, 9));
                 menu.add(item);
             }
@@ -370,7 +370,7 @@ public class MenuBar extends JMenuBar {
             // --------------------------------------------------
 
             {
-                StyledMenuItem item = new StyledMenuItem("Settings");
+                StyledMenuItem item = new StyledMenuItem("Settings", "cog");
 
                 item.addActionListener(e -> Settings.show());
                 menu.add(item);

@@ -19,9 +19,12 @@ import com.energyxxer.craftrlang.projects.ProjectManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -49,13 +52,16 @@ public class ProjectExplorerItem extends ExplorerElement {
 
     private ThemeListenerManager tlm = new ThemeListenerManager();
 
-    public ProjectExplorerItem(ExplorerMaster master, File file, ArrayList<String> toOpen) {
+    private boolean translucent = false;
+
+    ProjectExplorerItem(ExplorerMaster master, File file, ArrayList<String> toOpen) {
         this.path = file.getPath();
         this.master = master;
 
         this.isDirectory = file.isDirectory();
 
         this.filename = file.getName();
+        if(this.filename.equals(".project")) translucent = true;
         if(!this.isDirectory) {
             if(filename.endsWith(".craftr") || filename.endsWith(".png")) filename = filename.substring(0, filename.lastIndexOf('.'));
         }
@@ -84,6 +90,7 @@ public class ProjectExplorerItem extends ExplorerElement {
         this.x = indentation * master.getIndentPerLevel() + master.getInitialIndent();
 
         this.filename = filenameBuilder.toString();
+        if(this.filename.equals(".project")) translucent = true;
         this.isDirectory = file.isDirectory();
 
         if(!this.isDirectory) {
@@ -236,8 +243,16 @@ public class ProjectExplorerItem extends ExplorerElement {
         }
         FontMetrics metrics = g.getFontMetrics(g.getFont());
 
+        Graphics2D g2d = (Graphics2D) g;
+        Composite oldComposite = g2d.getComposite();
+        if(translucent) {
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+        }
+
         g.drawString(filename, x, master.getOffsetY() + metrics.getAscent() + ((master.getRowHeight() - metrics.getHeight())/2));
         x += metrics.stringWidth(filename);
+
+        g2d.setComposite(oldComposite);
 
         if(master.getFlag(ExplorerFlag.DEBUG_WIDTH)) {
             g.setColor(Color.YELLOW);
