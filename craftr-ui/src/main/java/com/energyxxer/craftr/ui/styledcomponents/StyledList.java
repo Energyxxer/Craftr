@@ -5,7 +5,6 @@ import com.energyxxer.xswing.XList;
 
 import javax.swing.BorderFactory;
 import java.awt.Color;
-import java.awt.Font;
 
 /**
  * Created by User on 12/14/2016.
@@ -47,7 +46,7 @@ public class StyledList<T> extends XList<T> {
                         0, 0, Math.max(t.getInteger(1,this.namespace + ".list.cell.rollover.border.thickness","General.list.cell.rollover.border.thickness"),0), 0,
                                             t.getColor(new Color(0, 0, 0, 0), this.namespace + ".list.cell.hover.border.color","General.list.cell.hover.border.color")));
 
-                setFont(new Font(          t.getString(this.namespace + ".list.font","General.list.font","General.font","default:Tahoma"),0,14));
+                setFont(t.getFont(this.namespace+".list","General.list","General"));
             } else {
                 setBackground(              t.getColor(Color.WHITE, "General.list.background"));
                 setForeground(              t.getColor(Color.BLACK, "General.list.cell.foreground","General.foreground"));
@@ -66,7 +65,7 @@ public class StyledList<T> extends XList<T> {
                         0, 0, Math.max(t.getInteger(1,"General.list.cell.rollover.border.thickness"),0), 0,
                                 t.getColor(new Color(0, 0, 0, 0), "General.list.cell.hover.border")));
 
-                setFont(new Font(t.getString("General.list.font","General.font","default:Tahoma"),0,14));
+                setFont(t.getFont("General.list","General"));
             }
         });
     }

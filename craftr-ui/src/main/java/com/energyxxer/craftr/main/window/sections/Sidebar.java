@@ -21,7 +21,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
-import java.io.File;
 
 /**
  * Created by User on 12/15/2016.
@@ -139,7 +138,7 @@ public class Sidebar extends JPanel {
 
         expanded.add(header, BorderLayout.NORTH);
 
-        JScrollPane sp = new JScrollPane(CraftrWindow.projectExplorer = new ProjectExplorerMaster(new File(Preferences.get("workspace_dir"))));
+        JScrollPane sp = new JScrollPane(CraftrWindow.projectExplorer = new ProjectExplorerMaster());
         sp.setBorder(new EmptyBorder(0, 0, 0, 0));
         sp.setLayout(new OverlayScrollPaneLayout(sp));
 

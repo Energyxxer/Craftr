@@ -15,6 +15,7 @@ import java.util.HashMap;
  */
 public class Resources {
     public static final HashMap<String, ArrayList<String>> indexes = new HashMap<>();
+    public static final ArrayList<String> tips = new ArrayList<>();
 
     public static CraftrLibrary nativeLib = null;
 
@@ -37,8 +38,16 @@ public class Resources {
                 }
             }
             if(key != null) indexes.put(key, currentValues);
-        } catch(IOException e) {
-            e.printStackTrace();
+        } catch(IOException x) {
+            x.printStackTrace();
+        }
+
+        tips.clear();
+        try {
+            ArrayList<String> lines = LineReader.read("/resources/tips.txt");
+            tips.addAll(lines);
+        } catch(IOException x) {
+            x.printStackTrace();
         }
 
         ThemeManager.loadAll();

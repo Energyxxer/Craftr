@@ -11,7 +11,6 @@ import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -38,15 +37,13 @@ class SettingsAppearance extends JPanel {
                 header.add(padding, BorderLayout.WEST);
             }
 
-            JLabel label = new JLabel("Appearance");
+            StyledLabel label = new StyledLabel("Appearance","Settings.content.header");
             header.add(label, BorderLayout.CENTER);
 
             tlm.addThemeChangeListener(t -> {
                 setBackground(t.getColor(new Color(235, 235, 235), "Settings.content.background"));
                 header.setBackground(t.getColor(new Color(235, 235, 235), "Settings.content.header.background"));
                 header.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Settings.content.header.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "Settings.content.header.border.color")));
-                label.setForeground(t.getColor(Color.BLACK, "Settings.content.header.foreground"));
-                label.setFont(new Font(t.getString("Settings.content.header.font","General.font","default:Tahoma"),1,20));
             });
         }
 

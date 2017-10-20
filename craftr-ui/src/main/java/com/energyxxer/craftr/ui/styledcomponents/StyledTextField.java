@@ -4,7 +4,6 @@ import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.XTextField;
 
 import java.awt.Color;
-import java.awt.Font;
 
 /**
  * Provides a text field that reacts to theme changes and
@@ -49,8 +48,8 @@ public class StyledTextField extends XTextField {
                 setForeground       (t.getColor(Color.BLACK, this.namespace + ".textfield.foreground","General.textfield.foreground","General.foreground"));
                 setSelectionColor   (t.getColor(new Color(50, 100, 175), this.namespace + ".textfield.selection.background","General.textfield.selection.background"));
                 setSelectedTextColor(t.getColor(getForeground(), this.namespace + ".textfield.selection.foreground","General.textfield.selection.foreground"));
-                setBorder(t.getColor(new Color(200, 200, 200), this.namespace + ".textfield.border.color","General.textfield.border.color"),Math.max(t.getInteger(1,this.namespace + ".textfield.border.borderThickness","General.textfield.border.borderThickness"),0));
-                setFont(new Font   (t.getString(this.namespace + ".textfield.font","General.textfield.font","General.font","default:Tahoma"),0,12));
+                setBorder(t.getColor(new Color(200, 200, 200), this.namespace + ".textfield.border.color","General.textfield.border.color"),Math.max(t.getInteger(1,this.namespace + ".textfield.border.thickness","General.textfield.border.thickness"),0));
+                setFont(t.getFont(this.namespace+".textfield","General.textfield","General"));
 
                 setDisabledTextColor(t.getColor(getForeground(), this.namespace + ".textfield.disabled.foreground","General.textfield.disabled.foreground"));
             } else {
@@ -59,7 +58,7 @@ public class StyledTextField extends XTextField {
                 setSelectionColor   (t.getColor(new Color(50, 100, 175), "General.textfield.selection.background"));
                 setSelectedTextColor(t.getColor(getForeground(), "General.textfield.selection.foreground"));
                 setBorder(t.getColor(new Color(200, 200, 200), "General.textfield.border.color"),Math.max(t.getInteger(1,"General.textfield.border.borderThickness"),0));
-                setFont(new Font   (t.getString("General.textfield.font","General.font","default:Tahoma"),0,12));
+                setFont(t.getFont("General.textfield","General"));
 
                 setDisabledTextColor(t.getColor(getForeground(), "General.textfield.disabled.foreground"));
             }

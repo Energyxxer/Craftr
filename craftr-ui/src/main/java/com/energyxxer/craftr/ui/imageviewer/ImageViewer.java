@@ -12,16 +12,16 @@ import com.energyxxer.util.out.Console;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
-import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -35,7 +35,7 @@ import java.io.IOException;
 /**
  * Created by User on 2/8/2017.
  */
-public class ImageViewer extends JComponent implements DisplayModule, MouseWheelListener, MouseMotionListener, KeyListener {
+public class ImageViewer extends JPanel implements DisplayModule, MouseWheelListener, MouseMotionListener, KeyListener {
 
     private static final double MIN_SCALE = 0.25;
     private static final double MAX_SCALE = 50;
@@ -74,7 +74,7 @@ public class ImageViewer extends JComponent implements DisplayModule, MouseWheel
             this.crosshairColor = t.getColor(new Color(0,0,0,64), "ImageViewer.crosshair");
         });
 
-        KeyStroke closeKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK);
+        KeyStroke closeKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_MASK);
 
         this.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(closeKeystroke, "closeKeystroke");
 
@@ -88,6 +88,7 @@ public class ImageViewer extends JComponent implements DisplayModule, MouseWheel
 
     @Override
     protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
         if(scale == 0) scale = 1;
         g.setColor(this.getBackground());
         g.fillRect(0,0,this.getWidth(), this.getHeight());

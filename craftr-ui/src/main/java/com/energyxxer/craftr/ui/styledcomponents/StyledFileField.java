@@ -6,7 +6,6 @@ import com.energyxxer.xswing.XFileField;
 import com.energyxxer.xswing.XTextField;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.io.File;
 
 /**
@@ -64,34 +63,29 @@ public class StyledFileField extends XFileField {
                 field.setForeground         (t.getColor(Color.BLACK, this.namespace + ".textfield.foreground","General.textfield.foreground","General.foreground"));
                 field.setSelectionColor     (t.getColor(Color.BLACK, this.namespace + ".textfield.selection.background","General.textfield.selection.background"));
                 field.setSelectedTextColor  (t.getColor(field.getForeground(), this.namespace + ".textfield.selection.foreground","General.textfield.selection.foreground"));
-                field.setBorder             (t.getColor(new Color(200, 200, 200), this.namespace + ".textfield.border.color","General.textfield.border.color"),Math.max(t.getInteger(1,this.namespace + ".textfield.border.borderThickness","General.textfield.border.borderThickness"),0));
-                field.setFont(new Font   (t.getString(this.namespace + ".textfield.font","General.textfield.font","General.font","default:Tahoma"),0,12));
+                field.setBorder             (t.getColor(new Color(200, 200, 200), this.namespace + ".textfield.border.color","General.textfield.border.color"),Math.max(t.getInteger(1,this.namespace + ".textfield.border.thickness","General.textfield.border.thickness"),0));
+                field.setFont(t.getFont(this.namespace + ".textfield","General.textfield","General"));
 
                 button.setBackground        (t.getColor(new Color(215, 215, 215), this.namespace + ".button.background","General.button.background"));
                 button.setForeground        (t.getColor(Color.BLACK, this.namespace + ".button.foreground","General.button.foreground","General.foreground"));
                 button.setBorder            (t.getColor(new Color(200, 200, 200), this.namespace + ".button.border.color","General.button.border.color"), Math.max(t.getInteger(1,this.namespace + ".button.border.thickness","General.button.border.thickness"),0));
                 button.setRolloverColor     (t.getColor(new Color(200, 202, 205), this.namespace + ".button.hover.background","General.button.hover.background"));
                 button.setPressedColor      (t.getColor(Color.WHITE, this.namespace + ".button.pressed.background","General.button.pressed.background"));
-                button.setFont(new Font   (t.getString(this.namespace + ".button.font","General.button.font","General.font","default:Tahoma"),
-                        (t.getBoolean(false,this.namespace + ".button.bold", "General.button.bold") ? Font.BOLD : Font.PLAIN) +
-                                (t.getBoolean(false,this.namespace + ".button.italic", "General.button.italic") ? Font.ITALIC : Font.PLAIN),12));
+                button.setFont(t.getFont(this.namespace + ".button","General.button","General"));
             } else {
                 field.setBackground         (t.getColor(new Color(220, 220, 220), "General.textfield.background"));
                 field.setForeground         (t.getColor(Color.BLACK, "General.textfield.foreground","General.foreground"));
                 field.setSelectionColor     (t.getColor(new Color(50, 100, 175), "General.textfield.selection.background"));
                 field.setSelectedTextColor  (t.getColor(field.getForeground(), "General.textfield.selection.foreground"));
-                field.setBorder             (t.getColor(new Color(200, 200, 200), "General.textfield.border.color"),Math.max(t.getInteger(1,"General.textfield.border.borderThickness"),0));
-                field.setFont(new Font   (t.getString("General.textfield.font","General.font","default:Tahoma"),0,12));
+                field.setBorder             (t.getColor(new Color(200, 200, 200), "General.textfield.border.color"),Math.max(t.getInteger(1,"General.textfield.border.thickness"),0));
+                field.setFont(t.getFont("General.textfield","General"));
 
                 button.setBackground        (t.getColor(new Color(215, 215, 215), "General.button.background"));
                 button.setForeground        (t.getColor(Color.BLACK, "General.button.foreground","General.foreground"));
                 button.setBorder            (t.getColor(new Color(200, 200, 200), "General.button.border.color"), Math.max(t.getInteger(1,"General.button.border.thickness"),0));
                 button.setRolloverColor     (t.getColor(new Color(200, 202, 205), "General.button.hover.background"));
                 button.setPressedColor      (t.getColor(Color.WHITE, "General.button.pressed.background"));
-                button.setFont(new Font   (t.getString("General.button.font","General.font","default:Tahoma"),
-                        (t.getBoolean(false,"General.button.bold") ? Font.BOLD : Font.PLAIN) +
-                                (t.getBoolean(false,"General.button.italic") ? Font.ITALIC : Font.PLAIN),
-                        12));
+                button.setFont(t.getFont("General.button","General"));
             }
         });
     }

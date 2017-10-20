@@ -61,7 +61,7 @@ public class ProjectDialog {
         pane = new JPanel(new BorderLayout());
         pane.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         tlm.addThemeChangeListener(t ->
-                pane.setBackground(t.getColor(new Color(235, 235, 235), "NewProjectDialog.background"))
+                pane.setBackground(t.getColor(new Color(235, 235, 235), "NewProjectDialog.background","Dialog.background"))
         );
 
         //<editor-fold desc="Icon">
@@ -194,7 +194,7 @@ public class ProjectDialog {
         if(valid) {
             valid = FileUtil.validateFilename(str);
             if(!valid) {
-                displayError((str.length() > 0) ?  "Error: Not a valid file name" : null);
+                displayError("Error: Not a valid file name");
             }
         }
         if(valid) displayError(null);

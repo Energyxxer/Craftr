@@ -5,11 +5,11 @@ import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.dialogs.OptionDialog;
 import com.energyxxer.craftr.ui.editor.CraftrEditorModule;
 import com.energyxxer.craftr.ui.editor.behavior.caret.CaretProfile;
+import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
+import com.energyxxer.craftr.ui.styledcomponents.StyledPopupMenu;
 import com.energyxxer.craftrlang.projects.Project;
 
 import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -27,7 +27,7 @@ public class TabManager {
 
 	private static Tab selectedTab = null;
 	
-	private static JPopupMenu menu = new JPopupMenu();
+	private static StyledPopupMenu menu;
 
 	public static void openTab(String path, int index) {
 		openTab(path);
@@ -94,9 +94,9 @@ public class TabManager {
 	}
 	
 	private static void updateMenu() {
-		menu.removeAll();
+		menu = new StyledPopupMenu();
 		if(TabManager.openTabs.size() <= 0) {
-			JMenuItem item = new JMenuItem("No tabs open!");
+			StyledMenuItem item = new StyledMenuItem("No tabs open!");
 			item.setFont(item.getFont().deriveFont(Font.ITALIC));
 			item.setIcon(new ImageIcon(Commons.getIcon("info").getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
 			menu.add(item);
@@ -104,7 +104,7 @@ public class TabManager {
 		}
 		for(int i = 0; i < TabManager.openTabs.size(); i++) {
 			Tab tab = TabManager.openTabs.get(i);
-			JMenuItem item = new JMenuItem(((!tab.isSaved()) ? "*" : "") + tab.getName());
+			StyledMenuItem item = new StyledMenuItem(((!tab.isSaved()) ? "*" : "") + tab.getName());
 			item.setIcon(new ImageIcon(tab.getLinkedTabItem().getIcon()));
 			if(!tab.visible) {
 				item.setFont(item.getFont().deriveFont(Font.BOLD));
@@ -118,7 +118,7 @@ public class TabManager {
 		}
 	}
 	
-	public static JPopupMenu getMenu() {
+	public static StyledPopupMenu getMenu() {
 		updateMenu();
 		return menu;
 	}

@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.ui.tablist;
 
 import com.energyxxer.craftr.main.window.CraftrWindow;
+import com.energyxxer.craftr.ui.HintStylizer;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.hints.TextHint;
@@ -51,6 +52,8 @@ public class TabListMaster extends JComponent implements MouseListener, MouseMot
             selectionStyle = t.getString("TabList.tab.selectionStyle","default:FULL");
             selectionLineThickness = Math.max(t.getInteger(2,"TabList.tab.selectionLineThickness"), 0);
             height = Math.max(t.getInteger(5,"TabList.height"),5);
+
+            this.setFont(t.getFont("TabList.tab","General"));
 
             children.forEach(e -> e.themeChanged(t));
         });
@@ -218,6 +221,7 @@ public class TabListMaster extends JComponent implements MouseListener, MouseMot
                 String text = element.getToolTipText();
                 if(text != null && (rolloverElement != null || !hint.isShowing())) {
                     hint.setText(text);
+                    HintStylizer.style(hint);
                     hint.show(new Point(this.getLocationOnScreen().x+element.getLastRecordedOffset()+element.getWidth()/2,this.getLocationOnScreen().y+this.getHeight()/2), () -> rolloverElement == element);
                 }
             }

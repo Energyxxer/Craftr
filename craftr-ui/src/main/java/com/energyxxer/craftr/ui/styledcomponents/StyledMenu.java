@@ -1,8 +1,8 @@
 package com.energyxxer.craftr.ui.styledcomponents;
 
 import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.util.Disposable;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
+import com.energyxxer.util.Disposable;
 import com.energyxxer.xswing.menu.XMenu;
 
 import javax.swing.BorderFactory;
@@ -11,7 +11,6 @@ import javax.swing.JMenuItem;
 import javax.swing.UIManager;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +33,10 @@ public class StyledMenu extends XMenu implements Disposable {
         super(text);
 
         tlm.addThemeChangeListener(t -> {
-            this.setBackground(t.getColor(new Color(215, 215, 215), "General.menu.background"));
+            //this.setBackground(t.getColor(new Color(215, 215, 215), "General.menu.background"));
             this.setForeground(t.getColor(Color.BLACK, "General.menu.foreground","General.foreground"));
             this.setRolloverBackground(t.getColor(new Color(190, 190, 190), "General.menu.selected.background"));
-            this.setFont(new Font(t.getString("General.menu.font","General.font","default:Tahoma"), 0, 12));
+            this.setFont(t.getFont("General.menu","General"));
             if(icon != null) this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16,16, Image.SCALE_SMOOTH)));
 
             getPopupMenu().setBackground(t.getColor(new Color(215, 215, 215), "General.menu.background"));

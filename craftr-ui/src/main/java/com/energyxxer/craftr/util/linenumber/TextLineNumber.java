@@ -241,7 +241,7 @@ public class TextLineNumber extends JPanel
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
-			public void run()
+			public void start()
 			{
 				try
 				{

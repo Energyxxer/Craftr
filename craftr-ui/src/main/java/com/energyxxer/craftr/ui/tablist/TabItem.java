@@ -62,6 +62,7 @@ public class TabItem extends TabListElement {
 
     @Override
     public void render(Graphics g) {
+        g.setFont(master.getFont());
         FontMetrics fm = g.getFontMetrics();
 
         this.x = master.getOffsetX();

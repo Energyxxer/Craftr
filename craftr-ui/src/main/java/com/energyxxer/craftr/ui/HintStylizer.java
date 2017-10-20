@@ -8,6 +8,11 @@ import com.energyxxer.xswing.hints.TextHint;
 import java.awt.Color;
 
 public class HintStylizer {
+
+    public static void style(Hint hint) {
+        style(hint, null);
+    }
+
     public static void style(Hint hint, String type) {
         Theme t = CraftrWindow.getTheme();
 
@@ -16,10 +21,7 @@ public class HintStylizer {
         if(hint instanceof TextHint) {
             TextHint thint = (TextHint) hint;
             thint.setForeground(t.getColor(Color.WHITE, "Hint."+type+".foreground","Hint.foreground","General.foreground"));
-            thint.setBold(t.getBoolean(false, "Hint."+type+".bold","Hint.bold"));
-            thint.setItalic(t.getBoolean(false, "Hint."+type+".italic","Hint.italic"));
-            thint.setFontSize(t.getInteger(12, "Hint."+type+".fontSize","Hint.fontSize","General.fontSize"));
-            thint.setFontFamily(t.getString("Tahoma", "Hint."+type+".font","Hint.font","General.font"));
+            thint.setFont(t.getFont("Hint."+type,"Hint","General"));
         }
     }
 }

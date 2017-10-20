@@ -8,7 +8,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Image;
 
 /**
@@ -147,17 +146,11 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
 
         if (this.namespace != null) {
             setForeground(t.getColor(Color.BLACK, this.namespace + ".label.foreground","General.label.foreground","General.foreground"));
-            setFont(new Font(t.getString(this.namespace + ".label.font","General.label.font","General.font", "default:Tahoma"),
-                    (t.getBoolean((style & Font.BOLD) > 0,this.namespace + ".label.bold", "General.label.bold") ? Font.BOLD : Font.PLAIN) +
-                    (t.getBoolean((style & Font.ITALIC) > 0,this.namespace + ".label.italic","General.label.italic") ? Font.ITALIC : Font.PLAIN),
-                    t.getInteger(this.size,this.namespace + ".label.fontSize","General.label.fontSize")));
+            setFont(t.getFont(this.namespace+".label","General.label","General"));
             if(changeable) this.setText(t.getString(this.namespace + ".label.text","default:" + defaultText));
         } else {
             setForeground(t.getColor(Color.BLACK, "General.label.foreground","General.foreground"));
-            setFont(new Font(t.getString("General.label.font","General.font", "default:Tahoma"),
-                    (t.getBoolean((style & Font.BOLD) > 0, "General.label.bold") ? Font.BOLD : Font.PLAIN) +
-                            (t.getBoolean((style & Font.ITALIC) > 0,"General.label.italic") ? Font.ITALIC : Font.PLAIN),
-                    t.getInteger(this.size,"General.label.fontSize")));
+            setFont(t.getFont("General.label","General"));
             if(changeable) this.setText(defaultText);
         }
         if (icon != null) {

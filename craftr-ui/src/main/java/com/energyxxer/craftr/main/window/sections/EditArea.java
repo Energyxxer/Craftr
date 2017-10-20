@@ -24,7 +24,7 @@ import java.awt.GridBagLayout;
  */
 public class EditArea extends JPanel {
 
-    private static final boolean useConsole = true;
+    private static final boolean USE_CONSOLE = false;
 
     private JPanel tabList;
     
@@ -50,7 +50,7 @@ public class EditArea extends JPanel {
         {
             ToolbarButton more = new ToolbarButton("more", tlm);
             more.setHintText("View all tabs");
-            more.setPreferredPos(Hint.LEFT);
+            more.setPreferredHintPos(Hint.LEFT);
             more.setPreferredSize(new Dimension(25,25));
             tabActionPanel.add(more);
 
@@ -76,18 +76,26 @@ public class EditArea extends JPanel {
 
         tabListHolder.add(tabSP, BorderLayout.CENTER);
 
-        if (useConsole) this.add(new ConsoleArea(), BorderLayout.SOUTH);
-        this.add(CraftrWindow.noticeBoard = new NoticeBoard(), BorderLayout.SOUTH);
+        if (USE_CONSOLE) this.add(new ConsoleArea(), BorderLayout.SOUTH);
+        else this.add(CraftrWindow.noticeBoard = new NoticeBoard(), BorderLayout.SOUTH);
 
         this.setContent(CraftrWindow.welcomePane);
     }
 
     public void setContent(JComponent content) {
-        if(this.content != null) this.remove(this.content);
+        if(this.content != null) {
+            if(this.content == CraftrWindow.welcomePane) {
+                CraftrWindow.welcomePane.tipScreen.pause();
+            }
+            this.remove(this.content);
+        }
         if(content == null) content = CraftrWindow.welcomePane;
 
         this.add(content, BorderLayout.CENTER);
         this.content = content;
+        if(content == CraftrWindow.welcomePane) {
+            if(CraftrWindow.isVisible()) CraftrWindow.welcomePane.tipScreen.start();
+        }
 
         this.revalidate();
         this.repaint();

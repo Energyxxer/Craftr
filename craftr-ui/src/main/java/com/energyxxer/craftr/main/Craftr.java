@@ -61,6 +61,8 @@ public class Craftr {
 		CraftrWindow.setVisible(true);
 		splash.setVisible(false);
 		splash.dispose();
+
+		CraftrWindow.welcomePane.tipScreen.start(1000);
 	}
 
 }

@@ -1,6 +1,9 @@
 package com.energyxxer.craftr.ui.theme;
 
+import com.energyxxer.craftr.main.window.CraftrWindow;
+
 import java.awt.Color;
+import java.awt.Font;
 import java.util.HashMap;
 
 import static com.energyxxer.craftr.ui.theme.Theme.ThemeType.GUI_THEME;
@@ -66,7 +69,7 @@ public class Theme {
 		return defaultValue;
 	}
 
-	public boolean getBoolean(String key) { return getBoolean(false, key); }
+	public boolean getBoolean(String... keys) { return getBoolean(false, keys); }
 
 	//Strings
 
@@ -95,6 +98,35 @@ public class Theme {
 
 	public int getInteger(String... keys) {
 		return getInteger(0, keys);
+	}
+
+	//Fonts
+
+	public Font getFont(Font defaultValue, String... keys) {
+		String[] names = new String[keys.length];
+		String[] sizes = new String[keys.length];
+		String[] bolds = new String[keys.length];
+		String[] italics = new String[keys.length];
+
+		for(int i = 0; i < keys.length; i++) {
+			names[i] = keys[i] + ".font";
+			sizes[i] = keys[i] + ".fontSize";
+			bolds[i] = keys[i] + ".bold";
+			italics[i] = keys[i] + ".italic";
+		}
+
+		String name = this.getString(names);
+		if(name == null) name = defaultValue.getName();
+		int size = this.getInteger(defaultValue.getSize(), sizes);
+		if(size < 0) size = 14;
+		boolean bold = this.getBoolean(defaultValue.isBold(), bolds);
+		boolean italic = this.getBoolean(defaultValue.isItalic(), italics);
+
+		return new Font(name, (bold ? Font.BOLD : Font.PLAIN) + (italic ? Font.ITALIC : Font.PLAIN), size);
+	}
+
+	public Font getFont(String... keys) {
+		return getFont(CraftrWindow.defaultFont, keys);
 	}
 
 	//Other

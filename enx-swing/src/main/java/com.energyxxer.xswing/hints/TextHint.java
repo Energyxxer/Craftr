@@ -38,39 +38,11 @@ public class TextHint extends Hint {
         textPane.setForeground(fg);
     }
 
-    public boolean isBold() {
-        return (textPane.getFont().getStyle() & Font.BOLD) > 0;
+    public Font getFont() {
+        return textPane.getFont();
     }
 
-    public void setBold(boolean bold) {
-        //I believe this to be the most confusing code I've ever written.
-        if(bold) textPane.setFont(textPane.getFont().deriveFont(textPane.getFont().getStyle() | Font.BOLD));
-        else textPane.setFont(textPane.getFont().deriveFont(textPane.getFont().getStyle() & ~Font.BOLD));
-    }
-
-    public boolean isItalic() {
-        return (textPane.getFont().getStyle() & Font.ITALIC) > 0;
-    }
-
-    public void setItalic(boolean italic) {
-        //Darn bitwise operators.
-        if(italic) textPane.setFont(textPane.getFont().deriveFont(textPane.getFont().getStyle() | Font.ITALIC));
-        else textPane.setFont(textPane.getFont().deriveFont(textPane.getFont().getStyle() & ~Font.ITALIC));
-    }
-
-    public String getFontFamily() {
-        return textPane.getFont().getFamily();
-    }
-
-    public void setFontFamily(String family) {
-        textPane.setFont(new Font(family, textPane.getFont().getStyle(),textPane.getFont().getSize()));
-    }
-
-    public int getFontSize() {
-        return textPane.getFont().getSize();
-    }
-
-    public void setFontSize(int size) {
-        textPane.setFont(textPane.getFont().deriveFont((float) size));
+    public void setFont(Font font) {
+        textPane.setFont(font);
     }
 }

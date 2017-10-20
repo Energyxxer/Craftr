@@ -1,13 +1,12 @@
 package com.energyxxer.craftr.ui.styledcomponents;
 
 import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.util.Disposable;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
+import com.energyxxer.util.Disposable;
 import com.energyxxer.xswing.menu.XMenuItem;
 
 import javax.swing.ImageIcon;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Image;
 
 /**
@@ -24,7 +23,7 @@ public class StyledMenuItem extends XMenuItem implements Disposable {
         tlm.addThemeChangeListener(t -> {
             this.setRolloverBackground(t.getColor(new Color(190, 190, 190), "General.menu.selected.background"));
             this.setForeground(t.getColor(Color.BLACK, "General.menu.foreground","General.foreground"));
-            this.setFont(new Font(t.getString("General.menu.font","General.font","default:Tahoma"), 0, 12));
+            this.setFont(t.getFont("General.menu","General"));
             updateIcon();
         });
     }

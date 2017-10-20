@@ -21,11 +21,13 @@ import com.energyxxer.xswing.hints.HintManager;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
@@ -39,6 +41,8 @@ import java.util.TimerTask;
  * Literally what it sounds like.
  */
 public class CraftrWindow {
+	private static final Dimension defaultSize = new Dimension(1200, 800);
+	public static final Font defaultFont = new JLabel().getFont();
 
 	public static JFrame jframe;
 
@@ -56,7 +60,6 @@ public class CraftrWindow {
 
 	public static HintManager hintManager = new HintManager(jframe);
 
-	private static final Dimension defaultSize = new Dimension(1200, 800);
 	public static TabListMaster tabList;
 
 	private ThemeListenerManager tlm = new ThemeListenerManager();
@@ -131,6 +134,10 @@ public class CraftrWindow {
 
 	public static void setVisible(boolean b) {
 		jframe.setVisible(b);
+	}
+
+	public static boolean isVisible() {
+		return jframe.isVisible();
 	}
 
 	public static void setTheme(Theme t) {

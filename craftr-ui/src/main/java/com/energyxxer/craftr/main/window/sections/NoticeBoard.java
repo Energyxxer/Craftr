@@ -56,7 +56,7 @@ public class NoticeBoard extends JPanel {
 
         ToolbarButton toggle = new ToolbarButton("toggle", tlm);
         toggle.setHintText("Toggle Board");
-        toggle.setPreferredPos(Hint.LEFT);
+        toggle.setPreferredHintPos(Hint.LEFT);
         toggle.setPreferredSize(new Dimension(20,20));
 
         toggle.addActionListener(e -> {
@@ -69,7 +69,7 @@ public class NoticeBoard extends JPanel {
 
         ToolbarButton clear = new ToolbarButton("clear", tlm);
         clear.setHintText("Clear Board");
-        clear.setPreferredPos(Hint.LEFT);
+        clear.setPreferredHintPos(Hint.LEFT);
         clear.setPreferredSize(new Dimension(20,20));
 
         consoleActionPanel.add(clear);

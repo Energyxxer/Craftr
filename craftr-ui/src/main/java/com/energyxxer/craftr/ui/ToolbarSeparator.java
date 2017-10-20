@@ -2,42 +2,45 @@ package com.energyxxer.craftr.ui;
 
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
+import javax.swing.JComponent;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 
 /**
  * It's literally just a line.
  */
-public class ToolbarSeparator extends JPanel {
+public class ToolbarSeparator extends JComponent {
 
 	private ThemeListenerManager tlm = new ThemeListenerManager();
 
+	private Color left = Color.BLACK;
+	private Color right = Color.WHITE;
+
 	public ToolbarSeparator() {
-		super();
-		this.setMinimumSize(new Dimension(15, 30));
-		this.setMaximumSize(new Dimension(15, 30));
-		this.setPreferredSize(new Dimension(15, 30));
+		this.setPreferredSize(new Dimension(15, 25));
 
 		this.setOpaque(true);
 		this.setBackground(new Color(0,0,0,0));
 
-		{
-			JPanel separatorLine = new JPanel(new BorderLayout());
-			separatorLine.setPreferredSize(new Dimension(2, 20));
-			//separatorLine.setBackground(CraftrWindow.theme.l2);
-			this.add(separatorLine);
+		tlm.addThemeChangeListener(t -> {
+			left = t.getColor(new Color(150, 150, 150), "Toolbar.separator.dark");
+			right = t.getColor(new Color(235, 235, 235), "Toolbar.separator.light");
+		});
+	}
 
-			JPanel lightLine = new JPanel();
-			lightLine.setPreferredSize(new Dimension(1, 1));
-			//lightLine.setBackground(CraftrWindow.theme.p2);
-			separatorLine.add(lightLine, BorderLayout.EAST);
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
 
-			tlm.addThemeChangeListener(t -> {
-				lightLine.setBackground(t.getColor(new Color(235, 235, 235), "Toolbar.separator.light"));
-				separatorLine.setBackground(t.getColor(new Color(150, 150, 150), "Toolbar.separator.dark"));
-			});
-		}
+		int x = this.getWidth()/2-1;
+
+		g.setColor(left);
+		g.fillRect(x,2,1,this.getHeight()-4);
+		x++;
+		g.setColor(right);
+		g.fillRect(x,2,1,this.getHeight()-4);
+
+		g.dispose();
 	}
 }

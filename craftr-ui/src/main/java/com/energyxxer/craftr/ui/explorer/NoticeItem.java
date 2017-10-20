@@ -36,6 +36,7 @@ public class NoticeItem extends ExplorerElement {
 
     @Override
     public void render(Graphics g) {
+        g.setFont(master.getFont());
         int y = master.getOffsetY();
         master.getFlatList().add(this);
 

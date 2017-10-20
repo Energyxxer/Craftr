@@ -17,7 +17,7 @@ public class XMenu extends JMenu {
         super.setOpaque(false);
         super.setContentAreaFilled(false);
         super.setBorderPainted(false);
-        super.getPopupMenu().setBorderPainted(false);
+        //super.getPopupMenu().setBorderPainted(false);
         this.getPopupMenu().setBorder(BorderFactory.createEmptyBorder());
     }
 

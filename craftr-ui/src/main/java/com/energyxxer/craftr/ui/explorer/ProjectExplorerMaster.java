@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * Created by User on 5/16/2017.
  */
 public class ProjectExplorerMaster extends ExplorerMaster {
-    private final File root;
+    private File root;
 
     private ThemeListenerManager tlm = new ThemeListenerManager();
 
@@ -25,9 +25,8 @@ public class ProjectExplorerMaster extends ExplorerMaster {
             FLATTEN_EMPTY_PACKAGES = new ExplorerFlag("Flatten Empty Packages"),
             SHOW_PROJECT_FILES = new ExplorerFlag("Show Project Files");
 
-    public ProjectExplorerMaster(File root) {
-        this.root = root;
-
+    public ProjectExplorerMaster() {
+        updateRoot();
         tlm.addThemeChangeListener(t -> {
             colors.put("background",t.getColor(Color.WHITE, "Explorer.background"));
             colors.put("item.background",t.getColor(new Color(0,0,0,0), "Explorer.item.background"));
@@ -44,6 +43,8 @@ public class ProjectExplorerMaster extends ExplorerMaster {
             selectionStyle = t.getString("Explorer.item.selectionStyle","default:FULL");
             selectionLineThickness = Math.max(t.getInteger(2,"Explorer.item.selectionLineThickness"), 0);
 
+            this.setFont(t.getFont("Explorer.item","General"));
+
             assets.put("expand", Commons.getIcon("triangle_right").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
             assets.put("collapse",Commons.getIcon("triangle_down").getScaledInstance(16, 16, Image.SCALE_SMOOTH));
         });
@@ -55,10 +56,16 @@ public class ProjectExplorerMaster extends ExplorerMaster {
         refresh();
     }
 
+    private void updateRoot() {
+        this.root = new File(Preferences.get("workspace_dir"));
+    }
+
     @Override
     public void refresh() {
         ProjectManager.setWorkspaceDir(Preferences.get("workspace_dir"));
         ProjectManager.loadWorkspace();
+
+        updateRoot();
 
         clearSelected();
         ArrayList<String> copy = new ArrayList<>();

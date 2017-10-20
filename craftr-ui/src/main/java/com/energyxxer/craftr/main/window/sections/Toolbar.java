@@ -61,8 +61,7 @@ public class Toolbar extends JPanel {
         projectLabel.setTextChangeable(false);
         projectIndicator.add(projectLabel);
 
-        JPanel buttonBar = new JPanel();
-        buttonBar.setLayout(new GridBagLayout());
+        JPanel buttonBar = new JPanel(new GridBagLayout());
         tlm.addThemeChangeListener(t -> {
             this.setBackground(t.getColor(new Color(235, 235, 235), "Toolbar.background"));
             this.setBorder(BorderFactory.createMatteBorder(0, 0, Math.max(t.getInteger(1,"Toolbar.border.thickness"),0), 0, t.getColor(new Color(200, 200, 200), "Toolbar.border.color")));
@@ -73,7 +72,7 @@ public class Toolbar extends JPanel {
         });
         buttonBar.setOpaque(false);
         this.add(buttonBar, BorderLayout.EAST);
-        
+
         buttonBar.add(new ToolbarSeparator());
 
         {

@@ -179,6 +179,7 @@ public class ProjectExplorerItem extends ExplorerElement {
     }
 
     public void render(Graphics g) {
+        g.setFont(master.getFont());
         int y = master.getOffsetY();
         master.getFlatList().add(this);
 
