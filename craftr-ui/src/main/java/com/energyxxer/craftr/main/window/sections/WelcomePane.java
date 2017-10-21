@@ -9,6 +9,7 @@ import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 
@@ -46,7 +47,7 @@ public class WelcomePane extends JPanel {
             button.setText("New Project");
             button.setHintText("Create a new project");
             button.addActionListener(e -> FileType.PROJECT.create(null));
-            JPanel wrapper = new JPanel();
+            JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             wrapper.setOpaque(false);
             wrapper.add(button);
             buttonPanel.add(wrapper);
@@ -55,26 +56,7 @@ public class WelcomePane extends JPanel {
             ToolbarButton button = new ToolbarButton(null, tlm);
             button.setText("Getting Started");
             button.setHintText("A guide on how to begin your Craftr project");
-            JPanel wrapper = new JPanel();
-            wrapper.setOpaque(false);
-            wrapper.add(button);
-            buttonPanel.add(wrapper);
-        }
-        {
-            ToolbarButton button = new ToolbarButton("cog", tlm);
-            button.setText("Settings");
-            button.setHintText("Manage settings");
-            button.addActionListener(e -> Settings.show());
-            JPanel wrapper = new JPanel();
-            wrapper.setOpaque(false);
-            wrapper.add(button);
-            buttonPanel.add(wrapper);
-        }
-        {
-            ToolbarButton button = new ToolbarButton(null, tlm);
-            button.setText("Documentation");
-            button.setHintText("Read the language docs");
-            JPanel wrapper = new JPanel();
+            JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
             wrapper.setOpaque(false);
             wrapper.add(button);
             buttonPanel.add(wrapper);
@@ -84,7 +66,26 @@ public class WelcomePane extends JPanel {
             button.setText("Select Workspace");
             button.setHintText("Choose a location to keep your projects");
             button.addActionListener(e -> Preferences.promptWorkspace());
-            JPanel wrapper = new JPanel();
+            JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            wrapper.setOpaque(false);
+            wrapper.add(button);
+            buttonPanel.add(wrapper);
+        }
+        {
+            ToolbarButton button = new ToolbarButton("documentation", tlm);
+            button.setText("Documentation");
+            button.setHintText("Read the language docs");
+            JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            wrapper.setOpaque(false);
+            wrapper.add(button);
+            buttonPanel.add(wrapper);
+        }
+        {
+            ToolbarButton button = new ToolbarButton("cog", tlm);
+            button.setText("Settings");
+            button.setHintText("Manage settings");
+            button.addActionListener(e -> Settings.show());
+            JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             wrapper.setOpaque(false);
             wrapper.add(button);
             buttonPanel.add(wrapper);
@@ -94,7 +95,7 @@ public class WelcomePane extends JPanel {
             button.setText("About");
             button.setHintText("Learn about this build of Craftr");
             button.addActionListener(e -> AboutPane.INSTANCE.setVisible(true));
-            JPanel wrapper = new JPanel();
+            JPanel wrapper = new JPanel(new FlowLayout(FlowLayout.LEFT));
             wrapper.setOpaque(false);
             wrapper.add(button);
             buttonPanel.add(wrapper);

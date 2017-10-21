@@ -76,8 +76,8 @@ public class EditArea extends JPanel {
 
         tabListHolder.add(tabSP, BorderLayout.CENTER);
 
-        if (USE_CONSOLE) this.add(new ConsoleArea(), BorderLayout.SOUTH);
-        else this.add(CraftrWindow.noticeBoard = new NoticeBoard(), BorderLayout.SOUTH);
+        //if (USE_CONSOLE) this.add(new ConsoleBoard(), BorderLayout.SOUTH);
+        //else this.add(CraftrWindow.noticeBoard = new NoticeBoard(), BorderLayout.SOUTH);
 
         this.setContent(CraftrWindow.welcomePane);
     }

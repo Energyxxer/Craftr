@@ -58,7 +58,7 @@ public class Toolbar extends JPanel {
         projectIndicator.add(new Padding(10));
 
         projectLabel = new StyledLabel("", "Toolbar.projectIndicator");
-        projectLabel.setTextChangeable(false);
+        projectLabel.setTextThemeDriven(false);
         projectIndicator.add(projectLabel);
 
         JPanel buttonBar = new JPanel(new GridBagLayout());
@@ -140,7 +140,7 @@ public class Toolbar extends JPanel {
                 c.addProgressListener(CraftrWindow::setStatus);
                 c.addCompletionListener(() -> {
                     CraftrWindow.noticeExplorer.setNotices(c.getReport().groupByLabel());
-                    if(c.getReport().getTotal() > 0) CraftrWindow.noticeBoard.expand();
+                    if(c.getReport().getTotal() > 0) CraftrWindow.noticeBoard.open();
                     c.getReport().getWarnings().forEach(Console.warn::println);
                     c.getReport().getErrors().forEach(Console.err::println);
                 });

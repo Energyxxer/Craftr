@@ -36,7 +36,6 @@ import java.util.List;
  * Created by User on 2/7/2017.
  */
 public class ProjectExplorerItem extends ExplorerElement {
-    private final ExplorerMaster master;
     private ProjectExplorerItem parent = null;
 
     private String path = null;
@@ -55,8 +54,8 @@ public class ProjectExplorerItem extends ExplorerElement {
     private boolean translucent = false;
 
     ProjectExplorerItem(ExplorerMaster master, File file, ArrayList<String> toOpen) {
+        super(master);
         this.path = file.getPath();
-        this.master = master;
 
         this.isDirectory = file.isDirectory();
 
@@ -74,8 +73,8 @@ public class ProjectExplorerItem extends ExplorerElement {
     }
 
     private ProjectExplorerItem(@NotNull ProjectExplorerItem parent, File file, ArrayList<String> toOpen) {
+        super(parent.getMaster());
         this.parent = parent;
-        this.master = parent.master;
 
         File[] subfiles;
         StringBuilder filenameBuilder = new StringBuilder(file.getName());
@@ -185,10 +184,10 @@ public class ProjectExplorerItem extends ExplorerElement {
 
         int x = (indentation * master.getIndentPerLevel()) + master.getInitialIndent();
 
-        g.setColor((this.rollover || this.selected) ? master.getColors().get("item.rollover.background") : master.getColors().get("item.background"));
+        g.setColor((this.rollover || this.selected) ? master.getColorMap().get("item.rollover.background") : master.getColorMap().get("item.background"));
         g.fillRect(0, master.getOffsetY(), master.getWidth(), master.getRowHeight());
         if(this.selected) {
-            g.setColor(master.getColors().get("item.selected.background"));
+            g.setColor(master.getColorMap().get("item.selected.background"));
 
             switch(master.getSelectionStyle()) {
                 case "FULL": {
@@ -219,9 +218,9 @@ public class ProjectExplorerItem extends ExplorerElement {
         if(isDirectory && listFiles != null && listFiles.length > 0){
             int margin = ((master.getRowHeight() - 16) / 2);
             if(expanded) {
-                g.drawImage(master.getAssets().get("collapse"),x,y + margin,16, 16,new Color(0,0,0,0),null);
+                g.drawImage(master.getAssetMap().get("collapse"),x,y + margin,16, 16,new Color(0,0,0,0),null);
             } else {
-                g.drawImage(master.getAssets().get("expand"),x,y + margin,16, 16,new Color(0,0,0,0),null);
+                g.drawImage(master.getAssetMap().get("expand"),x,y + margin,16, 16,new Color(0,0,0,0),null);
             }
         }
         x += 23;
@@ -236,11 +235,11 @@ public class ProjectExplorerItem extends ExplorerElement {
         //File Name
 
         if(this.selected) {
-            g.setColor(master.getColors().get("item.selected.foreground"));
+            g.setColor(master.getColorMap().get("item.selected.foreground"));
         } else if(this.rollover) {
-            g.setColor(master.getColors().get("item.rollover.foreground"));
+            g.setColor(master.getColorMap().get("item.rollover.foreground"));
         } else {
-            g.setColor(master.getColors().get("item.foreground"));
+            g.setColor(master.getColorMap().get("item.foreground"));
         }
         FontMetrics metrics = g.getFontMetrics(g.getFont());
 

@@ -15,20 +15,19 @@ import java.awt.event.MouseEvent;
  * Created by User on 5/16/2017.
  */
 public class NoticeItem extends ExplorerElement {
-    private ExplorerMaster master;
     private Notice notice;
 
     private int x;
 
     public NoticeItem(ExplorerMaster master, Notice notice) {
-        this.master = master;
+        super(master);
         this.notice = notice;
 
         this.x = master.getInitialIndent();
     }
 
     public NoticeItem(NoticeGroupElement parent, Notice notice) {
-        this.master = parent.master;
+        super(parent.getMaster());
         this.notice = notice;
 
         this.x = (parent.indentation + 1) * master.getIndentPerLevel() + master.getInitialIndent();
@@ -42,10 +41,10 @@ public class NoticeItem extends ExplorerElement {
 
         int x = this.x + 23;
 
-        g.setColor((this.rollover || this.selected) ? master.getColors().get("item.rollover.background") : master.getColors().get("item.background"));
+        g.setColor((this.rollover || this.selected) ? master.getColorMap().get("item.rollover.background") : master.getColorMap().get("item.background"));
         g.fillRect(0, master.getOffsetY(), master.getWidth(), master.getRowHeight());
         if(this.selected) {
-            g.setColor(master.getColors().get("item.selected.background"));
+            g.setColor(master.getColorMap().get("item.selected.background"));
 
             switch(master.getSelectionStyle()) {
                 case "FULL": {
@@ -74,18 +73,18 @@ public class NoticeItem extends ExplorerElement {
         //File Icon
         {
             int margin = ((master.getRowHeight() - 16) / 2);
-            g.drawImage(master.getAssets().get(notice.getType().name().toLowerCase()),x,y + margin,16, 16,new Color(0,0,0,0),null);
+            g.drawImage(master.getAssetMap().get(notice.getType().name().toLowerCase()),x,y + margin,16, 16,new Color(0,0,0,0),null);
         }
         x += 25;
 
         //File Name
 
         if(this.selected) {
-            g.setColor(master.getColors().get("item.selected.foreground"));
+            g.setColor(master.getColorMap().get("item.selected.foreground"));
         } else if(this.rollover) {
-            g.setColor(master.getColors().get("item.rollover.foreground"));
+            g.setColor(master.getColorMap().get("item.rollover.foreground"));
         } else {
-            g.setColor(master.getColors().get("item.foreground"));
+            g.setColor(master.getColorMap().get("item.foreground"));
         }
         FontMetrics metrics = g.getFontMetrics(g.getFont());
 

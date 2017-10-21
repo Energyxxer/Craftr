@@ -1,27 +1,21 @@
-package com.energyxxer.craftr.main.window.sections;
+package com.energyxxer.craftr.main.window.sections.tools;
 
 import com.energyxxer.craftr.global.TabManager;
-import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.scrollbar.OverlayScrollBarUI;
-import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.util.out.Console;
 import com.energyxxer.util.out.ConsoleOutputStream;
-import com.energyxxer.xswing.hints.Hint;
 
 import javax.swing.BorderFactory;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -29,29 +23,30 @@ import java.awt.event.MouseEvent;
 /**
  * Created by User on 12/15/2016.
  */
-public class ConsoleArea extends JPanel {
+public class ConsoleBoard extends ToolBoard {
 
     private static final int CONSOLE_HEIGHT = 200;
 
     private ThemeListenerManager tlm = new ThemeListenerManager();
 
-    {
+    public ConsoleBoard(ToolBoardMaster parent) {
+        super(parent);
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(0, CONSOLE_HEIGHT));
         tlm.addThemeChangeListener(t -> this.setBorder(BorderFactory.createMatteBorder(Math.max(t.getInteger(1, "Console.header.border.thickness"),0), 0, 0, 0, t.getColor(new Color(200, 200, 200), "Console.header.border.color"))));
 
-        JPanel consoleHeader = new JPanel(new BorderLayout());
-        tlm.addThemeChangeListener(t -> consoleHeader.setBackground(t.getColor(new Color(235, 235, 235), "Console.header.background")));
-        consoleHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-        consoleHeader.setPreferredSize(new Dimension(0, 25));
+        //JPanel consoleHeader = new JPanel(new BorderLayout());
+        //tlm.addThemeChangeListener(t -> consoleHeader.setBackground(t.getColor(new Color(235, 235, 235), "Console.header.background")));
+        //consoleHeader.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+        //consoleHeader.setPreferredSize(new Dimension(0, 25));
 
-        StyledLabel consoleLabel = new StyledLabel("Console", "Console.header");
-        consoleHeader.add(consoleLabel, BorderLayout.WEST);
+        //StyledLabel consoleLabel = new StyledLabel("Console", "Console.header");
+        //consoleHeader.add(consoleLabel, BorderLayout.WEST);
 
-        JPanel consoleActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
-        consoleActionPanel.setOpaque(false);
+        //JPanel consoleActionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 2, 2));
+        //consoleActionPanel.setOpaque(false);
 
-        ToolbarButton toggle = new ToolbarButton("toggle", tlm);
+        /*ToolbarButton toggle = new ToolbarButton("toggle", tlm);
         toggle.setHintText("Toggle Console");
         toggle.setPreferredHintPos(Hint.LEFT);
         toggle.setPreferredSize(new Dimension(20,20));
@@ -76,9 +71,10 @@ public class ConsoleArea extends JPanel {
         consoleActionPanel.add(toggle);
         consoleHeader.add(consoleActionPanel, BorderLayout.EAST);
 
-        this.add(consoleHeader, BorderLayout.NORTH);
+        this.add(consoleHeader, BorderLayout.NORTH);*/
 
         JTextPane console = new JTextPane();
+        console.setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
         tlm.addThemeChangeListener(t -> {
             console.setBackground(t.getColor(Color.WHITE, "Console.background"));
             console.setSelectionColor(t.getColor(new Color(50, 100, 175), "Console.selection.background","General.textfield.selection.background"));
@@ -98,11 +94,11 @@ public class ConsoleArea extends JPanel {
             Style debugStyle = console.addStyle("debug", null);
             StyleConstants.setForeground(debugStyle, new Color(104,151,187));
         });
-        clear.addActionListener(e -> {
+        /*clear.addActionListener(e -> {
             try {
                 console.getDocument().remove(0,console.getDocument().getLength());
             } catch(BadLocationException x) {}
-        });
+        });*/
         console.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -121,8 +117,7 @@ public class ConsoleArea extends JPanel {
             public void mouseMoved(MouseEvent e) {
                 AttributeSet hyperlink = console.getStyledDocument().getCharacterElement(console.viewToModel(e.getPoint())).getAttributes();
 
-                console.setCursor((hyperlink.containsAttribute("IS_HYPERLINK",true))
-                        ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
+                console.setCursor(Cursor.getPredefinedCursor((hyperlink.containsAttribute("IS_HYPERLINK",true)) ? Cursor.HAND_CURSOR : Cursor.TEXT_CURSOR));
             }
         });
         console.setEditable(false);
@@ -156,6 +151,15 @@ public class ConsoleArea extends JPanel {
         });
 
         this.add(consoleScrollPane, BorderLayout.CENTER);
+    }
 
+    @Override
+    public String getName() {
+        return "Console";
+    }
+
+    @Override
+    public String getIconName() {
+        return "console";
     }
 }

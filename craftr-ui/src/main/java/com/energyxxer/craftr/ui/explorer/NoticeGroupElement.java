@@ -20,7 +20,6 @@ import java.util.List;
  * Created by User on 5/16/2017.
  */
 public class NoticeGroupElement extends ExplorerElement {
-    ExplorerMaster master;
     private String label;
     private List<Notice> notices;
 
@@ -30,7 +29,7 @@ public class NoticeGroupElement extends ExplorerElement {
     public int indentation = 0;
 
     public NoticeGroupElement(ExplorerMaster master, String label, List<Notice> notices) {
-        this.master = master;
+        super(master);
         this.label = label;
         this.notices = notices;
 
@@ -52,10 +51,10 @@ public class NoticeGroupElement extends ExplorerElement {
 
         int x = master.getInitialIndent();
 
-        g.setColor((this.rollover || this.selected) ? master.getColors().get("item.rollover.background") : master.getColors().get("item.background"));
+        g.setColor((this.rollover || this.selected) ? master.getColorMap().get("item.rollover.background") : master.getColorMap().get("item.background"));
         g.fillRect(0, master.getOffsetY(), master.getWidth(), master.getRowHeight());
         if(this.selected) {
-            g.setColor(master.getColors().get("item.selected.background"));
+            g.setColor(master.getColorMap().get("item.selected.background"));
 
             switch(master.getSelectionStyle()) {
                 case "FULL": {
@@ -85,9 +84,9 @@ public class NoticeGroupElement extends ExplorerElement {
         {
             int margin = ((master.getRowHeight() - 16) / 2);
             if(expanded) {
-                g.drawImage(master.getAssets().get("collapse"),x,y + margin,16, 16,new Color(0,0,0,0),null);
+                g.drawImage(master.getAssetMap().get("collapse"),x,y + margin,16, 16,new Color(0,0,0,0),null);
             } else {
-                g.drawImage(master.getAssets().get("expand"),x,y + margin,16, 16,new Color(0,0,0,0),null);
+                g.drawImage(master.getAssetMap().get("expand"),x,y + margin,16, 16,new Color(0,0,0,0),null);
             }
         }
         x += 23;
@@ -102,11 +101,11 @@ public class NoticeGroupElement extends ExplorerElement {
         //File Name
 
         if(this.selected) {
-            g.setColor(master.getColors().get("item.selected.foreground"));
+            g.setColor(master.getColorMap().get("item.selected.foreground"));
         } else if(this.rollover) {
-            g.setColor(master.getColors().get("item.rollover.foreground"));
+            g.setColor(master.getColorMap().get("item.rollover.foreground"));
         } else {
-            g.setColor(master.getColors().get("item.foreground"));
+            g.setColor(master.getColorMap().get("item.foreground"));
         }
 
         Font originalFont = g.getFont();

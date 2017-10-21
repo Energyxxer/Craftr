@@ -30,7 +30,7 @@ public class Commons {
 
     public static void showInExplorer(String path) {
         try {
-            Runtime.getRuntime().exec("Explorer.exe /select," + path);
+            Runtime.getRuntime().exec("Explorer.exe /setSelected," + path);
         } catch (IOException x) {
             x.printStackTrace();
         }

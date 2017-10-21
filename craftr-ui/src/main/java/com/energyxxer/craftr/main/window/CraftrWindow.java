@@ -4,11 +4,13 @@ import com.energyxxer.craftr.global.Status;
 import com.energyxxer.craftr.main.Craftr;
 import com.energyxxer.craftr.main.window.sections.EditArea;
 import com.energyxxer.craftr.main.window.sections.MenuBar;
-import com.energyxxer.craftr.main.window.sections.NoticeBoard;
 import com.energyxxer.craftr.main.window.sections.Sidebar;
 import com.energyxxer.craftr.main.window.sections.StatusBar;
 import com.energyxxer.craftr.main.window.sections.Toolbar;
 import com.energyxxer.craftr.main.window.sections.WelcomePane;
+import com.energyxxer.craftr.main.window.sections.tools.ConsoleBoard;
+import com.energyxxer.craftr.main.window.sections.tools.NoticeBoard;
+import com.energyxxer.craftr.main.window.sections.tools.ToolBoardMaster;
 import com.energyxxer.craftr.ui.explorer.NoticeExplorerMaster;
 import com.energyxxer.craftr.ui.explorer.ProjectExplorerMaster;
 import com.energyxxer.craftr.ui.tablist.TabListMaster;
@@ -22,6 +24,7 @@ import com.energyxxer.xswing.hints.HintManager;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import java.awt.BorderLayout;
@@ -48,7 +51,9 @@ public class CraftrWindow {
 
 	public static ProjectExplorerMaster projectExplorer;
 	public static NoticeExplorerMaster noticeExplorer;
+
 	public static NoticeBoard noticeBoard;
+	public static ConsoleBoard consoleBoard;
 
 	public static MenuBar menuBar;
 	public static Toolbar toolbar;
@@ -81,9 +86,15 @@ public class CraftrWindow {
 
 		jframe.getContentPane().add(toolbar = new Toolbar(), BorderLayout.NORTH);
 
-		jframe.getContentPane().add(sidebar = new Sidebar(), BorderLayout.WEST);
+		JPanel mainContent = new JPanel(new BorderLayout());
+		jframe.getContentPane().add(mainContent, BorderLayout.CENTER);
+		mainContent.add(sidebar = new Sidebar(), BorderLayout.WEST);
+		mainContent.add(editArea = new EditArea(), BorderLayout.CENTER);
+		ToolBoardMaster toolBoard = new ToolBoardMaster();
+		mainContent.add(toolBoard, BorderLayout.SOUTH);
 
-		jframe.getContentPane().add(editArea = new EditArea(), BorderLayout.CENTER);
+		noticeBoard = new NoticeBoard(toolBoard);
+		consoleBoard = new ConsoleBoard(toolBoard);
 
 		jframe.getContentPane().add(statusBar = new StatusBar(), BorderLayout.SOUTH);
 

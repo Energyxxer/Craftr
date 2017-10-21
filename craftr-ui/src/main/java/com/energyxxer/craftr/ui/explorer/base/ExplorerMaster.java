@@ -121,15 +121,10 @@ public class ExplorerMaster extends JComponent implements MouseListener, MouseMo
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        ExplorerElement element = getElementAtMousePos(e);
-        if(element != null) element.mouseEntered(e);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        ExplorerElement element = getElementAtMousePos(e);
-        if(element != null) element.mouseExited(e);
-
         if(rolloverItem != null) {
             rolloverItem.setRollover(false);
             repaint();
@@ -223,11 +218,11 @@ public class ExplorerMaster extends JComponent implements MouseListener, MouseMo
         return flatList;
     }
 
-    public HashMap<String, Color> getColors() {
+    public HashMap<String, Color> getColorMap() {
         return colors;
     }
 
-    public HashMap<String, Image> getAssets() {
+    public HashMap<String, Image> getAssetMap() {
         return assets;
     }
 

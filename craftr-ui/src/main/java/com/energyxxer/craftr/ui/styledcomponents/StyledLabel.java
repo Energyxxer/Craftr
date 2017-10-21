@@ -22,25 +22,21 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
     private String icon = null;
 
     private boolean changeable = true;
-    private String defaultText = "";
 
     private Theme theme;
 
     public StyledLabel(String text, Icon icon, int horizontalAlignment) {
         super(text, icon, horizontalAlignment);
-        this.defaultText = text;
         setNamespaceInit(null);
     }
 
     public StyledLabel(String text, int horizontalAlignment) {
         super(text, horizontalAlignment);
-        this.defaultText = text;
         setNamespaceInit(null);
     }
 
     public StyledLabel(String text) {
         super(text);
-        this.defaultText = text;
         setNamespaceInit(null);
     }
 
@@ -62,19 +58,16 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
 
     public StyledLabel(String text, String namespace, Icon icon, int horizontalAlignment) {
         super(text, icon, horizontalAlignment);
-        this.defaultText = text;
         setNamespaceInit(namespace);
     }
 
     public StyledLabel(String text, String namespace, int horizontalAlignment) {
         super(text, horizontalAlignment);
-        this.defaultText = text;
         setNamespaceInit(namespace);
     }
 
     public StyledLabel(String text, String namespace) {
         super(text);
-        this.defaultText = text;
         setNamespaceInit(namespace);
     }
 
@@ -137,7 +130,7 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
         this.update();
     }
 
-    public void setTextChangeable(boolean changeable) {
+    public void setTextThemeDriven(boolean changeable) {
         this.changeable = changeable;
     }
 
@@ -147,11 +140,10 @@ public class StyledLabel extends JLabel implements ThemeChangeListener {
         if (this.namespace != null) {
             setForeground(t.getColor(Color.BLACK, this.namespace + ".label.foreground","General.label.foreground","General.foreground"));
             setFont(t.getFont(this.namespace+".label","General.label","General"));
-            if(changeable) this.setText(t.getString(this.namespace + ".label.text","default:" + defaultText));
+            if(changeable) this.setText(t.getString(this.namespace + ".label.text","default:" + getText()));
         } else {
             setForeground(t.getColor(Color.BLACK, "General.label.foreground","General.foreground"));
             setFont(t.getFont("General.label","General"));
-            if(changeable) this.setText(defaultText);
         }
         if (icon != null) {
             this.setIcon(new ImageIcon(Commons.getIcon(icon).getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
