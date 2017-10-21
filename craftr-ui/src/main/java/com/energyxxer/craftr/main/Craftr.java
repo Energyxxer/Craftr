@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.main;
 
 import com.energyxxer.craftr.global.Resources;
+import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.util.Version;
 import com.energyxxer.craftrlang.projects.ProjectManager;
@@ -63,6 +64,7 @@ public class Craftr {
 		splash.dispose();
 
 		CraftrWindow.welcomePane.tipScreen.start(1000);
+		TabManager.openSavedTabs();
 	}
 
 }

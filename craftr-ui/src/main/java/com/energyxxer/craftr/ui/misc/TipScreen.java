@@ -58,8 +58,10 @@ public class TipScreen extends JComponent {
     }
 
     public void pause() {
-        task.cancel();
-        timer.purge();
+        if(task != null) {
+            task.cancel();
+            timer.purge();
+        }
     }
 
     private void tick() {

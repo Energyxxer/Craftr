@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.main.window;
 
 import com.energyxxer.craftr.global.Status;
+import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.main.Craftr;
 import com.energyxxer.craftr.main.window.sections.EditArea;
 import com.energyxxer.craftr.main.window.sections.MenuBar;
@@ -34,6 +35,7 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +76,7 @@ public class CraftrWindow {
     public CraftrWindow() {
 		jframe = new JFrame();
 		setTitle("");
-		jframe.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		jframe.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		tlm.addThemeChangeListener(t -> jframe.getContentPane().setBackground(t.getColor(new Color(215, 215, 215), "Window.background")));
 
@@ -121,6 +123,13 @@ public class CraftrWindow {
 		//PopupFactory.getSharedInstance().getPopup(jframe, test, 500, 500).show();
 
 		//toolbar.setToolTipText("a");
+
+		jframe.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				terminate();
+			}
+		});
 
 		jframe.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		jframe.setSize(defaultSize);
@@ -196,5 +205,12 @@ public class CraftrWindow {
 
     public static void close() {
 		jframe.dispatchEvent(new WindowEvent(jframe, WindowEvent.WINDOW_CLOSING));
+	}
+
+	private static void terminate() {
+		System.out.println("Terminating...");
+		TabManager.saveOpenTabs();
+		jframe.dispose();
+		System.exit(0);
 	}
 }

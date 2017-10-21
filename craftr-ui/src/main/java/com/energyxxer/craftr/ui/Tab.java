@@ -75,7 +75,7 @@ public class Tab {
 	}
 
 	public boolean isActive() {
-		return this.tabItem.isSelected();
+		return this.tabItem != null && this.tabItem.isSelected();
 	}
 
 	public void save() {

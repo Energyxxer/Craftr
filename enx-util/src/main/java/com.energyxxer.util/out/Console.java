@@ -13,16 +13,16 @@ public class Console {
     public static final PrintStream err;
     public static final PrintStream debug;
 
-    private static final MultiOutputStream infoOut;
-    private static final MultiOutputStream warnOut;
-    private static final MultiOutputStream errOut;
-    private static final MultiOutputStream debugOut;
+    private static final MultiOutputStream infoOut = new MultiOutputStream();
+    private static final MultiOutputStream warnOut = new MultiOutputStream();
+    private static final MultiOutputStream errOut = new MultiOutputStream();
+    private static final MultiOutputStream debugOut = new MultiOutputStream();
 
     static {
-        info = new PrintStream(infoOut = new MultiOutputStream(/*System.out*/));
-        warn = new PrintStream(warnOut = new MultiOutputStream(/*System.out*/));
-        err = new PrintStream(errOut = new MultiOutputStream(/*System.err*/));
-        debug = new PrintStream(debugOut = new MultiOutputStream(/*System.out*/));
+        info = new PrintStream(infoOut);
+        warn = new PrintStream(warnOut);
+        err = new PrintStream(errOut);
+        debug = new PrintStream(debugOut);
 
         System.setOut(new PrintStream(new MultiOutputStream(info, System.out)));
         System.setErr(new PrintStream(new MultiOutputStream(err, System.err)));

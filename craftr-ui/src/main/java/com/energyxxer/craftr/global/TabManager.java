@@ -16,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 
 /**
  * Interface that allows communication between parts of the program and the tab
@@ -163,6 +164,33 @@ public class TabManager {
 				if (tab.path.startsWith(oldPath)) {
 					tab.path = newPath + tab.path.substring(oldPath.length());
 					tab.updateName();
+				}
+			}
+		}
+	}
+
+	public static void saveOpenTabs() {
+		StringBuilder sb = new StringBuilder();
+		for(Tab tab : openTabs) {
+			if(selectedTab != tab) {
+				sb.append(tab.path);
+				sb.append(File.pathSeparatorChar);
+			}
+		}
+		if(selectedTab != null) {
+			sb.append(selectedTab.path);
+			sb.append(File.pathSeparatorChar);
+		}
+		Preferences.put("open_tabs",sb.toString());
+	}
+
+	public static void openSavedTabs() {
+		String savedTabs = Preferences.get("open_tabs",null);
+		if(savedTabs != null) {
+			String[] paths = savedTabs.split(Matcher.quoteReplacement(File.pathSeparator));
+			for(String path : paths) {
+				if(new File(path).exists()) {
+					openTab(path);
 				}
 			}
 		}
