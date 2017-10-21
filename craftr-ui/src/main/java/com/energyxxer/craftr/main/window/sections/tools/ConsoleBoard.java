@@ -132,9 +132,9 @@ public class ConsoleBoard extends ToolBoard {
         Console.addErrStream(new ConsoleOutputStream(console,"error"));
         Console.addDebugStream(new ConsoleOutputStream(console,"debug"));
 
-        /*consoleOut = new PrintStream(textConsoleOut);
-        System.setOut(new PrintStream(new MultiOutputStream(consoleOut, System.out)));
-        System.setErr(new PrintStream(new MultiOutputStream(consoleOut, System.err)));*/
+        //consoleOut = new PrintStream(textConsoleOut);
+        //System.setOut(new PrintStream(new MultiOutputStream(consoleOut, System.out)));
+        //System.setErr(new PrintStream(new MultiOutputStream(consoleOut, System.err)));
 
         JScrollPane consoleScrollPane = new JScrollPane(console);
 

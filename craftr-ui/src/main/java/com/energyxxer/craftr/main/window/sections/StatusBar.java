@@ -20,11 +20,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 /**
  * Created by User on 12/15/2016.
  */
-public class StatusBar extends JPanel {
+public class StatusBar extends JPanel implements MouseListener {
 
     private StyledLabel statusLabel;
 
@@ -54,7 +56,7 @@ public class StatusBar extends JPanel {
 
         this.add(extension,BorderLayout.EAST);
 
-
+        this.addMouseListener(this);
 
         this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK), "reloadResources");
         this.getActionMap().put("reloadResources", new AbstractAction() {
@@ -93,5 +95,32 @@ public class StatusBar extends JPanel {
 
     public void setSelectionInfo(String text) {
         extension.setSelectionInfo(text);
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if((e.getClickCount() & 1) == 0) {
+            CraftrWindow.toolBoard.toggle();
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }

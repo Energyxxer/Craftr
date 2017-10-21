@@ -101,10 +101,8 @@ public class NavigatorMaster extends JComponent implements MouseListener, MouseM
             selectedElement.selected = false;
             selectedElement = null;
         }
-        if(elem != null && elements.contains(elem)) {
-            elem.selected = true;
-            selectedElement = elem;
-        }
+        if(elem != null) elem.selected = true;
+        selectedElement = elem;
         repaint();
     }
 
@@ -120,10 +118,8 @@ public class NavigatorMaster extends JComponent implements MouseListener, MouseM
             rolloverElement.rollover = false;
             rolloverElement = null;
         }
-        if(elements.contains(elem)) {
-            elem.rollover = true;
-            rolloverElement = elem;
-        }
+        if(elem != null) elem.rollover = true;
+        rolloverElement = elem;
         repaint();
     }
 

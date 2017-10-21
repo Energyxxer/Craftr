@@ -15,6 +15,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
 public class ToolBoardMaster extends JPanel {
@@ -25,6 +27,9 @@ public class ToolBoardMaster extends JPanel {
     private StyledLabel headerLabel = new StyledLabel("Sample Text","ToolBoard.header");
 
     private NavigatorMaster navbar = new NavigatorMaster(NavigatorMaster.VERTICAL);
+
+    private ToolBoard lastOpenedBoard = null;
+    private boolean open = false;
 
     public ToolBoardMaster() {
         super(new BorderLayout());
@@ -40,6 +45,13 @@ public class ToolBoardMaster extends JPanel {
         labelWrapper.add(new Padding(15,"ToolBoard.header.label.indentation"), BorderLayout.WEST);
         labelWrapper.add(headerLabel, BorderLayout.CENTER);
         header.add(labelWrapper, BorderLayout.WEST);
+
+        header.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if((e.getClickCount() & 1) == 0) close();
+            }
+        });
 
         headerLabel.setTextThemeDriven(false);
 
@@ -82,6 +94,14 @@ public class ToolBoardMaster extends JPanel {
         });
     }
 
+    public void toggle() {
+        if(!open) open(); else close();
+    }
+
+    public void open() {
+        if(lastOpenedBoard != null) open(lastOpenedBoard);
+    }
+
     public void open(ToolBoard board) {
         this.removeAll();
         this.add(header, BorderLayout.NORTH);
@@ -89,14 +109,28 @@ public class ToolBoardMaster extends JPanel {
         headerLabel.setIconName(board.getIconName());
         this.add(navbar, BorderLayout.WEST);
         this.add(board, BorderLayout.CENTER);
+        navbar.setSelected(board.navbarItem);
+        lastOpenedBoard = board;
         this.revalidate();
         this.repaint();
+        navbar.revalidate();
+        navbar.repaint();
+        open = true;
     }
 
     public void close() {
         this.removeAll();
         this.revalidate();
         this.repaint();
+        open = false;
+    }
+
+    public ToolBoard getLastOpenedBoard() {
+        return lastOpenedBoard;
+    }
+
+    public void setLastOpenedBoard(ToolBoard lastOpenedBoard) {
+        this.lastOpenedBoard = lastOpenedBoard;
     }
 
     public NavigatorMaster getNavbar() {

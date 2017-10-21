@@ -19,10 +19,13 @@ public class Console {
     private static final MultiOutputStream debugOut;
 
     static {
-        info = new PrintStream(infoOut = new MultiOutputStream(System.out));
-        warn = new PrintStream(warnOut = new MultiOutputStream(System.out));
-        err = new PrintStream(errOut = new MultiOutputStream(System.err));
-        debug = new PrintStream(debugOut = new MultiOutputStream(System.out));
+        info = new PrintStream(infoOut = new MultiOutputStream(/*System.out*/));
+        warn = new PrintStream(warnOut = new MultiOutputStream(/*System.out*/));
+        err = new PrintStream(errOut = new MultiOutputStream(/*System.err*/));
+        debug = new PrintStream(debugOut = new MultiOutputStream(/*System.out*/));
+
+        System.setOut(new PrintStream(new MultiOutputStream(info, System.out)));
+        System.setErr(new PrintStream(new MultiOutputStream(err, System.err)));
     }
 
     public static void addInfoStream(OutputStream os) {

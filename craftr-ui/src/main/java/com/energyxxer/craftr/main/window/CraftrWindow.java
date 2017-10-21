@@ -52,6 +52,8 @@ public class CraftrWindow {
 	public static ProjectExplorerMaster projectExplorer;
 	public static NoticeExplorerMaster noticeExplorer;
 
+	public static ToolBoardMaster toolBoard;
+
 	public static NoticeBoard noticeBoard;
 	public static ConsoleBoard consoleBoard;
 
@@ -90,11 +92,12 @@ public class CraftrWindow {
 		jframe.getContentPane().add(mainContent, BorderLayout.CENTER);
 		mainContent.add(sidebar = new Sidebar(), BorderLayout.WEST);
 		mainContent.add(editArea = new EditArea(), BorderLayout.CENTER);
-		ToolBoardMaster toolBoard = new ToolBoardMaster();
+		toolBoard = new ToolBoardMaster();
 		mainContent.add(toolBoard, BorderLayout.SOUTH);
 
 		noticeBoard = new NoticeBoard(toolBoard);
 		consoleBoard = new ConsoleBoard(toolBoard);
+		toolBoard.setLastOpenedBoard(noticeBoard);
 
 		jframe.getContentPane().add(statusBar = new StatusBar(), BorderLayout.SOUTH);
 
