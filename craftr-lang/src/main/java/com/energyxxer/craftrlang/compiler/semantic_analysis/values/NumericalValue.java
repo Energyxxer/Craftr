@@ -7,6 +7,10 @@ public abstract class NumericalValue extends Value {
         super(context);
     }
 
+    public NumericalValue(ObjectivePointer reference, Context context) {
+        super(reference, context);
+    }
+
     public abstract int getWeight();
 
     public abstract NumericalValue coerce(NumericalValue value);

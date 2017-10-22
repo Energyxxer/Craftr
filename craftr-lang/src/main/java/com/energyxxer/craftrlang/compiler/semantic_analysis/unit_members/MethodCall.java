@@ -10,6 +10,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.SelectorReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
@@ -17,6 +18,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
@@ -96,6 +98,15 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
 
             this.method = dataHolder.getMethodLog().findMethod(signature, pattern, context, (dataHolder instanceof ObjectInstance) ? ((ObjectInstance) dataHolder) : null);
         }
+
+        if(method != null && method.getReturnType() != DataType.VOID) {
+            this.reference = new ObjectivePointer(new SelectorReference(context.getAnalyzer().getPrefix() + "_RETURN"),context.getAnalyzer().getPrefix() + "_g");
+        }
+    }
+
+    @Override
+    public boolean isExplicit() {
+        return false;
     }
 
     public Method getMethod() {
@@ -118,19 +129,71 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 
     @Override
-    public void writeToFunction(MCFunction function) {
-        if(method != null && method.getCodeBlock() != null)
-            method.getCodeBlock().writeToFunction(function);
+    public Value writeToFunction(MCFunction function) {
+        if(method != null && method.getCodeBlock() != null) {
+            if(method.isStatic()) {
+                String argPlayer = context.getAnalyzer().getPrefix() + "_" + method.getPlayerName();
+                String argObjective = context.getAnalyzer().getPrefix() + "_a";
+                int a = 0;
+                for(Value param : positionalParams) {
+                    Value actualParam = param.unwrap(function);
+                    if(actualParam == null) {
+                        function.addComment("Actual param is null: " + param);
+                        continue;
+                    }
+                    if(actualParam.isExplicit()) {
+                        function.addCommand("scoreboard players set " + argPlayer + " " + (argObjective+a) + " " + actualParam.getScoreboardValue());
+                    } else {
+                        function.addCommand("scoreboard players operation " + argPlayer + " " + (argObjective+a) + " = " + actualParam.getReference().getEntity().toSelector(function) + " " + actualParam.getReference().getObjectiveName());
+                    }
+                }
+                //TODO: Keyword Parameters
+            } else {
+                function.addComment(method.getName() + " is not static");
+            }
+            function.addCommand("function " +
+                    method
+                            .getCodeBlock()
+                            .getFunction()
+                            .getName());
+            if(method.getReturnType() != DataType.VOID) {
+                return method.getReturnType().createImplicit(reference, context);
+            }
+        }
         //TEMPORARY. DO MORE STUFF TO CHANGE CODE BLOCK VARIABLES AND BLAH BLAH TO OPTIMIZE
+        return null;
+    }
+
+    @Override
+    public Value unwrap(MCFunction function) {
+        Value value = this.writeToFunction(function);
+        return (value != null) ? value.unwrap(function) : null;
+    }
+
+    @Override
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
+        return super.runOperation(operator, pattern, function);
+    }
+
+    @Override
+    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function) {
+        Value unwrapped = this.unwrap(function);
+        if(unwrapped != null) return unwrapped.runOperation(operator, value, pattern, function);
+        else return null;
+    }
+
+    @Override
+    public ObjectivePointer getReference() {
+        throw new IllegalStateException("Dude, you shouldn't access a method call reference directly, first unwrap.");
     }
 }

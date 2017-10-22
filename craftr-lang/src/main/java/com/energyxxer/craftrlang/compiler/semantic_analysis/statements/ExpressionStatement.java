@@ -29,7 +29,10 @@ public class ExpressionStatement extends Statement {
     }
 
     @Override
-    public void writeToFunction(MCFunction function) {
-
+    public Value writeToFunction(MCFunction function) {
+        if(content != null) {
+            return content.writeToFunction(function);
+        }
+        return null;
     }
 }

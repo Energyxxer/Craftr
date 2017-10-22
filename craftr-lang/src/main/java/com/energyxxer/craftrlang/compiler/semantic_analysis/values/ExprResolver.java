@@ -138,6 +138,7 @@ public final class ExprResolver {
                         return expr.simplify();
                     } catch(NullPointerException npe) {
                         context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("NullPointerException", NoticeType.INFO, list.toString()));
+                        npe.printStackTrace();
                         return null;
                     }
                 }
@@ -188,7 +189,6 @@ public final class ExprResolver {
                 if(dataHolder == null) dataHolder = (context.isStatic()) ? context.getUnit() : context.getUnit().getGenericInstance();
 
                 MethodCall call = new MethodCall(pattern, dataHolder, function, context); //REPLACE CONTEXT METHOD LOG BY A MORE SOPHISTICATED SYSTEM AKA AN ACTUAL OBJECT REFERENCE
-                call.writeToFunction(function);
 
                 return call;
             } case "SINGLE_IDENTIFIER": {

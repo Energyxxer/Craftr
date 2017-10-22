@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
+import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
@@ -20,6 +21,10 @@ public class BooleanValue extends Value {
         this.value = value;
     }
 
+    public BooleanValue(ObjectivePointer reference, Context context) {
+        super(reference, context);
+    }
+
     @Override
     public DataType getDataType() {
         return DataType.BOOLEAN;
@@ -36,12 +41,12 @@ public class BooleanValue extends Value {
     }
 
     @Override
-    public Value operation(Operator operator, TokenPattern<?> pattern) {
+    public Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
         return (operator == NOT) ? new BooleanValue(!this.value, context) : null;
     }
 
     @Override
-    public Value operation(Operator operator, Value operand, TokenPattern<?> pattern) {
+    public Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
         if(operand instanceof BooleanValue) switch(operator) {
             case AND:
                 return new BooleanValue(this.value && ((BooleanValue) operand).value, this.context);
@@ -56,9 +61,6 @@ public class BooleanValue extends Value {
 
     @Override
     public String toString() {
-        return "BooleanValue{" +
-                "value=" + value +
-                ",explicit=" + this.explicit +
-                '}';
+        return "" + value;
     }
 }

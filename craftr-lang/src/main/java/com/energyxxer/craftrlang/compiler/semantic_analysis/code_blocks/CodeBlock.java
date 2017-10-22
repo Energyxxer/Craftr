@@ -15,6 +15,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.Statement;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 /**
@@ -82,8 +83,9 @@ public class CodeBlock extends Statement implements Context {
     }
 
     @Override
-    public void writeToFunction(MCFunction function) {
+    public Value writeToFunction(MCFunction function) {
         function.addFunction(this.function);
+        return null;
     }
 
     @Override

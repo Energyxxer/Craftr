@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
+import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -14,40 +15,57 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
  */
 public abstract class Value implements TraversableStructure {
     protected final Context context;
-    protected boolean explicit = true;
+    protected ObjectivePointer reference = null;
 
     public Value(Context context) {
         this.context = context;
     }
 
-    public final boolean isExplicit() {
-        return explicit;
+    public Value(ObjectivePointer reference, Context context) {
+        this.reference = reference;
+        this.context = context;
     }
 
-    protected final void setExplicit(boolean explicit) {
-        this.explicit = explicit;
+    public boolean isExplicit() {
+        return reference == null;
+    }
+
+    public void setReference(ObjectivePointer reference) {
+        this.reference = reference;
+    }
+
+    public ObjectivePointer getReference() {
+        return reference;
+    }
+
+    public int getScoreboardValue() {
+        return Integer.MIN_VALUE;
     }
 
     public abstract DataType getDataType();
     public abstract SymbolTable getSubSymbolTable();
     public abstract MethodLog getMethodLog();
 
-    public final Value runOperation(Operator operator, TokenPattern<?> pattern) {
-        Value returnValue = this.operation(operator, pattern);
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
+        Value returnValue = this.operation(operator, pattern, function);
         if(returnValue == null) {
             this.context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator '" + operator.getSymbol() + "' cannot be applied to '" + getDataType() + "'", pattern.getFormattedPath()));
         }
         return returnValue;
     }
 
-    public final Value runOperation(Operator operator, Value value, TokenPattern<?> pattern) {
-        Value returnValue = this.operation(operator, value, pattern);
+    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function) {
+        Value returnValue = this.operation(operator, value.unwrap(function), pattern, function);
         if(returnValue == null) {
-            this.context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator '" + operator.getSymbol() + "' cannot be applied to types '" + getDataType() + "', '" + value.getDataType() + "'", pattern.getFormattedPath()));
+            this.context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator '" + operator.getSymbol() + "' cannot be applied to types '" + getDataType() + " (" + this + ")', '" + value.getDataType() + "(" + value + ")'", pattern.getFormattedPath()));
         }
         return returnValue;
     }
 
-    protected abstract Value operation(Operator operator, TokenPattern<?> pattern);
-    protected abstract Value operation(Operator operator, Value operand, TokenPattern<?> pattern);
+    public Value unwrap(MCFunction function) {
+        return this;
+    }
+
+    protected abstract Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function);
+    protected abstract Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function);
 }

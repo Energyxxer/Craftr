@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
+import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
@@ -23,7 +24,11 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     private MethodLog methodLog;
 
     public ObjectInstance(Unit unit, Context context) {
-        super(context);
+        this(unit, null, context);
+    }
+
+    public ObjectInstance(Unit unit, ObjectivePointer reference, Context context) {
+        super(reference, context);
         this.unit = unit;
 
         this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
@@ -52,12 +57,12 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 

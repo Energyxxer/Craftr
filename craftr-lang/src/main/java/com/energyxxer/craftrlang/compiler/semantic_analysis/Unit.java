@@ -286,6 +286,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
         };
 
         dataType = new DataType(this);
+        dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, r, c));
 
         staticInitializer = new MCFunction(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$initStatic");
         instanceInitializer = new MCFunction(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$init");

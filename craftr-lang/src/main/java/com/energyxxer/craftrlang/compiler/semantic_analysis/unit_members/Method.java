@@ -199,6 +199,10 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
         return modifiers.contains(CraftrLang.Modifier.STATIC);
     }
 
+    public String getPlayerName() {
+        return declaringUnit.getName().toUpperCase();
+    }
+
     public DataType getReturnType() {
         return returnType;
     }

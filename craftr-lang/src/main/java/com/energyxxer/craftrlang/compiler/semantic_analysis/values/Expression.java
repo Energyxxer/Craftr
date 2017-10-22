@@ -25,6 +25,16 @@ public class Expression extends Value implements FunctionWriter {
         this.pattern = pattern;
     }
 
+    @Override
+    public boolean isExplicit() {
+        return false;
+    }
+
+    @Override
+    public Value unwrap(MCFunction function) {
+        return this.writeToFunction(function);
+    }
+
     public Value simplify() {
 
         if(a == null || b == null) return this;
@@ -32,14 +42,14 @@ public class Expression extends Value implements FunctionWriter {
         if(a instanceof Expression) a = ((Expression) a).simplify();
         if(b instanceof Expression) b = ((Expression) b).simplify();
 
-        if(a.explicit && b.explicit) {
-            return a.runOperation(this.op, b, pattern);
+        if(a.isExplicit() && b.isExplicit()) {
+            return a.runOperation(this.op, b, pattern, null);
         } return this;
     }
 
     @Override
     public DataType getDataType() {
-        return null;
+        return a.getDataType().getReturnType(op, b.getDataType());
     }
 
     @Override
@@ -53,12 +63,12 @@ public class Expression extends Value implements FunctionWriter {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 
@@ -68,7 +78,13 @@ public class Expression extends Value implements FunctionWriter {
     }
 
     @Override
-    public void writeToFunction(MCFunction function) {
+    public Value writeToFunction(MCFunction function) {
+        function.addComment("WRITING EXPRESSION");
+        return a.runOperation(this.op, b, pattern, function);
+    }
 
+    @Override
+    public ObjectivePointer getReference() {
+        throw new IllegalStateException("Dude, you shouldn't access an expression reference directly, first unwrap.");
     }
 }

@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
+import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
@@ -34,21 +35,18 @@ public class StringValue extends Value {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 
     @Override
     public String toString() {
-        return "StringValue{" +
-                "value=" + value +
-                ",explicit=" + this.explicit +
-                '}';
+        return value;
     }
 
     public String getRawValue() {

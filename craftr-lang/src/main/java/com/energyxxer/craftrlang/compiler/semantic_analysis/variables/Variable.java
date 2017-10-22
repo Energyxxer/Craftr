@@ -189,6 +189,10 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         return new Variable(pattern, context, visibility, modifiers, dataType, name, validName, block, value);
     }
 
+    public String getObjectiveName() {
+        return name;
+    }
+
     public Value getValue() {
         return value;
     }
@@ -199,12 +203,12 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 

@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
+import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
@@ -18,22 +19,26 @@ public class FloatValue extends NumericalValue {
         this.value = value;
     }
 
+    public FloatValue(ObjectivePointer reference, Context context) {
+        super(reference, context);
+    }
+
     @Override
     public NumericalValue coerce(NumericalValue value) {
         return this;
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
         if(operand instanceof NumericalValue) {
             int weightDiff = this.getWeight() - ((NumericalValue) operand).getWeight();
-            if(weightDiff > 0) return operation(operator, ((NumericalValue) operand).coerce(this), pattern);
-            else if(weightDiff < 0) return this.coerce((NumericalValue) operand).operation(operator, operand, pattern);
+            if(weightDiff > 0) return operation(operator, ((NumericalValue) operand).coerce(this), pattern, function);
+            else if(weightDiff < 0) return this.coerce((NumericalValue) operand).operation(operator, operand, pattern, function);
             else {
                 //We can be certain that if this code is running, then both operands are FloatValues
 
