@@ -240,7 +240,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     public void initCodeBlock() {
         if(codeBlock != null) {
             codeBlock.initialize();
-            System.out.println(codeBlock.getFunction());
+            System.out.println(codeBlock.getFunction().build());
         }
     }
 

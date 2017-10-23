@@ -84,6 +84,7 @@ public class CodeBlock extends Statement implements Context {
 
     @Override
     public Value writeToFunction(MCFunction function) {
+        if(true) throw new RuntimeException("CodeBlock::writeToFunction run.");
         function.addFunction(this.function);
         return null;
     }

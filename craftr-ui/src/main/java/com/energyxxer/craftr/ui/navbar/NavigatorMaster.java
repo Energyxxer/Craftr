@@ -83,6 +83,9 @@ public class NavigatorMaster extends JComponent implements MouseListener, MouseM
 
         Dimension size = (rect != null) ? new Dimension(rect.width+2*rect.x,rect.height+2*rect.y) : new Dimension();
 
+        if(size.width < 5) size.width = 5;
+        if(size.height < 5) size.height = 5;
+
         if(!this.getPreferredSize().equals(size)) {
             this.setPreferredSize(size);
         }

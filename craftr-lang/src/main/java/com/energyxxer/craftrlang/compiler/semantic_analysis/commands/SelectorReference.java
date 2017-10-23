@@ -1,20 +1,27 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.commands;
 
-import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.Instruction;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 
-public class SelectorReference implements EntityReference {
+public class SelectorReference extends EntityReference {
     private String selector;
 
-    public SelectorReference() {
-        this("@s");
+    public SelectorReference(Context context) {
+        this("@s", context);
     }
 
-    public SelectorReference(String selector) {
+    public SelectorReference(String selector, Context context) {
+        super(context);
         this.selector = selector;
     }
 
     @Override
-    public String toSelector(MCFunction function) {
+    public Instruction getInstruction() {
+        return null;
+    }
+
+    @Override
+    public String toSelector() {
         return selector;
     }
 

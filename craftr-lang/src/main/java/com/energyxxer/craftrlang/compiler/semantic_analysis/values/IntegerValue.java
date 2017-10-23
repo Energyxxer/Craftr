@@ -1,6 +1,9 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.CompoundInstruction;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.ScoreboardCommand;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.ScoreboardOperation;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.SelectorReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
@@ -78,14 +81,29 @@ public class IntegerValue extends NumericalValue {
                 switch(operator) {
                     case ADD: {
                         String newObjective = context.getAnalyzer().getPrefix() + "_op";
-                        function.addCommand("scoreboard players operation @s " + newObjective + " = " + reference.getEntity().toSelector(function) + " " + reference.getObjectiveName());
-                        function.addCommand("scoreboard players add @s " + newObjective + " " + ((NumericalValue) operand).getRawValue());
-                        return new IntegerValue(new ObjectivePointer(new SelectorReference("@s"), newObjective), context);
+                        function.addInstruction(new CompoundInstruction(
+                                new ScoreboardOperation(
+                                        new ObjectivePointer(new SelectorReference(context),newObjective),
+                                        ScoreboardOperation.ASSIGN,
+                                        reference
+                                ),
+                                new ScoreboardCommand(
+                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        ScoreboardCommand.ADD,
+                                        operand
+                                )
+                        ));
+                        return new IntegerValue(new ObjectivePointer(new SelectorReference("@s", context), newObjective), context);
                     }
                 }
             }
         }
         return null;
+    }
+
+    @Override
+    public int getScoreboardValue() {
+        return (this.isExplicit()) ? value : Integer.MIN_VALUE;
     }
 
     @Override
@@ -111,11 +129,6 @@ public class IntegerValue extends NumericalValue {
     @Override
     public String toString() {
         return "IntegerValue(" + ((this.isExplicit()) ? value : reference) + ")";
-    }
-
-    @Override
-    public int getScoreboardValue() {
-        return value;
     }
 
     @Override

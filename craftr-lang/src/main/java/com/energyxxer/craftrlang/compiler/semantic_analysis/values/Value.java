@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.Score;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -13,7 +14,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 /**
  * Created by Energyxxer on 07/11/2017.
  */
-public abstract class Value implements TraversableStructure {
+public abstract class Value implements TraversableStructure, Score {
     protected final Context context;
     protected ObjectivePointer reference = null;
 
@@ -55,7 +56,7 @@ public abstract class Value implements TraversableStructure {
     }
 
     public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function) {
-        Value returnValue = this.operation(operator, value.unwrap(function), pattern, function);
+        Value returnValue = this.unwrap(function).operation(operator, value.unwrap(function), pattern, function);
         if(returnValue == null) {
             this.context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator '" + operator.getSymbol() + "' cannot be applied to types '" + getDataType() + " (" + this + ")', '" + value.getDataType() + "(" + value + ")'", pattern.getFormattedPath()));
         }

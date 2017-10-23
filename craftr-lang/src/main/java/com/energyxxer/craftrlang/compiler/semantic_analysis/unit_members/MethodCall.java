@@ -3,6 +3,9 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.FunctionWriter;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.FunctionCall;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.ScoreboardCommand;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.ScoreboardOperation;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
@@ -100,7 +103,7 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
         }
 
         if(method != null && method.getReturnType() != DataType.VOID) {
-            this.reference = new ObjectivePointer(new SelectorReference(context.getAnalyzer().getPrefix() + "_RETURN"),context.getAnalyzer().getPrefix() + "_g");
+            this.reference = new ObjectivePointer(new SelectorReference(context.getAnalyzer().getPrefix() + "_RETURN",context),context.getAnalyzer().getPrefix() + "_g");
         }
     }
 
@@ -152,20 +155,16 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
                         continue;
                     }
                     if(actualParam.isExplicit()) {
-                        function.addCommand("scoreboard players set " + argPlayer + " " + (argObjective+a) + " " + actualParam.getScoreboardValue());
+                        function.addInstruction(new ScoreboardCommand(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+a),ScoreboardCommand.SET,actualParam));
                     } else {
-                        function.addCommand("scoreboard players operation " + argPlayer + " " + (argObjective+a) + " = " + actualParam.getReference().getEntity().toSelector(function) + " " + actualParam.getReference().getObjectiveName());
+                        function.addInstruction(new ScoreboardOperation(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+a),ScoreboardOperation.ASSIGN,actualParam.getReference()));
                     }
                 }
                 //TODO: Keyword Parameters
             } else {
                 function.addComment(method.getName() + " is not static");
             }
-            function.addCommand("function " +
-                    method
-                            .getCodeBlock()
-                            .getFunction()
-                            .getName());
+            function.addInstruction(new FunctionCall(method.getCodeBlock().getFunction()));
             if(method.getReturnType() != DataType.VOID) {
                 return method.getReturnType().createImplicit(reference, context);
             }
