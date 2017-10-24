@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class MCFunction {
     private String name;
 
-    public ArrayList<Instruction> instructions = new ArrayList<>();
+    private ArrayList<Instruction> instructions = new ArrayList<>();
 
     public MCFunction(String name) {
         this.name = name;

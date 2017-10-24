@@ -48,7 +48,11 @@ public abstract class Value implements TraversableStructure, Score {
     public abstract MethodLog getMethodLog();
 
     public Value runOperation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
-        Value returnValue = this.operation(operator, pattern, function);
+        return runOperation(operator, pattern, function, false);
+    }
+
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+        Value returnValue = this.operation(operator, pattern, function, silent);
         if(returnValue == null) {
             this.context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator '" + operator.getSymbol() + "' cannot be applied to '" + getDataType() + "'", pattern.getFormattedPath()));
         }
@@ -56,9 +60,13 @@ public abstract class Value implements TraversableStructure, Score {
     }
 
     public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function) {
-        Value returnValue = this.unwrap(function).operation(operator, value.unwrap(function), pattern, function);
+        return runOperation(operator, value, pattern, function, false);
+    }
+
+    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+        Value returnValue = this.unwrap(function).operation(operator, value.unwrap(function), pattern, function, silent);
         if(returnValue == null) {
-            this.context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator '" + operator.getSymbol() + "' cannot be applied to types '" + getDataType() + " (" + this + ")', '" + value.getDataType() + "(" + value + ")'", pattern.getFormattedPath()));
+            if(!silent) this.context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator '" + operator.getSymbol() + "' cannot be applied to types '" + getDataType() + " (" + this + ")', '" + value.getDataType() + "(" + value + ")'", pattern.getFormattedPath()));
         }
         return returnValue;
     }
@@ -67,6 +75,6 @@ public abstract class Value implements TraversableStructure, Score {
         return this;
     }
 
-    protected abstract Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function);
-    protected abstract Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function);
+    protected abstract Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent);
+    protected abstract Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent);
 }

@@ -35,12 +35,12 @@ public class StringValue extends Value {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return null;
     }
 

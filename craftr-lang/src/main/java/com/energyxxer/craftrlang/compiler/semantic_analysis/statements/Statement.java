@@ -11,6 +11,8 @@ public abstract class Statement implements FunctionWriter {
     protected final Context context;
     protected final MCFunction function;
 
+    protected boolean silent = false;
+
     public Statement(TokenPattern<?> pattern, Context context, MCFunction function) {
         this.pattern = pattern;
         this.context = context;
@@ -27,5 +29,13 @@ public abstract class Statement implements FunctionWriter {
             case "IF_STATEMENT": return new IfStatement(pattern, context, function);
             default: return null;
         }
+    }
+
+    public boolean isSilent() {
+        return silent;
+    }
+
+    public void setSilent(boolean silent) {
+        this.silent = silent;
     }
 }

@@ -12,25 +12,26 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 public class ExpressionStatement extends Statement {
 
     private FunctionWriter content;
-    private boolean valid = true;
 
     public ExpressionStatement(TokenPattern<?> pattern, Context context, MCFunction function) {
         super(pattern, context, function);
-
-        Value content = ExprResolver.analyzeValue(pattern.find("EXPRESSION"), context, null, function);
-        if(content instanceof FunctionWriter) {
-            this.content = (FunctionWriter) content;
-        } else if(content != null) {
-            valid = false;
-            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Not a statement", pattern.getFormattedPath()));
-        } else valid = false;
-        System.out.println(content + " at " + context);
-        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Expression Report", NoticeType.INFO, content + " at " + context, pattern.getFormattedPath()));
     }
 
     @Override
     public Value writeToFunction(MCFunction function) {
-        if(content != null) {
+        Value rawContent = ExprResolver.analyzeValue(pattern.find("EXPRESSION"), context, null, function, silent);
+        boolean valid = false;
+
+        if(rawContent instanceof FunctionWriter) {
+            this.content = (FunctionWriter) rawContent;
+            valid = true;
+        } else if(rawContent != null) {
+            if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Not a statement", pattern.getFormattedPath()));
+        }
+        if(!silent) System.out.println(rawContent + " at " + context);
+        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Expression Report", NoticeType.INFO, rawContent + " at " + context, pattern.getFormattedPath()));
+
+        if(content != null && valid) {
             return content.writeToFunction(function);
         }
         return null;

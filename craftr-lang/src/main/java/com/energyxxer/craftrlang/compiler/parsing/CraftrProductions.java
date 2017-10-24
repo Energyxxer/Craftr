@@ -726,7 +726,7 @@ public class CraftrProductions {
 		STATEMENT.add(IF_STATEMENT);
 
         {
-            RETURN_STATEMENT = new TokenGroupMatch();
+            RETURN_STATEMENT = new TokenGroupMatch().setName("RETURN_STATEMENT");
             RETURN_STATEMENT.append(new TokenItemMatch(CraftrLang.ACTION_KEYWORD,"return"));
             RETURN_STATEMENT.append(VALUE);
             RETURN_STATEMENT.append(new TokenItemMatch(CraftrLang.END_OF_STATEMENT));

@@ -19,6 +19,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibi
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
@@ -43,10 +44,11 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     private boolean validName;
 
     private CodeBlock block = null;
+    private Method method = null;
 
     private Value value = null;
 
-    public Variable(TokenPattern<?> pattern, Context context, SymbolVisibility visibility, List<CraftrLang.Modifier> modifiers, DataType dataType, String name, boolean validName, CodeBlock block, Value value) {
+    public Variable(TokenPattern<?> pattern, Context context, SymbolVisibility visibility, List<CraftrLang.Modifier> modifiers, DataType dataType, String name, boolean validName, CodeBlock block, Method method, Value value) {
         super(context);
         this.pattern = pattern;
         this.visibility = visibility;
@@ -55,14 +57,14 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.name = name;
         this.validName = validName;
         this.block = block;
+        this.method = method;
         this.value = value;
     }
 
     private Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, Context context) {
         super(context);
         this.pattern = pattern;
-        this.modifiers = new ArrayList<>();
-        this.modifiers.addAll(modifiers);
+        this.modifiers = new ArrayList<>(modifiers);
         this.dataType = dataType;
 
         this.visibility = (
@@ -79,35 +81,26 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         }
     }
 
-    public Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, CodeBlock block) {
-        this(pattern, modifiers, dataType, (Context) block);
-
-        this.block = block;
-
-        if(validName) {
-            if(block.findVariable(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
-                block.getSymbolTable().put(this);
-            } else {
-                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
-            }
-        }
+    public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, Method method, Value value) {
+        super(method);
+        this.pattern = null;
+        this.visibility = SymbolVisibility.METHOD;
+        this.modifiers = new ArrayList<>(modifiers);
+        this.dataType = dataType;
+        this.name = name;
+        this.validName = !CraftrLang.isPseudoIdentifier(this.name);
+        this.block = null;
+        this.method = method;
+        this.value = value;
     }
 
     public Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, Unit parentUnit) {
         this(pattern, modifiers, dataType, (Context) parentUnit);
 
-        if(validName) {
-            /*if(fieldLog.findField(((TokenItem) pattern.find("VARIABLE_NAME")).getContents()) == null) {
-                table.put(this);
-            } else {
-                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable '" + name + "' already declared in the scope", this.pattern.find("VARIABLE_NAME").getFormattedPath()));
-            }*/
-        }
-
-        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
     }
 
     public void initializeValue() {
+        if(this.pattern == null) return;
         TokenPattern<?> initialization = this.pattern.find("VARIABLE_INITIALIZATION");
 
         if(initialization != null) {
@@ -120,17 +113,21 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                     initializerFunction = ((Unit) context).getInstanceInitializer();
             } else if(context instanceof CodeBlock) {
                 initializerFunction = ((CodeBlock) context).getFunction();
+            } else if(context instanceof Method) {
+                return; //There's no variable initialization in method parameters;
+                        // also this class isn't the one that parses method params so no point in having this;
             } else {
-                initializerFunction = null;
                 context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Something went wrong: Variable context is of unrecognized type: " + context.getClass().getSimpleName(), pattern.getFormattedPath()));
                 return;
             }
 
-            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), context, (context instanceof Unit && !this.isStatic()) ? ((Unit) context).getGenericInstance() : null, initializerFunction);
+            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (context instanceof Unit && !isStatic()) ? ((Unit) context).getInstanceContext() : context, null, initializerFunction);
+            if(this.value != null) this.value = this.value.unwrap(initializerFunction);
             if(this.value != null && !this.dataType.instanceOf(this.value.getDataType())) {
                 context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
             }
         }
+        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
     }
 
     /*
@@ -141,27 +138,6 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     *
     * TODO: FIX THIS EYESORE OF A MESS
     * */
-
-    //Local variable parsing
-    public static List<Variable> parseDeclaration(TokenPattern<?> pattern, CodeBlock block) {
-        ArrayList<Variable> variables = new ArrayList<>();
-
-        //Skipping over annotations
-
-        List<CraftrLang.Modifier> modifiers = Collections.emptyList();
-
-        TokenList modifierPatterns = (TokenList) pattern.find("VARIABLE_INNER.MODIFIER_LIST");
-        if(modifierPatterns != null) modifiers = SemanticUtils.getModifiers(Arrays.asList(modifierPatterns.getContents()), block.getAnalyzer());
-
-        TokenPattern<?>[] declarationList = ((TokenList) pattern.find("VARIABLE_INNER.VARIABLE_DECLARATION_LIST")).getContents();
-
-        for(TokenPattern<?> p : declarationList) {
-            if(!p.getName().equals("VARIABLE_DECLARATION")) continue;
-            variables.add(new Variable(p, modifiers, null, block));
-        }
-
-        return variables;
-    }
 
     public static List<Variable> parseDeclaration(TokenPattern<?> pattern, Unit unit) {
         ArrayList<Variable> variables = new ArrayList<>();
@@ -186,7 +162,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     public Variable duplicate() {
-        return new Variable(pattern, context, visibility, modifiers, dataType, name, validName, block, value);
+        return new Variable(pattern, context, visibility, modifiers, dataType, name, validName, block, method, value);
     }
 
     public String getObjectiveName() {
@@ -203,13 +179,41 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+        if(operand == null) {
+            if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Operand is null", pattern.getFormattedPath()));
+            return null;
+        }
+        if(operator.isAssignment()) {
+            switch(operator) {
+                case ASSIGN: {
+                    if(operand.getDataType().instanceOf(this.getDataType())) {
+                        value = operand;
+                    } else {
+                        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
+                    }
+                    break;
+                }
+                default: return null;
+            }
+        } else {
+            if(value != null) return value.runOperation(operator, operand, pattern, function, silent);
+            else {
+                if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable might not have been defined", pattern.getFormattedPath()));
+                return null;
+            }
+        }
         return null;
+    }
+
+    @Override
+    public boolean isExplicit() {
+        return value != null && value.isExplicit();
     }
 
     public boolean isStatic() {

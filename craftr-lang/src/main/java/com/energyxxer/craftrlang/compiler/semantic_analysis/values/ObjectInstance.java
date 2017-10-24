@@ -47,7 +47,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     }
 
     @Override
-    public SymbolTable getSubSymbolTable() {
+    public @NotNull SymbolTable getSubSymbolTable() {
         return fieldLog;
     }
 
@@ -57,12 +57,12 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return null;
     }
 

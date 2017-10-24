@@ -158,4 +158,8 @@ public class SymbolTable implements Iterable<Symbol> {
     public Iterator<Symbol> iterator() {
         return table.values().iterator();
     }
+
+    public void clear() {
+        table.clear();
+    }
 }

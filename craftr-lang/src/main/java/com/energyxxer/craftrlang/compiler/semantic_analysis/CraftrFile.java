@@ -10,6 +10,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.util.FileUtil;
 import com.energyxxer.util.vprimitives.VInteger;
 
@@ -202,6 +203,11 @@ public class CraftrFile extends AbstractFileComponent implements Context {
 
     @Override
     public Context getParent() {
+        return null;
+    }
+
+    @Override
+    public DataHolder getDataHolder() {
         return null;
     }
 }

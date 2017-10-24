@@ -283,6 +283,11 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
             public SymbolTable getReferenceTable() {
                 return null; //WHAT TO DO
             }
+
+            @Override
+            public DataHolder getDataHolder() {
+                return genericInstance;
+            }
         };
 
         dataType = new DataType(this);
@@ -478,6 +483,11 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
         staticMethodLog.initCodeBlocks();
         instanceMethodLog.initCodeBlocks();
+    }
+
+    @Override
+    public DataHolder getDataHolder() {
+        return this;
     }
 
     @Override

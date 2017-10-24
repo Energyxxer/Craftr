@@ -3,7 +3,6 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.FunctionWriter;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.FunctionCall;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.ScoreboardCommand;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.ScoreboardOperation;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
@@ -24,22 +23,21 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstanc
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MethodCall extends Value implements FunctionWriter, TraversableStructure {
-
+    private final TokenPattern<?> pattern;
     private String methodName;
-    private ArrayList<Value> positionalParams = new ArrayList<>();
-    private HashMap<String, Value> keywordParams = new HashMap<>();
+    private ArrayList<ActualParameter> positionalParams = new ArrayList<>();
+    private HashMap<String, ActualParameter> keywordParams = new HashMap<>();
 
     private Method method = null;
 
     public MethodCall(TokenPattern<?> pattern, DataHolder dataHolder, MCFunction function, Context context) {
         super(context);
-
+        this.pattern = pattern;
         this.methodName = ((TokenItem) pattern.find("METHOD_CALL_NAME")).getContents().value;
 
         TokenList parameterListWrapper = (TokenList) pattern.find("PARAMETER_LIST");
@@ -61,10 +59,9 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
                     }
                     TokenPattern<?> rawValue = rawParam.find("VALUE");
                     Value value = ExprResolver.analyzeValueOrReference(rawValue, context, (!context.isStatic()) ? context.getUnit().getGenericInstance() : null, function);
-                    context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "OBTAINED VALUE IS: " + value, rawValue.getFormattedPath()));
 
                     if(label == null) {
-                        positionalParams.add(value);
+                        positionalParams.add(new ActualParameter(rawParam, value));
                         if(value == null) {
                             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Actual positional parameter is null: " + rawValue, rawValue.getFormattedPath()));
                             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... context:" + context, rawValue.getFormattedPath()));
@@ -72,10 +69,10 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
                             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... context.getUnit():" + context.getUnit(), rawValue.getFormattedPath()));
                         }
                     } else {
-                        if(keywordParams.keySet().contains(label)) {
+                        if(keywordParams.containsKey(label)) {
                             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate keyword parameter", rawLabel.getFormattedPath()));
                         }
-                        keywordParams.put(label, value);
+                        keywordParams.put(label, new ActualParameter(rawParam, label, value));
                     }
                 }
             }
@@ -83,16 +80,7 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
 
         ArrayList<FormalParameter> formalParams = new ArrayList<>();
 
-        for(Value value : positionalParams) {
-            formalParams.add(new FormalParameter((value != null) ? value.getDataType() : DataType.OBJECT, null));
-        }
-
-        for(int i = 0; i < positionalParams.size(); i++) {
-            Value param = positionalParams.get(i);
-            if(param instanceof Variable) {
-                positionalParams.set(i, ((Variable) param).getValue());
-            }
-        }
+        positionalParams.forEach(p -> formalParams.add(p.toFormal()));
 
         if(dataHolder.getMethodLog() == null) {
             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method from an undefined data holder", pattern.getFormattedPath()));
@@ -132,44 +120,45 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return null;
     }
 
     @Override
     public Value writeToFunction(MCFunction function) {
-        if(method != null && method.getCodeBlock() != null) {
+        if(method != null) {
             if(method.isStatic()) {
                 String argPlayer = context.getAnalyzer().getPrefix() + "_" + method.getPlayerName();
                 String argObjective = context.getAnalyzer().getPrefix() + "_a";
-                int a = 0;
-                for(Value param : positionalParams) {
-                    Value actualParam = param.unwrap(function);
+                for(int i = 0; i < positionalParams.size(); i++) {
+                    ActualParameter rawParam = positionalParams.get(i);
+                    Value actualParam = rawParam.getValue();
                     if(actualParam == null) {
-                        function.addComment("Actual param is null: " + param);
+                        function.addComment("Actual param is null: " + rawParam);
                         continue;
                     }
-                    if(actualParam.isExplicit()) {
-                        function.addInstruction(new ScoreboardCommand(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+a),ScoreboardCommand.SET,actualParam));
+                    actualParam = actualParam.unwrap(function);
+                    if(actualParam == null) {
+                        function.addComment("Actual unwrapped param is null: " + rawParam);
+                    } else if(actualParam.isExplicit()) {
+                        function.addInstruction(new ScoreboardCommand(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+i),ScoreboardCommand.SET,actualParam));
                     } else {
-                        function.addInstruction(new ScoreboardOperation(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+a),ScoreboardOperation.ASSIGN,actualParam.getReference()));
+                        function.addInstruction(new ScoreboardOperation(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+i),ScoreboardOperation.ASSIGN,actualParam.getReference()));
                     }
+                    rawParam.setValue(actualParam);
                 }
                 //TODO: Keyword Parameters
             } else {
                 function.addComment(method.getName() + " is not static");
             }
-            function.addInstruction(new FunctionCall(method.getCodeBlock().getFunction()));
-            if(method.getReturnType() != DataType.VOID) {
-                return method.getReturnType().createImplicit(reference, context);
-            }
+
+            return method.writeCall(function, positionalParams, keywordParams, pattern, context);
         }
-        //TEMPORARY. DO MORE STUFF TO CHANGE CODE BLOCK VARIABLES AND BLAH BLAH TO OPTIMIZE
         return null;
     }
 
@@ -180,14 +169,16 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
     }
 
     @Override
-    public Value runOperation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
-        return super.runOperation(operator, pattern, function);
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+        Value unwrapped = this.unwrap(function);
+        if(unwrapped != null) return unwrapped.runOperation(operator, pattern, function, silent);
+        return null;
     }
 
     @Override
-    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function) {
+    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         Value unwrapped = this.unwrap(function);
-        if(unwrapped != null) return unwrapped.runOperation(operator, value, pattern, function);
+        if(unwrapped != null) return unwrapped.runOperation(operator, value, pattern, function, silent);
         else return null;
     }
 

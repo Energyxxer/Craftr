@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.craftrlang.CraftrLang;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -13,18 +14,27 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.SelectorReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.natives.NativeMethods;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by User on 5/16/2017.
@@ -38,13 +48,13 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     private String name;
     private final boolean validName;
     private List<FormalParameter> positionalParams = new ArrayList<>();
-    private List<FormalParameter> keywordParams = new ArrayList<>();
+    private HashMap<String, FormalParameter> keywordParams = new HashMap<>();
 
     private CodeBlock codeBlock;
 
     private final MethodSignature signature;
 
-    public Method(TokenPattern<?> pattern, Unit declaringUnit, MethodType type, List<CraftrLang.Modifier> modifiers, DataType returnType, String name, boolean validName, List<FormalParameter> positionalParams, List<FormalParameter> keywordParams, CodeBlock codeBlock, MethodSignature signature) {
+    public Method(TokenPattern<?> pattern, Unit declaringUnit, MethodType type, List<CraftrLang.Modifier> modifiers, DataType returnType, String name, boolean validName, List<FormalParameter> positionalParams, HashMap<String, FormalParameter> keywordParams, CodeBlock codeBlock, MethodSignature signature) {
         super(pattern);
         this.declaringUnit = declaringUnit;
         this.type = type;
@@ -147,8 +157,8 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
                         break;
                     }
                 }
-                if(!isDuplicate) for(FormalParameter p : keywordParams) {
-                    if(p.getName().equals(param.getName())) {
+                if(!isDuplicate) {
+                    if(keywordParams.containsKey(param.getName())) {
                         this.declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(
                                 new Notice(
                                         NoticeType.ERROR,
@@ -157,12 +167,13 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
                                 )
                         );
                         isDuplicate = true;
-                        break;
                     }
                 }
 
                 if(!isDuplicate) {
-                    ((isKeyword) ? keywordParams : positionalParams).add(param);
+                    if(isKeyword) {
+                        keywordParams.put(param.getName(),param);
+                    } else positionalParams.add(param);
                 }
 
             }
@@ -173,10 +184,6 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
         else this.returnType = DataType.parseType(pattern.find("RETURN_TYPE").flattenTokens(), declaringUnit.getDeclaringFile().getReferenceTable(), declaringUnit);
 
         this.signature = new MethodSignature(declaringUnit, name, positionalParams);
-
-        if(modifierPatterns != null && modifiers.contains(CraftrLang.Modifier.NATIVE)) {
-            declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Native Methods", NoticeType.INFO, "Require native implementation for '" + getSignature().toString() + "'", modifierPatterns.getFormattedPath()));
-        }
 
         TokenPattern<?> body = pattern.find("METHOD_BODY");
         boolean omitted = body.find("OMITTED_BODY") != null;
@@ -239,6 +246,17 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
 
     public void initCodeBlock() {
         if(codeBlock != null) {
+            codeBlock.clearSymbols();
+            for(int i = 0; i < positionalParams.size(); i++) {
+                FormalParameter param = positionalParams.get(i);
+                codeBlock.getSymbolTable().put(new Variable(param.getName(),Collections.emptyList(),param.getType(),this,positionalParams.get(i).getType().createImplicit(new ObjectivePointer(new SelectorReference(getAnalyzer().getPrefix() + "_" + this.getPlayerName(), this), getAnalyzer().getPrefix() + "_a" + i),this)));
+            }
+            FormalParameter[] keywordArr = keywordParams.values().toArray(new FormalParameter[0]);
+            for(int i = 0; i < keywordArr.length; i++) {
+                FormalParameter param = keywordArr[i];
+                codeBlock.getSymbolTable().put(new Variable(param.getName(),Collections.emptyList(),param.getType(),this,keywordArr[i].getType().createImplicit(new ObjectivePointer(new SelectorReference(getAnalyzer().getPrefix() + "_" + this.getPlayerName(), this), getAnalyzer().getPrefix() + "_ka" + i),this)));
+            }
+            codeBlock.setSilent(false);
             codeBlock.initialize();
             System.out.println(codeBlock.getFunction().build());
         }
@@ -278,6 +296,14 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
         return null;
     }
 
+    public List<FormalParameter> getPositionalParams() {
+        return positionalParams;
+    }
+
+    public HashMap<String, FormalParameter> getKeywordParams() {
+        return keywordParams;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -291,5 +317,51 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     @Override
     public int hashCode() {
         return signature.hashCode();
+    }
+
+    public Value writeCall(MCFunction function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, Context context) {
+        if(this.modifiers.contains(CraftrLang.Modifier.NATIVE)) {
+            return NativeMethods.execute(this, function, positionalParams, keywordParams, pattern, context);
+        }
+
+        if(codeBlock == null) {
+            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Method '" + this.getSignature().getFullyQualifiedName() + "' hasn't been defined... for some reason... how did you even call this method?", pattern.getFormattedPath()));
+            return null;
+        }
+
+        //positionalParams and this.positionalParams SHOULD NOT DIFFER IN LENGTH. IF THEY DO, WELL CRUD.
+        //Assign actual positional params to code block
+        for(int i = 0; i < this.positionalParams.size(); i++) {
+            Value param = positionalParams.get(i).getValue();
+            if(param == null) {
+                codeBlock.getSymbolTable().put(this.positionalParams.get(i).getName(), null);
+                continue;
+            }
+            param = param.unwrap(function);
+
+            codeBlock.getSymbolTable().put(new Variable(this.positionalParams.get(i).getName(), Collections.emptyList(), this.positionalParams.get(i).getType(), this, param));
+        }
+
+        //Assign actual keyword params to code block
+        //TODO: NULL VALUES IF KEYWORD PARAMETERS OMITTED
+        for(Map.Entry<String, ActualParameter> entry : keywordParams.entrySet()) {
+            if(!this.keywordParams.containsKey(entry.getKey())) {
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unknown keyword parameter label '" + entry.getKey() + "'", entry.getValue().pattern.getFormattedPath()));
+                continue;
+            }
+            if(entry.getValue().getDataType().instanceOf(this.keywordParams.get(entry.getKey()).getType())) {
+                codeBlock.getSymbolTable().put(new Variable(entry.getKey(), Collections.emptyList(), this.keywordParams.get(entry.getKey()).getType(), this, entry.getValue().getValue()));
+            } else {
+                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + entry.getValue().getDataType() + " cannot be converted to " + this.keywordParams.get(entry.getKey()).getType(), entry.getValue().pattern.getFormattedPath()));
+            }
+
+        }
+        codeBlock.setSilent(true);
+        return codeBlock.writeToFunction(function);
+    }
+
+    @Override
+    public DataHolder getDataHolder() {
+        return this.isStatic() ? declaringUnit : declaringUnit.getGenericInstance();
     }
 }

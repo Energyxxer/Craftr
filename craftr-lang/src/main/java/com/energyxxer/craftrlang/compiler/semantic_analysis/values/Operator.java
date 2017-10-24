@@ -32,16 +32,18 @@ public enum Operator {
     private String symbol;
     private int precedence;
     private boolean rtl = false;
+    private boolean assignment = false;
 
     Operator(String symbol, int precedence) {
         this.symbol = symbol;
         this.precedence = precedence;
     }
 
-    Operator(String symbol, int precedence, boolean rtl) {
+    Operator(String symbol, int precedence, boolean assignment) {
         this.symbol = symbol;
         this.precedence = precedence;
-        this.rtl = rtl;
+        this.rtl = assignment;
+        this.assignment = true;
     }
 
     public String getSymbol() {
@@ -54,6 +56,10 @@ public enum Operator {
 
     public boolean isRightToLeft() {
         return rtl;
+    }
+
+    public boolean isAssignment() {
+        return assignment;
     }
 
     public static Operator getOperatorForSymbol(String symbol) {

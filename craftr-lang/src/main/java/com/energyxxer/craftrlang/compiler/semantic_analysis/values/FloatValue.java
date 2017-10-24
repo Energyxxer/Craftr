@@ -29,16 +29,16 @@ public class FloatValue extends NumericalValue {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         if(operand instanceof NumericalValue) {
             int weightDiff = this.getWeight() - ((NumericalValue) operand).getWeight();
-            if(weightDiff > 0) return operation(operator, ((NumericalValue) operand).coerce(this), pattern, function);
-            else if(weightDiff < 0) return this.coerce((NumericalValue) operand).operation(operator, operand, pattern, function);
+            if(weightDiff > 0) return operation(operator, ((NumericalValue) operand).coerce(this), pattern, function, silent);
+            else if(weightDiff < 0) return this.coerce((NumericalValue) operand).operation(operator, operand, pattern, function, silent);
             else {
                 //We can be certain that if this code is running, then both operands are FloatValues
 

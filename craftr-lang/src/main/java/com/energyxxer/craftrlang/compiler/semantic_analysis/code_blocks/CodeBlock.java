@@ -5,6 +5,8 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
+import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
@@ -12,20 +14,40 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.ReturnStatement;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.Statement;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
+
+import java.util.List;
 
 /**
  * Created by Energyxxer on 07/10/2017.
  */
-public class CodeBlock extends Statement implements Context {
-    private boolean staticBlock = false;
+public class CodeBlock extends Statement implements Context, DataHolder {
+    private boolean isStatic = false;
+
+    private boolean closed = false;
 
     private CodeBlock parentBlock = null;
-    private SymbolTable symbolTable;
+    private SymbolTable symbolTable = new SymbolTable() {
+        @Override
+        public Symbol getSymbol(List<Token> flatTokens, Context context, boolean silent) {
+            if(flatTokens.size() > 1) {
+                //I don't think this should even be allowed
+                if(!silent && !CodeBlock.this.silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Trying to get a symbol of more than one token from a code block...?", flatTokens.get(0).getFormattedPath()));
+                return super.getSymbol(flatTokens, context, silent);
+            }
+
+            Symbol sym = super.getSymbol(flatTokens, context, true);
+            if(sym != null) return sym;
+            if(parentBlock != null) return parentBlock.getSymbolTable().getSymbol(flatTokens, context, silent || CodeBlock.this.silent);
+            if(isStatic) return context.getUnit().getStaticFieldLog().getSymbol(flatTokens, context, silent || CodeBlock.this.silent);
+            else return context.getUnit().getGenericInstance().getSubSymbolTable().getSymbol(flatTokens, context, silent || CodeBlock.this.silent);
+        }
+    };
 
     private boolean initialized = false;
 
@@ -34,28 +56,16 @@ public class CodeBlock extends Statement implements Context {
 
         if(context instanceof CodeBlock) this.parentBlock = (CodeBlock) context;
 
-        this.symbolTable = new SymbolTable(SymbolVisibility.BLOCK, (parentBlock != null) ? parentBlock.symbolTable : context.getUnit().getSubSymbolTable());
+        this.clearSymbols();
+    }
+
+    public void clearSymbols() {
+        this.symbolTable.clear();
     }
 
     public void initialize() {
         if(initialized) return;
-        TokenPattern<?> inner = (TokenPattern<?>) pattern.getContents();
-
-        TokenList list = (TokenList) inner.find("STATEMENT_LIST");
-        if(list != null) {
-            TokenPattern<?>[] rawStatements = list.getContents();
-            for(TokenPattern<?> rawStatement : rawStatements) {
-                if(!(rawStatement instanceof TokenStructure)) continue;
-
-                Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this, function);
-
-                if(statement != null) {
-                    statement.writeToFunction(function); //TEMPORARY. DO MORE STUFF OFC
-                    System.out.println(statement.getClass().getSimpleName());
-                }
-            }
-        }
-
+        this.writeToFunction(this.function);
         initialized = true;
     }
 
@@ -63,15 +73,8 @@ public class CodeBlock extends Statement implements Context {
         return symbolTable;
     }
 
-    public Variable findVariable(Token name) {
-        Symbol inCurrent = symbolTable.getSymbol(name, this);
-        if(inCurrent != null && inCurrent instanceof Variable) return (Variable) inCurrent;
-        else if(parentBlock != null) return parentBlock.findVariable(name);
-        return null;
-    }
-
     public void setStatic(boolean staticBlock) {
-        this.staticBlock = staticBlock;
+        this.isStatic = staticBlock;
     }
 
     public MCFunction getFunction() {
@@ -84,9 +87,36 @@ public class CodeBlock extends Statement implements Context {
 
     @Override
     public Value writeToFunction(MCFunction function) {
-        if(true) throw new RuntimeException("CodeBlock::writeToFunction run.");
-        function.addFunction(this.function);
-        return null;
+        TokenPattern<?> inner = (TokenPattern<?>) pattern.getContents();
+
+        closed = false;
+        Value returnValue = null;
+
+        TokenList list = (TokenList) inner.find("STATEMENT_LIST");
+        if(list != null) {
+            TokenPattern<?>[] rawStatements = list.getContents();
+            for(TokenPattern<?> rawStatement : rawStatements) {
+                if(closed) {
+                    if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unreachable statement", rawStatement.getFormattedPath()));
+                    return returnValue;
+                }
+                if(!(rawStatement instanceof TokenStructure)) continue;
+
+                Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this, function);
+
+                if(statement != null) {
+                    statement.setSilent(silent);
+                    Value value = statement.writeToFunction(function);
+                    if(statement instanceof ReturnStatement) {
+                        returnValue = value;
+                        closed = true;
+                    }
+                    //TEMPORARY. DO MORE STUFF OFC
+                }
+            }
+        }
+
+        return returnValue;
     }
 
     @Override
@@ -111,7 +141,7 @@ public class CodeBlock extends Statement implements Context {
 
     @Override
     public boolean isStatic() {
-        return staticBlock;
+        return isStatic;
     }
 
     @Override
@@ -122,5 +152,20 @@ public class CodeBlock extends Statement implements Context {
     @Override
     public SymbolTable getReferenceTable() {
         return null;
+    }
+
+    @Override
+    public DataHolder getDataHolder() {
+        return this;
+    }
+
+    @Override
+    public SymbolTable getSubSymbolTable() {
+        return symbolTable;
+    }
+
+    @Override
+    public MethodLog getMethodLog() {
+        return this.isStatic() ? context.getUnit().getStaticMethodLog() : context.getUnit().getGenericInstance().getMethodLog();
     }
 }

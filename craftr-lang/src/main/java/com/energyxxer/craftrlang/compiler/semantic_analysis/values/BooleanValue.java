@@ -41,12 +41,12 @@ public class BooleanValue extends Value {
     }
 
     @Override
-    public Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
+    public Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return (operator == NOT) ? new BooleanValue(!this.value, context) : null;
     }
 
     @Override
-    public Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
+    public Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         if(operand instanceof BooleanValue) switch(operator) {
             case AND:
                 return new BooleanValue(this.value && ((BooleanValue) operand).value, this.context);

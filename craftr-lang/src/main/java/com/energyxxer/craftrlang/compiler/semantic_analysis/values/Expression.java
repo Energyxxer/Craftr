@@ -9,6 +9,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 
 public class Expression extends Value implements FunctionWriter {
+    protected boolean silent = false;
 
     private Value a;
     private Operator op;
@@ -43,7 +44,7 @@ public class Expression extends Value implements FunctionWriter {
         if(b instanceof Expression) b = ((Expression) b).simplify();
 
         if(a.isExplicit() && b.isExplicit()) {
-            return a.runOperation(this.op, b, pattern, null);
+            return a.runOperation(this.op, b, pattern, null, silent);
         } return this;
     }
 
@@ -63,12 +64,12 @@ public class Expression extends Value implements FunctionWriter {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
         return null;
     }
 
@@ -79,12 +80,19 @@ public class Expression extends Value implements FunctionWriter {
 
     @Override
     public Value writeToFunction(MCFunction function) {
-        function.addComment("WRITING EXPRESSION");
-        return a.runOperation(this.op, b, pattern, function);
+        return a.runOperation(this.op, b, pattern, function, silent);
     }
 
     @Override
     public ObjectivePointer getReference() {
         throw new IllegalStateException("Dude, you shouldn't access an expression reference directly, first unwrap.");
+    }
+
+    public boolean isSilent() {
+        return silent;
+    }
+
+    public void setSilent(boolean silent) {
+        this.silent = silent;
     }
 }
