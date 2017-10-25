@@ -114,7 +114,7 @@ public final class ExprResolver {
                     for(int i = 0; i < contents.length; i++) {
                         if((i & 1) == 0) {
                             //Operand
-                            Value value = analyzeValueOrReference(contents[i], context, dataHolder, function, silent);
+                            Value value = analyzeValueOrReference(contents[i], context, null, function, silent);
                             if(value == null) return null;
                             flatValues.add(value);
                         } else {
@@ -206,7 +206,7 @@ public final class ExprResolver {
                 //Methods can only return values, not just any traversable object
                 return analyzeValue(((TokenStructure) pattern).getContents(), context, dataHolder, function, silent);
             } case "METHOD_CALL_INNER": {
-                if(dataHolder == null) dataHolder = context.getDataHolder();
+                if(dataHolder == null) dataHolder = context.getInstance();
                 if(dataHolder == null) {
                     if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "WHOA WHOA THERE, THERE'S NO DATA HOLDER??? CRUD", pattern.getFormattedPath()));
                     return null;
@@ -296,6 +296,8 @@ public final class ExprResolver {
                 return analyzeStructure(((TokenStructure) pattern).getContents(), context, dataHolder, function, silent);
             } case "POINTER_NEXT": {
                 return analyzeStructure(pattern.find("NESTED_POINTER"), context, dataHolder, function, silent);
+            } case "NULL" : {
+                return new Null(context);
             }
         }
         } catch(NullPointerException npe) {

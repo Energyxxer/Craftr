@@ -1,13 +1,18 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.natives;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.RawCommand;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.execute.ExecuteCommand;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.execute.ExecuteStore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.SelectorReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.ActualParameter;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.IntegerValue;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
 import java.util.HashMap;
@@ -17,6 +22,7 @@ public class NativeMethods {
     private static HashMap<String, MethodExecutor> methods = new HashMap<>();
 
     static {
+        // Math
         methods.put("craftr.lang.util.Math.pow(int, int)",
                 (function, positionalParams, unused, pattern, context) -> {
                     Value rawBase = positionalParams.get(0).getValue();
@@ -33,6 +39,28 @@ public class NativeMethods {
                     return null;
                 }
         );
+        //World
+        methods.put("craftr.lang.World.getDayTime()",
+                (function, unused, unusedToo, pattern, context) -> {
+
+                    ObjectivePointer reference = new ObjectivePointer(
+                            new SelectorReference(
+                                    context.getAnalyzer().getPrefix() + "_RESULT",
+                                    context),
+                            context.getAnalyzer().getPrefix() + "_g"
+                    );
+
+                    function.addInstruction(
+                            new ExecuteCommand(
+                                    new RawCommand("time query daytime"),
+                                    new ExecuteStore(
+                                            ExecuteStore.Action.RESULT,
+                                            reference
+                                    )
+                            )
+                    );
+                    return new IntegerValue(reference, context);
+                });
     }
 
     public static Value execute(Method method, MCFunction function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, Context context) {

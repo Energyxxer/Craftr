@@ -10,7 +10,6 @@ import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
@@ -19,8 +18,10 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibi
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Null;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import org.jetbrains.annotations.Nullable;
@@ -46,7 +47,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     private CodeBlock block = null;
     private Method method = null;
 
-    private Value value = null;
+    private Value value;
 
     public Variable(TokenPattern<?> pattern, Context context, SymbolVisibility visibility, List<CraftrLang.Modifier> modifiers, DataType dataType, String name, boolean validName, CodeBlock block, Method method, Value value) {
         super(context);
@@ -58,7 +59,8 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.validName = validName;
         this.block = block;
         this.method = method;
-        this.value = value;
+        if(value == null) this.value = new Null(context);
+        else this.value = value;
     }
 
     private Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, Context context) {
@@ -79,6 +81,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         if(!validName) {
             context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME").getFormattedPath()));
         }
+        this.value = new Null(context);
     }
 
     public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, Method method, Value value) {
@@ -91,7 +94,8 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.validName = !CraftrLang.isPseudoIdentifier(this.name);
         this.block = null;
         this.method = method;
-        this.value = value;
+        if(value == null) this.value = new Null(context);
+        else this.value = value;
     }
 
     public Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, Unit parentUnit) {
@@ -123,11 +127,12 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
             this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (context instanceof Unit && !isStatic()) ? ((Unit) context).getInstanceContext() : context, null, initializerFunction);
             if(this.value != null) this.value = this.value.unwrap(initializerFunction);
-            if(this.value != null && !this.dataType.instanceOf(this.value.getDataType())) {
+            if(this.value != null && !this.value.getDataType().instanceOf(this.getDataType())) {
                 context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
             }
+            if(this.value == null) this.value = new Null(context);
+            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
         }
-        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
     }
 
     /*
@@ -179,17 +184,21 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+        //fromVariable SHOULD be false
+        if(operand != null && operand instanceof Variable) {
+            operand = ((Variable) operand).value;
+        }
         if(operand == null) {
             if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Operand is null", pattern.getFormattedPath()));
             return null;
         }
-        if(operator.isAssignment()) {
+        /*if(operator.isAssignment()) {
             switch(operator) {
                 case ASSIGN: {
                     if(operand.getDataType().instanceOf(this.getDataType())) {
@@ -197,18 +206,28 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                     } else {
                         if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
                     }
-                    break;
+                    return value;
                 }
                 default: return null;
             }
         } else {
-            if(value != null) return value.runOperation(operator, operand, pattern, function, silent);
-            else {
-                if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable might not have been defined", pattern.getFormattedPath()));
-                return null;
+        }*/
+        if(operand.isNull() && operator == Operator.ASSIGN) {
+            this.value = operand;
+            return value;
+        } else if(value.isNull() && operator == Operator.ASSIGN) {
+            if(operand.getDataType().instanceOf(this.getDataType())) {
+                value = operand.clone(function);
+            } else {
+                if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
             }
+            return value.clone(function);
         }
-        return null;
+        if(!value.isNull()) return value.runOperation(operator, operand, pattern, function, true, silent);
+        else {
+            if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable might not have been defined", pattern.getFormattedPath()));
+            return value;
+        }
     }
 
     @Override
@@ -255,5 +274,10 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         if(context instanceof CodeBlock) return context.getUnit(); else if(context instanceof Unit) return ((Unit) context);
         context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Variable with no unit: " + this, pattern.getFormattedPath()));
         return null;
+    }
+
+    @Override
+    public Value clone(MCFunction function) {
+        throw new IllegalStateException("Dude, don't clone the variable, clone the value!");
     }
 }

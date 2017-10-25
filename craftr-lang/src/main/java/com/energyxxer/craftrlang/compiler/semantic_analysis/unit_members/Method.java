@@ -13,7 +13,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks.CodeBlock;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.SelectorReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
@@ -24,6 +24,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibi
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.natives.NativeMethods;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
@@ -194,7 +195,6 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
         } else {
             TokenPattern<?> block = body.find("DELIMITED_CODE_BLOCK");
             this.codeBlock = new CodeBlock(block, this);
-            this.codeBlock.setStatic(this.isStatic());
         }
     }
 
@@ -354,7 +354,6 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
             } else {
                 context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + entry.getValue().getDataType() + " cannot be converted to " + this.keywordParams.get(entry.getKey()).getType(), entry.getValue().pattern.getFormattedPath()));
             }
-
         }
         codeBlock.setSilent(true);
         return codeBlock.writeToFunction(function);
@@ -363,5 +362,10 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     @Override
     public DataHolder getDataHolder() {
         return this.isStatic() ? declaringUnit : declaringUnit.getGenericInstance();
+    }
+
+    @Override
+    public ObjectInstance getInstance() {
+        return (!this.isStatic()) ? declaringUnit.getGenericInstance() : null;
     }
 }

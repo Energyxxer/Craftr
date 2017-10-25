@@ -1,7 +1,10 @@
-package com.energyxxer.craftrlang.compiler.code_generation.functions.commands;
+package com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands;
 
+import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.CompoundInstruction;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Instruction;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
 import com.energyxxer.util.Constant;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,7 +60,7 @@ public class ScoreboardOperation implements Instruction {
     }
 
     @Override
-    public List<String> getLines() {
+    public @NotNull List<String> getLines() {
         return Collections.singletonList("scoreboard players operation " + a.getEntity().toSelector() + " " + a.getObjectiveName() + " " + operation + " " + b.getEntity().toSelector() + " " + b.getObjectiveName());
     }
 

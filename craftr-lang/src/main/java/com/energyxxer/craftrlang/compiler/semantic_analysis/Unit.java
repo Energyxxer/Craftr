@@ -288,6 +288,11 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
             public DataHolder getDataHolder() {
                 return genericInstance;
             }
+
+            @Override
+            public ObjectInstance getInstance() {
+                return genericInstance;
+            }
         };
 
         dataType = new DataType(this);
@@ -584,6 +589,11 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
     public ObjectInstance getGenericInstance() {
         return genericInstance;
+    }
+
+    @Override
+    public ObjectInstance getInstance() {
+        return null;
     }
 
     @Override

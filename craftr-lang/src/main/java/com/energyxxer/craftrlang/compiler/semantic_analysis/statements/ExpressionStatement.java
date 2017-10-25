@@ -26,7 +26,7 @@ public class ExpressionStatement extends Statement {
             this.content = (FunctionWriter) rawContent;
             valid = true;
         } else if(rawContent != null) {
-            if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Not a statement", pattern.getFormattedPath()));
+            //if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Not a statement: " + rawContent, pattern.getFormattedPath()));
         }
         if(!silent) System.out.println(rawContent + " at " + context);
         if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Expression Report", NoticeType.INFO, rawContent + " at " + context, pattern.getFormattedPath()));

@@ -1,4 +1,6 @@
-package com.energyxxer.craftrlang.compiler.code_generation.functions.commands;
+package com.energyxxer.craftrlang.compiler.code_generation.functions.instructions;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +18,7 @@ public class CompoundInstruction implements Instruction {
     }
 
     public void addInstruction(Instruction instruction) {
-        instructions.add(instruction);
+        if(instruction != null) instructions.add(instruction);
     }
 
     @Override
@@ -25,16 +27,15 @@ public class CompoundInstruction implements Instruction {
     }
 
     @Override
-    public List<String> getLines() {
+    public @NotNull List<String> getLines() {
         ArrayList<String> lines = new ArrayList<>();
         instructions.forEach(i -> {
             Instruction innerPreInstruction = i.getPreInstruction();
             List<String> innerPreLines = (innerPreInstruction != null) ? innerPreInstruction.getLines() : null;
-            List<String> innerLines = i.getLines();
             Instruction innerPostInstruction = i.getPostInstruction();
             List<String> innerPostLines = (innerPostInstruction != null) ? innerPostInstruction.getLines() : null;
             if(innerPreLines != null) lines.addAll(innerPreLines);
-            if(innerLines != null) lines.addAll(innerLines);
+            lines.addAll(i.getLines());
             if(innerPostLines != null) lines.addAll(innerPostLines);
         });
         return lines;

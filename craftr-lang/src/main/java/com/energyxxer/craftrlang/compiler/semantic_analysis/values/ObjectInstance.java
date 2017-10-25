@@ -57,12 +57,12 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
         return null;
     }
 
@@ -74,5 +74,10 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     @Override
     public SymbolVisibility getVisibility() {
         return SymbolVisibility.UNIT;
+    }
+
+    @Override
+    public ObjectInstance clone(MCFunction function) {
+        return new ObjectInstance(this.unit, this.reference, this.context);
     }
 }

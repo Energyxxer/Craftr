@@ -1,6 +1,8 @@
-package com.energyxxer.craftrlang.compiler.code_generation.functions.commands;
+package com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Instruction;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +20,7 @@ public class FunctionCall implements Instruction {
     }
 
     @Override
-    public List<String> getLines() {
+    public @NotNull List<String> getLines() {
         return Collections.singletonList("function " + function.getName());
     }
 

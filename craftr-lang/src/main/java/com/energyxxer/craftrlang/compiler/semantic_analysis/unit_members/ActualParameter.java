@@ -9,6 +9,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 public class ActualParameter extends AbstractFileComponent {
     private String name = null;
     private Value value;
+    private boolean used = false;
 
     public ActualParameter(TokenPattern<?> pattern, String name, Value value) {
         super(pattern);
@@ -44,5 +45,13 @@ public class ActualParameter extends AbstractFileComponent {
 
     public DataType getDataType() {
         return (value != null) ? value.getDataType() : DataType.OBJECT;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+    public void setUsed(boolean used) {
+        this.used = used;
     }
 }

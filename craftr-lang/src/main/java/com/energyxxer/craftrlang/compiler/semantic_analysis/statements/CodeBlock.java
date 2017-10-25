@@ -1,4 +1,4 @@
-package com.energyxxer.craftrlang.compiler.semantic_analysis.code_blocks;
+package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
@@ -16,9 +16,8 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.ReturnStatement;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.Statement;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
 import java.util.List;
@@ -71,10 +70,6 @@ public class CodeBlock extends Statement implements Context, DataHolder {
 
     public SymbolTable getSymbolTable() {
         return symbolTable;
-    }
-
-    public void setStatic(boolean staticBlock) {
-        this.isStatic = staticBlock;
     }
 
     public MCFunction getFunction() {
@@ -141,7 +136,7 @@ public class CodeBlock extends Statement implements Context, DataHolder {
 
     @Override
     public boolean isStatic() {
-        return isStatic;
+        return context.isStatic();
     }
 
     @Override
@@ -166,6 +161,11 @@ public class CodeBlock extends Statement implements Context, DataHolder {
 
     @Override
     public MethodLog getMethodLog() {
-        return this.isStatic() ? context.getUnit().getStaticMethodLog() : context.getUnit().getGenericInstance().getMethodLog();
+        return this.isStatic() ? context.getUnit().getMethodLog() : context.getUnit().getGenericInstance().getMethodLog();
+    }
+
+    @Override
+    public ObjectInstance getInstance() {
+        return context.getInstance();
     }
 }

@@ -1,4 +1,6 @@
-package com.energyxxer.craftrlang.compiler.code_generation.functions.commands;
+package com.energyxxer.craftrlang.compiler.code_generation.functions.instructions;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,7 +18,7 @@ public class Comment implements Instruction {
     }
 
     @Override
-    public List<String> getLines() {
+    public @NotNull List<String> getLines() {
         return Collections.singletonList(content);
     }
 

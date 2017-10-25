@@ -3,8 +3,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.FunctionWriter;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.ScoreboardCommand;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.ScoreboardOperation;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.ScoreboardOperation;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
@@ -58,7 +57,7 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
                         }
                     }
                     TokenPattern<?> rawValue = rawParam.find("VALUE");
-                    Value value = ExprResolver.analyzeValueOrReference(rawValue, context, (!context.isStatic()) ? context.getUnit().getGenericInstance() : null, function);
+                    Value value = ExprResolver.analyzeValue(rawValue, context, null, function);
 
                     if(label == null) {
                         positionalParams.add(new ActualParameter(rawParam, value));
@@ -120,12 +119,12 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
         return null;
     }
 
@@ -146,7 +145,7 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
                     if(actualParam == null) {
                         function.addComment("Actual unwrapped param is null: " + rawParam);
                     } else if(actualParam.isExplicit()) {
-                        function.addInstruction(new ScoreboardCommand(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+i),ScoreboardCommand.SET,actualParam));
+                        //function.addInstruction(new ScoreboardCommand(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+i),ScoreboardCommand.SET,actualParam));
                     } else {
                         function.addInstruction(new ScoreboardOperation(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+i),ScoreboardOperation.ASSIGN,actualParam.getReference()));
                     }
@@ -169,21 +168,26 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
     }
 
     @Override
-    public Value runOperation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
         Value unwrapped = this.unwrap(function);
-        if(unwrapped != null) return unwrapped.runOperation(operator, pattern, function, silent);
+        if(unwrapped != null) return unwrapped.runOperation(operator, pattern, function, fromVariable, silent);
         return null;
     }
 
     @Override
-    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
         Value unwrapped = this.unwrap(function);
-        if(unwrapped != null) return unwrapped.runOperation(operator, value, pattern, function, silent);
+        if(unwrapped != null) return unwrapped.runOperation(operator, value, pattern, function, fromVariable, silent);
         else return null;
     }
 
     @Override
     public ObjectivePointer getReference() {
         throw new IllegalStateException("Dude, you shouldn't access a method call reference directly, first unwrap.");
+    }
+
+    @Override
+    public Value clone(MCFunction function) {
+        throw new IllegalStateException("Dude, don't clone the method call, first unwrap.");
     }
 }

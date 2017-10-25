@@ -1,9 +1,10 @@
 package com.energyxxer.craftrlang.compiler.code_generation.functions;
 
-import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.Comment;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.Instruction;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Comment;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Instruction;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MCFunction {
     private String name;
@@ -35,8 +36,9 @@ public class MCFunction {
         if(instruction.getPreInstruction() != null) {
             sb.append(assemble(instruction.getPreInstruction()));
         }
-        if(instruction.getLines() != null) {
-            for(String line : instruction.getLines()) {
+        List<String> lines = instruction.getLines();
+        if(lines != null) {
+            for(String line : lines) {
                 sb.append(line);
                 sb.append('\n');
             }

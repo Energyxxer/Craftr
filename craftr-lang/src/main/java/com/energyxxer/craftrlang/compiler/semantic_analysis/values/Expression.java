@@ -44,7 +44,7 @@ public class Expression extends Value implements FunctionWriter {
         if(b instanceof Expression) b = ((Expression) b).simplify();
 
         if(a.isExplicit() && b.isExplicit()) {
-            return a.runOperation(this.op, b, pattern, null, silent);
+            return a.runOperation(this.op, b, pattern, null, false, silent);
         } return this;
     }
 
@@ -64,12 +64,12 @@ public class Expression extends Value implements FunctionWriter {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
         return null;
     }
 
@@ -80,7 +80,7 @@ public class Expression extends Value implements FunctionWriter {
 
     @Override
     public Value writeToFunction(MCFunction function) {
-        return a.runOperation(this.op, b, pattern, function, silent);
+        return a.runOperation(this.op, b, pattern, function, false, silent);
     }
 
     @Override
@@ -94,5 +94,10 @@ public class Expression extends Value implements FunctionWriter {
 
     public void setSilent(boolean silent) {
         this.silent = silent;
+    }
+
+    @Override
+    public Value clone(MCFunction function) {
+        throw new IllegalStateException("Dude, you shouldn't clone an expression directly, first unwrap.");
     }
 }

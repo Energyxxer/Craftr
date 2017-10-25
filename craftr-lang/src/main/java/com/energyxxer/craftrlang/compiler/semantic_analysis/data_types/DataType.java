@@ -40,6 +40,7 @@ public class DataType {
     private final String name;
     private final boolean primitive;
     private final Unit unit;
+    private final boolean nullType;
 
     private ReferenceConstructor referenceConstructor;
     private TypeOperationPromise typeOperationPromise;
@@ -52,12 +53,22 @@ public class DataType {
         this.name = name;
         this.primitive = primitive;
         this.unit = null;
+        this.nullType = false;
     }
 
     public DataType(Unit unit) {
         this.name = unit.getFullyQualifiedName();
         this.primitive = false;
         this.unit = unit;
+        this.nullType = false;
+    }
+
+    //Null data type
+    public DataType() {
+        this.name = "null";
+        this.primitive = true;
+        this.unit = null;
+        this.nullType = true;
     }
 
     public String getName() {
@@ -76,6 +87,8 @@ public class DataType {
     public static final DataType CHAR = new DataType("char", true);
     public static final DataType LONG = new DataType("long", true);
     public static final DataType BOOLEAN = new DataType("boolean", true);
+
+    public static final DataType NULL = new DataType();
 
     public static final DataType OBJECT = new DataType("craftr.lang.Object", false);
     public static final DataType STRING = new DataType("craftr.lang.String", false);
@@ -170,6 +183,25 @@ public class DataType {
         return (unit != null) ? unit.getInstanceMethodLog() : null;
     }
 
+    public boolean isNullType() {
+        return nullType;
+    }
+
+    public boolean instanceOf(DataType type) {
+        if(this.isNullType()) return true; //Yeah yeah null can be anything it wants to be, now get lost.
+        if(type.isNullType()) return false; //Woah woah there buddy, null is unique; nobody else can be null.
+
+        if(this.primitive || type.primitive) return this.equals(type);
+        if(this.unit != null && type.unit != null)
+        return this.unit.instanceOf(type.unit);
+        else return this.name.equals(type.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -178,18 +210,6 @@ public class DataType {
         DataType dataType = (DataType) o;
 
         return name.equals(dataType.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
-
-    public boolean instanceOf(DataType type) {
-        if(this.primitive || type.primitive) return this.equals(type);
-        if(this.unit != null && type.unit != null)
-        return this.unit.instanceOf(type.unit);
-        else return this.name.equals(type.name);
     }
 
     @Override

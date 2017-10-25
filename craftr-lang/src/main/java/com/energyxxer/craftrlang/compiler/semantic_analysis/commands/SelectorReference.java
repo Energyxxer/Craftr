@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.commands;
 
-import com.energyxxer.craftrlang.compiler.code_generation.functions.commands.Instruction;
+import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Instruction;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 
 public class SelectorReference extends EntityReference {
