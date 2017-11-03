@@ -2,10 +2,11 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.ScoreboardOperation;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.ResolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.SelectorReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
@@ -25,7 +26,7 @@ public class BooleanValue extends Value {
         this.value = value;
     }
 
-    public BooleanValue(ObjectivePointer reference, Context context) {
+    public BooleanValue(UnresolvedObjectiveReference reference, Context context) {
         super(reference, context);
     }
 
@@ -85,19 +86,16 @@ public class BooleanValue extends Value {
         if(this.isExplicit()) {
             return new BooleanValue(this.value, context);
         } else {
-            ObjectivePointer newReference = new ObjectivePointer(
-                    new SelectorReference(context.getAnalyzer().getPrefix() + "_CLONE",context),
-                    context.getAnalyzer().getPrefix() + "_g"
-            );
+            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().CLONE.GENERIC.get());
 
             function.addInstruction(
                     new ScoreboardOperation(
                             newReference,
                             ScoreboardOperation.ASSIGN,
-                            this.reference
+                            context.resolve(reference)
                     )
             );
-            return new BooleanValue(newReference, context);
+            return new BooleanValue(newReference.getUnresolvedObjectiveReference(), context);
         }
     }
 }

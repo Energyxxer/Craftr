@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler;
 
+import com.energyxxer.craftrlang.compiler.code_generation.DataPackBuilder;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftrlang.compiler.parsing.Parser;
@@ -9,6 +10,7 @@ import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.interfaces.ProgressListener;
 import com.energyxxer.craftrlang.projects.Project;
+import com.energyxxer.util.StringUtil;
 import com.energyxxer.util.ThreadLock;
 import com.energyxxer.util.out.Console;
 
@@ -30,6 +32,8 @@ public class Compiler {
 	private Scanner sc;
 	private Parser parser;
 	private SemanticAnalyzer analyzer;
+
+	private DataPackBuilder dataPackBuilder;
 
 	private Thread thread = null;
 
@@ -103,6 +107,7 @@ public class Compiler {
 		allPatterns.putAll(parser.getFilePatterns());
 
 		analyzer = new SemanticAnalyzer(this, allPatterns, source);
+		dataPackBuilder = new DataPackBuilder(this);
 		if(library != null) {
 			LibraryLoad callback = (c,r) -> {
 				analyzer.join(c.analyzer);
@@ -135,6 +140,15 @@ public class Compiler {
 
 	public Project getProject() {
 		return project;
+	}
+
+	private String randomPrefix = StringUtil.getRandomString(3);
+
+	public String getPrefix() {
+		if(project != null) {
+			return project.getPrefix();
+		}
+		return randomPrefix;
 	}
 
 	private void finalizeCompilation() {
@@ -197,6 +211,10 @@ public class Compiler {
 
 	public SemanticAnalyzer getAnalyzer() {
 		return analyzer;
+	}
+
+	public DataPackBuilder getDataPackBuilder() {
+		return dataPackBuilder;
 	}
 
 	public Thread getThread() {

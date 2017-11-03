@@ -2,6 +2,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.Score;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -17,7 +18,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
  */
 public abstract class Value implements TraversableStructure, Score {
     protected final Context context;
-    protected ObjectivePointer reference = null;
+    protected UnresolvedObjectiveReference reference = null;
 
     /*
     * TODO:  DDDD    OOO
@@ -51,7 +52,7 @@ public abstract class Value implements TraversableStructure, Score {
         this.context = context;
     }
 
-    public Value(ObjectivePointer reference, Context context) {
+    public Value(UnresolvedObjectiveReference reference, Context context) {
         this.reference = reference;
         this.context = context;
     }
@@ -60,11 +61,11 @@ public abstract class Value implements TraversableStructure, Score {
         return reference == null;
     }
 
-    public void setReference(ObjectivePointer reference) {
+    public void setReference(UnresolvedObjectiveReference reference) {
         this.reference = reference;
     }
 
-    public ObjectivePointer getReference() {
+    public UnresolvedObjectiveReference getReference() {
         return reference;
     }
 

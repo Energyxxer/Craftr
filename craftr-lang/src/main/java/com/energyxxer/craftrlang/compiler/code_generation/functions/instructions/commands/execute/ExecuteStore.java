@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.execute;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Instruction;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.ResolvedObjectiveReference;
 
 public class ExecuteStore implements ExecuteSubCommand {
     public enum Action {
@@ -15,21 +15,21 @@ public class ExecuteStore implements ExecuteSubCommand {
     }
 
     private Action action;
-    private ObjectivePointer reference;
+    private ResolvedObjectiveReference reference;
 
-    public ExecuteStore(Action action, ObjectivePointer reference) {
+    public ExecuteStore(Action action, ResolvedObjectiveReference reference) {
         this.action = action;
         this.reference = reference;
     }
 
     @Override
     public Instruction getPreInstruction() {
-        return reference.getEntity().getInstruction();
+        return reference.getPlayerReference().getInstruction();
     }
 
     @Override
     public String getSubCommand() {
-        return "store " + action.prefix + " " + reference.getEntity().toSelector() + " " + reference.getObjectiveName();
+        return "store " + action.prefix + " " + reference.getPlayerReference().getSelector() + " " + reference.getObjective().getName();
     }
 
     @Override
@@ -45,11 +45,11 @@ public class ExecuteStore implements ExecuteSubCommand {
         this.action = action;
     }
 
-    public ObjectivePointer getReference() {
+    public ResolvedObjectiveReference getReference() {
         return reference;
     }
 
-    public void setReference(ObjectivePointer reference) {
+    public void setReference(ResolvedObjectiveReference reference) {
         this.reference = reference;
     }
 

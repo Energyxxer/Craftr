@@ -4,6 +4,8 @@ import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.FunctionWriter;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.ScoreboardOperation;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.ResolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
@@ -11,7 +13,6 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.SelectorReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
@@ -19,7 +20,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
@@ -90,7 +90,7 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
         }
 
         if(method != null && method.getReturnType() != DataType.VOID) {
-            this.reference = new ObjectivePointer(new SelectorReference(context.getAnalyzer().getPrefix() + "_RETURN",context),context.getAnalyzer().getPrefix() + "_g");
+            this.reference = context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().RETURN.GENERIC.get();
         }
     }
 
@@ -131,11 +131,11 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
     @Override
     public Value writeToFunction(MCFunction function) {
         if(method != null) {
+
+            ArrayList<ResolvedObjectiveReference> paramReferences = new ArrayList<>();
+
             if(method.isStatic()) {
-                String argPlayer = context.getAnalyzer().getPrefix() + "_" + method.getPlayerName();
-                String argObjective = context.getAnalyzer().getPrefix() + "_a";
-                for(int i = 0; i < positionalParams.size(); i++) {
-                    ActualParameter rawParam = positionalParams.get(i);
+                for(ActualParameter rawParam : positionalParams) {
                     Value actualParam = rawParam.getValue();
                     if(actualParam == null) {
                         function.addComment("Actual param is null: " + rawParam);
@@ -145,9 +145,18 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
                     if(actualParam == null) {
                         function.addComment("Actual unwrapped param is null: " + rawParam);
                     } else if(actualParam.isExplicit()) {
-                        //function.addInstruction(new ScoreboardCommand(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+i),ScoreboardCommand.SET,actualParam));
+
                     } else {
-                        function.addInstruction(new ScoreboardOperation(new ObjectivePointer(new SelectorReference(argPlayer, context), argObjective+i),ScoreboardOperation.ASSIGN,actualParam.getReference()));
+                        ResolvedObjectiveReference paramReference = context.resolve(context.getPlayer().PARAMETER.get());
+                        paramReference.setInUse(true);
+                        paramReferences.add(paramReference);
+                        function.addInstruction(
+                                new ScoreboardOperation(
+                                        paramReference,
+                                        ScoreboardOperation.ASSIGN,
+                                        context.resolve(actualParam.getReference())
+                                )
+                        );
                     }
                     rawParam.setValue(actualParam);
                 }
@@ -156,7 +165,9 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
                 function.addComment(method.getName() + " is not static");
             }
 
-            return method.writeCall(function, positionalParams, keywordParams, pattern, context);
+            Value result = method.writeCall(function, positionalParams, keywordParams, pattern, context);
+            paramReferences.forEach(p -> p.setInUse(false));
+            return result;
         }
         return null;
     }
@@ -182,7 +193,7 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
     }
 
     @Override
-    public ObjectivePointer getReference() {
+    public UnresolvedObjectiveReference getReference() {
         throw new IllegalStateException("Dude, you shouldn't access a method call reference directly, first unwrap.");
     }
 

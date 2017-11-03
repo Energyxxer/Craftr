@@ -1,6 +1,9 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.code_generation.players.EntityPlayer;
+import com.energyxxer.craftrlang.compiler.code_generation.players.Player;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
@@ -23,11 +26,13 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     private FieldLog fieldLog;
     private MethodLog methodLog;
 
+    private Player player;
+
     public ObjectInstance(Unit unit, Context context) {
         this(unit, null, context);
     }
 
-    public ObjectInstance(Unit unit, ObjectivePointer reference, Context context) {
+    public ObjectInstance(Unit unit, UnresolvedObjectiveReference reference, Context context) {
         super(reference, context);
         this.unit = unit;
 
@@ -35,6 +40,9 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         this.methodLog = unit.getInstanceMethodLog().createForInstance(this);
 
         this.fieldLog.put("this", this);
+
+        //TODO: Actual player constructor...
+        this.player = new EntityPlayer(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager(), this);
     }
 
     public @NotNull Unit getUnit() {
@@ -79,5 +87,9 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     @Override
     public ObjectInstance clone(MCFunction function) {
         return new ObjectInstance(this.unit, this.reference, this.context);
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }

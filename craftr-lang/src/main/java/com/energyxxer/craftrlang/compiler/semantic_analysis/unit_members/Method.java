@@ -2,6 +2,8 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.code_generation.players.Player;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -13,8 +15,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.SelectorReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
@@ -24,8 +24,8 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibi
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.natives.NativeMethods;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 import org.jetbrains.annotations.NotNull;
@@ -247,17 +247,47 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     public void initCodeBlock() {
         if(codeBlock != null) {
             codeBlock.clearSymbols();
-            for(int i = 0; i < positionalParams.size(); i++) {
-                FormalParameter param = positionalParams.get(i);
-                codeBlock.getSymbolTable().put(new Variable(param.getName(),Collections.emptyList(),param.getType(),this,positionalParams.get(i).getType().createImplicit(new ObjectivePointer(new SelectorReference(getAnalyzer().getPrefix() + "_" + this.getPlayerName(), this), getAnalyzer().getPrefix() + "_a" + i),this)));
+            ArrayList<UnresolvedObjectiveReference> paramReferences = new ArrayList<>();
+
+            for(FormalParameter param : positionalParams) {
+                UnresolvedObjectiveReference paramReference = this.getPlayer().PARAMETER.get();
+                paramReference.setInUse(true);
+                paramReferences.add(paramReference);
+                codeBlock.getSymbolTable().put(
+                        new Variable(
+                                param.getName(),
+                                Collections.emptyList(),
+                                param.getType(),
+                                this,
+                                param.getType().createImplicit(
+                                        paramReference,
+                                        this
+                                )
+                        )
+                );
             }
             FormalParameter[] keywordArr = keywordParams.values().toArray(new FormalParameter[0]);
-            for(int i = 0; i < keywordArr.length; i++) {
-                FormalParameter param = keywordArr[i];
-                codeBlock.getSymbolTable().put(new Variable(param.getName(),Collections.emptyList(),param.getType(),this,keywordArr[i].getType().createImplicit(new ObjectivePointer(new SelectorReference(getAnalyzer().getPrefix() + "_" + this.getPlayerName(), this), getAnalyzer().getPrefix() + "_ka" + i),this)));
+            for(FormalParameter param : keywordArr) {
+                UnresolvedObjectiveReference paramReference = this.getPlayer().PARAMETER.get();
+                paramReference.setInUse(true);
+                paramReferences.add(paramReference);
+                codeBlock.getSymbolTable().put(
+                        new Variable(
+                                param.getName(),
+                                Collections.emptyList(),
+                                param.getType(),
+                                this,
+                                param.getType().createImplicit(
+                                        paramReference,
+                                        this
+                                )
+                        )
+                );
             }
             codeBlock.setSilent(false);
             codeBlock.initialize();
+            paramReferences.forEach(p -> p.setInUse(false));
+
             System.out.println(codeBlock.getFunction().build());
         }
     }
@@ -367,5 +397,10 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     @Override
     public ObjectInstance getInstance() {
         return (!this.isStatic()) ? declaringUnit.getGenericInstance() : null;
+    }
+
+    @Override
+    public Player getPlayer() {
+        return this.isStatic() ? declaringUnit.getPlayer() : declaringUnit.getGenericInstance().getPlayer();
     }
 }

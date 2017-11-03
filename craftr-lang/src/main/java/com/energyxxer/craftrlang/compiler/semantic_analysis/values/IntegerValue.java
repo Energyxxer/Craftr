@@ -4,10 +4,11 @@ import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.CompoundInstruction;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.ScoreboardCommand;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.ScoreboardOperation;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.ResolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.SelectorReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
@@ -30,7 +31,7 @@ public class IntegerValue extends NumericalValue {
         this.value = value;
     }
 
-    public IntegerValue(ObjectivePointer reference, Context context) {
+    public IntegerValue(UnresolvedObjectiveReference reference, Context context) {
         super(context);
         this.reference = reference;
     }
@@ -84,10 +85,20 @@ public class IntegerValue extends NumericalValue {
                         }
                     } else {
                         if(operand.isExplicit()) {
-                            if(operand instanceof IntegerValue) function.addInstruction(new ScoreboardCommand(reference, ScoreboardCommand.ADD, operand));
+                            if(operand instanceof IntegerValue) function.addInstruction(
+                                    new ScoreboardCommand(
+                                            reference.resolveTo(context.resolve(reference.getPlayer())),
+                                            ScoreboardCommand.ADD,
+                                            operand)
+                            );
                             return this.clone(function);
                         } else {
-                            if(operand instanceof IntegerValue) function.addInstruction(new ScoreboardOperation(reference, ScoreboardOperation.ADD, operand.getReference()));
+                            if(operand instanceof IntegerValue) function.addInstruction(
+                                    new ScoreboardOperation(
+                                            reference.resolveTo(context.resolve(reference.getPlayer())),
+                                            ScoreboardOperation.ADD,
+                                            operand.getReference().resolveTo(context.resolve(operand.getReference().getPlayer())))
+                            );
                             return this.clone(function);
                         }
                     }
@@ -126,52 +137,48 @@ public class IntegerValue extends NumericalValue {
             Console.debug.println("DOING IMPLICIT OPERATIONS WITH INTEGERS");
             if(operand instanceof NumericalValue) {
                 //Deal with floats later
-                String newObjective = context.getAnalyzer().getPrefix() + "_op";
+                ResolvedObjectiveReference operationReference = context.getPlayer().OPERATION.get().resolveTo(context.getPlayerReference());
+                ResolvedObjectiveReference resolvedValueReference = reference.resolveTo(context.resolve(reference.getPlayer()));
+                ResolvedObjectiveReference fakePlayerReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().MATH.GENERIC.get());
+                operationReference.setInUse(true);
                 switch(operator) {
                     case ADD: {
                         function.addInstruction(new CompoundInstruction(
                                 new ScoreboardOperation(
-                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        operationReference,
                                         ScoreboardOperation.ASSIGN,
-                                        reference
+                                        resolvedValueReference
                                 ),
                                 new ScoreboardCommand(
-                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        operationReference,
                                         ScoreboardCommand.ADD,
                                         operand
                                 )
                         ));
-                        return new IntegerValue(new ObjectivePointer(new SelectorReference(context), newObjective), context);
+                        return new IntegerValue(operationReference.getUnresolvedObjectiveReference(), context);
                     }
                     case SUBTRACT: {
                         function.addInstruction(new CompoundInstruction(
                                 new ScoreboardOperation(
-                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        operationReference,
                                         ScoreboardOperation.ASSIGN,
-                                        reference
+                                        resolvedValueReference
                                 ),
                                 new ScoreboardCommand(
-                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        operationReference,
                                         ScoreboardCommand.REMOVE,
                                         operand
                                 )
                         ));
-                        return new IntegerValue(new ObjectivePointer(new SelectorReference(context), newObjective), context);
+                        return new IntegerValue(operationReference.getUnresolvedObjectiveReference(), context);
                     }
                     case MULTIPLY: {
-                        ObjectivePointer fakePlayerReference = new ObjectivePointer(
-                                new SelectorReference(
-                                        context.getAnalyzer().getPrefix() + "_math",
-                                        context
-                                ),
-                                context.getAnalyzer().getPrefix() + "_g"
-                        );
-
+                        fakePlayerReference.setInUse(true);
                         function.addInstruction(new CompoundInstruction(
                                 new ScoreboardOperation(
-                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        operationReference,
                                         ScoreboardOperation.ASSIGN,
-                                        reference
+                                        resolvedValueReference
                                 ),
                                 new ScoreboardCommand(
                                         fakePlayerReference,
@@ -179,27 +186,22 @@ public class IntegerValue extends NumericalValue {
                                         operand
                                 ),
                                 new ScoreboardOperation(
-                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        operationReference,
                                         ScoreboardOperation.MULTIPLY,
                                         fakePlayerReference
                                 )
                         ));
-                        return new IntegerValue(new ObjectivePointer(new SelectorReference(context), newObjective), context);
+                        fakePlayerReference.setInUse(false);
+
+                        return new IntegerValue(operationReference.getUnresolvedObjectiveReference(), context);
                     }
                     case DIVIDE: {
-                        ObjectivePointer fakePlayerReference = new ObjectivePointer(
-                                new SelectorReference(
-                                        context.getAnalyzer().getPrefix() + "_math",
-                                        context
-                                ),
-                                context.getAnalyzer().getPrefix() + "_g"
-                        );
-
+                        fakePlayerReference.setInUse(true);
                         function.addInstruction(new CompoundInstruction(
                                 new ScoreboardOperation(
-                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        operationReference,
                                         ScoreboardOperation.ASSIGN,
-                                        reference
+                                        resolvedValueReference
                                 ),
                                 new ScoreboardCommand(
                                         fakePlayerReference,
@@ -207,27 +209,22 @@ public class IntegerValue extends NumericalValue {
                                         operand
                                 ),
                                 new ScoreboardOperation(
-                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        operationReference,
                                         ScoreboardOperation.DIVIDE,
                                         fakePlayerReference
                                 )
                         ));
-                        return new IntegerValue(new ObjectivePointer(new SelectorReference(context), newObjective), context);
+                        fakePlayerReference.setInUse(false);
+
+                        return new IntegerValue(operationReference.getUnresolvedObjectiveReference(), context);
                     }
                     case MODULO: {
-                        ObjectivePointer fakePlayerReference = new ObjectivePointer(
-                                new SelectorReference(
-                                        context.getAnalyzer().getPrefix() + "_math",
-                                        context
-                                ),
-                                context.getAnalyzer().getPrefix() + "_g"
-                        );
-
+                        fakePlayerReference.setInUse(true);
                         function.addInstruction(new CompoundInstruction(
                                 new ScoreboardOperation(
-                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        operationReference,
                                         ScoreboardOperation.ASSIGN,
-                                        reference
+                                        resolvedValueReference
                                 ),
                                 new ScoreboardCommand(
                                         fakePlayerReference,
@@ -235,12 +232,14 @@ public class IntegerValue extends NumericalValue {
                                         operand
                                 ),
                                 new ScoreboardOperation(
-                                        new ObjectivePointer(new SelectorReference(context), newObjective),
+                                        operationReference,
                                         ScoreboardOperation.MODULO,
                                         fakePlayerReference
                                 )
                         ));
-                        return new IntegerValue(new ObjectivePointer(new SelectorReference(context), newObjective), context);
+                        fakePlayerReference.setInUse(false);
+
+                        return new IntegerValue(operationReference.getUnresolvedObjectiveReference(), context);
                     }
                 }
             }
@@ -288,20 +287,17 @@ public class IntegerValue extends NumericalValue {
         if(this.isExplicit()) {
             return new IntegerValue(this.value, context);
         } else {
-            ObjectivePointer newReference = new ObjectivePointer(
-                    new SelectorReference(context.getAnalyzer().getPrefix() + "_CLONE",context),
-                    context.getAnalyzer().getPrefix() + "_g"
-            );
+            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().CLONE.GENERIC.get());
 
             function.addInstruction(
                     new ScoreboardOperation(
                             newReference,
                             ScoreboardOperation.ASSIGN,
-                            this.reference
+                            context.resolve(reference)
                     )
             );
             //TODO Change this instruction to a compound instruction to remotely add the cloning instruction when the value is used next.
-            return new IntegerValue(newReference, context);
+            return new IntegerValue(newReference.getUnresolvedObjectiveReference(), context);
         }
     }
 }

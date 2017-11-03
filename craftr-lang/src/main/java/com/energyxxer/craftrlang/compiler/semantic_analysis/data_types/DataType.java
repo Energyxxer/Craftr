@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.data_types;
 
 import com.energyxxer.craftrlang.CraftrLang;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -12,7 +13,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.BooleanValue;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.FloatValue;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.IntegerValue;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
@@ -165,7 +165,7 @@ public class DataType {
         this.typeOperationPromise = typeOperationPromise;
     }
 
-    public Value createImplicit(ObjectivePointer reference, Context context) {
+    public Value createImplicit(UnresolvedObjectiveReference reference, Context context) {
         if(referenceConstructor != null) return referenceConstructor.create(reference, context);
         else return null;
     }

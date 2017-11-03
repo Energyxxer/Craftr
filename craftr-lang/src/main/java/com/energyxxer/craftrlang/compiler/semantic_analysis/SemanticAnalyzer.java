@@ -75,15 +75,6 @@ public class SemanticAnalyzer {
         files.forEach(CraftrFile::initCodeBlocks);
     }
 
-    private String randomPrefix = StringUtil.getRandomString(3);
-
-    public String getPrefix() {
-        if(compiler.getProject() != null) {
-            return compiler.getProject().getPrefix();
-        }
-        return randomPrefix;
-    }
-
     public SymbolTable getSymbolTable() {
         return symbolTable;
     }

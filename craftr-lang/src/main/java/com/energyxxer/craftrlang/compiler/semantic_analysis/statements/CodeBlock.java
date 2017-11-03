@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.code_generation.players.Player;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -26,8 +27,6 @@ import java.util.List;
  * Created by Energyxxer on 07/10/2017.
  */
 public class CodeBlock extends Statement implements Context, DataHolder {
-    private boolean isStatic = false;
-
     private boolean closed = false;
 
     private CodeBlock parentBlock = null;
@@ -43,7 +42,7 @@ public class CodeBlock extends Statement implements Context, DataHolder {
             Symbol sym = super.getSymbol(flatTokens, context, true);
             if(sym != null) return sym;
             if(parentBlock != null) return parentBlock.getSymbolTable().getSymbol(flatTokens, context, silent || CodeBlock.this.silent);
-            if(isStatic) return context.getUnit().getStaticFieldLog().getSymbol(flatTokens, context, silent || CodeBlock.this.silent);
+            if(isStatic()) return context.getUnit().getStaticFieldLog().getSymbol(flatTokens, context, silent || CodeBlock.this.silent);
             else return context.getUnit().getGenericInstance().getSubSymbolTable().getSymbol(flatTokens, context, silent || CodeBlock.this.silent);
         }
     };
@@ -167,5 +166,10 @@ public class CodeBlock extends Statement implements Context, DataHolder {
     @Override
     public ObjectInstance getInstance() {
         return context.getInstance();
+    }
+
+    @Override
+    public Player getPlayer() {
+        return (isStatic() ? context.getUnit().getPlayer() : context.getInstance().getPlayer());
     }
 }

@@ -1,12 +1,12 @@
 package com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.execute;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Instruction;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.EntityReference;
+import com.energyxxer.craftrlang.compiler.code_generation.players.PlayerReference;
 
 public class ExecuteAs implements ExecuteSubCommand {
-    private EntityReference entity;
+    private PlayerReference entity;
 
-    public ExecuteAs(EntityReference entity) {
+    public ExecuteAs(PlayerReference entity) {
         this.entity = entity;
     }
 
@@ -17,7 +17,7 @@ public class ExecuteAs implements ExecuteSubCommand {
 
     @Override
     public String getSubCommand() {
-        return "as " + entity.toSelector();
+        return "as " + entity.getSelector();
     }
 
     @Override

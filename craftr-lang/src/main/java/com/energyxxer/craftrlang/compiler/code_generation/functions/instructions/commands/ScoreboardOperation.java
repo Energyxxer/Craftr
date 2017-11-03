@@ -2,7 +2,7 @@ package com.energyxxer.craftrlang.compiler.code_generation.functions.instruction
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.CompoundInstruction;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Instruction;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.ResolvedObjectiveReference;
 import com.energyxxer.util.Constant;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,21 +19,21 @@ public class ScoreboardOperation implements Instruction {
     public static final Constant MIN = new Constant(">", ScoreboardOperation.class);
     public static final Constant MAX = new Constant("<", ScoreboardOperation.class);
 
-    public ObjectivePointer a;
+    public ResolvedObjectiveReference a;
     public Constant operation;
-    public ObjectivePointer b;
+    public ResolvedObjectiveReference b;
 
-    public ScoreboardOperation(ObjectivePointer a, Constant operation, ObjectivePointer b) {
+    public ScoreboardOperation(ResolvedObjectiveReference a, Constant operation, ResolvedObjectiveReference b) {
         this.a = a;
         this.setOperation(operation);
         this.b = b;
     }
 
-    public ObjectivePointer getA() {
+    public ResolvedObjectiveReference getA() {
         return a;
     }
 
-    public void setA(ObjectivePointer a) {
+    public void setA(ResolvedObjectiveReference a) {
         this.a = a;
     }
 
@@ -46,22 +46,22 @@ public class ScoreboardOperation implements Instruction {
         this.operation = operation;
     }
 
-    public ObjectivePointer getB() {
+    public ResolvedObjectiveReference getB() {
         return b;
     }
 
-    public void setB(ObjectivePointer b) {
+    public void setB(ResolvedObjectiveReference b) {
         this.b = b;
     }
 
     @Override
     public Instruction getPreInstruction() {
-        return new CompoundInstruction(a.getEntity().getInstruction(),b.getEntity().getInstruction());
+        return new CompoundInstruction(a.getPlayerReference().getInstruction(),b.getPlayerReference().getInstruction());
     }
 
     @Override
     public @NotNull List<String> getLines() {
-        return Collections.singletonList("scoreboard players operation " + a.getEntity().toSelector() + " " + a.getObjectiveName() + " " + operation + " " + b.getEntity().toSelector() + " " + b.getObjectiveName());
+        return Collections.singletonList("scoreboard players operation " + a.getPlayerReference().getSelector() + " " + a.getObjective().getName() + " " + operation + " " + b.getPlayerReference().getSelector() + " " + b.getObjective().getName());
     }
 
     @Override

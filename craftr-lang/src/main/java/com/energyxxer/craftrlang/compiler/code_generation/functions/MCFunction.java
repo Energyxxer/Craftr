@@ -37,11 +37,9 @@ public class MCFunction {
             sb.append(assemble(instruction.getPreInstruction()));
         }
         List<String> lines = instruction.getLines();
-        if(lines != null) {
-            for(String line : lines) {
-                sb.append(line);
-                sb.append('\n');
-            }
+        for(String line : lines) {
+            sb.append(line);
+            sb.append('\n');
         }
         if(instruction.getPostInstruction() != null) {
             sb.append(assemble(instruction.getPostInstruction()));

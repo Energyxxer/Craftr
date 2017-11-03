@@ -4,15 +4,14 @@ import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.RawCommand;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.execute.ExecuteCommand;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.execute.ExecuteStore;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.ResolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.commands.SelectorReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.ActualParameter;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.IntegerValue;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
 import java.util.HashMap;
@@ -43,12 +42,7 @@ public class NativeMethods {
         methods.put("craftr.lang.World.getDayTime()",
                 (function, unused, unusedToo, pattern, context) -> {
 
-                    ObjectivePointer reference = new ObjectivePointer(
-                            new SelectorReference(
-                                    context.getAnalyzer().getPrefix() + "_RESULT",
-                                    context),
-                            context.getAnalyzer().getPrefix() + "_g"
-                    );
+                    ResolvedObjectiveReference reference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().RETURN.GENERIC.get());
 
                     function.addInstruction(
                             new ExecuteCommand(
@@ -59,7 +53,7 @@ public class NativeMethods {
                                     )
                             )
                     );
-                    return new IntegerValue(reference, context);
+                    return new IntegerValue(reference.getUnresolvedObjectiveReference(), context);
                 });
     }
 

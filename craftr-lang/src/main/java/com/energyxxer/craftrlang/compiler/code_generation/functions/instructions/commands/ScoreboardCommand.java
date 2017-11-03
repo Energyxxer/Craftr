@@ -2,7 +2,7 @@ package com.energyxxer.craftrlang.compiler.code_generation.functions.instruction
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.Score;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Instruction;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectivePointer;
+import com.energyxxer.craftrlang.compiler.code_generation.objectives.ResolvedObjectiveReference;
 import com.energyxxer.util.Constant;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,22 +14,22 @@ public class ScoreboardCommand implements Instruction {
     public static final Constant ADD = new Constant("add", ScoreboardCommand.class);
     public static final Constant REMOVE = new Constant("remove", ScoreboardCommand.class);
 
-    public ObjectivePointer pointer;
+    public ResolvedObjectiveReference reference;
     public Constant operation = SET;
     public Score value;
 
-    public ScoreboardCommand(ObjectivePointer pointer, Constant operation, Score value) {
-        this.pointer = pointer;
+    public ScoreboardCommand(ResolvedObjectiveReference reference, Constant operation, Score value) {
+        this.reference = reference;
         this.setOperation(operation);
         this.value = value;
     }
 
-    public ObjectivePointer getPointer() {
-        return pointer;
+    public ResolvedObjectiveReference getReference() {
+        return reference;
     }
 
-    public void setPointer(ObjectivePointer pointer) {
-        this.pointer = pointer;
+    public void setReference(ResolvedObjectiveReference reference) {
+        this.reference = reference;
     }
 
     public Constant getOperation() {
@@ -51,12 +51,12 @@ public class ScoreboardCommand implements Instruction {
 
     @Override
     public Instruction getPreInstruction() {
-        return pointer.getEntity().getInstruction();
+        return reference.getPlayerReference().getInstruction();
     }
 
     @Override
     public @NotNull List<String> getLines() {
-        return Collections.singletonList("scoreboard players " + operation + " " + pointer.getEntity().toSelector() + " " + pointer.getObjectiveName() + " " + value.getScoreboardValue());
+        return Collections.singletonList("scoreboard players " + operation + " " + reference.getPlayerReference().getSelector() + " " + reference.getObjective().getName() + " " + value.getScoreboardValue());
     }
 
     @Override
