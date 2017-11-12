@@ -4,8 +4,11 @@ import com.energyxxer.craftrlang.compiler.code_generation.DataPackBuilder;
 import com.energyxxer.craftrlang.compiler.code_generation.objectives.ObjectiveGroup;
 import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
 
-public abstract class Player {
-    private final PlayerManager playerManager;
+/**
+ * A score holder, not a player entity
+ * */
+public abstract class ScoreHolder {
+    private final ScoreHolderManager scoreHolderManager;
 
     public final ObjectiveGroup OPERATION;
     public final ObjectiveGroup PARAMETER;
@@ -14,28 +17,28 @@ public abstract class Player {
 
     public final UnresolvedObjectiveReference ID;
 
-    public Player(PlayerManager playerManager) {
-        this.playerManager = playerManager;
+    public ScoreHolder(ScoreHolderManager scoreHolderManager) {
+        this.scoreHolderManager = scoreHolderManager;
 
         this.OPERATION = new ObjectiveGroup(this, "op", "Operation");
         this.PARAMETER = new ObjectiveGroup(this, "p", "Parameter");
         this.GENERIC = new ObjectiveGroup(this, "g", "Generic");
         this.ID_OPERATION = new ObjectiveGroup(this, "id_op", "ID Operation");
-        this.ID = new UnresolvedObjectiveReference(playerManager.getDataPackBuilder().getObjectiveManager().createObjective("id","Entity ID"), this);
+        this.ID = new UnresolvedObjectiveReference(scoreHolderManager.getDataPackBuilder().getObjectiveManager().createObjective("id","Entity ID"), this);
     }
 
-    public PlayerManager getPlayerManager() {
-        return playerManager;
+    public ScoreHolderManager getScoreHolderManager() {
+        return scoreHolderManager;
     }
 
     public DataPackBuilder getDataPackBuilder() {
-        return playerManager.getDataPackBuilder();
+        return scoreHolderManager.getDataPackBuilder();
     }
 
-    public PlayerReference resolvePlayer(Player player) {
-        if(this == player) return new PlayerReference(this, "@s");
-        return player.createReference();
+    public ScoreHolderReference resolvePlayer(ScoreHolder scoreHolder) {
+        if(this == scoreHolder) return new ScoreHolderReference(this, "@s");
+        return scoreHolder.createReference();
     }
 
-    abstract PlayerReference createReference();
+    abstract ScoreHolderReference createReference();
 }

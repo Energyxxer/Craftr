@@ -3,7 +3,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.code_generation.players.FakePlayer;
-import com.energyxxer.craftrlang.compiler.code_generation.players.Player;
+import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -299,12 +299,12 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
             }
 
             @Override
-            public Player getPlayer() {
-                return genericInstance.getPlayer();
+            public ScoreHolder getPlayer() {
+                return genericInstance.getScoreHolder();
             }
         };
 
-        staticPlayer = getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().createFakePlayer(this.name.toUpperCase());
+        staticPlayer = getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().createFakePlayer(this.name.toUpperCase());
 
         dataType = new DataType(this);
         dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, r, c));
@@ -635,7 +635,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
     }
 
     @Override
-    public Player getPlayer() {
+    public ScoreHolder getPlayer() {
         return staticPlayer;
     }
 

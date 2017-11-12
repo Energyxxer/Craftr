@@ -1,17 +1,17 @@
 package com.energyxxer.craftrlang.compiler.code_generation.objectives;
 
-import com.energyxxer.craftrlang.compiler.code_generation.players.Player;
-import com.energyxxer.craftrlang.compiler.code_generation.players.PlayerReference;
+import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolder;
+import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolderReference;
 
 public class ResolvedObjectiveReference {
     private final UnresolvedObjectiveReference unresolvedObjectiveReference;
-    private final PlayerReference playerReference;
+    private final ScoreHolderReference scoreHolderReference;
 
-    ResolvedObjectiveReference(UnresolvedObjectiveReference unresolvedObjectiveReference, PlayerReference playerReference) {
-        if(unresolvedObjectiveReference.getPlayer() != playerReference.getPlayer()) throw new IllegalArgumentException("At ResolvedObjectiveReference constructor: unresolvedObjectiveReference's player (" + unresolvedObjectiveReference.getPlayer() + ") does not correspond to playerReference's (" + playerReference.getPlayer() + ")");
+    ResolvedObjectiveReference(UnresolvedObjectiveReference unresolvedObjectiveReference, ScoreHolderReference scoreHolderReference) {
+        if(unresolvedObjectiveReference.getScoreHolder() != scoreHolderReference.getScoreHolder()) throw new IllegalArgumentException("At ResolvedObjectiveReference constructor: unresolvedObjectiveReference's player (" + unresolvedObjectiveReference.getScoreHolder() + ") does not correspond to scoreHolderReference's (" + scoreHolderReference.getScoreHolder() + ")");
 
         this.unresolvedObjectiveReference = unresolvedObjectiveReference;
-        this.playerReference = playerReference;
+        this.scoreHolderReference = scoreHolderReference;
     }
 
     public void setInUse(boolean inUse) {
@@ -22,12 +22,12 @@ public class ResolvedObjectiveReference {
         return unresolvedObjectiveReference.isInUse();
     }
 
-    public Player getPlayer() {
-        return playerReference.getPlayer();
+    public ScoreHolder getPlayer() {
+        return scoreHolderReference.getScoreHolder();
     }
 
-    public PlayerReference getPlayerReference() {
-        return playerReference;
+    public ScoreHolderReference getScoreHolderReference() {
+        return scoreHolderReference;
     }
 
     public Objective getObjective() {

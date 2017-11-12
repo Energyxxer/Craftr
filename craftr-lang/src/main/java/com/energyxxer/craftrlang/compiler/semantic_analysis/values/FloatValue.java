@@ -117,7 +117,7 @@ public class FloatValue extends NumericalValue {
         if(this.isExplicit()) {
             return new FloatValue(this.value, context);
         } else {
-            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().CLONE.GENERIC.get());
+            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().CLONE.GENERIC.get());
 
             function.addInstruction(
                     new ScoreboardOperation(

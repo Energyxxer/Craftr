@@ -2,23 +2,23 @@ package com.energyxxer.craftrlang.compiler.code_generation.players;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Instruction;
 
-public class PlayerReference {
-    private Player player;
+public class ScoreHolderReference {
+    private ScoreHolder scoreHolder;
     private String selector;
     private Instruction instruction;
 
-    public PlayerReference(Player player, String selector) {
-        this(player, selector, null);
+    public ScoreHolderReference(ScoreHolder scoreHolder, String selector) {
+        this(scoreHolder, selector, null);
     }
 
-    public PlayerReference(Player player, String selector, Instruction instruction) {
-        this.player = player;
+    public ScoreHolderReference(ScoreHolder scoreHolder, String selector, Instruction instruction) {
+        this.scoreHolder = scoreHolder;
         this.selector = selector;
         this.instruction = instruction;
     }
 
-    public Player getPlayer() {
-        return player;
+    public ScoreHolder getScoreHolder() {
+        return scoreHolder;
     }
 
     public String getSelector() {
@@ -31,8 +31,8 @@ public class PlayerReference {
 
     @Override
     public String toString() {
-        return "PlayerReference{" +
-                "player=" + player +
+        return "ScoreHolderReference{" +
+                "scoreHolder=" + scoreHolder +
                 ", selector='" + selector + '\'' +
                 ", instruction=" + instruction +
                 '}';

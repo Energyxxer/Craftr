@@ -1,18 +1,18 @@
 package com.energyxxer.craftrlang.compiler.code_generation.objectives;
 
-import com.energyxxer.craftrlang.compiler.code_generation.players.Player;
+import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolder;
 
 import java.util.ArrayList;
 
 public class ObjectiveGroup {
-    private Player parent;
+    private ScoreHolder parent;
 
     private String prefix;
     private String displayNameBase;
 
     private ArrayList<UnresolvedObjectiveReference> objectives = new ArrayList<>();
 
-    public ObjectiveGroup(Player parent, String prefix, String displayNameBase) {
+    public ObjectiveGroup(ScoreHolder parent, String prefix, String displayNameBase) {
         this.parent = parent;
         this.prefix = prefix;
         this.displayNameBase = displayNameBase;

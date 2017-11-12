@@ -3,14 +3,14 @@ package com.energyxxer.craftrlang.compiler.code_generation.players;
 import com.energyxxer.craftrlang.compiler.Compiler;
 import com.energyxxer.craftrlang.compiler.code_generation.DataPackBuilder;
 
-public class PlayerManager {
+public class ScoreHolderManager {
     private final DataPackBuilder dataPackBuilder;
 
-    public final Player RETURN;
-    public final Player CLONE;
-    public final Player MATH;
+    public final ScoreHolder RETURN;
+    public final ScoreHolder CLONE;
+    public final ScoreHolder MATH;
 
-    public PlayerManager(DataPackBuilder dataPackBuilder) {
+    public ScoreHolderManager(DataPackBuilder dataPackBuilder) {
         this.dataPackBuilder = dataPackBuilder;
 
         this.RETURN = new FakePlayer(this, "RETURN");

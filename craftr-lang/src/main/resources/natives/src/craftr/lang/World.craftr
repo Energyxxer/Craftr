@@ -14,19 +14,19 @@ public abstract native world World {
     // execute
     public native void execute(String rawCommand); //wait...
     // particle
-    public native void playParticle(Particle particle, double x, double y, double z, double dx, double dy, double dz, double speed, int count, boolean force, player[] players, String param1, String param2);
+    public native void playParticle(Particle particle, double x, double y, double z, double dx, double dy, double dz, double speed, int count, boolean force, scoreHolder[] players, String param1, String param2);
     public native void playParticle(Particle particle, double x, double y, double z, double dx, double dy, double dz, double speed, int count, boolean force);
-    public native void playParticle(Particle particle, Vector3D offset = null, double x = 0, double y = 0, double z = 0, Vector3D size = null, double dx = 0, double dy = 0, double dz = 0, double speed = 0, int count = 1, boolean force = false, player[] players = null, String param1 = null, String param2 = null);
+    public native void playParticle(Particle particle, Vector3D offset = null, double x = 0, double y = 0, double z = 0, Vector3D size = null, double dx = 0, double dy = 0, double dz = 0, double speed = 0, int count = 1, boolean force = false, scoreHolder[] players = null, String param1 = null, String param2 = null);
     public native void playParticle(Particle particle, double x, double y, double z, Color tint);
-    public native void playParticle(Particle particle, Vector3D offset, Vector3D size, double speed, int count, boolean force, player[] players, String param1, String param2);
+    public native void playParticle(Particle particle, Vector3D offset, Vector3D size, double speed, int count, boolean force, scoreHolder[] players, String param1, String param2);
     public native void playParticle(Particle particle, Vector3D offset, Vector3D size, double speed, int count, boolean force);
     public native void playParticle(Particle particle, Vector3D offset, Color tint);
     // playsound
-    public native void playSound(String sound, SoundSource source, player[] players, Vector3D offset, float volume, float pitch, float minVolume);
-    public native void playSound(String sound, SoundSource source = SoundSource.MASTER, player[] players = null, Vector3D offset = null, float volume = 1, float pitch = 1, float minVolume = 0);
+    public native void playSound(String sound, SoundSource source, scoreHolder[] players, Vector3D offset, float volume, float pitch, float minVolume);
+    public native void playSound(String sound, SoundSource source = SoundSource.MASTER, scoreHolder[] players = null, Vector3D offset = null, float volume = 1, float pitch = 1, float minVolume = 0);
     // stopsound
-    public native void stopSound(player[] players, SoundSource source, String sound);
-    public native void stopSound(player[] players, SoundSource source = null, String sound = null);
+    public native void stopSound(scoreHolder[] players, SoundSource source, String sound);
+    public native void stopSound(scoreHolder[] players, SoundSource source = null, String sound = null);
     // setblock
     public native void setBlock(Block block, Vector3D offset);
     // fill

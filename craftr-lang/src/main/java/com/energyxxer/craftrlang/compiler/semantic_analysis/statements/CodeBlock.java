@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.code_generation.players.Player;
+import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -169,7 +169,7 @@ public class CodeBlock extends Statement implements Context, DataHolder {
     }
 
     @Override
-    public Player getPlayer() {
-        return (isStatic() ? context.getUnit().getPlayer() : context.getInstance().getPlayer());
+    public ScoreHolder getPlayer() {
+        return (isStatic() ? context.getUnit().getPlayer() : context.getInstance().getScoreHolder());
     }
 }

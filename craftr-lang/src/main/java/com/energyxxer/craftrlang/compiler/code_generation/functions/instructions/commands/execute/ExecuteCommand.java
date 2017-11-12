@@ -42,7 +42,7 @@ public class ExecuteCommand implements Instruction {
             sb.append(subCommand.getSubCommand());
             sb.append(' ');
         }
-        sb.append("then ");
+        sb.append("run ");
 
         String header = sb.toString();
 

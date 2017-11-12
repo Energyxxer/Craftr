@@ -90,7 +90,7 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
         }
 
         if(method != null && method.getReturnType() != DataType.VOID) {
-            this.reference = context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().RETURN.GENERIC.get();
+            this.reference = context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get();
         }
     }
 

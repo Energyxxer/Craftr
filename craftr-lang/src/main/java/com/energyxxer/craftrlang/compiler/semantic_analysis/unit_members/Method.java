@@ -3,7 +3,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.code_generation.players.Player;
+import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -400,7 +400,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     }
 
     @Override
-    public Player getPlayer() {
-        return this.isStatic() ? declaringUnit.getPlayer() : declaringUnit.getGenericInstance().getPlayer();
+    public ScoreHolder getPlayer() {
+        return this.isStatic() ? declaringUnit.getPlayer() : declaringUnit.getGenericInstance().getScoreHolder();
     }
 }

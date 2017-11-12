@@ -86,7 +86,7 @@ public class BooleanValue extends Value {
         if(this.isExplicit()) {
             return new BooleanValue(this.value, context);
         } else {
-            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().CLONE.GENERIC.get());
+            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().CLONE.GENERIC.get());
 
             function.addInstruction(
                     new ScoreboardOperation(

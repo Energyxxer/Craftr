@@ -1,18 +1,18 @@
 package com.energyxxer.craftrlang.compiler.code_generation.players;
 
-public class FakePlayer extends Player {
+public class FakePlayer extends ScoreHolder {
 
     private String name;
-    private PlayerReference reference;
+    private ScoreHolderReference reference;
 
-    public FakePlayer(PlayerManager playerManager, String name) {
-        super(playerManager);
-        this.name = playerManager.getCompiler().getPrefix() + "_" + name;
-        this.reference = new PlayerReference(this, name);
+    public FakePlayer(ScoreHolderManager scoreHolderManager, String name) {
+        super(scoreHolderManager);
+        this.name = scoreHolderManager.getCompiler().getPrefix() + "_" + name;
+        this.reference = new ScoreHolderReference(this, name);
     }
 
     @Override
-    PlayerReference createReference() {
-        return new PlayerReference(this, name);
+    ScoreHolderReference createReference() {
+        return new ScoreHolderReference(this, name);
     }
 }

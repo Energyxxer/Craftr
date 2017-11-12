@@ -51,12 +51,12 @@ public class ScoreboardCommand implements Instruction {
 
     @Override
     public Instruction getPreInstruction() {
-        return reference.getPlayerReference().getInstruction();
+        return reference.getScoreHolderReference().getInstruction();
     }
 
     @Override
     public @NotNull List<String> getLines() {
-        return Collections.singletonList("scoreboard players " + operation + " " + reference.getPlayerReference().getSelector() + " " + reference.getObjective().getName() + " " + value.getScoreboardValue());
+        return Collections.singletonList("scoreboard players " + operation + " " + reference.getScoreHolderReference().getSelector() + " " + reference.getObjective().getName() + " " + value.getScoreboardValue());
     }
 
     @Override

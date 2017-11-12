@@ -87,7 +87,7 @@ public class IntegerValue extends NumericalValue {
                         if(operand.isExplicit()) {
                             if(operand instanceof IntegerValue) function.addInstruction(
                                     new ScoreboardCommand(
-                                            reference.resolveTo(context.resolve(reference.getPlayer())),
+                                            reference.resolveTo(context.resolve(reference.getScoreHolder())),
                                             ScoreboardCommand.ADD,
                                             operand)
                             );
@@ -95,9 +95,9 @@ public class IntegerValue extends NumericalValue {
                         } else {
                             if(operand instanceof IntegerValue) function.addInstruction(
                                     new ScoreboardOperation(
-                                            reference.resolveTo(context.resolve(reference.getPlayer())),
+                                            reference.resolveTo(context.resolve(reference.getScoreHolder())),
                                             ScoreboardOperation.ADD,
-                                            operand.getReference().resolveTo(context.resolve(operand.getReference().getPlayer())))
+                                            operand.getReference().resolveTo(context.resolve(operand.getReference().getScoreHolder())))
                             );
                             return this.clone(function);
                         }
@@ -138,8 +138,8 @@ public class IntegerValue extends NumericalValue {
             if(operand instanceof NumericalValue) {
                 //Deal with floats later
                 ResolvedObjectiveReference operationReference = context.getPlayer().OPERATION.get().resolveTo(context.getPlayerReference());
-                ResolvedObjectiveReference resolvedValueReference = reference.resolveTo(context.resolve(reference.getPlayer()));
-                ResolvedObjectiveReference fakePlayerReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().MATH.GENERIC.get());
+                ResolvedObjectiveReference resolvedValueReference = reference.resolveTo(context.resolve(reference.getScoreHolder()));
+                ResolvedObjectiveReference fakePlayerReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().MATH.GENERIC.get());
                 operationReference.setInUse(true);
                 switch(operator) {
                     case ADD: {
@@ -287,7 +287,7 @@ public class IntegerValue extends NumericalValue {
         if(this.isExplicit()) {
             return new IntegerValue(this.value, context);
         } else {
-            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().CLONE.GENERIC.get());
+            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().CLONE.GENERIC.get());
 
             function.addInstruction(
                     new ScoreboardOperation(

@@ -1,12 +1,12 @@
 package com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.execute;
 
 import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.Instruction;
-import com.energyxxer.craftrlang.compiler.code_generation.players.PlayerReference;
+import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolderReference;
 
 public class ExecuteAt implements ExecuteSubCommand {
-    private PlayerReference entity;
+    private ScoreHolderReference entity;
 
-    public ExecuteAt(PlayerReference entity) {
+    public ExecuteAt(ScoreHolderReference entity) {
         this.entity = entity;
     }
 

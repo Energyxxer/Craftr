@@ -12,7 +12,7 @@ public class ObjectiveManager {
 
     //
     // TODO: Hey, you know what you're doing with these stupid objective builders?
-    // TODO: That's really dumb. Make a PlayerManager with each of these objective groups in them to make objective use
+    // TODO: That's really dumb. Make a ScoreHolderManager with each of these objective groups in them to make objective use
     // TODO: on a player-by-player basis instead of a global thing.
     // TODO: We don't want 500 objectives when each entity could be reusing the same 5
     //

@@ -1,24 +1,24 @@
 package com.energyxxer.craftrlang.compiler.code_generation.objectives;
 
-import com.energyxxer.craftrlang.compiler.code_generation.players.Player;
-import com.energyxxer.craftrlang.compiler.code_generation.players.PlayerReference;
+import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolder;
+import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolderReference;
 
 public class UnresolvedObjectiveReference {
     private Objective objective;
-    private Player player;
+    private ScoreHolder scoreHolder;
     private boolean inUse = false;
 
-    public UnresolvedObjectiveReference(Objective objective, Player player) {
+    public UnresolvedObjectiveReference(Objective objective, ScoreHolder scoreHolder) {
         this.objective = objective;
-        this.player = player;
+        this.scoreHolder = scoreHolder;
     }
 
     public Objective getObjective() {
         return objective;
     }
 
-    public Player getPlayer() {
-        return player;
+    public ScoreHolder getScoreHolder() {
+        return scoreHolder;
     }
 
     public boolean isInUse() {
@@ -29,12 +29,12 @@ public class UnresolvedObjectiveReference {
         this.inUse = inUse;
     }
 
-    public ResolvedObjectiveReference resolveTo(PlayerReference playerReference) {
-        return new ResolvedObjectiveReference(this, playerReference);
+    public ResolvedObjectiveReference resolveTo(ScoreHolderReference scoreHolderReference) {
+        return new ResolvedObjectiveReference(this, scoreHolderReference);
     }
 
     @Override
     public String toString() {
-        return (inUse ? "*" : "") + objective + " [" + player + "]";
+        return (inUse ? "*" : "") + objective + " [" + scoreHolder + "]";
     }
 }

@@ -56,12 +56,12 @@ public class ScoreboardOperation implements Instruction {
 
     @Override
     public Instruction getPreInstruction() {
-        return new CompoundInstruction(a.getPlayerReference().getInstruction(),b.getPlayerReference().getInstruction());
+        return new CompoundInstruction(a.getScoreHolderReference().getInstruction(),b.getScoreHolderReference().getInstruction());
     }
 
     @Override
     public @NotNull List<String> getLines() {
-        return Collections.singletonList("scoreboard players operation " + a.getPlayerReference().getSelector() + " " + a.getObjective().getName() + " " + operation + " " + b.getPlayerReference().getSelector() + " " + b.getObjective().getName());
+        return Collections.singletonList("scoreboard players operation " + a.getScoreHolderReference().getSelector() + " " + a.getObjective().getName() + " " + operation + " " + b.getScoreHolderReference().getSelector() + " " + b.getObjective().getName());
     }
 
     @Override

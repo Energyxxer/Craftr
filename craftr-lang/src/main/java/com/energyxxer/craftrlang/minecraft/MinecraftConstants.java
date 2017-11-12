@@ -17,7 +17,7 @@ public class MinecraftConstants {
 	public static ArrayList<String> dimension_enums = new ArrayList<>();
 
 	static {
-		entities_old.add("Player");
+		entities_old.add("ScoreHolder");
 		entities_old.add("Bat");
 		entities_old.add("Chicken");
 		entities_old.add("Cow");

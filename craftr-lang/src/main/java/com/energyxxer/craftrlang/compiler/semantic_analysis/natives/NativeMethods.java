@@ -42,7 +42,7 @@ public class NativeMethods {
         methods.put("craftr.lang.World.getDayTime()",
                 (function, unused, unusedToo, pattern, context) -> {
 
-                    ResolvedObjectiveReference reference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().RETURN.GENERIC.get());
+                    ResolvedObjectiveReference reference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get());
 
                     function.addInstruction(
                             new ExecuteCommand(

@@ -65,7 +65,7 @@ public class StringValue extends Value {
         if(this.isExplicit()) {
             return new StringValue(this.value, context);
         } else {
-            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getPlayerManager().CLONE.GENERIC.get());
+            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().CLONE.GENERIC.get());
 
             function.addInstruction(
                     new ScoreboardOperation(

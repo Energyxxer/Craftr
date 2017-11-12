@@ -24,12 +24,12 @@ public class ExecuteStore implements ExecuteSubCommand {
 
     @Override
     public Instruction getPreInstruction() {
-        return reference.getPlayerReference().getInstruction();
+        return reference.getScoreHolderReference().getInstruction();
     }
 
     @Override
     public String getSubCommand() {
-        return "store " + action.prefix + " " + reference.getPlayerReference().getSelector() + " " + reference.getObjective().getName();
+        return "store " + action.prefix + " " + reference.getScoreHolderReference().getSelector() + " " + reference.getObjective().getName();
     }
 
     @Override
