@@ -68,7 +68,7 @@ public class TipScreen extends JComponent {
         milliseconds += 1000/ TICK_RATE;
         if(milliseconds >= 1000) {
             milliseconds = 0;
-            if(++seconds >= 10) {
+            if(++seconds >= TIP_PERIOD) {
                 this.showNext();
                 seconds = 0;
             }
