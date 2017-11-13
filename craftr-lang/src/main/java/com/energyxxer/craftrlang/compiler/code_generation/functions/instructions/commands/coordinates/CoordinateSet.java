@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.coordinates;
 
-public class CoordinateSet {
+public class CoordinateSet implements CoordinateModifier {
 
     private Coordinate x;
     private Coordinate y;
@@ -23,5 +23,27 @@ public class CoordinateSet {
     @Override
     public String toString() {
         return x + " " + y + " " + z;
+    }
+
+    @Override
+    public String getSubCommand() {
+        return "at " + x + " " + y + " " + z;
+    }
+
+    @Override
+    public boolean isIdempotent() {
+        return x.isIdempotent() && y.isIdempotent() && z.isIdempotent();
+    }
+
+    @Override
+    public boolean isSignificant() {
+        return x.isSignificant() || y.isSignificant() || z.isSignificant();
+    }
+
+    @Override
+    public boolean isAbsolute() {
+        return x.getType() == Coordinate.Type.ABSOLUTE &&
+                y.getType() == Coordinate.Type.ABSOLUTE &&
+                z.getType() == Coordinate.Type.ABSOLUTE;
     }
 }

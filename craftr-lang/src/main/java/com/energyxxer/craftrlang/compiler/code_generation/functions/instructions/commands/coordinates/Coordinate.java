@@ -39,8 +39,16 @@ public class Coordinate {
         this.coord = coord;
     }
 
+    public boolean isIdempotent() {
+        return type == Type.ABSOLUTE;
+    }
+
+    public boolean isSignificant() {
+        return type == Type.ABSOLUTE || coord == 0;
+    }
+
     @Override
     public String toString() {
-        return type.prefix + coord;
+        return type.prefix + ((coord % 1 == 0 && type != Type.ABSOLUTE) ? String.valueOf((int) coord) : String.valueOf(coord));
     }
 }
