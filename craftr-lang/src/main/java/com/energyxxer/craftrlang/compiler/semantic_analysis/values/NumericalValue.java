@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 
 public abstract class NumericalValue extends Value {

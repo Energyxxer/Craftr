@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
-import com.energyxxer.craftrlang.compiler.code_generation.functions.FunctionWriter;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.codegen.functions.FunctionWriter;
+import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 

@@ -1,8 +1,8 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.Score;
-import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.codegen.functions.Score;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;

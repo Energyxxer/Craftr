@@ -1,10 +1,10 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.natives;
 
-import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.RawCommand;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.execute.ExecuteCommand;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.execute.ExecuteStore;
-import com.energyxxer.craftrlang.compiler.code_generation.objectives.ResolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.RawCommand;
+import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.execute.ExecuteCommand;
+import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.execute.ExecuteStore;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.ResolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;

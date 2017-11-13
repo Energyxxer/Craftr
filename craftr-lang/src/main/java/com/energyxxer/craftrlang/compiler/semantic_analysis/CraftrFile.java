@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
-import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolder;
+import com.energyxxer.craftrlang.compiler.codegen.players.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;

@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler;
 
-import com.energyxxer.craftrlang.compiler.code_generation.DataPackBuilder;
+import com.energyxxer.craftrlang.compiler.codegen.DataPackBuilder;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftrlang.compiler.parsing.Parser;

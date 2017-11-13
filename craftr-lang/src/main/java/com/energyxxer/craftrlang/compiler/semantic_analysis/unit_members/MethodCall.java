@@ -1,11 +1,11 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.craftrlang.CraftrLang;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.FunctionWriter;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.code_generation.functions.instructions.commands.ScoreboardOperation;
-import com.energyxxer.craftrlang.compiler.code_generation.objectives.ResolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.codegen.functions.FunctionWriter;
+import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
+import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.ScoreboardOperation;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.ResolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;

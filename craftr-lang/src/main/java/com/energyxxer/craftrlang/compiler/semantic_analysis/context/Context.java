@@ -1,9 +1,9 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.context;
 
-import com.energyxxer.craftrlang.compiler.code_generation.objectives.ResolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.code_generation.objectives.UnresolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolder;
-import com.energyxxer.craftrlang.compiler.code_generation.players.ScoreHolderReference;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.ResolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.craftrlang.compiler.codegen.players.ScoreHolder;
+import com.energyxxer.craftrlang.compiler.codegen.players.ScoreHolderReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
