@@ -1,7 +1,7 @@
 package com.energyxxer.xswing;
 
-import javax.swing.JPanel;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created by User on 2/11/2017.

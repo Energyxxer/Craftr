@@ -1,9 +1,7 @@
 package com.energyxxer.xswing;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import java.awt.Color;
-import java.awt.Graphics;
+import javax.swing.*;
+import java.awt.*;
 
 public class XButton extends JButton {
 	

@@ -3,12 +3,8 @@ package com.energyxxer.xswing;
 import com.energyxxer.util.Factory;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.SwingConstants;
-import java.awt.Dimension;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;

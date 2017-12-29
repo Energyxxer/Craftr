@@ -1,15 +1,9 @@
 package com.energyxxer.xswing;
 
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.LookAndFeel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.File;
 
 public class XFileField extends JPanel {

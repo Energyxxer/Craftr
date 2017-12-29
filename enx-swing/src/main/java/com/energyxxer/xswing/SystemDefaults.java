@@ -1,10 +1,8 @@
 package com.energyxxer.xswing;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.Border;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 
 public class SystemDefaults {
 	public static final Color BACKGROUND = new JPanel().getBackground();

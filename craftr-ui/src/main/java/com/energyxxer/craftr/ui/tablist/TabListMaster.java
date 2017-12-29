@@ -6,11 +6,8 @@ import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.hints.TextHint;
 
-import javax.swing.JComponent;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Point;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -137,9 +134,12 @@ public class TabListMaster extends JComponent implements MouseListener, MouseMot
     @Override
     public void mousePressed(MouseEvent e) {
         TabListElement element = getElementAtMousePos(e);
-        dragPoint = e.getPoint();
-        draggedElement = element;
-        dragPivot = -1;
+
+        if(e.getButton() == MouseEvent.BUTTON1) {
+            dragPoint = e.getPoint();
+            draggedElement = element;
+            dragPivot = -1;
+        }
         if(element == null) return;
 
         int x = 0;
@@ -184,23 +184,25 @@ public class TabListMaster extends JComponent implements MouseListener, MouseMot
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        dragPoint = e.getPoint();
-        if(draggedElement != null) draggedElement.mouseDragged(e);
-        int x = 0;
-        for(int i = 0; i < children.size(); i++) {
-            TabListElement element = children.get(i);
-            int w = element.getWidth();
-            int center = (int) (e.getX() + (0.5-dragPivot * w));
-            if(center >= x && center < x + w) {
-                children.remove(draggedElement);
-                if(center <= x + w/2) {
-                    children.add(i, draggedElement);
-                } else {
-                    children.add(Math.min(i+1,children.size()), draggedElement);
+        if(draggedElement != null) {
+            draggedElement.mouseDragged(e);
+            dragPoint = e.getPoint();
+            int x = 0;
+            for (int i = 0; i < children.size(); i++) {
+                TabListElement element = children.get(i);
+                int w = element.getWidth();
+                int center = (int) (e.getX() + (0.5 - dragPivot * w));
+                if (center >= x && center < x + w) {
+                    children.remove(draggedElement);
+                    if (center <= x + w / 2) {
+                        children.add(i, draggedElement);
+                    } else {
+                        children.add(Math.min(i + 1, children.size()), draggedElement);
+                    }
+                    break;
                 }
-                break;
+                x += w;
             }
-            x += w;
         }
         repaint();
     }

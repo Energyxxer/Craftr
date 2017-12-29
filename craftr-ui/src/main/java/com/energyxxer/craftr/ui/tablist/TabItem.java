@@ -10,11 +10,7 @@ import com.energyxxer.craftrlang.projects.ProjectManager;
 import com.energyxxer.util.StringUtil;
 
 import javax.imageio.ImageIO;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -156,7 +152,7 @@ public class TabItem extends TabListElement {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(isOverCloseButton(e)) {
+        if(isOverCloseButton(e) || e.getButton() == MouseEvent.BUTTON2) {
             TabManager.closeTab(this.associatedTab);
         }
     }

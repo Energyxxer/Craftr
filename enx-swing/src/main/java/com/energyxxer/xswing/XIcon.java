@@ -1,9 +1,7 @@
 package com.energyxxer.xswing;
 
-import javax.swing.JPanel;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**

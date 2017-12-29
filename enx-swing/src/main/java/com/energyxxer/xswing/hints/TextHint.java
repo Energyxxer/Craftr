@@ -1,9 +1,7 @@
 package com.energyxxer.xswing.hints;
 
-import javax.swing.JFrame;
-import javax.swing.JTextPane;
-import java.awt.Color;
-import java.awt.Font;
+import javax.swing.*;
+import java.awt.*;
 
 public class TextHint extends Hint {
     private final JTextPane textPane;

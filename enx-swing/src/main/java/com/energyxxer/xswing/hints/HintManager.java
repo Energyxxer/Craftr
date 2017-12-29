@@ -1,7 +1,7 @@
 package com.energyxxer.xswing.hints;
 
-import javax.swing.JFrame;
-import java.awt.MouseInfo;
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;

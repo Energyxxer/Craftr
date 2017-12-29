@@ -1,10 +1,8 @@
 package com.energyxxer.xswing;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
+import javax.swing.*;
 import javax.swing.border.Border;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.*;
 
 public class ComponentStyle {
 	public Color background = SystemDefaults.BACKGROUND;
