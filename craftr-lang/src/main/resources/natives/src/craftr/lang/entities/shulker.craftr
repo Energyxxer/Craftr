@@ -1,0 +1,28 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity shulker extends living_base {
+    
+    //Getters for NBT Data
+    public native int getPeek();
+    public native Direction getAttachFace();
+    public native DyeColor getColor();
+    public native int getAPX();
+    public native int getAPY();
+    public native int getAPZ();
+    
+    //Setters for NBT Data
+    public native void setPeek(int peek);
+    public native void setAttachFace(Direction dir);
+    public native void setColor(DyeColor color);
+    public native void setAPX(int x);
+    public native void setAPY(int y);
+    public native void setAPZ(int z);
+}

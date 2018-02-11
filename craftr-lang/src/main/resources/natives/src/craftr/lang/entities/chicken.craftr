@@ -1,0 +1,21 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.entities.features.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity chicken extends living_base implements breedable {
+    
+    //Getters for NBT Data
+    public native boolean isChickenJockey();
+    public native int getEggLayTime();
+    
+    //Setters for NBT Data
+    public native void setChickenJockey(boolean jockey);
+    public native void setEggLayTime(int time);
+}

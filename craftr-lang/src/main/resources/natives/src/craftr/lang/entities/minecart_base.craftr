@@ -1,0 +1,24 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public abstract entity minecart_base extends entity_base {
+    
+    //Getters for NBT Data
+    public native boolean isCustomDisplayTileEnabled();
+    public native String getDisplayTile();
+    public native int getDisplayData();
+    public native int getDisplayOffset();
+    
+    //Setters for NBT Data
+    public native void setCustomDisplayTileEnabled(boolean enabled);
+    public native void setDisplayTile(String tile);
+    public native void setDisplayData(int data);
+    public native void setDisplayOffset(int offset);
+}

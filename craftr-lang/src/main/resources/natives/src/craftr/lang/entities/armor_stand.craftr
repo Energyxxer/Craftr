@@ -1,0 +1,39 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity armor_stand extends entity_base {
+    
+    //Getters for NBT Data
+    public native int getDisabledSlots();
+    public native item_base getItemForSlot(Slot slot);
+    public native boolean isMarker();
+    public native boolean isInvisible();
+    public native boolean isBasePlateEnabled();
+    public native boolean isFallFlying();
+    public native Rotation getRotationForPart(int part);
+    public native boolean isArmsShown();
+    public native boolean isSmall();
+    
+    //Setters for NBT Data
+    public native void setDisabledSlots(int map);
+    public native void setDisabledSlots(int mainhand = -1, int feet = -1, int legs = -1, int chest = -1, int head = -1);
+    public native void setItemForSlot(Slot slot, item_base itm);
+    public native void setMarker(boolean marker);
+    public native void setInvisible(boolean invisible);
+    public native void setBasePlateEnabled(boolean enabled);
+    public native void setFallFlying(boolean fallFlying);
+    public native void setRotationForPart(Rotation head = null, Rotation body = null, Rotation leftArm = null, Rotation rightArm = null, Rotation leftLeg = null, Rotation rightLeg = null);
+    public native void setArmsShown(boolean shown);
+    public native void setSmall(boolean small);
+    
+    //Helper properties
+    public native boolean isDummy();
+    public native void setDummy();
+}

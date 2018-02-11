@@ -1,0 +1,28 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity villager extends living_base {
+    
+    //Getters for NBT Data
+    public native int getProfession();
+    public native int getRiches();
+    public native int getCareer();
+    public native int getCareerLevel();
+    public native boolean isWilling();
+    //Offers currently unsupported
+    
+    //Setters for NBT Data
+    public native void setProfession(int profession);
+    public native void setRiches(int riches);
+    public native void setCareer(int career);
+    public native void setCareerLevel(int level);
+    public native void setWilling(boolean willing);
+    //Offers currently unsupported
+}

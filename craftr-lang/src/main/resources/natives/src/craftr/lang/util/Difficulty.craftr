@@ -1,0 +1,13 @@
+package craftr.lang.util;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 22/7/2017.
+*/
+public enum Difficulty {
+    PEACEFUL, NORMAL, HARD
+}

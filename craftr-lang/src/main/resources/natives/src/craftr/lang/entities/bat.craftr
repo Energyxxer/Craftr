@@ -1,0 +1,18 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity bat extends living_base {
+    
+    //Getters for NBT Data
+    public native boolean isSleeping();
+    
+    //Setters for NBT Data
+    public native void setSleeping(boolean sleeping);
+}

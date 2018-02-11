@@ -1,0 +1,24 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity wither_skull extends projectile_base {
+    
+    //Getters for NBT Data
+    public native Vector3D getDirection();
+    public native int getLife();
+    public native Vector3D getPower();
+    
+    //Setters for NBT Data
+    public native void setDirection(Vector3D dir);
+    public native void setDirection(double x, double y, double z);
+    public native void setLife(int ticks);
+    public native void setPower(Vector3D power);
+    public native void setPower(double x, double y, double z);
+}

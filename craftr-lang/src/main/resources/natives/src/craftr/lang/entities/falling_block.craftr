@@ -1,0 +1,30 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity falling_block extends entity_base {
+    
+    //Getters for NBT Data
+    public native BlockType getBlockType();
+    public native int getData();
+    public native int getTime();
+    public native boolean isDropItemEnabled();
+    public native boolean isHurtEntitiesEnabled();
+    public native int getFallHurtMax();
+    public native float getFallHurtAmount();
+    
+    //Setters for NBT Data
+    public native void setBlockType(BlockType type);
+    public native void setData(int data);
+    public native void setTime(int time);
+    public native void setDropItemEnabled(boolean enabled);
+    public native void setHurtEntitiesEnabled(boolean enabled);
+    public native void setFallHurtMax(int max);
+    public native void setFallHurtAmount(int amount);
+}

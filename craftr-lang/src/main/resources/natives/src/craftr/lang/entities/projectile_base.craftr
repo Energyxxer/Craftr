@@ -1,0 +1,24 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public abstract entity projectile_base extends entity_base {
+    
+    //Getters for NBT Data
+    public native int getXTile();
+    public native int getYTile();
+    public native int getZTile();
+    //inTile tag currently unsupported
+    
+    //Setters for NBT Data
+    public native void setXTile(int x);
+    public native void setYTile(int y);
+    public native void setZTile(int z);
+    //inTile tag currently unsupported
+}

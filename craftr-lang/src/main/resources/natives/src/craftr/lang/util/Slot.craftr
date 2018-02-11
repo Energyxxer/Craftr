@@ -1,0 +1,120 @@
+package craftr.lang.util;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public enum Slot {
+    ARMOR_HEAD(103),
+    ARMOR_CHEST(102),
+    ARMOR_LEGGINGS(101),
+    ARMOR_FEET(100),
+    WEAPON_MAINHAND,
+    WEAPON_OFFHAND(-106),
+    ENDERCHEST_0(0),
+    ENDERCHEST_1(1),
+    ENDERCHEST_2(2),
+    ENDERCHEST_3(3),
+    ENDERCHEST_4(4),
+    ENDERCHEST_5(5),
+    ENDERCHEST_6(6),
+    ENDERCHEST_7(7),
+    ENDERCHEST_8(8),
+    ENDERCHEST_9(9),
+    ENDERCHEST_10(10),
+    ENDERCHEST_11(11),
+    ENDERCHEST_12(12),
+    ENDERCHEST_13(13),
+    ENDERCHEST_14(14),
+    ENDERCHEST_15(15),
+    ENDERCHEST_16(16),
+    ENDERCHEST_17(17),
+    ENDERCHEST_18(18),
+    ENDERCHEST_19(19),
+    ENDERCHEST_20(20),
+    ENDERCHEST_21(21),
+    ENDERCHEST_22(22),
+    ENDERCHEST_23(23),
+    ENDERCHEST_24(24),
+    ENDERCHEST_25(25),
+    ENDERCHEST_26(26),
+    HOTBAR_0(0),
+    HOTBAR_1(1),
+    HOTBAR_2(2),
+    HOTBAR_3(3),
+    HOTBAR_4(4),
+    HOTBAR_5(5),
+    HOTBAR_6(6),
+    HOTBAR_7(7),
+    HOTBAR_8(8),
+    INVENTORY_0(9),
+    INVENTORY_1(10),
+    INVENTORY_2(11),
+    INVENTORY_3(12),
+    INVENTORY_4(13),
+    INVENTORY_5(14),
+    INVENTORY_6(15),
+    INVENTORY_7(16),
+    INVENTORY_8(17),
+    INVENTORY_9(18),
+    INVENTORY_10(19),
+    INVENTORY_11(20),
+    INVENTORY_12(21),
+    INVENTORY_13(22),
+    INVENTORY_14(23),
+    INVENTORY_15(24),
+    INVENTORY_16(25),
+    INVENTORY_17(26),
+    INVENTORY_18(27),
+    INVENTORY_19(28),
+    INVENTORY_20(29),
+    INVENTORY_21(30),
+    INVENTORY_22(31),
+    INVENTORY_23(32),
+    INVENTORY_24(33),
+    INVENTORY_25(34),
+    INVENTORY_26(35),
+    HORSE_SADDLE,
+    HORSE_CHEST,
+    HORSE_ARMOR,
+    HORSE_0(0),
+    HORSE_1(1),
+    HORSE_2(2),
+    HORSE_3(3),
+    HORSE_4(4),
+    HORSE_5(5),
+    HORSE_6(6),
+    HORSE_7(7),
+    HORSE_8(8),
+    HORSE_9(9),
+    HORSE_10(10),
+    HORSE_11(11),
+    HORSE_12(12),
+    HORSE_13(13),
+    HORSE_14(14),
+    VILLAGER_0(0),
+    VILLAGER_1(1),
+    VILLAGER_2(2),
+    VILLAGER_3(3),
+    VILLAGER_4(4),
+    VILLAGER_5(5),
+    VILLAGER_6(6),
+    VILLAGER_7(7);
+    
+    boolean fixed;
+    int inContainerID;
+    
+    Slot() {
+        this.fixed = false;
+        this.inContainerID = -1;
+    }
+    
+    Slot(int inContainerID) {
+        this.fixed = true;
+        this.inContainerID = inContainerID;
+    }
+}

@@ -1,0 +1,22 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity xp_orb extends entity_base {
+    
+    //Getters for NBT Data
+    public native int getAge();
+    public native int getHealth();
+    public native int getValue();
+    
+    //Setters for NBT Data
+    public native int setAge(int age);
+    public native int setHealth(int health);
+    public native int setValue(int value);
+}

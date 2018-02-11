@@ -1,0 +1,24 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity vex extends living_base {
+    
+    //Getters for NBT Data
+    public native int getBoundX();
+    public native int getBoundY();
+    public native int getBoundZ();
+    public native int getLifeTicks();
+    
+    //Setters for NBT Data
+    public native void setBoundX(int x);
+    public native void setBoundY(int y);
+    public native void setBoundZ(int z);
+    public native void setLifeTicks(int ticks);
+}

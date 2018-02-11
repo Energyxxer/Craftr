@@ -1,0 +1,45 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity area_effect_cloud extends entity_base {
+    
+    //Getters for NBT Data
+    public native int getAge();
+    public native Color getColor();
+    public native int getDuration();
+    public native int getReapplicationDelay();
+    public native int getWaitTime();
+    public native float getDurationOnUse();
+    public native float getRadius();
+    public native float getRadiusOnUse();
+    public native float getRadiusPerTick();
+    public native Particle getParticle();
+    public native int getParticleParam1();
+    public native int getParticleParam2();
+    public native StatusEffect[] getEffects();
+    
+    //Setters for NBT Data
+    public native void setAge(int age);
+    public native void setColor(Color color);
+    public native void setDuration(int duration);
+    public native void setReapplicationDelay(int delay);
+    public native void setWaitTime(int ticks);
+    public native void setDurationOnUse(float duration);
+    public native void setRadius(float radius);
+    public native void setRadiusOnUse(float radius);
+    public native void setRadiusPerTick(float radius);
+    public native void setParticle(Particle particle);
+    public native void setParticleParam1(int param);
+    public native void setParticleParam2(int param);
+    public native void setEffects(StatusEffect[] effects);
+    
+    //Helper procedures
+    public native void setDummy(boolean dummy);
+}

@@ -1,0 +1,24 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity item_entity extends entity_base {
+    
+    //Getters for NBT Data
+    public native int getAge();
+    public native int getHealth();
+    public native int getPickupDelay();
+    public native item_base getItem();
+    
+    //Setters for NBT Data
+    public native void setAge(int age);
+    public native void setHealth(int health);
+    public native void setPickupDelay(int delay);
+    public native void setItem(item_base itm);
+}

@@ -1,0 +1,22 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity zombie_pigman extends living_base {
+    
+    //Getters for NBT Data
+    public native boolean isBaby();
+    public native boolean canBreakDoors();
+    public native int getAnger();
+    
+    //Setters for NBT Data
+    public native void setBaby(boolean baby);
+    public native void setBreakDoors(boolean breakDoors);
+    public native void setAnger(int ticks);
+}

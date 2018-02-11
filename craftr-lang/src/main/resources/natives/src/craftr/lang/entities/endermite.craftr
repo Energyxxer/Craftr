@@ -1,0 +1,20 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity endermite extends living_base {
+    
+    //Getters for NBT Data
+    public native int getLifetime();
+    public native boolean isPlayerSpawned();
+    
+    //Setters for NBT Data
+    public native void setLifetime(int ticks);
+    public native void setPlayerSpawned(boolean playerSpawned);
+}

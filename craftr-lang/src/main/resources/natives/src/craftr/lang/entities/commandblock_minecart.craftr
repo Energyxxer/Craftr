@@ -1,0 +1,24 @@
+package craftr.lang.entities;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
+/**
+* Created by Energyxxer on 15/7/2017.
+*/
+public entity commandblock_minecart extends minecart_base {
+    
+    //Getters for NBT Data
+    public native String getCommand();
+    public native int getSuccessCount();
+    public native String getLastOutput();
+    public native boolean isTrackOutputEnabled();
+    
+    //Setters for NBT Data
+    public native void setCommand(String command);
+    public native void setSuccessCount(int successCount);
+    public native void setLastOutput(String output);
+    public native void setTrackOutputEnabled(boolean enabled);
+}
