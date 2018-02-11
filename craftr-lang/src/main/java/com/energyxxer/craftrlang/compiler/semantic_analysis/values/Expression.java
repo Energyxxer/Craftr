@@ -1,15 +1,14 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.FunctionWriter;
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 
-public class Expression extends Value implements FunctionWriter {
+public class Expression extends Value {
     protected boolean silent = false;
 
     private Value a;
@@ -33,7 +32,7 @@ public class Expression extends Value implements FunctionWriter {
     }
 
     @Override
-    public Value unwrap(MCFunction function) {
+    public Value unwrap(Function function) {
         return this.writeToFunction(function);
     }
 
@@ -65,12 +64,12 @@ public class Expression extends Value implements FunctionWriter {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
@@ -79,13 +78,12 @@ public class Expression extends Value implements FunctionWriter {
         return "(" + a + " " + op.getSymbol() + " " + b + ")";
     }
 
-    @Override
-    public Value writeToFunction(MCFunction function) {
+    public Value writeToFunction(Function function) {
         return a.runOperation(this.op, b, pattern, function, false, silent);
     }
 
     @Override
-    public UnresolvedObjectiveReference getReference() {
+    public LocalScore getReference() {
         throw new IllegalStateException("Dude, you shouldn't access an expression reference directly, first unwrap.");
     }
 
@@ -98,7 +96,7 @@ public class Expression extends Value implements FunctionWriter {
     }
 
     @Override
-    public Value clone(MCFunction function) {
+    public Value clone(Function function) {
         throw new IllegalStateException("Dude, you shouldn't clone an expression directly, first unwrap.");
     }
 }

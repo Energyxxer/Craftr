@@ -1,24 +1,23 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.FunctionWriter;
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
+import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 
-public abstract class Statement implements FunctionWriter {
+public abstract class Statement {
     protected final TokenPattern<?> pattern;
     protected final Context context;
-    protected final MCFunction function;
+    protected final Function function;
 
     protected boolean silent = false;
 
-    public Statement(TokenPattern<?> pattern, Context context, MCFunction function) {
+    public Statement(TokenPattern<?> pattern, Context context, Function function) {
         this.pattern = pattern;
         this.context = context;
         this.function = function;
     }
 
-    public static Statement read(TokenPattern<?> pattern, Context context, MCFunction function) {
+    public static Statement read(TokenPattern<?> pattern, Context context, Function function) {
         switch(pattern.getName()) {
             case "EXPRESSION_STATEMENT": return new ExpressionStatement(pattern, context, function);
             case "SETUP_STATEMENT": return new SetupStatement(pattern, context, function);

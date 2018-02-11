@@ -1,9 +1,8 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.codegen.players.ScoreHolderEntity;
-import com.energyxxer.craftrlang.compiler.codegen.players.ScoreHolder;
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
+import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
@@ -32,7 +31,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         this(unit, null, context);
     }
 
-    public ObjectInstance(Unit unit, UnresolvedObjectiveReference reference, Context context) {
+    public ObjectInstance(Unit unit, LocalScore reference, Context context) {
         super(reference, context);
         this.unit = unit;
 
@@ -42,7 +41,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         this.fieldLog.put("this", this);
 
         //TODO: Actual scoreHolder constructor...
-        this.scoreHolder = new ScoreHolderEntity(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager(), this);
+        //this.scoreHolder = new ScoreHolderEntity(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager(), this);
     }
 
     public @NotNull Unit getUnit() {
@@ -65,12 +64,12 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
@@ -85,7 +84,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     }
 
     @Override
-    public ObjectInstance clone(MCFunction function) {
+    public ObjectInstance clone(Function function) {
         return new ObjectInstance(this.unit, this.reference, this.context);
     }
 

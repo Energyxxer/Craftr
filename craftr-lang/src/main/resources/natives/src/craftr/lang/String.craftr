@@ -1,14 +1,13 @@
 package craftr.lang;
 
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
 /**
-* Created by Energyxxer on 26/9/2017.
+* Created by Energyxxer on 27/7/2017.
 */
-public class String {
-    
-    public native String substring(int start, int end);
-    public native String substring(int start);
-    
+public final class String {
     public native int length();
-    
-    public native String();
 }

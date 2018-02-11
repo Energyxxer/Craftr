@@ -11,21 +11,23 @@ import java.io.File;
 public class CraftrLibrary {
     private final File dir;
     private final String name;
+    private final String prefix;
     private Compiler compiler = null;
 
     private CompilerReport report = null;
 
-    public CraftrLibrary(@NotNull File dir, String name) {
+    public CraftrLibrary(@NotNull File dir, String name, String prefix) {
         if(!dir.isDirectory()) throw new IllegalArgumentException("ERROR: File '" + dir + "' is not a directory. Native libraries must be contained inside a folder");
         this.dir = dir;
         this.name = name;
+        this.prefix = prefix;
     }
 
     public void awaitLib(Compiler parent, LibraryLoad callback, final ThreadLock lock) {
         synchronized(lock) {
             lock.condition = false;
             if(compiler == null) {
-                compiler = new Compiler(dir, name);
+                compiler = new Compiler(dir, name, prefix);
                 compiler.setBreakpoint(3);
                 compiler.addProgressListener(parent::setProgress);
                 compiler.addCompletionListener(() -> {

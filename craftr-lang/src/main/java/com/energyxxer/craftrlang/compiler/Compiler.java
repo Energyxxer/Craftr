@@ -1,6 +1,5 @@
 package com.energyxxer.craftrlang.compiler;
 
-import com.energyxxer.craftrlang.compiler.codegen.DataPackBuilder;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftrlang.compiler.parsing.Parser;
@@ -21,6 +20,7 @@ import java.util.HashMap;
 public class Compiler {
 	private final Project project;
 	private final String projectName;
+	private final String projectPrefix;
 	private final File source;
 	private final boolean silent;
 	private ArrayList<ProgressListener> progressListeners = new ArrayList<>();
@@ -33,7 +33,7 @@ public class Compiler {
 	private Parser parser;
 	private SemanticAnalyzer analyzer;
 
-	private DataPackBuilder dataPackBuilder;
+	private CraftrCommandModule module;
 
 	private Thread thread = null;
 
@@ -43,6 +43,7 @@ public class Compiler {
 	public Compiler(Project project) {
 		this.project = project;
 		this.projectName = project.getName();
+		this.projectPrefix = project.getPrefix();
 		this.source = project.getSource();
 
 		this.thread = new Thread(this::runCompilation,"Craftr-Compiler");
@@ -50,9 +51,10 @@ public class Compiler {
 		silent = false;
 	}
 
-	Compiler(File source, String name) {
+	Compiler(File source, String name, String prefix) {
 		this.project = null;
 		this.projectName = name;
+		this.projectPrefix = prefix;
 		this.source = source;
 
 		this.thread = new Thread(this::runCompilation,"Craftr-Compiler");
@@ -107,7 +109,7 @@ public class Compiler {
 		allPatterns.putAll(parser.getFilePatterns());
 
 		analyzer = new SemanticAnalyzer(this, allPatterns, source);
-		dataPackBuilder = new DataPackBuilder(this);
+		module = new CraftrCommandModule(projectName, projectPrefix);
 		if(library != null) {
 			LibraryLoad callback = (c,r) -> {
 				analyzer.join(c.analyzer);
@@ -145,6 +147,9 @@ public class Compiler {
 	private String randomPrefix = StringUtil.getRandomString(3);
 
 	public String getPrefix() {
+		if(projectPrefix != null) {
+			return projectPrefix;
+		}
 		if(project != null) {
 			return project.getPrefix();
 		}
@@ -213,9 +218,9 @@ public class Compiler {
 		return analyzer;
 	}
 
-	public DataPackBuilder getDataPackBuilder() {
-		return dataPackBuilder;
-	}
+	public CraftrCommandModule getModule() {
+	    return module;
+    }
 
 	public Thread getThread() {
 		return thread;

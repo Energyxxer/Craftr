@@ -1,21 +1,22 @@
 package craftr.lang.util;
 
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
 /**
-* Created by Energyxxer on 30/9/2017.
+* Created by Energyxxer on 15/7/2017.
 */
 public class StatusEffect {
-    private Effect id;
-    private int duration;
-    private int amplifier;
+    public final Effect id;
+    public int duration;
+    public int amplifier;
+    public boolean showParticles;
+    public boolean ambient;
     
-    public static final int SHOWN = 0;
-    public static final int AMBIENT = 1;
-    public static final int HIDDEN = 2;
-    
-    private int visibilityFlag = SHOWN;
-    
-    public StatusEffect(Effect id) {
-        this(id,30);
+    public StatusEffect(Effect id, int duration = 600, int amplifier = 0, boolean showParticles = true, boolean ambient = false) {
+        this(id, duration, amplifier, showParticles, ambient);
     }
     
     public StatusEffect(Effect id, int duration) {
@@ -23,19 +24,18 @@ public class StatusEffect {
     }
     
     public StatusEffect(Effect id, int duration, int amplifier) {
-        this(id, duration, amplifier, SHOWN);
+        this(id, duration, amplifier, true);
     }
     
-    public StatusEffect(Effect id, int duration, int amplifier, int visibilityFlag) {
+    public StatusEffect(Effect id, int duration, int amplifier, boolean showParticles) {
+        this(id, duration, amplifier, showParticles, false);
+    }
+    
+    public StatusEffect(Effect id, int duration, int amplifier, boolean showParticles, boolean ambient) {
         this.id = id;
         this.duration = duration;
         this.amplifier = amplifier;
-        
-        if(visibilityFlag >= SHOWN && visibilityFlag <= HIDDEN) {
-            this.visibilityFlag = visibilityFlag;
-        } else {
-            getWorld().print("Illegal visibility flag: " + visibilityFlag);
-            this.visibilityFlag = SHOWN;
-        }
+        this.showParticles = showParticles;
+        this.ambient = ambient;
     }
 }

@@ -1,9 +1,9 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.FakePlayer;
+import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.CraftrLang;
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.players.FakePlayer;
-import com.energyxxer.craftrlang.compiler.codegen.players.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -12,11 +12,7 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.*;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
@@ -158,11 +154,11 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
     /**
      * Function responsible for static initialization of this unit.
      * */
-    private MCFunction staticInitializer;
+    private Function staticInitializer;
     /**
      * Function responsible for instantiation of objects of this unit.
      * */
-    private MCFunction instanceInitializer;
+    private Function instanceInitializer;
 
     /**
      * The numeric ID of this unit type.
@@ -304,13 +300,13 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
             }
         };
 
-        staticPlayer = getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().createFakePlayer(this.name.toUpperCase());
+        //staticPlayer = getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().createFakePlayer(this.name.toUpperCase());
 
         dataType = new DataType(this);
         dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, r, c));
 
-        staticInitializer = new MCFunction(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$initStatic");
-        instanceInitializer = new MCFunction(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$init");
+        staticInitializer = this.getAnalyzer().getCompiler().getModule().projectNS.getFunctionManager().create(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$initStatic");
+        instanceInitializer = this.getAnalyzer().getCompiler().getModule().projectNS.getFunctionManager().create(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$init");
     }
 
     void initUnitActions() {
@@ -340,7 +336,8 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
                                     .get("entity_base");
                 } else if(type == UnitType.ENUM && !this.getFullyQualifiedName().equals("craftr.lang.Enum")) {
                     superUnit = (Unit)
-                            getAnalyzer().getLangPackage()
+                            getAnalyzer()
+                                    .getLangPackage()
                                     .getSubSymbolTable()
                                     .getMap()
                                     .get("Enum");
@@ -566,11 +563,11 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
         return instanceMethodLog;
     }
 
-    public MCFunction getStaticInitializer() {
+    public Function getStaticInitializer() {
         return staticInitializer;
     }
 
-    public MCFunction getInstanceInitializer() {
+    public Function getInstanceInitializer() {
         return instanceInitializer;
     }
 
@@ -641,7 +638,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
     @Override
     public String toString() {
-        return name;
+        return getFullyQualifiedName();
         /*return "" + modifiers + " " + type + " " + name + ""
                 + ((rawUnitExtends != null) ? " extends " + rawUnitExtends: "")
                 + ((rawUnitImplements != null) ? " implements " + rawUnitImplements: "")

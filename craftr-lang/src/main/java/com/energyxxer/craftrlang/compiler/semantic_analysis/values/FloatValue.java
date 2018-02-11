@@ -1,9 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.ScoreboardOperation;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.ResolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -24,7 +22,7 @@ public class FloatValue extends NumericalValue {
         this.value = value;
     }
 
-    public FloatValue(UnresolvedObjectiveReference reference, Context context) {
+    public FloatValue(LocalScore reference, Context context) {
         super(reference, context);
     }
 
@@ -34,12 +32,12 @@ public class FloatValue extends NumericalValue {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
 
         if(operator == Operator.ASSIGN) {
             if(operand instanceof NumericalValue && ((NumericalValue) operand).getWeight()<=this.getWeight()) {
@@ -113,20 +111,12 @@ public class FloatValue extends NumericalValue {
     }
 
     @Override
-    public FloatValue clone(MCFunction function) {
+    public FloatValue clone(Function function) {
         if(this.isExplicit()) {
             return new FloatValue(this.value, context);
         } else {
-            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().CLONE.GENERIC.get());
-
-            function.addInstruction(
-                    new ScoreboardOperation(
-                            newReference,
-                            ScoreboardOperation.ASSIGN,
-                            context.resolve(reference)
-                    )
-            );
-            return new FloatValue(newReference.getUnresolvedObjectiveReference(), context);
+            //TODO
+            return null;
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.players.ScoreHolder;
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -17,7 +17,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
@@ -50,7 +49,7 @@ public class CodeBlock extends Statement implements Context, DataHolder {
     private boolean initialized = false;
 
     public CodeBlock(TokenPattern<?> pattern, Context context) {
-        super(pattern, context, new MCFunction((context instanceof Method) ? "func@" + ((Method) context).getName() : ((context instanceof CodeBlock) ? ((CodeBlock) context).function.getName() : "func@" + context.getDeclaringFile().getIOFile().getName())));
+        super(pattern, context, null/*TODO: INITIALIZE FUNCTION HERE DAMMIT new Function((context instanceof Method) ? "func@" + ((Method) context).getName() : ((context instanceof CodeBlock) ? ((CodeBlock) context).function.getName() : "func@" + context.getDeclaringFile().getIOFile().getName()))*/);
 
         if(context instanceof CodeBlock) this.parentBlock = (CodeBlock) context;
 
@@ -71,7 +70,7 @@ public class CodeBlock extends Statement implements Context, DataHolder {
         return symbolTable;
     }
 
-    public MCFunction getFunction() {
+    public Function getFunction() {
         return function;
     }
 
@@ -79,8 +78,9 @@ public class CodeBlock extends Statement implements Context, DataHolder {
         return (parentBlock != null) ? parentBlock.getLevel()+1 : 0;
     }
 
-    @Override
-    public Value writeToFunction(MCFunction function) {
+    //TODO: Replace all old instances of FunctionWriter with a new CommandWriter that writes commands instead of whatever tf this used to write
+    public Value writeToFunction(Function function) {
+        if(true) return null;
         TokenPattern<?> inner = (TokenPattern<?>) pattern.getContents();
 
         closed = false;
@@ -100,9 +100,9 @@ public class CodeBlock extends Statement implements Context, DataHolder {
 
                 if(statement != null) {
                     statement.setSilent(silent);
-                    Value value = statement.writeToFunction(function);
+                    //Value value = statement.writeToFunction(function);
                     if(statement instanceof ReturnStatement) {
-                        returnValue = value;
+                        //returnValue = value;
                         closed = true;
                     }
                     //TEMPORARY. DO MORE STUFF OFC

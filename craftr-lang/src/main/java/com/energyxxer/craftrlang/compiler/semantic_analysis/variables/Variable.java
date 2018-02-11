@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.variables;
 
+import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.craftrlang.CraftrLang;
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -109,7 +109,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
         if(initialization != null) {
 
-            MCFunction initializerFunction;
+            Function initializerFunction;
             if(context instanceof Unit) {
                 if(modifiers.contains(CraftrLang.Modifier.STATIC))
                     initializerFunction = ((Unit) context).getStaticInitializer();
@@ -184,12 +184,12 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         //fromVariable SHOULD be false
         if(operand != null && operand instanceof Variable) {
             operand = ((Variable) operand).value;
@@ -277,7 +277,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     @Override
-    public Value clone(MCFunction function) {
+    public Value clone(Function function) {
         throw new IllegalStateException("Dude, don't clone the variable, clone the value!");
     }
 }

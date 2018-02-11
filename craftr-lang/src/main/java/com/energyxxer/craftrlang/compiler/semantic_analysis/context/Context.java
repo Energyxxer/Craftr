@@ -1,9 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.context;
 
-import com.energyxxer.craftrlang.compiler.codegen.objectives.ResolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.codegen.players.ScoreHolder;
-import com.energyxxer.craftrlang.compiler.codegen.players.ScoreHolderReference;
+import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
@@ -29,17 +26,4 @@ public interface Context {
     }
 
     ScoreHolder getPlayer();
-    default ScoreHolderReference getPlayerReference() {
-        ScoreHolder scoreHolder = getPlayer();
-        return (scoreHolder != null) ? new ScoreHolderReference(scoreHolder, "@s") : null;
-    }
-
-    default ScoreHolderReference resolve(ScoreHolder scoreHolder) {
-        ScoreHolder thisScoreHolder = getPlayer();
-        return (thisScoreHolder != null) ? thisScoreHolder.resolvePlayer(scoreHolder) : null;
-    }
-
-    default ResolvedObjectiveReference resolve(UnresolvedObjectiveReference reference) {
-        return reference.resolveTo(this.resolve(reference.getScoreHolder()));
-    }
 }

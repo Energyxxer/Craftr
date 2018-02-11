@@ -1,8 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.functions.Score;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -16,43 +15,15 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 /**
  * Created by Energyxxer on 07/11/2017.
  */
-public abstract class Value implements TraversableStructure, Score {
+public abstract class Value implements TraversableStructure {
     protected final Context context;
-    protected UnresolvedObjectiveReference reference = null;
-
-    /*
-    * TODO:  DDDD    OOO
-    * TODO:  D   D  O   O
-    * TODO:  D   D  O   O
-    * TODO:  D   D  O   O
-    * TODO:  DDDD    OOO
-    *
-    * TODO:  L        A    ZZZZZ  Y   Y
-    * TODO:  L       A A      Z    Y Y
-    * TODO:  L       AAA     Z      Y
-    * TODO:  L      A   A   Z       Y
-    * TODO:  LLLLL  A   A  ZZZZZ    Y
-    *
-    * TODO:  IIIII  N   N   SSS  TTTTT  RRRR   U   U   CCCC  TTTTT  IIIII   OOO   N   N
-    * TODO:    I    NN  N  S       T    R   R  U   U  C        T      I    O   O  NN  N
-    * TODO:    I    N N N   SS     T    RRRR   U   U  C        T      I    O   O  N N N
-    * TODO:    I    N  NN     S    T    R  R   U   U  C        T      I    O   O  N  NN
-    * TODO:  IIIII  N   N  SSS     T    R   R   UUU    CCCC    T    IIIII   OOO   N   N
-    *
-    * TODO:  IIIII  N   N   SSS  TTTTT    A    N   N  TTTTT  IIIII    A    TTTTT  IIIII   OOO   N   N
-    * TODO:    I    NN  N  S       T     A A   NN  N    T      I     A A     T      I    O   O  NN  N
-    * TODO:    I    N N N   SS     T     AAA   N N N    T      I     AAA     T      I    O   O  N N N
-    * TODO:    I    N  NN     S    T    A   A  N  NN    T      I    A   A    T      I    O   O  N  NN
-    * TODO:  IIIII  N   N  SSS     T    A   A  N   N    T    IIIII  A   A    T    IIIII   OOO   N   N
-    *
-    * tldr; do lazy instruction instantiation
-    * */
+    protected LocalScore reference = null;
 
     public Value(Context context) {
         this.context = context;
     }
 
-    public Value(UnresolvedObjectiveReference reference, Context context) {
+    public Value(LocalScore reference, Context context) {
         this.reference = reference;
         this.context = context;
     }
@@ -61,23 +32,19 @@ public abstract class Value implements TraversableStructure, Score {
         return reference == null;
     }
 
-    public void setReference(UnresolvedObjectiveReference reference) {
+    public void setReference(LocalScore reference) {
         this.reference = reference;
     }
 
-    public UnresolvedObjectiveReference getReference() {
+    public LocalScore getReference() {
         return reference;
-    }
-
-    public int getScoreboardValue() {
-        return Integer.MIN_VALUE;
     }
 
     public abstract DataType getDataType();
     public abstract SymbolTable getSubSymbolTable();
     public abstract MethodLog getMethodLog();
 
-    public Value runOperation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         Value returnValue = this.operation(operator, pattern, function, fromVariable, silent);
         if(returnValue == null) {
             this.context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator '" + operator.getSymbol() + "' cannot be applied to '" + getDataType() + "'", pattern.getFormattedPath()));
@@ -85,7 +52,7 @@ public abstract class Value implements TraversableStructure, Score {
         return returnValue;
     }
 
-    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
 
         Value thisUnwrapped = this.unwrap(function);
         Value operandUnwrapped = value.unwrap(function);
@@ -102,14 +69,14 @@ public abstract class Value implements TraversableStructure, Score {
         return returnValue;
     }
 
-    public Value unwrap(MCFunction function) {
+    public Value unwrap(Function function) {
         return this;
     }
 
-    protected abstract Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent);
-    protected abstract Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent);
+    protected abstract Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent);
+    protected abstract Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent);
 
-    public abstract Value clone(MCFunction function);
+    public abstract Value clone(Function function);
 
     public boolean isNull() {
         return getDataType() != null && getDataType().isNullType();

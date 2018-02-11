@@ -1,9 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.ScoreboardOperation;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.ResolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -26,7 +24,7 @@ public class BooleanValue extends Value {
         this.value = value;
     }
 
-    public BooleanValue(UnresolvedObjectiveReference reference, Context context) {
+    public BooleanValue(LocalScore reference, Context context) {
         super(reference, context);
     }
 
@@ -46,12 +44,12 @@ public class BooleanValue extends Value {
     }
 
     @Override
-    public Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    public Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return (operator == NOT) ? new BooleanValue(!this.value, context) : null;
     }
 
     @Override
-    public Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    public Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
 
         if(operator == Operator.ASSIGN) {
             if(operand instanceof BooleanValue) {
@@ -82,20 +80,12 @@ public class BooleanValue extends Value {
     }
 
     @Override
-    public BooleanValue clone(MCFunction function) {
+    public BooleanValue clone(Function function) {
         if(this.isExplicit()) {
             return new BooleanValue(this.value, context);
         } else {
-            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().CLONE.GENERIC.get());
-
-            function.addInstruction(
-                    new ScoreboardOperation(
-                            newReference,
-                            ScoreboardOperation.ASSIGN,
-                            context.resolve(reference)
-                    )
-            );
-            return new BooleanValue(newReference.getUnresolvedObjectiveReference(), context);
+            //TODO
+            return null;
         }
     }
 }

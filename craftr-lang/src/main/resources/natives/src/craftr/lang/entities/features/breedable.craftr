@@ -1,8 +1,22 @@
-package craftr.lang.entity.features;
+package craftr.lang.entities.features;
+
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
 
 /**
-* Created by Energyxxer on 27/9/2017.
+* Created by Energyxxer on 15/7/2017.
 */
-public feature breedable {
+public feature breedable requires living_base {
     
+    //Getters for NBT Data
+    public native int getLoveTicks();
+    public native int getAge();
+    public native int getForcedAge();
+    
+    //Setters for NBT Data
+    public native void setLoveTicks(int ticks);
+    public native void setAge(int age);
+    public native void setForcedAge(int forcedAge);
 }

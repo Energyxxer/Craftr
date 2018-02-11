@@ -1,10 +1,8 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.natives;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.RawCommand;
-import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.execute.ExecuteCommand;
-import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.execute.ExecuteStore;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.ResolvedObjectiveReference;
+import com.energyxxer.commodore.commands.execute.ExecuteCommand;
+import com.energyxxer.commodore.commands.time.TimeQueryCommand;
+import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -42,22 +40,22 @@ public class NativeMethods {
         methods.put("craftr.lang.World.getDayTime()",
                 (function, unused, unusedToo, pattern, context) -> {
 
-                    ResolvedObjectiveReference reference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get());
+                    //TODO START REBUILDING EVERYTHING FROM HERE PLEASE
+                    //TODO EVERYTHING ELSE IS A NIGHTMARE HELP
+                    //TODO THE ROAD TO NORMALITY STARTS HERE
 
-                    function.addInstruction(
-                            new ExecuteCommand(
-                                    new RawCommand("time query daytime"),
-                                    new ExecuteStore(
-                                            ExecuteStore.Action.RESULT,
-                                            reference
-                                    )
-                            )
-                    );
-                    return new IntegerValue(reference.getUnresolvedObjectiveReference(), context);
+                    //ResolvedObjectiveReference reference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get());
+
+                    ExecuteCommand exec = new ExecuteCommand(new TimeQueryCommand(TimeQueryCommand.TimeCounter.DAYTIME));
+                    //exec.addModifier(new ExecuteStoreScore(score));
+                    function.append(exec);
+
+                    //return new IntegerValue(reference.getUnresolvedObjectiveReference(), context);
+                    return null;
                 });
     }
 
-    public static Value execute(Method method, MCFunction function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, Context context) {
+    public static Value execute(Method method, Function function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, Context context) {
         String fullSignature = method.getSignature().getFullyQualifiedName();
         MethodExecutor executor = methods.get(fullSignature);
         if(executor != null) {

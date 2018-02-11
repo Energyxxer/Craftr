@@ -1,11 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.*;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
@@ -25,11 +21,11 @@ import java.util.ArrayList;
  */
 public final class ExprResolver {
 
-    public static Value analyzeValue(TokenPattern<?> pattern, Context context, DataHolder dataHolder, MCFunction function) {
+    public static Value analyzeValue(TokenPattern<?> pattern, Context context, DataHolder dataHolder, Function function) {
         return analyzeValue(pattern, context, dataHolder, function, false);
     }
 
-    public static Value analyzeValue(TokenPattern<?> pattern, Context context, DataHolder dataHolder, MCFunction function, boolean silent) {
+    public static Value analyzeValue(TokenPattern<?> pattern, Context context, DataHolder dataHolder, Function function, boolean silent) {
         TraversableStructure s = analyzeStructure(pattern, context, dataHolder, function, silent);
         if(s != null) {
             if(s instanceof Variable) return ((Variable) s).getValue();
@@ -39,11 +35,11 @@ public final class ExprResolver {
         return null;
     }
 
-    public static Value analyzeValueOrReference(TokenPattern<?> pattern, Context context, DataHolder dataHolder, MCFunction function) {
+    public static Value analyzeValueOrReference(TokenPattern<?> pattern, Context context, DataHolder dataHolder, Function function) {
         return analyzeValueOrReference(pattern, context, dataHolder, function, false);
     }
 
-    public static Value analyzeValueOrReference(TokenPattern<?> pattern, Context context, DataHolder dataHolder, MCFunction function, boolean silent) {
+    public static Value analyzeValueOrReference(TokenPattern<?> pattern, Context context, DataHolder dataHolder, Function function, boolean silent) {
         TraversableStructure s = analyzeStructure(pattern, context, dataHolder, function, silent);
         if(s != null) {
             if(s instanceof Variable) return (Variable) s;
@@ -57,7 +53,7 @@ public final class ExprResolver {
     //    return analyzeStructure(pattern, context, dataHolder, function, false);
     //}
 
-    public static TraversableStructure analyzeStructure(TokenPattern<?> pattern, Context context, DataHolder dataHolder, MCFunction function, boolean silent) {
+    public static TraversableStructure analyzeStructure(TokenPattern<?> pattern, Context context, DataHolder dataHolder, Function function, boolean silent) {
         try{
         switch(pattern.getName()) {
             case "NUMBER": {

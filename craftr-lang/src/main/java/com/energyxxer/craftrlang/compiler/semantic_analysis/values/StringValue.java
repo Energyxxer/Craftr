@@ -1,9 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.ScoreboardOperation;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.ResolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
@@ -22,7 +20,7 @@ public class StringValue extends Value {
         this.value = value;
     }
 
-    public StringValue(UnresolvedObjectiveReference reference, Context context) {
+    public StringValue(LocalScore reference, Context context) {
         super(reference, context);
     }
 
@@ -42,12 +40,12 @@ public class StringValue extends Value {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
@@ -61,20 +59,12 @@ public class StringValue extends Value {
     }
 
     @Override
-    public StringValue clone(MCFunction function) {
+    public StringValue clone(Function function) {
         if(this.isExplicit()) {
             return new StringValue(this.value, context);
         } else {
-            ResolvedObjectiveReference newReference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().CLONE.GENERIC.get());
-
-            function.addInstruction(
-                    new ScoreboardOperation(
-                            newReference,
-                            ScoreboardOperation.ASSIGN,
-                            context.resolve(reference)
-                    )
-            );
-            return new StringValue(newReference.getUnresolvedObjectiveReference(), context);
+            //TODO
+            return null;
         }
     }
 }

@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 
 public abstract class NumericalValue extends Value {
@@ -8,7 +8,7 @@ public abstract class NumericalValue extends Value {
         super(context);
     }
 
-    public NumericalValue(UnresolvedObjectiveReference reference, Context context) {
+    public NumericalValue(LocalScore reference, Context context) {
         super(reference, context);
     }
 

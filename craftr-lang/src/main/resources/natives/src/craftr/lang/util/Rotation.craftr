@@ -1,17 +1,23 @@
 package craftr.lang.util;
 
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
 /**
-* Created by Energyxxer on 27/9/2017.
+* Created by Energyxxer on 15/7/2017.
 */
 public class Rotation {
-    public double yaw, pitch;
+    public float yaw, pitch, roll;
     
     public Rotation() {
-        this(0,0);
+        this(0,0,0);
     }
     
-    public Rotation(double yaw, double pitch) {
+    public Rotation(float yaw, float pitch, float roll) {
         this.yaw = yaw;
         this.pitch = pitch;
+        this.roll = roll;
     }
 }

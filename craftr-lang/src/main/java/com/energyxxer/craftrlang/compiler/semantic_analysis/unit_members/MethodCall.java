@@ -1,11 +1,8 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.CraftrLang;
-import com.energyxxer.craftrlang.compiler.codegen.functions.FunctionWriter;
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.functions.instructions.commands.ScoreboardOperation;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.ResolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
@@ -26,7 +23,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MethodCall extends Value implements FunctionWriter, TraversableStructure {
+public class MethodCall extends Value implements TraversableStructure {
     private final TokenPattern<?> pattern;
     private String methodName;
     private ArrayList<ActualParameter> positionalParams = new ArrayList<>();
@@ -34,7 +31,7 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
 
     private Method method = null;
 
-    public MethodCall(TokenPattern<?> pattern, DataHolder dataHolder, MCFunction function, Context context) {
+    public MethodCall(TokenPattern<?> pattern, DataHolder dataHolder, Function function, Context context) {
         super(context);
         this.pattern = pattern;
         this.methodName = ((TokenItem) pattern.find("METHOD_CALL_NAME")).getContents().value;
@@ -90,7 +87,7 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
         }
 
         if(method != null && method.getReturnType() != DataType.VOID) {
-            this.reference = context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get();
+            //this.reference = context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get();
         }
     }
 
@@ -119,86 +116,41 @@ public class MethodCall extends Value implements FunctionWriter, TraversableStru
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    public Value writeToFunction(MCFunction function) {
-        if(method != null) {
-
-            ArrayList<ResolvedObjectiveReference> paramReferences = new ArrayList<>();
-
-            if(method.isStatic()) {
-                for(ActualParameter rawParam : positionalParams) {
-                    Value actualParam = rawParam.getValue();
-                    if(actualParam == null) {
-                        function.addComment("Actual param is null: " + rawParam);
-                        continue;
-                    }
-                    actualParam = actualParam.unwrap(function);
-                    if(actualParam == null) {
-                        function.addComment("Actual unwrapped param is null: " + rawParam);
-                    } else if(actualParam.isExplicit()) {
-
-                    } else {
-                        ResolvedObjectiveReference paramReference = context.resolve(context.getPlayer().PARAMETER.get());
-                        paramReference.setInUse(true);
-                        paramReferences.add(paramReference);
-                        function.addInstruction(
-                                new ScoreboardOperation(
-                                        paramReference,
-                                        ScoreboardOperation.ASSIGN,
-                                        context.resolve(actualParam.getReference())
-                                )
-                        );
-                    }
-                    rawParam.setValue(actualParam);
-                }
-                //TODO: Keyword Parameters
-            } else {
-                function.addComment(method.getName() + " is not static");
-            }
-
-            Value result = method.writeCall(function, positionalParams, keywordParams, pattern, context);
-            paramReferences.forEach(p -> p.setInUse(false));
-            return result;
-        }
+    public Value unwrap(Function function) {
         return null;
     }
 
     @Override
-    public Value unwrap(MCFunction function) {
-        Value value = this.writeToFunction(function);
-        return (value != null) ? value.unwrap(function) : null;
-    }
-
-    @Override
-    public Value runOperation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         Value unwrapped = this.unwrap(function);
         if(unwrapped != null) return unwrapped.runOperation(operator, pattern, function, fromVariable, silent);
         return null;
     }
 
     @Override
-    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         Value unwrapped = this.unwrap(function);
         if(unwrapped != null) return unwrapped.runOperation(operator, value, pattern, function, fromVariable, silent);
         else return null;
     }
 
     @Override
-    public UnresolvedObjectiveReference getReference() {
+    public LocalScore getReference() {
         throw new IllegalStateException("Dude, you shouldn't access a method call reference directly, first unwrap.");
     }
 
     @Override
-    public Value clone(MCFunction function) {
+    public Value clone(Function function) {
         throw new IllegalStateException("Dude, don't clone the method call, first unwrap.");
     }
 }

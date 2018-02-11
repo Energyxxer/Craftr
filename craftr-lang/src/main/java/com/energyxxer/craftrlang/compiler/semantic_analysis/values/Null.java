@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
@@ -33,17 +33,17 @@ public class Null extends Value {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, MCFunction function, boolean fromVariable, boolean silent) {
+    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
         return null;
     }
 
     @Override
-    public Value clone(MCFunction function) {
+    public Value clone(Function function) {
         return null;
     }
 
@@ -53,18 +53,13 @@ public class Null extends Value {
     }
 
     @Override
-    public void setReference(UnresolvedObjectiveReference reference) {
+    public void setReference(LocalScore reference) {
         //null
     }
 
     @Override
-    public UnresolvedObjectiveReference getReference() {
+    public LocalScore getReference() {
         return null;
-    }
-
-    @Override
-    public int getScoreboardValue() {
-        return Integer.MIN_VALUE;
     }
 
     @Override

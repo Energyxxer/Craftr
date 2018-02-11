@@ -1,9 +1,9 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
+import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
+import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.CraftrLang;
-import com.energyxxer.craftrlang.compiler.codegen.functions.MCFunction;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
-import com.energyxxer.craftrlang.compiler.codegen.players.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -16,11 +16,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.*;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.natives.NativeMethods;
@@ -30,12 +26,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by User on 5/16/2017.
@@ -247,10 +238,10 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     public void initCodeBlock() {
         if(codeBlock != null) {
             codeBlock.clearSymbols();
-            ArrayList<UnresolvedObjectiveReference> paramReferences = new ArrayList<>();
+            ArrayList<LocalScore> paramReferences = new ArrayList<>();
 
             for(FormalParameter param : positionalParams) {
-                UnresolvedObjectiveReference paramReference = this.getPlayer().PARAMETER.get();
+                /*LocalScore paramReference = this.getPlayer().PARAMETER.get();
                 paramReference.setInUse(true);
                 paramReferences.add(paramReference);
                 codeBlock.getSymbolTable().put(
@@ -264,11 +255,11 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
                                         this
                                 )
                         )
-                );
+                );*/
             }
             FormalParameter[] keywordArr = keywordParams.values().toArray(new FormalParameter[0]);
             for(FormalParameter param : keywordArr) {
-                UnresolvedObjectiveReference paramReference = this.getPlayer().PARAMETER.get();
+                /*LocalScore paramReference = this.getPlayer().PARAMETER.get();
                 paramReference.setInUse(true);
                 paramReferences.add(paramReference);
                 codeBlock.getSymbolTable().put(
@@ -282,13 +273,13 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
                                         this
                                 )
                         )
-                );
+                );*/
             }
             codeBlock.setSilent(false);
             codeBlock.initialize();
-            paramReferences.forEach(p -> p.setInUse(false));
+            //paramReferences.forEach(p -> p.setInUse(false));
 
-            System.out.println(codeBlock.getFunction().build());
+            //System.out.println(codeBlock.getFunction().build());
         }
     }
 
@@ -349,7 +340,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
         return signature.hashCode();
     }
 
-    public Value writeCall(MCFunction function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, Context context) {
+    public Value writeCall(Function function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, Context context) {
         if(this.modifiers.contains(CraftrLang.Modifier.NATIVE)) {
             return NativeMethods.execute(this, function, positionalParams, keywordParams, pattern, context);
         }

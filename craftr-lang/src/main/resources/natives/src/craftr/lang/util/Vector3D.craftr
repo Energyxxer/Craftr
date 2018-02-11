@@ -1,11 +1,15 @@
 package craftr.lang.util;
 
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
 /**
-* Created by Energyxxer on 27/9/2017.
+* Created by Energyxxer on 15/7/2017.
 */
 public class Vector3D {
     public double x, y, z;
-    //Maybe a "polar" flag?
     
     public Vector3D() {
         this(0,0,0);

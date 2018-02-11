@@ -1,56 +1,18 @@
 package craftr.lang;
 
+import craftr.lang.*;
+import craftr.lang.util.*;
+import craftr.lang.entities.*;
+import craftr.lang.items.*;
+
 /**
-* Created by Energyxxer on 30/9/2017.
+* Created by Energyxxer on 22/7/2017.
 */
-public abstract native world World {
+public native abstract world World {
     
-    public final WorldBorder worldBorder = this.instantiateWorldBorder();
+    //Getters
+    public native Difficulty getDifficulty();
     
-    private native WorldBorder instantiateWorldBorder();
-    
-    //Helper procedures
-    public native void print(String message);
-    // execute
-    public native void execute(String rawCommand); //wait...
-    // particle
-    public native void playParticle(Particle particle, double x, double y, double z, double dx, double dy, double dz, double speed, int count, boolean force, scoreHolder[] players, String param1, String param2);
-    public native void playParticle(Particle particle, double x, double y, double z, double dx, double dy, double dz, double speed, int count, boolean force);
-    public native void playParticle(Particle particle, Vector3D offset = null, double x = 0, double y = 0, double z = 0, Vector3D size = null, double dx = 0, double dy = 0, double dz = 0, double speed = 0, int count = 1, boolean force = false, scoreHolder[] players = null, String param1 = null, String param2 = null);
-    public native void playParticle(Particle particle, double x, double y, double z, Color tint);
-    public native void playParticle(Particle particle, Vector3D offset, Vector3D size, double speed, int count, boolean force, scoreHolder[] players, String param1, String param2);
-    public native void playParticle(Particle particle, Vector3D offset, Vector3D size, double speed, int count, boolean force);
-    public native void playParticle(Particle particle, Vector3D offset, Color tint);
-    // playsound
-    public native void playSound(String sound, SoundSource source, scoreHolder[] players, Vector3D offset, float volume, float pitch, float minVolume);
-    public native void playSound(String sound, SoundSource source = SoundSource.MASTER, scoreHolder[] players = null, Vector3D offset = null, float volume = 1, float pitch = 1, float minVolume = 0);
-    // stopsound
-    public native void stopSound(scoreHolder[] players, SoundSource source, String sound);
-    public native void stopSound(scoreHolder[] players, SoundSource source = null, String sound = null);
-    // setblock
-    public native void setBlock(Block block, Vector3D offset);
-    // fill
-    public native void fillBlocks(Block block, Vector3D offset0, Vector3D offset1);
-    
-    
-    //World procedures
-    // defaultgamemode
-    public native void setDefaultGamemode(Gamemode gamemode);
-    // gamerule
-    public native void setGamerule(String key, int value);
-    public native void setGamerule(String key, String value);
-    // setworldspawn
-    public native void setWorldSpawn(Vector3D pos);
-    // weather
-    public native void setWeather(WeatherState state);
-    public native void setWeather(WeatherState state, int duration);
-    // time
-    public native void setTime(int ticks);
-    public native void setTime(TimeOfDay time);
-    public native void addTime(int ticks);
-    
-    //World query
-    public native int getDayTime();
-    public native int getGameTime();
-    public native int getDay();
+    //Setters
+    public native void setDifficulty(Difficulty diff);
 }

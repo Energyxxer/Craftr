@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.data_types;
 
+import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.CraftrLang;
-import com.energyxxer.craftrlang.compiler.codegen.objectives.UnresolvedObjectiveReference;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -10,27 +10,12 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.BooleanValue;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.FloatValue;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.IntegerValue;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.*;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.ADD;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.AND;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.DIVIDE;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.EQUAL;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.GREATER_THAN;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.GREATER_THAN_OR_EQUAL;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.LESS_THAN;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.LESS_THAN_OR_EQUAL;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.MODULO;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.MULTIPLY;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.OR;
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.SUBTRACT;
+import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.*;
 
 /**
  * Created by User on 3/1/2017.
@@ -165,7 +150,7 @@ public class DataType {
         this.typeOperationPromise = typeOperationPromise;
     }
 
-    public Value createImplicit(UnresolvedObjectiveReference reference, Context context) {
+    public Value createImplicit(LocalScore reference, Context context) {
         if(referenceConstructor != null) return referenceConstructor.create(reference, context);
         else return null;
     }
