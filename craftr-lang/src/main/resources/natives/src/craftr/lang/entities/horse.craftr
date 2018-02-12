@@ -9,7 +9,7 @@ import craftr.lang.items.*;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public entity horse extends living_base implements breedable {
+public entity horse extends living_base implements breedable, tameable {
     
     //Getters for NBT Data
     public native boolean isEatingHaystack();

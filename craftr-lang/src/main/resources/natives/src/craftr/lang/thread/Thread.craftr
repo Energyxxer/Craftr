@@ -1,8 +1,11 @@
 package craftr.lang.thread;
 
 /**
-* Created by Energyxxer on 26/9/2017.
+* Created by User on 12/2/2018.
 */
 public class Thread {
     
+    String name = "Thread";
+    
+    public Thread(String label, float priority, int tickspeed) {}
 }

@@ -6,7 +6,9 @@ import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 import com.energyxxer.util.ImageManager;
+import com.energyxxer.util.out.Console;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +32,14 @@ public class Commons {
 
     public static void showInExplorer(String path) {
         try {
-            Runtime.getRuntime().exec("Explorer.exe /setSelected," + path);
+            if(System.getProperty("os.name").startsWith("Windows")) {
+                Runtime.getRuntime().exec("Explorer.exe /select," + path);
+            } else if(Desktop.isDesktopSupported()) {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.open(new File(path).getParentFile());
+            } else {
+                Console.err.println("Couldn't open file '" + path + "': Desktop is not supported");
+            }
         } catch (IOException x) {
             x.printStackTrace();
         }

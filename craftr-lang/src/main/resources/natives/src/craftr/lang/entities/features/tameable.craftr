@@ -8,11 +8,5 @@ import craftr.lang.items.*;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public feature tameable {
-    
-    //Getters for NBT Data
-    public native boolean isSitting();
-    
-    //Setters for NBT Data
-    public native void setSitting(boolean sitting);
+public feature Tameable {
 }

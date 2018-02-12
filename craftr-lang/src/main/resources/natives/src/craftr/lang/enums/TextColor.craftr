@@ -1,8 +1,0 @@
-package craftr.lang.enums;
-
-/**
-* Created by Energyxxer on 27/9/2017.
-*/
-public enum TextColor {
-    BLACK, DARK_BLUE, DARK_GREEN, DARK_AQUA, DARK_RED, DARK_PURPLE, GOLD, GRAY, DARK_GRAY, BLUE, LIME, AQUA, RED, LIGHT_PURPLE, YELLOW, WHITE, RESET;
-}
