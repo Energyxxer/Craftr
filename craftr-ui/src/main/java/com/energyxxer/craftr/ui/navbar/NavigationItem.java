@@ -1,12 +1,10 @@
 package com.energyxxer.craftr.ui.navbar;
 
 import com.energyxxer.craftr.global.Commons;
+import com.energyxxer.craftr.ui.HintStylizer;
 import com.energyxxer.xswing.hints.TextHint;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -112,6 +110,7 @@ public class NavigationItem extends NavigationElement {
             Point loc = new Point(e.getXOnScreen()-e.getX(),e.getYOnScreen()-e.getY());
             loc.x += bounds.x+bounds.width/2;
             loc.y += bounds.y+bounds.height/2;
+            HintStylizer.style(hint);
             hint.show(loc, this::isRollover);
         }
     }

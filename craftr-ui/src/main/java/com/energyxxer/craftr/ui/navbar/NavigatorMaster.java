@@ -2,15 +2,10 @@ package com.energyxxer.craftr.ui.navbar;
 
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.util.Constant;
-import com.energyxxer.xswing.hints.HintManager;
 import com.energyxxer.xswing.hints.TextHint;
 
-import javax.swing.JComponent;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.Rectangle;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -34,8 +29,7 @@ public class NavigatorMaster extends JComponent implements MouseListener, MouseM
     protected NavigationElement rolloverElement = null;
     protected NavigationElement selectedElement = null;
 
-    protected HintManager hintManager = new HintManager(CraftrWindow.jframe);
-    protected TextHint hint = hintManager.createTextHint("Sample Text");
+    protected TextHint hint = CraftrWindow.hintManager.createTextHint("Sample Text");
 
     public NavigatorMaster() {
         this(HORIZONTAL);
