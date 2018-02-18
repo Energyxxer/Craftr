@@ -1,0 +1,13 @@
+package craftr.lang.entities.features;
+
+/**
+* Created by User on 12/2/2018.
+*/
+public feature sittable requires living_base {
+    
+    //Getters for NBT Data
+    public native boolean isSitting();
+    
+    //Setters for NBT Data
+    public native void setSitting(boolean sitting);
+}
