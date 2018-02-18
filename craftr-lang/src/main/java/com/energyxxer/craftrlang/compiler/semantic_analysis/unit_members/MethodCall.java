@@ -146,11 +146,11 @@ public class MethodCall extends Value implements TraversableStructure {
 
     @Override
     public LocalScore getReference() {
-        throw new IllegalStateException("Dude, you shouldn't access a method call reference directly, first unwrap.");
+        throw new IllegalStateException("Mate, don't access a method call reference directly, first unwrap.");
     }
 
     @Override
     public Value clone(Function function) {
-        throw new IllegalStateException("Dude, don't clone the method call, first unwrap.");
+        throw new IllegalStateException("Mate, don't clone the method call, first unwrap.");
     }
 }
