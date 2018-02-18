@@ -17,6 +17,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
@@ -49,7 +50,16 @@ public class CodeBlock extends Statement implements Context, DataHolder {
     private boolean initialized = false;
 
     public CodeBlock(TokenPattern<?> pattern, Context context) {
-        super(pattern, context, null/*TODO: INITIALIZE FUNCTION HERE DAMMIT new Function((context instanceof Method) ? "func@" + ((Method) context).getName() : ((context instanceof CodeBlock) ? ((CodeBlock) context).function.getName() : "func@" + context.getDeclaringFile().getIOFile().getName()))*/);
+        super(pattern, context, context.getModuleNamespace().getFunctionManager().create(
+                (context instanceof Method) ?
+                        "func@" + ((Method) context).getName()
+                        :
+                        ((context instanceof CodeBlock) ?
+                                ((CodeBlock) context).function.getFullName()
+                                :
+                                "func@" + context.getDeclaringFile().getIOFile().getName()
+                        ), true
+        ));
 
         if(context instanceof CodeBlock) this.parentBlock = (CodeBlock) context;
 
@@ -62,7 +72,7 @@ public class CodeBlock extends Statement implements Context, DataHolder {
 
     public void initialize() {
         if(initialized) return;
-        this.writeToFunction(this.function);
+        this.writeCommands(this.function);
         initialized = true;
     }
 
@@ -78,7 +88,39 @@ public class CodeBlock extends Statement implements Context, DataHolder {
         return (parentBlock != null) ? parentBlock.getLevel()+1 : 0;
     }
 
+    @Override
+    public void writeCommands(Function function) {
+        TokenPattern<?> inner = (TokenPattern<?>) pattern.getContents();
+
+        closed = false;
+
+        TokenList list = (TokenList) inner.find("STATEMENT_LIST");
+        if(list != null) {
+            TokenPattern<?>[] rawStatements = list.getContents();
+            for(TokenPattern<?> rawStatement : rawStatements) {
+                if(closed) {
+                    if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unreachable statement", rawStatement.getFormattedPath()));
+                    return;
+                }
+                if(!(rawStatement instanceof TokenStructure)) continue;
+
+                Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this, function);
+
+                if(statement != null) {
+                    statement.setSilent(silent);
+                    statement.writeCommands(function);
+                    if(statement instanceof ReturnStatement) {
+                        //returnValue = value;
+                        closed = true;
+                    }
+                    //TEMPORARY. DO MORE STUFF OFC
+                }
+            }
+        }
+    }
+
     //TODO: Replace all old instances of FunctionWriter with a new CommandWriter that writes commands instead of whatever tf this used to write
+    @Deprecated
     public Value writeToFunction(Function function) {
         if(true) return null;
         TokenPattern<?> inner = (TokenPattern<?>) pattern.getContents();

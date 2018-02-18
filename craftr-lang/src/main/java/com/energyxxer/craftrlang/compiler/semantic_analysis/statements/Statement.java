@@ -1,10 +1,11 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.craftrlang.compiler.codegen.CommandWriter;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 
-public abstract class Statement {
+public abstract class Statement implements CommandWriter {
     protected final TokenPattern<?> pattern;
     protected final Context context;
     protected final Function function;
