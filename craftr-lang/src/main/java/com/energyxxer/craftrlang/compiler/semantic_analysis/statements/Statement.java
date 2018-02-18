@@ -26,6 +26,10 @@ public abstract class Statement implements CommandWriter {
             case "ACTION_STATEMENT": return new ActionStatement(pattern, context, function);
             case "RETURN_STATEMENT": return new ReturnStatement(pattern, context, function);
             case "IF_STATEMENT": return new IfStatement(pattern, context, function);
+            case "SWITCH_STATEMENT": return new SwitchStatement(pattern, context, function);
+            case "FOR_STATEMENT": return new ForStatement(pattern, context, function);
+            case "WHILE_STATEMENT": return new WhileStatement(pattern, context, function);
+            case "VARIABLE": return new VariableDeclaration(pattern, context, function);
             default: return null;
         }
     }

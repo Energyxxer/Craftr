@@ -94,6 +94,14 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
      *     This may be null until compilation stage 2.
      * */
     private List<Unit> features = null;
+    /**
+     * The units this feature requires in order to be implemented,
+     * <br>
+     * in the order of the implementation list.
+     * <br><br>
+     *     This may be null until compilation stage 2.
+     * */
+    private Unit requirement = null;
 
     /**
      * The flat list of tokens that make up the reference to the extended unit.
@@ -305,8 +313,8 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
         dataType = new DataType(this);
         dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, r, c));
 
-        staticInitializer = this.getAnalyzer().getCompiler().getModule().projectNS.getFunctionManager().create(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$initStatic");
-        instanceInitializer = this.getAnalyzer().getCompiler().getModule().projectNS.getFunctionManager().create(this.getFullyQualifiedName().replaceAll("\\.","/") + "/$init");
+        staticInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/$initStatic");
+        instanceInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/$init");
     }
 
     void initUnitActions() {
@@ -369,6 +377,25 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
                         this.features.add((Unit) symbol);
                     } else {
                         declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, UnitType.FEATURE.getName() + " name expected", path.get(path.size()-1).getFormattedPath()));
+                    }
+                }
+            }
+        }
+
+        if(rawUnitRequires != null) {
+            if(this.type != UnitType.FEATURE) {
+                declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "'requires' action is only valid for " + UnitType.FEATURE.getName() + " units", rawUnitRequires.get(rawUnitRequires.size()-1).getFormattedPath()));
+            } else {
+                Symbol symbol = declaringFile.getReferenceTable().getSymbol(rawUnitRequires, this);
+                if(symbol != null) {
+                    if(symbol instanceof Unit) {
+                        if(((Unit) symbol).type != UnitType.FEATURE) {
+                            this.requirement = (Unit) symbol;
+                        } else {
+                            declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-" + UnitType.FEATURE.getName().toLowerCase() + " unit name expected", rawUnitRequires.get(rawUnitRequires.size() - 1).getFormattedPath()));
+                        }
+                    } else {
+                        declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unit name expected", rawUnitRequires.get(rawUnitRequires.size()-1).getFormattedPath()));
                     }
                 }
             }
@@ -491,9 +518,6 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
     }
 
     void initCodeBlocks() {
-        System.out.println(staticInitializer);
-        System.out.println(instanceInitializer);
-
         staticMethodLog.initCodeBlocks();
         instanceMethodLog.initCodeBlocks();
     }
@@ -545,6 +569,10 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
     public String getFullyQualifiedName() {
         return declaringFile.getPackage().getFullyQualifiedName() + "." + name;
+    }
+
+    public String getFunctionPath() {
+        return getFullyQualifiedName().replace("\\.","/");
     }
 
     public FieldLog getStaticFieldLog() {

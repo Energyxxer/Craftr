@@ -8,5 +8,5 @@ import craftr.lang.items.*;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public feature Tameable {
+public feature tameable requires living_base {
 }

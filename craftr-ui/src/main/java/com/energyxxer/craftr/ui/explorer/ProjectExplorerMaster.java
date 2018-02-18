@@ -6,10 +6,10 @@ import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
 import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerSeparator;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
+import com.energyxxer.craftrlang.minecraft.MinecraftConstants;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 
-import java.awt.Color;
-import java.awt.Image;
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -99,6 +99,15 @@ public class ProjectExplorerMaster extends ExplorerMaster {
         File[] resourceFiles = new File(System.getProperty("user.home") + File.separator + "Craftr").listFiles();
         if(resourceFiles != null) {
             for(File f : resourceFiles) {
+                this.children.add(new ProjectExplorerItem(this, f, toOpen));
+            }
+        }
+
+        this.children.add(new ExplorerSeparator(this));
+
+        File[] minecraftFiles = new File(MinecraftConstants.getMinecraftDir() + File.separator + "saves" + File.separator + "Snapshot Tests" + File.separator + "datapacks").listFiles();
+        if(minecraftFiles != null) {
+            for(File f : minecraftFiles) {
                 this.children.add(new ProjectExplorerItem(this, f, toOpen));
             }
         }

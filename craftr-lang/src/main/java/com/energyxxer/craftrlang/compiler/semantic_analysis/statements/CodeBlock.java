@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
+import com.energyxxer.commodore.commands.function.FunctionCommand;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
@@ -52,12 +53,12 @@ public class CodeBlock extends Statement implements Context, DataHolder {
     public CodeBlock(TokenPattern<?> pattern, Context context) {
         super(pattern, context, context.getModuleNamespace().getFunctionManager().create(
                 (context instanceof Method) ?
-                        "func@" + ((Method) context).getName()
+                        context.getUnit().getFunctionPath() + "/met@" + ((Method) context).getName()
                         :
                         ((context instanceof CodeBlock) ?
                                 ((CodeBlock) context).function.getFullName()
                                 :
-                                "func@" + context.getDeclaringFile().getIOFile().getName()
+                                context.getUnit().getFunctionPath() + "/met@" + context.getDeclaringFile().getIOFile().getName()
                         ), true
         ));
 
@@ -72,24 +73,6 @@ public class CodeBlock extends Statement implements Context, DataHolder {
 
     public void initialize() {
         if(initialized) return;
-        this.writeCommands(this.function);
-        initialized = true;
-    }
-
-    public SymbolTable getSymbolTable() {
-        return symbolTable;
-    }
-
-    public Function getFunction() {
-        return function;
-    }
-
-    public int getLevel() {
-        return (parentBlock != null) ? parentBlock.getLevel()+1 : 0;
-    }
-
-    @Override
-    public void writeCommands(Function function) {
         TokenPattern<?> inner = (TokenPattern<?>) pattern.getContents();
 
         closed = false;
@@ -117,6 +100,24 @@ public class CodeBlock extends Statement implements Context, DataHolder {
                 }
             }
         }
+        initialized = true;
+    }
+
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
+    }
+
+    public Function getFunction() {
+        return function;
+    }
+
+    public int getLevel() {
+        return (parentBlock != null) ? parentBlock.getLevel()+1 : 0;
+    }
+
+    @Override
+    public void writeCommands(Function function) {
+        function.append(new FunctionCommand(this.function));
     }
 
     //TODO: Replace all old instances of FunctionWriter with a new CommandWriter that writes commands instead of whatever tf this used to write
