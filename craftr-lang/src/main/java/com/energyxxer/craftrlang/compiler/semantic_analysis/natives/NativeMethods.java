@@ -1,8 +1,11 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.natives;
 
 import com.energyxxer.commodore.commands.execute.ExecuteCommand;
+import com.energyxxer.commodore.commands.execute.ExecuteStoreScore;
 import com.energyxxer.commodore.commands.time.TimeQueryCommand;
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjective;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -21,7 +24,7 @@ public class NativeMethods {
     static {
         // Math
         methods.put("craftr.lang.util.Math.pow(int, int)",
-                (function, positionalParams, unused, pattern, context) -> {
+                (function, positionalParams, unused, pattern, semanticContext1) -> {
                     Value rawBase = positionalParams.get(0).getValue();
                     Value rawExponent = positionalParams.get(1).getValue();
 
@@ -29,16 +32,16 @@ public class NativeMethods {
                         int base = ((IntegerValue) rawBase).getRawValue();
                         int exponent = ((IntegerValue) rawExponent).getRawValue();
 
-                        return new IntegerValue((int) Math.pow(base, exponent), context);
+                        return new IntegerValue((int) Math.pow(base, exponent), semanticContext1);
                     } else {
-                        context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Math::pow hasn't been defined for implicit values yet btw.", pattern.getFormattedPath()));
+                        semanticContext1.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Math::pow hasn't been defined for implicit values yet btw.", pattern.getFormattedPath()));
                     }
                     return null;
                 }
         );
         //World
         methods.put("craftr.lang.World.getDayTime()",
-                (function, unused, unusedToo, pattern, context) -> {
+                (function, unused, unusedToo, pattern, semanticContext) -> {
 
                     //TODO START REBUILDING EVERYTHING FROM HERE PLEASE
                     //TODO EVERYTHING ELSE IS A NIGHTMARE HELP
@@ -46,12 +49,15 @@ public class NativeMethods {
 
                     //ResolvedObjectiveReference reference = semanticContext.resolve(semanticContext.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get());
 
+                    LocalizedObjective localObjective = semanticContext.getLocalizedObjectiveManager().RETURN.create();
+
+                    LocalScore score = new LocalScore(localObjective.getObjective(), semanticContext.getPlayer());
+
                     ExecuteCommand exec = new ExecuteCommand(new TimeQueryCommand(TimeQueryCommand.TimeCounter.DAYTIME));
-                    context.getAnalyzer().getCompiler().getModule().getCraftrObjectiveManager();
-                    //exec.addModifier(new ExecuteStoreScore(score));
+                    exec.addModifier(new ExecuteStoreScore(score));
                     function.append(exec);
 
-                    return new IntegerValue(42, context);
+                    return new IntegerValue(score, semanticContext);
 
                     //return new IntegerValue(reference.getUnresolvedObjectiveReference(), semanticContext);
                     //return null;

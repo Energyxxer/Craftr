@@ -1,14 +1,15 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
 import com.energyxxer.commodore.score.ScoreHolder;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
@@ -213,6 +214,12 @@ public class CraftrFile extends AbstractFileComponent implements SemanticContext
 
     @Override
     public DataHolder getDataHolder() {
+        return null;
+    }
+
+    @Override
+    public LocalizedObjectiveManager getLocalizedObjectiveManager() {
+        //Objectives have nothing to do with a file
         return null;
     }
 

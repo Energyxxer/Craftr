@@ -3,6 +3,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 import com.energyxxer.commodore.commands.function.FunctionCommand;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.ScoreHolder;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -12,8 +13,8 @@ import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
@@ -29,6 +30,8 @@ import java.util.List;
  */
 public class CodeBlock extends Statement implements SemanticContext, DataHolder {
     private boolean closed = false;
+
+    private LocalizedObjectiveManager locObjMgr = null;
 
     private CodeBlock parentBlock = null;
     private SymbolTable symbolTable = new SymbolTable() {
@@ -62,7 +65,16 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
                         ), true
         ));
 
-        if(semanticContext instanceof CodeBlock) this.parentBlock = (CodeBlock) semanticContext;
+        if(semanticContext instanceof CodeBlock) {
+            this.parentBlock = (CodeBlock) semanticContext;
+            this.locObjMgr = parentBlock.locObjMgr;
+        }
+
+        if(semanticContext instanceof CodeBlock || semanticContext instanceof Method) {
+            this.locObjMgr = semanticContext.getLocalizedObjectiveManager();
+        } else {
+            this.locObjMgr = getAnalyzer().getCompiler().getModule().createLocalizedObjectiveManager(this);
+        }
 
         this.clearSymbols();
     }
@@ -209,6 +221,11 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     @Override
     public ObjectInstance getInstance() {
         return semanticContext.getInstance();
+    }
+
+    @Override
+    public LocalizedObjectiveManager getLocalizedObjectiveManager() {
+        return null;
     }
 
     @Override

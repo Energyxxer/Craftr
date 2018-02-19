@@ -4,6 +4,7 @@ import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.FakePlayer;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.CraftrLang;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -151,6 +152,11 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
     private MethodLog instanceMethodLog;
 
     /**
+     * The localized objective manager for this static context.
+     * */
+    private LocalizedObjectiveManager locObjMgr;
+
+    /**
      * False until compilation stage 2.
      * */
     private boolean unitActionsInitialized = false;
@@ -253,6 +259,8 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
 
         file.getPackage().getSubSymbolTable().put(this);
 
+        this.locObjMgr = getAnalyzer().getCompiler().getModule().createLocalizedObjectiveManager(this);
+
         this.staticFieldLog = new FieldLog(this);
         this.instanceFieldLog = new FieldLog(this);
 
@@ -260,6 +268,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         this.instanceMethodLog = new MethodLog(this);
 
         this.instanceSemanticContext = new SemanticContext() {
+
             @Override
             public CraftrFile getDeclaringFile() {
                 return file;
@@ -309,9 +318,16 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
             public ScoreHolder getPlayer() {
                 return genericInstance.getScoreHolder();
             }
+
+            private LocalizedObjectiveManager locObjMgr = Unit.this.getAnalyzer().getCompiler().getModule().createLocalizedObjectiveManager(this);
+
+            @Override
+            public LocalizedObjectiveManager getLocalizedObjectiveManager() {
+                return locObjMgr;
+            }
         };
 
-        //staticPlayer = getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().createFakePlayer(this.name.toUpperCase());
+        staticPlayer = new FakePlayer(name.toUpperCase());
 
         dataType = new DataType(this);
         dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, r, c));
@@ -671,6 +687,11 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
     @Override
     public ScoreHolder getPlayer() {
         return staticPlayer;
+    }
+
+    @Override
+    public LocalizedObjectiveManager getLocalizedObjectiveManager() {
+        return locObjMgr;
     }
 
     @Override

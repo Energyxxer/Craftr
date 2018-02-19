@@ -1,9 +1,34 @@
-package com.energyxxer.craftrlang.compiler.codegen;
+package com.energyxxer.craftrlang.compiler.codegen.objectives;
 
 import com.energyxxer.craftrlang.compiler.CraftrCommandModule;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 
-public class CraftrObjectiveManager {
+public class LocalizedObjectiveManager {
     private final CraftrCommandModule module;
+    private final SemanticContext semanticContext;
+
+    public final LocalizedObjectiveGroup GENERIC;
+    public final LocalizedObjectiveGroup PARAMETER;
+    public final LocalizedObjectiveGroup OPERATION;
+    public final LocalizedObjectiveGroup RETURN;
+
+    public LocalizedObjectiveManager(CraftrCommandModule module, SemanticContext semanticContext) {
+        this.module = module;
+        this.semanticContext = semanticContext;
+
+        GENERIC = new LocalizedObjectiveGroup(this, "g");
+        PARAMETER = new LocalizedObjectiveGroup(this, "p");
+        OPERATION = new LocalizedObjectiveGroup(this, "op");
+        RETURN = new LocalizedObjectiveGroup(this, "r");
+    }
+
+    public SemanticContext getSemanticContext() {
+        return semanticContext;
+    }
+
+    public CraftrCommandModule getModule() {
+        return module;
+    }
 
     //
     // TODO: Hey, you know what you're doing with these stupid objective builders?
@@ -25,9 +50,14 @@ public class CraftrObjectiveManager {
 
     // class Objective:
     //     <Commodore's implementation>
-    // class LocalizedObjectiveGroup:
+    // class LocalizedObjectiveManager:
     //     + CraftrObjectiveManager parent: Craftr objective manager it belongs to, used to call Commodore's objective
     //           manager to create and get scoreboard objectives
+    //     + SemanticContext semanticContext: SemanticContext it belongs to
+    //     <Multiple localized objective groups for public access. e.g: GENERIC, OPERATION, RETURN...>
+    //     >> Owned by a semantic context, contains several common localized objective groups
+    // class LocalizedObjectiveGroup:
+    //     + LocalizedObjectiveManager parent: Localized objective manager it belongs to
     //     + String name: Objective name
     //     + SemanticContext semanticContext: SemanticContext it belongs to
     //     + List<LocalizedObjective> localizedObjectives: List of all captured objectives
@@ -42,10 +72,4 @@ public class CraftrObjectiveManager {
     //
     // Also good morning :)
     //
-
-    public CraftrObjectiveManager(CraftrCommandModule module) {
-        this.module = module;
-    }
-
-
 }

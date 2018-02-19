@@ -4,6 +4,7 @@ import com.energyxxer.commodore.module.Namespace;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.Compiler;
 import com.energyxxer.craftrlang.compiler.CraftrCommandModule;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
@@ -20,6 +21,8 @@ public interface SemanticContext {
     SemanticAnalyzer getAnalyzer();
     boolean isStatic();
     SemanticContext getParent();
+
+    LocalizedObjectiveManager getLocalizedObjectiveManager();
 
     SymbolTable getReferenceTable();
     DataHolder getDataHolder();

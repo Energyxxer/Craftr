@@ -108,9 +108,7 @@ public class Compiler {
             return;
         }
 
-        HashMap<File, TokenPattern<?>> allPatterns = new HashMap<>();
-
-        allPatterns.putAll(parser.getFilePatterns());
+        HashMap<File, TokenPattern<?>> allPatterns = new HashMap<>(parser.getFilePatterns());
 
         analyzer = new SemanticAnalyzer(this, allPatterns, source);
         module = new CraftrCommandModule(projectName, projectPrefix);
@@ -141,6 +139,7 @@ public class Compiler {
             finalizeCompilation();
             return;
         }
+        module.getObjectiveManager().setCreationFunction(module.projectNS.getFunctionManager().create("init"));
         if(projectOutput != null) module.compile(projectOutput, ModulePackGenerator.OutputType.FOLDER);
         this.setProgress("Compilation completed with " + report.getTotalsString());
         finalizeCompilation();

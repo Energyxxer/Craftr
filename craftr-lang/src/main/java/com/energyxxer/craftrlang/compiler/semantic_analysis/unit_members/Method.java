@@ -4,6 +4,7 @@ import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.CraftrLang;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -42,11 +43,12 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
     private List<FormalParameter> positionalParams = new ArrayList<>();
     private HashMap<String, FormalParameter> keywordParams = new HashMap<>();
 
+    private LocalizedObjectiveManager locObjMgr;
     private CodeBlock codeBlock;
 
     private final MethodSignature signature;
 
-    public Method(TokenPattern<?> pattern, Unit declaringUnit, MethodType type, List<CraftrLang.Modifier> modifiers, DataType returnType, String name, boolean validName, List<FormalParameter> positionalParams, HashMap<String, FormalParameter> keywordParams, CodeBlock codeBlock, MethodSignature signature) {
+    public Method(TokenPattern<?> pattern, Unit declaringUnit, MethodType type, List<CraftrLang.Modifier> modifiers, DataType returnType, String name, boolean validName, List<FormalParameter> positionalParams, HashMap<String, FormalParameter> keywordParams, LocalizedObjectiveManager locObjMgr, CodeBlock codeBlock, MethodSignature signature) {
         super(pattern);
         this.declaringUnit = declaringUnit;
         this.type = type;
@@ -56,6 +58,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         this.validName = validName;
         this.positionalParams = positionalParams;
         this.keywordParams = keywordParams;
+        this.locObjMgr = locObjMgr;
         this.codeBlock = codeBlock;
         this.signature = signature;
     }
@@ -177,6 +180,8 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
         this.signature = new MethodSignature(declaringUnit, name, positionalParams);
 
+        this.locObjMgr = getCompiler().getModule().createLocalizedObjectiveManager(this);
+
         TokenPattern<?> body = pattern.find("METHOD_BODY");
         boolean omitted = body.find("OMITTED_BODY") != null;
         if(omitted) {
@@ -190,7 +195,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
     }
 
     public Method duplicate() {
-        return new Method(pattern, declaringUnit, type, modifiers, returnType, name, validName, positionalParams, keywordParams, codeBlock, signature);
+        return new Method(pattern, declaringUnit, type, modifiers, returnType, name, validName, positionalParams, keywordParams, locObjMgr, codeBlock, signature);
     }
 
     public boolean isStatic() {
@@ -388,6 +393,11 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
     @Override
     public ObjectInstance getInstance() {
         return (!this.isStatic()) ? declaringUnit.getGenericInstance() : null;
+    }
+
+    @Override
+    public LocalizedObjectiveManager getLocalizedObjectiveManager() {
+        return null;
     }
 
     @Override

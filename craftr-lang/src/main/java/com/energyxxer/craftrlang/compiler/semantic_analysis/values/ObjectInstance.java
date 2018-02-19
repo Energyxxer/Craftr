@@ -1,8 +1,11 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
+import com.energyxxer.commodore.entity.GenericEntity;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.commodore.score.ScoreHolder;
+import com.energyxxer.commodore.selector.NameArgument;
+import com.energyxxer.commodore.selector.Selector;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
@@ -42,6 +45,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
 
         //TODO: Actual scoreHolder constructor...
         //this.scoreHolder = new ScoreHolderEntity(semanticContext.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager(), this);
+        this.scoreHolder = new GenericEntity(new Selector(Selector.BaseSelector.ALL_ENTITIES, new NameArgument(unit.getName())));
     }
 
     public @NotNull Unit getUnit() {
