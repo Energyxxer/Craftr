@@ -40,6 +40,8 @@ public class NavigatorMaster extends JComponent implements MouseListener, MouseM
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
+
+        this.setPreferredSize(new Dimension(30, 30));
     }
 
     public Constant getOrientation() {
