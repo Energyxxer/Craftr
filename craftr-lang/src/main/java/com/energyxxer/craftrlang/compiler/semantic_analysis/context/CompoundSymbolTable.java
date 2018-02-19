@@ -21,11 +21,11 @@ public class CompoundSymbolTable extends SymbolTable {
     }
 
     @Override
-    public Symbol getSymbol(List<Token> flatTokens, Context context, boolean silent) {
-        Symbol sym = super.getSymbol(flatTokens, context, true);
+    public Symbol getSymbol(List<Token> flatTokens, SemanticContext semanticContext, boolean silent) {
+        Symbol sym = super.getSymbol(flatTokens, semanticContext, true);
         if(sym != null) return sym;
         for(int i = 0; i < tables.size(); i++) {
-            sym = tables.get(i).getSymbol(flatTokens, context, (i < tables.size()-1) || silent);
+            sym = tables.get(i).getSymbol(flatTokens, semanticContext, (i < tables.size()-1) || silent);
             if(sym != null) return sym;
         }
         return null;

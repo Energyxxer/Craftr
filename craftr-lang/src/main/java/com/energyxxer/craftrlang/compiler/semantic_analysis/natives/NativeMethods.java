@@ -6,7 +6,7 @@ import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.ActualParameter;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.IntegerValue;
@@ -44,24 +44,27 @@ public class NativeMethods {
                     //TODO EVERYTHING ELSE IS A NIGHTMARE HELP
                     //TODO THE ROAD TO NORMALITY STARTS HERE
 
-                    //ResolvedObjectiveReference reference = context.resolve(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get());
+                    //ResolvedObjectiveReference reference = semanticContext.resolve(semanticContext.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get());
 
                     ExecuteCommand exec = new ExecuteCommand(new TimeQueryCommand(TimeQueryCommand.TimeCounter.DAYTIME));
+                    context.getAnalyzer().getCompiler().getModule().getCraftrObjectiveManager();
                     //exec.addModifier(new ExecuteStoreScore(score));
                     function.append(exec);
 
-                    //return new IntegerValue(reference.getUnresolvedObjectiveReference(), context);
-                    return null;
+                    return new IntegerValue(42, context);
+
+                    //return new IntegerValue(reference.getUnresolvedObjectiveReference(), semanticContext);
+                    //return null;
                 });
     }
 
-    public static Value execute(Method method, Function function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, Context context) {
+    public static Value execute(Method method, Function function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, SemanticContext semanticContext) {
         String fullSignature = method.getSignature().getFullyQualifiedName();
         MethodExecutor executor = methods.get(fullSignature);
         if(executor != null) {
-            return executor.writeCall(function, positionalParams, keywordParams, pattern, context);
+            return executor.writeCall(function, positionalParams, keywordParams, pattern, semanticContext);
         }
-        else context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Native Methods", NoticeType.INFO, "Require native implementation for '" + fullSignature + "'", method.pattern.getFormattedPath()));
+        else semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Native Methods", NoticeType.INFO, "Require native implementation for '" + fullSignature + "'", method.pattern.getFormattedPath()));
         return null;
     }
 }

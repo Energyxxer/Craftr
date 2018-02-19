@@ -3,7 +3,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
@@ -15,13 +15,13 @@ public class StringValue extends Value {
 
     private String value = null;
 
-    public StringValue(String value, Context context) {
-        super(context);
+    public StringValue(String value, SemanticContext semanticContext) {
+        super(semanticContext);
         this.value = value;
     }
 
-    public StringValue(LocalScore reference, Context context) {
-        super(reference, context);
+    public StringValue(LocalScore reference, SemanticContext semanticContext) {
+        super(reference, semanticContext);
     }
 
     @Override
@@ -61,7 +61,7 @@ public class StringValue extends Value {
     @Override
     public StringValue clone(Function function) {
         if(this.isExplicit()) {
-            return new StringValue(this.value, context);
+            return new StringValue(this.value, semanticContext);
         } else {
             //TODO
             return null;

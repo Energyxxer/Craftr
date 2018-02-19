@@ -5,7 +5,7 @@ import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
@@ -17,13 +17,13 @@ public class FloatValue extends NumericalValue {
 
     private float value = 0;
 
-    public FloatValue(float value, Context context) {
-        super(context);
+    public FloatValue(float value, SemanticContext semanticContext) {
+        super(semanticContext);
         this.value = value;
     }
 
-    public FloatValue(LocalScore reference, Context context) {
-        super(reference, context);
+    public FloatValue(LocalScore reference, SemanticContext semanticContext) {
+        super(reference, semanticContext);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class FloatValue extends NumericalValue {
                 this.reference = operand.clone(function).getReference();
                 return this.clone(function);
             } else {
-                if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
+                if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
                 return null;
             }
         }
@@ -61,21 +61,21 @@ public class FloatValue extends NumericalValue {
                 FloatValue floatOperand = (FloatValue) operand;
 
                 switch(operator) {
-                    case ADD: return new FloatValue(this.value + floatOperand.value, context);
-                    case SUBTRACT: return new FloatValue(this.value - floatOperand.value, context);
-                    case MULTIPLY: return new FloatValue(this.value * floatOperand.value, context);
-                    case DIVIDE: return new FloatValue(this.value / floatOperand.value, context);//Should probably add a case for division by zero
-                    case MODULO: return new FloatValue(this.value % floatOperand.value, context); //Should probably add a case for division by zero
-                    case EQUAL: return new BooleanValue(this.value == floatOperand.value, context);
-                    case LESS_THAN: return new BooleanValue(this.value < floatOperand.value, context);
-                    case LESS_THAN_OR_EQUAL: return new BooleanValue(this.value <= floatOperand.value, context);
-                    case GREATER_THAN: return new BooleanValue(this.value > floatOperand.value, context);
-                    case GREATER_THAN_OR_EQUAL: return new BooleanValue(this.value >= floatOperand.value, context);
+                    case ADD: return new FloatValue(this.value + floatOperand.value, semanticContext);
+                    case SUBTRACT: return new FloatValue(this.value - floatOperand.value, semanticContext);
+                    case MULTIPLY: return new FloatValue(this.value * floatOperand.value, semanticContext);
+                    case DIVIDE: return new FloatValue(this.value / floatOperand.value, semanticContext);//Should probably add a case for division by zero
+                    case MODULO: return new FloatValue(this.value % floatOperand.value, semanticContext); //Should probably add a case for division by zero
+                    case EQUAL: return new BooleanValue(this.value == floatOperand.value, semanticContext);
+                    case LESS_THAN: return new BooleanValue(this.value < floatOperand.value, semanticContext);
+                    case LESS_THAN_OR_EQUAL: return new BooleanValue(this.value <= floatOperand.value, semanticContext);
+                    case GREATER_THAN: return new BooleanValue(this.value > floatOperand.value, semanticContext);
+                    case GREATER_THAN_OR_EQUAL: return new BooleanValue(this.value >= floatOperand.value, semanticContext);
                 }
                 return null;
             }
         } else if(operand instanceof StringValue && operator == Operator.ADD) {
-            return new StringValue(String.valueOf(this.value)+((StringValue)operand).getRawValue(), this.context);
+            return new StringValue(String.valueOf(this.value)+((StringValue)operand).getRawValue(), this.semanticContext);
         }
         return null;
     }
@@ -113,7 +113,7 @@ public class FloatValue extends NumericalValue {
     @Override
     public FloatValue clone(Function function) {
         if(this.isExplicit()) {
-            return new FloatValue(this.value, context);
+            return new FloatValue(this.value, semanticContext);
         } else {
             //TODO
             return null;

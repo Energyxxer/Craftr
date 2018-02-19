@@ -11,7 +11,7 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
@@ -32,8 +32,8 @@ public class MethodCall extends Value implements TraversableStructure {
 
     private Method method = null;
 
-    public MethodCall(TokenPattern<?> pattern, DataHolder dataHolder, Function function, Context context) {
-        super(context);
+    public MethodCall(TokenPattern<?> pattern, DataHolder dataHolder, Function function, SemanticContext semanticContext) {
+        super(semanticContext);
         this.pattern = pattern;
         this.methodName = ((TokenItem) pattern.find("METHOD_CALL_NAME")).getContents().value;
 
@@ -55,23 +55,23 @@ public class MethodCall extends Value implements TraversableStructure {
                     if(rawLabel != null) {
                         label = ((TokenItem) rawLabel.find("PARAMETER_LABEL")).getContents().value;
                         if(CraftrLang.isPseudoIdentifier(label)) {
-                            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal keyword parameter label", rawLabel.getFormattedPath()));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal keyword parameter label", rawLabel.getFormattedPath()));
                         }
                     }
                     TokenPattern<?> rawValue = rawParam.find("VALUE");
-                    Value value = ExprResolver.analyzeValue(rawValue, context, null, function);
+                    Value value = ExprResolver.analyzeValue(rawValue, semanticContext, null, function);
 
                     if(label == null) {
                         positionalParams.add(new ActualParameter(rawParam, value));
                         if(value == null) {
-                            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Actual positional parameter is null: " + rawValue, rawValue.getFormattedPath()));
-                            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... context:" + context, rawValue.getFormattedPath()));
-                            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... context.isStatic():" + context.isStatic(), rawValue.getFormattedPath()));
-                            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... context.getUnit():" + context.getUnit(), rawValue.getFormattedPath()));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Actual positional parameter is null: " + rawValue, rawValue.getFormattedPath()));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... semanticContext:" + semanticContext, rawValue.getFormattedPath()));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... semanticContext.isStatic():" + semanticContext.isStatic(), rawValue.getFormattedPath()));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... semanticContext.getUnit():" + semanticContext.getUnit(), rawValue.getFormattedPath()));
                         }
                     } else {
                         if(keywordParams.containsKey(label)) {
-                            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate keyword parameter", rawLabel.getFormattedPath()));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate keyword parameter", rawLabel.getFormattedPath()));
                         }
                         keywordParams.put(label, new ActualParameter(rawParam, label, value));
                     }
@@ -84,15 +84,15 @@ public class MethodCall extends Value implements TraversableStructure {
         positionalParams.forEach(p -> formalParams.add(p.toFormal()));
 
         if(dataHolder.getMethodLog() == null) {
-            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method from an undefined data holder", pattern.getFormattedPath()));
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method from an undefined data holder", pattern.getFormattedPath()));
         } else {
             MethodSignature signature = new MethodSignature(dataHolder.getMethodLog().getDeclaringUnit(), methodName, formalParams);
 
-            this.method = dataHolder.getMethodLog().findMethod(signature, pattern, context, (dataHolder instanceof ObjectInstance) ? ((ObjectInstance) dataHolder) : null);
+            this.method = dataHolder.getMethodLog().findMethod(signature, pattern, semanticContext, (dataHolder instanceof ObjectInstance) ? ((ObjectInstance) dataHolder) : null);
         }
 
         if(method != null && method.getReturnType() != DataType.VOID) {
-            //this.reference = context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get();
+            //this.reference = semanticContext.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get();
         }
     }
 
@@ -132,7 +132,7 @@ public class MethodCall extends Value implements TraversableStructure {
 
     @Override
     public Value unwrap(Function function) {
-        return null;
+        return method.writeCall(function, positionalParams, keywordParams, pattern, semanticContext);
     }
 
     @Override

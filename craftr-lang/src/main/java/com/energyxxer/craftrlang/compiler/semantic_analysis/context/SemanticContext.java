@@ -13,13 +13,13 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstanc
 /**
  * Created by User on 5/16/2017.
  */
-public interface Context {
+public interface SemanticContext {
     CraftrFile getDeclaringFile();
     Unit getUnit();
     ContextType getContextType();
     SemanticAnalyzer getAnalyzer();
     boolean isStatic();
-    Context getParent();
+    SemanticContext getParent();
 
     SymbolTable getReferenceTable();
     DataHolder getDataHolder();

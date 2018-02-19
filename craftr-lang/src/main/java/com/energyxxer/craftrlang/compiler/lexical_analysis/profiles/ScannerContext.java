@@ -10,7 +10,7 @@ public interface ScannerContext {
      *
      * @param str The substring to analyze.
      *
-     * @return A context response object containing information about the analysis.
+     * @return A semanticContext response object containing information about the analysis.
      * */
     ScannerContextResponse analyze(String str);
 

@@ -12,7 +12,7 @@ import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
@@ -27,42 +27,42 @@ import java.util.List;
 /**
  * Created by Energyxxer on 07/10/2017.
  */
-public class CodeBlock extends Statement implements Context, DataHolder {
+public class CodeBlock extends Statement implements SemanticContext, DataHolder {
     private boolean closed = false;
 
     private CodeBlock parentBlock = null;
     private SymbolTable symbolTable = new SymbolTable() {
         @Override
-        public Symbol getSymbol(List<Token> flatTokens, Context context, boolean silent) {
+        public Symbol getSymbol(List<Token> flatTokens, SemanticContext semanticContext, boolean silent) {
             if(flatTokens.size() > 1) {
                 //I don't think this should even be allowed
-                if(!silent && !CodeBlock.this.silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Trying to get a symbol of more than one token from a code block...?", flatTokens.get(0).getFormattedPath()));
-                return super.getSymbol(flatTokens, context, silent);
+                if(!silent && !CodeBlock.this.silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Trying to get a symbol of more than one token from a code block...?", flatTokens.get(0).getFormattedPath()));
+                return super.getSymbol(flatTokens, semanticContext, silent);
             }
 
-            Symbol sym = super.getSymbol(flatTokens, context, true);
+            Symbol sym = super.getSymbol(flatTokens, semanticContext, true);
             if(sym != null) return sym;
-            if(parentBlock != null) return parentBlock.getSymbolTable().getSymbol(flatTokens, context, silent || CodeBlock.this.silent);
-            if(isStatic()) return context.getUnit().getStaticFieldLog().getSymbol(flatTokens, context, silent || CodeBlock.this.silent);
-            else return context.getUnit().getGenericInstance().getSubSymbolTable().getSymbol(flatTokens, context, silent || CodeBlock.this.silent);
+            if(parentBlock != null) return parentBlock.getSymbolTable().getSymbol(flatTokens, semanticContext, silent || CodeBlock.this.silent);
+            if(isStatic()) return semanticContext.getUnit().getStaticFieldLog().getSymbol(flatTokens, semanticContext, silent || CodeBlock.this.silent);
+            else return semanticContext.getUnit().getGenericInstance().getSubSymbolTable().getSymbol(flatTokens, semanticContext, silent || CodeBlock.this.silent);
         }
     };
 
     private boolean initialized = false;
 
-    public CodeBlock(TokenPattern<?> pattern, Context context) {
-        super(pattern, context, context.getModuleNamespace().getFunctionManager().create(
-                (context instanceof Method) ?
-                        context.getUnit().getFunctionPath() + "/met@" + ((Method) context).getName()
+    public CodeBlock(TokenPattern<?> pattern, SemanticContext semanticContext) {
+        super(pattern, semanticContext, semanticContext.getModuleNamespace().getFunctionManager().create(
+                (semanticContext instanceof Method) ?
+                        semanticContext.getUnit().getFunctionPath() + "/met@" + ((Method) semanticContext).getName()
                         :
-                        ((context instanceof CodeBlock) ?
-                                ((CodeBlock) context).function.getFullName()
+                        ((semanticContext instanceof CodeBlock) ?
+                                ((CodeBlock) semanticContext).function.getFullName()
                                 :
-                                context.getUnit().getFunctionPath() + "/met@" + context.getDeclaringFile().getIOFile().getName()
+                                semanticContext.getUnit().getFunctionPath() + "/met@" + semanticContext.getDeclaringFile().getIOFile().getName()
                         ), true
         ));
 
-        if(context instanceof CodeBlock) this.parentBlock = (CodeBlock) context;
+        if(semanticContext instanceof CodeBlock) this.parentBlock = (CodeBlock) semanticContext;
 
         this.clearSymbols();
     }
@@ -82,7 +82,7 @@ public class CodeBlock extends Statement implements Context, DataHolder {
             TokenPattern<?>[] rawStatements = list.getContents();
             for(TokenPattern<?> rawStatement : rawStatements) {
                 if(closed) {
-                    if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unreachable statement", rawStatement.getFormattedPath()));
+                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unreachable statement", rawStatement.getFormattedPath()));
                     return;
                 }
                 if(!(rawStatement instanceof TokenStructure)) continue;
@@ -134,7 +134,7 @@ public class CodeBlock extends Statement implements Context, DataHolder {
             TokenPattern<?>[] rawStatements = list.getContents();
             for(TokenPattern<?> rawStatement : rawStatements) {
                 if(closed) {
-                    if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unreachable statement", rawStatement.getFormattedPath()));
+                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unreachable statement", rawStatement.getFormattedPath()));
                     return returnValue;
                 }
                 if(!(rawStatement instanceof TokenStructure)) continue;
@@ -163,27 +163,27 @@ public class CodeBlock extends Statement implements Context, DataHolder {
 
     @Override
     public CraftrFile getDeclaringFile() {
-        return context.getDeclaringFile();
+        return semanticContext.getDeclaringFile();
     }
 
     @Override
     public Unit getUnit() {
-        return context.getUnit();
+        return semanticContext.getUnit();
     }
 
     @Override
     public SemanticAnalyzer getAnalyzer() {
-        return context.getAnalyzer();
+        return semanticContext.getAnalyzer();
     }
 
     @Override
     public boolean isStatic() {
-        return context.isStatic();
+        return semanticContext.isStatic();
     }
 
     @Override
-    public Context getParent() {
-        return context;
+    public SemanticContext getParent() {
+        return semanticContext;
     }
 
     @Override
@@ -203,16 +203,16 @@ public class CodeBlock extends Statement implements Context, DataHolder {
 
     @Override
     public MethodLog getMethodLog() {
-        return this.isStatic() ? context.getUnit().getMethodLog() : context.getUnit().getGenericInstance().getMethodLog();
+        return this.isStatic() ? semanticContext.getUnit().getMethodLog() : semanticContext.getUnit().getGenericInstance().getMethodLog();
     }
 
     @Override
     public ObjectInstance getInstance() {
-        return context.getInstance();
+        return semanticContext.getInstance();
     }
 
     @Override
     public ScoreHolder getPlayer() {
-        return (isStatic() ? context.getUnit().getPlayer() : context.getInstance().getScoreHolder());
+        return (isStatic() ? semanticContext.getUnit().getPlayer() : semanticContext.getInstance().getScoreHolder());
     }
 }

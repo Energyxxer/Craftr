@@ -5,7 +5,7 @@ import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
@@ -19,13 +19,13 @@ public class BooleanValue extends Value {
 
     private boolean value = false;
 
-    public BooleanValue(boolean value, Context context) {
-        super(context);
+    public BooleanValue(boolean value, SemanticContext semanticContext) {
+        super(semanticContext);
         this.value = value;
     }
 
-    public BooleanValue(LocalScore reference, Context context) {
-        super(reference, context);
+    public BooleanValue(LocalScore reference, SemanticContext semanticContext) {
+        super(reference, semanticContext);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class BooleanValue extends Value {
 
     @Override
     public Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
-        return (operator == NOT) ? new BooleanValue(!this.value, context) : null;
+        return (operator == NOT) ? new BooleanValue(!this.value, semanticContext) : null;
     }
 
     @Override
@@ -57,18 +57,18 @@ public class BooleanValue extends Value {
                 this.reference = operand.clone(function).getReference();
                 return this.clone(function);
             } else {
-                if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
+                if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
                 return null;
             }
         }
 
         if(operand instanceof BooleanValue) switch(operator) {
             case AND:
-                return new BooleanValue(this.value && ((BooleanValue) operand).value, this.context);
+                return new BooleanValue(this.value && ((BooleanValue) operand).value, this.semanticContext);
             case OR:
-                return new BooleanValue(this.value || ((BooleanValue) operand).value, this.context);
+                return new BooleanValue(this.value || ((BooleanValue) operand).value, this.semanticContext);
             case EQUAL:
-                return new BooleanValue(this.value == ((BooleanValue) operand).value, this.context);
+                return new BooleanValue(this.value == ((BooleanValue) operand).value, this.semanticContext);
         }
 
         return null;
@@ -82,7 +82,7 @@ public class BooleanValue extends Value {
     @Override
     public BooleanValue clone(Function function) {
         if(this.isExplicit()) {
-            return new BooleanValue(this.value, context);
+            return new BooleanValue(this.value, semanticContext);
         } else {
             //TODO
             return null;

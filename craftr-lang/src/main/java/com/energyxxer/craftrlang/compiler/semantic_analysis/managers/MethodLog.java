@@ -4,7 +4,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodSignature;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
@@ -49,26 +49,26 @@ public class MethodLog {
         return methods.get(signature);
     }
 
-    public Method findMethod(MethodSignature signature, TokenPattern<?> pattern, Context context, ObjectInstance instance) {
+    public Method findMethod(MethodSignature signature, TokenPattern<?> pattern, SemanticContext semanticContext, ObjectInstance instance) {
         Method method = this.findMethod(signature);
         if(method == null) {
             parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method '" + signature + "'", pattern.getFormattedPath()));
             return null;
         }
         if(!method.isStatic() && instance == null) { //TODO SOMETHING ABOUT THE INSTANCE PLEASE
-            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-static method '" + method.getSignature() + "' cannot be accessed from a static context", pattern.getFormattedPath()));
+            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-static method '" + method.getSignature() + "' cannot be accessed from a static semanticContext", pattern.getFormattedPath()));
         }
 
         switch(method.getVisibility()) {
             case GLOBAL: return method;
             case UNIT: {
-                if(method.getUnit() == context.getUnit()) return method; else break;
+                if(method.getUnit() == semanticContext.getUnit()) return method; else break;
             }
             case UNIT_INHERITED: {
-                if(context.getUnit().instanceOf(method.getUnit())) return method; else break;
+                if(semanticContext.getUnit().instanceOf(method.getUnit())) return method; else break;
             }
             case PACKAGE: {
-                if(method.getPackage() == context.getDeclaringFile().getPackage()) return method; else break;
+                if(method.getPackage() == semanticContext.getDeclaringFile().getPackage()) return method; else break;
             }
         }
         //If you got here it means you have no access. Sorry m8
@@ -76,7 +76,7 @@ public class MethodLog {
                 new Notice(
                         NoticeType.ERROR,
                         "Cannot access method '" + signature.getFullyQualifiedName()
-                                + "' from current context.",
+                                + "' from current semanticContext.",
                         pattern.getFormattedPath()
                 )
         );

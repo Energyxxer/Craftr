@@ -33,15 +33,15 @@ import java.util.List;
 /**
  * Created by User on 2/25/2017.
  */
-public class Unit extends AbstractFileComponent implements Symbol, DataHolder, Context, TraversableStructure {
+public class Unit extends AbstractFileComponent implements Symbol, DataHolder, SemanticContext, TraversableStructure {
     /**
      * The <code>CraftrFile</code> that declares this unit.
      * */
     private final CraftrFile declaringFile;
     /**
-     * The context used for instance things...? I don't think we even need this.
+     * The semanticContext used for instance things...? I don't think we even need this.
      * */
-    private final Context instanceContext;
+    private final SemanticContext instanceSemanticContext;
     /**
      * The visibility of this unit. Either:
      * <ul>
@@ -259,7 +259,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
         this.staticMethodLog = new MethodLog(this);
         this.instanceMethodLog = new MethodLog(this);
 
-        this.instanceContext = new Context() {
+        this.instanceSemanticContext = new SemanticContext() {
             @Override
             public CraftrFile getDeclaringFile() {
                 return file;
@@ -286,7 +286,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
             }
 
             @Override
-            public Context getParent() {
+            public SemanticContext getParent() {
                 return Unit.this;
             }
 
@@ -512,7 +512,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
             }
         }
 
-        this.genericInstance = new ObjectInstance(this, this.instanceContext);
+        this.genericInstance = new ObjectInstance(this, this.instanceSemanticContext);
 
         unitComponentsInitialized = true;
     }
@@ -646,8 +646,8 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
         return true;
     }
 
-    public Context getInstanceContext() {
-        return this.instanceContext;
+    public SemanticContext getInstanceSemanticContext() {
+        return this.instanceSemanticContext;
     }
 
     public List<Unit> getInheritanceMap() {
@@ -655,7 +655,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
     }
 
     @Override
-    public Context getParent() {
+    public SemanticContext getParent() {
         return declaringFile;
     }
 

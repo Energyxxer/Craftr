@@ -71,32 +71,32 @@ public class SymbolTable implements Iterable<Symbol> {
         return parent.getRoot();
     }
 
-    public Symbol getSymbol(List<Token> flatTokens, Context context) {
-        return getSymbol(flatTokens, context, false);
+    public Symbol getSymbol(List<Token> flatTokens, SemanticContext semanticContext) {
+        return getSymbol(flatTokens, semanticContext, false);
     }
 
-    public Symbol getSymbol(List<Token> flatTokens, Context context, boolean silent) {
+    public Symbol getSymbol(List<Token> flatTokens, SemanticContext semanticContext, boolean silent) {
         Token token = flatTokens.get(0);
         String raw = token.value;
         Symbol next = this.table.get(raw);
         if(next != null) {
             switch(next.getVisibility()) {
                 case PACKAGE: {
-                    if(context.getDeclaringFile().getPackage() != next.getPackage()) {
+                    if(semanticContext.getDeclaringFile().getPackage() != next.getPackage()) {
 
-                        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
+                        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current semanticContext", token.getFormattedPath()));
                     }
                     break;
                 }
                 case UNIT: {
-                    if(context.getUnit() != next.getUnit()) {
-                        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
+                    if(semanticContext.getUnit() != next.getUnit()) {
+                        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current semanticContext", token.getFormattedPath()));
                     }
                     break;
                 }
                 case UNIT_INHERITED: {
-                    if(context.getUnit().instanceOf(next.getUnit())) {
-                        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current context", token.getFormattedPath()));
+                    if(semanticContext.getUnit().instanceOf(next.getUnit())) {
+                        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot access symbol '" + raw + "' from current semanticContext", token.getFormattedPath()));
                     }
                     break;
                 }
@@ -112,22 +112,22 @@ public class SymbolTable implements Iterable<Symbol> {
             if(flatTokens.size() > 1) {
                 SymbolTable subTable = next.getSubSymbolTable();
                 if(subTable != null) {
-                    return next.getSubSymbolTable().getSymbol(flatTokens.subList(2, flatTokens.size()), context, silent);
+                    return next.getSubSymbolTable().getSymbol(flatTokens.subList(2, flatTokens.size()), semanticContext, silent);
                 }
-                if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, raw + " is not a data structure", token.getFormattedPath()));
+                if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, raw + " is not a data structure", token.getFormattedPath()));
             }
             return next;
         }
-        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + raw + "'", token.getFormattedPath()));
+        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + raw + "'", token.getFormattedPath()));
         return null;
     }
 
-    public Symbol getSymbol(Token singleToken, Context context) {
-        return getSymbol(Collections.singletonList(singleToken), context);
+    public Symbol getSymbol(Token singleToken, SemanticContext semanticContext) {
+        return getSymbol(Collections.singletonList(singleToken), semanticContext);
     }
 
-    public Symbol getSymbol(Token singleToken, Context context, boolean silent) {
-        return getSymbol(Collections.singletonList(singleToken), context, silent);
+    public Symbol getSymbol(Token singleToken, SemanticContext semanticContext, boolean silent) {
+        return getSymbol(Collections.singletonList(singleToken), semanticContext, silent);
     }
 
     public SymbolTable mergeWith(SymbolTable other) {

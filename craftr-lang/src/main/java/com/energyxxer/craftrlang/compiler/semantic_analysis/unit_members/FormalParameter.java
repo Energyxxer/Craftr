@@ -4,7 +4,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 
 /**
@@ -19,12 +19,12 @@ public class FormalParameter {
         this.name = name;
     }
 
-    public FormalParameter(TokenPattern<?> rawParam, Context context) {
-        this.type = DataType.parseType((rawParam.find("DATA_TYPE")).flattenTokens(), context.getUnit().getDeclaringFile().getReferenceTable(), context.getUnit());
+    public FormalParameter(TokenPattern<?> rawParam, SemanticContext semanticContext) {
+        this.type = DataType.parseType((rawParam.find("DATA_TYPE")).flattenTokens(), semanticContext.getUnit().getDeclaringFile().getReferenceTable(), semanticContext.getUnit());
         this.name = ((TokenItem) rawParam.find("PARAMETER_NAME")).getContents().value;
 
         if(type == DataType.VOID) {
-            context.getUnit().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal type 'void'", rawParam.find("DATA_TYPE").getFormattedPath()));
+            semanticContext.getUnit().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal type 'void'", rawParam.find("DATA_TYPE").getFormattedPath()));
         }
     }
 

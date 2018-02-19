@@ -16,7 +16,7 @@ public class ScannerContextResponse {
     public final boolean success;
     /**
      * The full string that makes up the token associated with
-     * the context, if applicable. null if the analysis wasn't successful.
+     * the semanticContext, if applicable. null if the analysis wasn't successful.
      * */
     public final String value;
     /**
@@ -36,7 +36,7 @@ public class ScannerContextResponse {
      * */
     public final HashMap<TokenSection, String> subSections;
     /**
-     * A field containing a possible error message for the context response.
+     * A field containing a possible error message for the semanticContext response.
      * */
     public String errorMessage = null;
     /**

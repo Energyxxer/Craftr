@@ -6,7 +6,7 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
@@ -117,7 +117,7 @@ public class DataType {
         });
     }
 
-    public static DataType parseType(List<Token> flatTokens, SymbolTable table, Context context) {
+    public static DataType parseType(List<Token> flatTokens, SymbolTable table, SemanticContext semanticContext) {
         if(flatTokens.size() == 1) {
             for(DataType type : PRIMITIVES) {
                 if(type.getName().equals(flatTokens.get(0).value)) return type;
@@ -129,13 +129,13 @@ public class DataType {
         if(flatTokens.size() >= 3 && flatTokens.get(1).type == CraftrLang.BRACE) {
             return TEMP_ARRAY;
         }
-        Symbol symbol = table.getSymbol(flatTokens, context);
+        Symbol symbol = table.getSymbol(flatTokens, semanticContext);
         if(symbol == null) {
-            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Symbol not found:" + flatTokens + " at context" + context, flatTokens.get(0).getFormattedPath()));
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Symbol not found:" + flatTokens + " at semanticContext" + semanticContext, flatTokens.get(0).getFormattedPath()));
             return OBJECT;
         }
         if(!(symbol instanceof Unit)) {
-            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "'" + flatTokens.get(flatTokens.size()-1).value + "' is not a unit",flatTokens.get(flatTokens.size()-1).getFormattedPath()));
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "'" + flatTokens.get(flatTokens.size()-1).value + "' is not a unit",flatTokens.get(flatTokens.size()-1).getFormattedPath()));
             return OBJECT;
         }
 
@@ -150,8 +150,8 @@ public class DataType {
         this.typeOperationPromise = typeOperationPromise;
     }
 
-    public Value createImplicit(LocalScore reference, Context context) {
-        if(referenceConstructor != null) return referenceConstructor.create(reference, context);
+    public Value createImplicit(LocalScore reference, SemanticContext semanticContext) {
+        if(referenceConstructor != null) return referenceConstructor.create(reference, semanticContext);
         else return null;
     }
 

@@ -4,7 +4,7 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
@@ -42,17 +42,17 @@ public class FieldLog extends SymbolTable {
     }
 
     @Override
-    public Symbol getSymbol(List<Token> flatTokens, Context context, boolean silent) {
+    public Symbol getSymbol(List<Token> flatTokens, SemanticContext semanticContext, boolean silent) {
 
         if(flatTokens.size() > 1) {
             //I don't think this should even be allowed
-            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Trying to get a symbol of more than one token from a field log...?", flatTokens.get(0).getFormattedPath()));
-            return super.getSymbol(flatTokens, context, silent);
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Trying to get a symbol of more than one token from a field log...?", flatTokens.get(0).getFormattedPath()));
+            return super.getSymbol(flatTokens, semanticContext, silent);
         }
 
-        Symbol sym = super.getSymbol(flatTokens, context, true);
+        Symbol sym = super.getSymbol(flatTokens, semanticContext, true);
         if(sym != null) return sym;
-        if(!isStatic) sym = parentUnit.getStaticFieldLog().getSymbol(flatTokens, context, true);
+        if(!isStatic) sym = parentUnit.getStaticFieldLog().getSymbol(flatTokens, semanticContext, true);
         if(sym != null) return sym;
 
         List<Unit> im = parentUnit.getInheritanceMap();
@@ -60,13 +60,13 @@ public class FieldLog extends SymbolTable {
             Symbol sym2;
 
             if(isStatic) {
-                sym2 = parent.getStaticFieldLog().getSymbol(flatTokens, context, true);
+                sym2 = parent.getStaticFieldLog().getSymbol(flatTokens, semanticContext, true);
             } else {
-                sym2 = parent.getInstanceFieldLog().getSymbol(flatTokens, context, true);
+                sym2 = parent.getInstanceFieldLog().getSymbol(flatTokens, semanticContext, true);
             }
             if(sym2 != null) return sym2;
         }
-        if(!silent) context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + flatTokens.get(0).value + "'", flatTokens.get(0).getFormattedPath()));
+        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + flatTokens.get(0).value + "'", flatTokens.get(0).getFormattedPath()));
         return null;
     }
 

@@ -5,7 +5,7 @@ import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
@@ -27,12 +27,12 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
 
     private ScoreHolder scoreHolder;
 
-    public ObjectInstance(Unit unit, Context context) {
-        this(unit, null, context);
+    public ObjectInstance(Unit unit, SemanticContext semanticContext) {
+        this(unit, null, semanticContext);
     }
 
-    public ObjectInstance(Unit unit, LocalScore reference, Context context) {
-        super(reference, context);
+    public ObjectInstance(Unit unit, LocalScore reference, SemanticContext semanticContext) {
+        super(reference, semanticContext);
         this.unit = unit;
 
         this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
@@ -41,7 +41,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         this.fieldLog.put("this", this);
 
         //TODO: Actual scoreHolder constructor...
-        //this.scoreHolder = new ScoreHolderEntity(context.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager(), this);
+        //this.scoreHolder = new ScoreHolderEntity(semanticContext.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager(), this);
     }
 
     public @NotNull Unit getUnit() {
@@ -85,7 +85,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
 
     @Override
     public ObjectInstance clone(Function function) {
-        return new ObjectInstance(this.unit, this.reference, this.context);
+        return new ObjectInstance(this.unit, this.reference, this.semanticContext);
     }
 
     public ScoreHolder getScoreHolder() {

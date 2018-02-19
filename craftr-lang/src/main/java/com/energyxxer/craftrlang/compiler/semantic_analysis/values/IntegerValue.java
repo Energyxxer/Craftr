@@ -3,7 +3,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
@@ -15,17 +15,17 @@ public class IntegerValue extends NumericalValue {
 
     private int value = 0;
 
-    public IntegerValue(Context context) {
-        this(0, context);
+    public IntegerValue(SemanticContext semanticContext) {
+        this(0, semanticContext);
     }
 
-    public IntegerValue(int value, Context context) {
-        super(context);
+    public IntegerValue(int value, SemanticContext semanticContext) {
+        super(semanticContext);
         this.value = value;
     }
 
-    public IntegerValue(LocalScore reference, Context context) {
-        super(context);
+    public IntegerValue(LocalScore reference, SemanticContext semanticContext) {
+        super(semanticContext);
         this.reference = reference;
     }
 
@@ -39,7 +39,7 @@ public class IntegerValue extends NumericalValue {
     @Override
     public NumericalValue coerce(NumericalValue other) {
         if(other instanceof IntegerValue) return this;
-        if(other instanceof FloatValue) return new FloatValue(this.value, context);
+        if(other instanceof FloatValue) return new FloatValue(this.value, semanticContext);
         return null;
     }
 
@@ -89,7 +89,7 @@ public class IntegerValue extends NumericalValue {
     @Override
     public IntegerValue clone(Function function) {
         if(this.isExplicit()) {
-            return new IntegerValue(this.value, context);
+            return new IntegerValue(this.value, semanticContext);
         } else {
             //TODO: THIS
             return null;

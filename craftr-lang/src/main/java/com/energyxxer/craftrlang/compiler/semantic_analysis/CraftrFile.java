@@ -7,7 +7,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Created by User on 2/25/2017.
  */
-public class CraftrFile extends AbstractFileComponent implements Context {
+public class CraftrFile extends AbstractFileComponent implements SemanticContext {
 
     private SemanticAnalyzer analyzer;
     private File file;
@@ -207,7 +207,7 @@ public class CraftrFile extends AbstractFileComponent implements Context {
     }
 
     @Override
-    public Context getParent() {
+    public SemanticContext getParent() {
         return null;
     }
 

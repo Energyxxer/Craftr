@@ -31,7 +31,7 @@ import java.util.*;
 /**
  * Created by User on 5/16/2017.
  */
-public class Method extends AbstractFileComponent implements Symbol, Context {
+public class Method extends AbstractFileComponent implements Symbol, SemanticContext {
     private Unit declaringUnit;
 
     private MethodType type;
@@ -303,7 +303,7 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
     }
 
     @Override
-    public Context getParent() {
+    public SemanticContext getParent() {
         return declaringUnit;
     }
 
@@ -340,13 +340,13 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
         return signature.hashCode();
     }
 
-    public Value writeCall(Function function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, Context context) {
+    public Value writeCall(Function function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, SemanticContext semanticContext) {
         if(this.modifiers.contains(CraftrLang.Modifier.NATIVE)) {
-            return NativeMethods.execute(this, function, positionalParams, keywordParams, pattern, context);
+            return NativeMethods.execute(this, function, positionalParams, keywordParams, pattern, semanticContext);
         }
 
         if(codeBlock == null) {
-            context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Method '" + this.getSignature().getFullyQualifiedName() + "' hasn't been defined... for some reason... how did you even call this method?", pattern.getFormattedPath()));
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Method '" + this.getSignature().getFullyQualifiedName() + "' hasn't been defined... for some reason... how did you even call this method?", pattern.getFormattedPath()));
             return null;
         }
 
@@ -367,13 +367,13 @@ public class Method extends AbstractFileComponent implements Symbol, Context {
         //TODO: NULL VALUES IF KEYWORD PARAMETERS OMITTED
         for(Map.Entry<String, ActualParameter> entry : keywordParams.entrySet()) {
             if(!this.keywordParams.containsKey(entry.getKey())) {
-                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unknown keyword parameter label '" + entry.getKey() + "'", entry.getValue().pattern.getFormattedPath()));
+                semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unknown keyword parameter label '" + entry.getKey() + "'", entry.getValue().pattern.getFormattedPath()));
                 continue;
             }
             if(entry.getValue().getDataType().instanceOf(this.keywordParams.get(entry.getKey()).getType())) {
                 codeBlock.getSymbolTable().put(new Variable(entry.getKey(), Collections.emptyList(), this.keywordParams.get(entry.getKey()).getType(), this, entry.getValue().getValue()));
             } else {
-                context.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + entry.getValue().getDataType() + " cannot be converted to " + this.keywordParams.get(entry.getKey()).getType(), entry.getValue().pattern.getFormattedPath()));
+                semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + entry.getValue().getDataType() + " cannot be converted to " + this.keywordParams.get(entry.getKey()).getType(), entry.getValue().pattern.getFormattedPath()));
             }
         }
         codeBlock.setSilent(true);
