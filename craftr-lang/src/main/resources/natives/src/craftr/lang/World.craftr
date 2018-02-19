@@ -12,6 +12,7 @@ public native abstract world World {
     
     //Getters
     public native Difficulty getDifficulty();
+    public native int getDayTime();
     
     //Setters
     public native void setDifficulty(Difficulty diff);

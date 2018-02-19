@@ -7,7 +7,6 @@ import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.PackageManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
-import com.energyxxer.util.StringUtil;
 import com.energyxxer.util.vprimitives.VInteger;
 
 import java.io.File;
@@ -69,6 +68,8 @@ public class SemanticAnalyzer {
         this.nextID = id.value;
         //Stage 5
         files.forEach(CraftrFile::initComponents);
+        //Stage 5
+        files.forEach(CraftrFile::initFieldValues);
         //Stage 6
         files.forEach(CraftrFile::checkActionCompatibility);
         //Stage 7

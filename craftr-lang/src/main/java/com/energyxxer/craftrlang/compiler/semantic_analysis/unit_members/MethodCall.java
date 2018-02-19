@@ -10,6 +10,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Context;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
@@ -35,6 +36,10 @@ public class MethodCall extends Value implements TraversableStructure {
         super(context);
         this.pattern = pattern;
         this.methodName = ((TokenItem) pattern.find("METHOD_CALL_NAME")).getContents().value;
+
+        if(dataHolder instanceof Unit) {
+            dataHolder = ((Unit) dataHolder).getDataHolder(); //Unwrap one more time to get the instance data holder of singleton units
+        }
 
         TokenList parameterListWrapper = (TokenList) pattern.find("PARAMETER_LIST");
 

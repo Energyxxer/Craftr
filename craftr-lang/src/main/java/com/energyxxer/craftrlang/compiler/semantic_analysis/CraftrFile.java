@@ -164,6 +164,10 @@ public class CraftrFile extends AbstractFileComponent implements Context {
         units.forEach(Unit::initUnitComponents);
     }
 
+    public void initFieldValues() {
+        units.forEach(Unit::initFieldValues);
+    }
+
     public void initCodeBlocks() {
         units.forEach(Unit::initCodeBlocks);
     }

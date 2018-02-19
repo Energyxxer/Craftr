@@ -158,7 +158,10 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
      * False until compilation stage 5.
      * */
     private boolean unitComponentsInitialized = false;
-
+    /**
+     * False until compilation stage 6.
+     * */
+    private boolean fieldValuesInitialized = false;
     /**
      * Function responsible for static initialization of this unit.
      * */
@@ -511,10 +514,16 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
         this.genericInstance = new ObjectInstance(this, this.instanceContext);
 
+        unitComponentsInitialized = true;
+    }
+
+    void initFieldValues() {
+        if(fieldValuesInitialized) return;
+
         staticFieldLog.forEachVar(Variable::initializeValue);
         instanceFieldLog.forEachVar(Variable::initializeValue);
 
-        unitComponentsInitialized = true;
+        fieldValuesInitialized = true;
     }
 
     void initCodeBlocks() {
@@ -524,7 +533,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
     @Override
     public DataHolder getDataHolder() {
-        return this;
+        return (type.isSingleton()) ? genericInstance : this;
     }
 
     @Override
@@ -549,7 +558,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
     @Override
     public @NotNull SymbolTable getSubSymbolTable() {
-        return staticFieldLog;
+        return (type.isSingleton()) ? instanceFieldLog : staticFieldLog;
     }
 
     @Override
@@ -620,7 +629,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, C
 
     @Override
     public MethodLog getMethodLog() {
-        return staticMethodLog;
+        return (type.isSingleton()) ? instanceMethodLog : staticMethodLog;
     }
 
     public ObjectInstance getGenericInstance() {

@@ -1,10 +1,6 @@
 package com.energyxxer.craftr.main.window.sections;
 
-import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.craftr.global.Preferences;
-import com.energyxxer.craftr.global.Resources;
-import com.energyxxer.craftr.global.Status;
-import com.energyxxer.craftr.global.TabManager;
+import com.energyxxer.craftr.global.*;
 import com.energyxxer.craftr.main.Craftr;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.dialogs.ProjectProperties;
@@ -15,12 +11,8 @@ import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.craftr.util.FileUtil;
 import com.energyxxer.craftrlang.projects.Project;
 
-import javax.swing.BorderFactory;
-import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
-import javax.swing.KeyStroke;
-import java.awt.Color;
-import java.awt.Dimension;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -308,9 +300,9 @@ public class MenuBar extends JMenuBar {
                         if (protocol.equals("file")) {
                             File packagedNatives = new File(url.getFile());
 
-                            Files.walkFileTree(packagedNatives.toPath(), new FileVisitor<Path>() {
+                            Files.walkFileTree(packagedNatives.toPath(), new FileVisitor<>() {
                                 @Override
-                                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                                     return CONTINUE;
                                 }
 
@@ -324,12 +316,12 @@ public class MenuBar extends JMenuBar {
                                 }
 
                                 @Override
-                                public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+                                public FileVisitResult visitFileFailed(Path file, IOException exc) {
                                     return CONTINUE;
                                 }
 
                                 @Override
-                                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                                public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
                                     return CONTINUE;
                                 }
                             });
