@@ -1,0 +1,17 @@
+package craftr.lang.entities.features;
+
+/**
+* Created by User on 20/2/2018.
+*/
+public feature equippable requires entity_base {
+    
+    public native float getDropChancesForSlot(Slot slot);
+    public native item_base getItemForSlot(Slot slot);
+    
+    public native void setItem(Slot slot, item_base itm);
+    public native void setArmorItems(item_base head = null, item_base chest = null, item_base leggings = null, item_base feet = null);
+    public native void setHandItems(item_base main = null, item_base offhand = -1);
+    
+    public native void setArmorDropChances(float head = -1, float chest = -1, float leggings = -1, float feet = -1);
+    public native void setHandDropChances(float main = -1, float offhand = -1);
+}

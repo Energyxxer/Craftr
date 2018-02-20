@@ -1,11 +1,10 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.commodore.entity.GenericEntity;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.LocalScore;
-import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.commodore.selector.NameArgument;
 import com.energyxxer.commodore.selector.Selector;
+import com.energyxxer.craftrlang.compiler.codegen.entities.CraftrEntity;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
@@ -28,7 +27,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     private FieldLog fieldLog;
     private MethodLog methodLog;
 
-    private ScoreHolder scoreHolder;
+    private CraftrEntity entity;
 
     public ObjectInstance(Unit unit, SemanticContext semanticContext) {
         this(unit, null, semanticContext);
@@ -43,9 +42,9 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
 
         this.fieldLog.put("this", this);
 
-        //TODO: Actual scoreHolder constructor...
-        //this.scoreHolder = new ScoreHolderEntity(semanticContext.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager(), this);
-        this.scoreHolder = new GenericEntity(new Selector(Selector.BaseSelector.ALL_ENTITIES, new NameArgument(unit.getName())));
+        //TODO: Actual entity constructor...
+        //this.entity = new ScoreHolderEntity(semanticContext.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager(), this);
+        this.entity = new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new NameArgument(unit.getName())));
     }
 
     public @NotNull Unit getUnit() {
@@ -92,7 +91,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         return new ObjectInstance(this.unit, this.reference, this.semanticContext);
     }
 
-    public ScoreHolder getScoreHolder() {
-        return scoreHolder;
+    public CraftrEntity getEntity() {
+        return entity;
     }
 }

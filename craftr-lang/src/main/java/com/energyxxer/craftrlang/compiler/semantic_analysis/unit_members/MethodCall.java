@@ -29,7 +29,7 @@ public class MethodCall extends Value implements TraversableStructure {
     private String methodName;
     private ArrayList<ActualParameter> positionalParams = new ArrayList<>();
     private HashMap<String, ActualParameter> keywordParams = new HashMap<>();
-
+    private DataHolder dataHolder = null;
     private Method method = null;
 
     public MethodCall(TokenPattern<?> pattern, DataHolder dataHolder, Function function, SemanticContext semanticContext) {
@@ -40,6 +40,7 @@ public class MethodCall extends Value implements TraversableStructure {
         if(dataHolder instanceof Unit) {
             dataHolder = ((Unit) dataHolder).getDataHolder(); //Unwrap one more time to get the instance data holder of singleton units
         }
+        this.dataHolder = dataHolder;
 
         TokenList parameterListWrapper = (TokenList) pattern.find("PARAMETER_LIST");
 
@@ -132,7 +133,7 @@ public class MethodCall extends Value implements TraversableStructure {
 
     @Override
     public Value unwrap(Function function) {
-        return method.writeCall(function, positionalParams, keywordParams, pattern, semanticContext);
+        return (method != null) ? method.writeCall(function, positionalParams, keywordParams, pattern, semanticContext, dataHolder) : null;
     }
 
     @Override

@@ -1,17 +1,17 @@
 package craftr.lang.entities;
 
+import craftr.lang.entities.features.*;
+
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public abstract entity living_base extends entity_base {
+public abstract entity living_base extends entity_base implements equippable {
     
     //Getters for NBT Data
     public native float getHealth();
     public native float getAbsorptionAmount();
     public native int getHurtTime();
     public native boolean isFallFlying();
-    public native float getDropChancesForSlot(Slot slot);
-    public native item_base getItemForSlot(Slot slot);
     public native String getDeathLootTable();
     public native long getDeathLootTableSeed();
     public native boolean isPickUpLootEnabled();
@@ -23,11 +23,6 @@ public abstract entity living_base extends entity_base {
     public native void setHealth(float health);
     public native void setAbsorptionAmount(float amount);
     public native void setFallFlying(boolean fallFlying);
-    public native void setArmorDropChances(float head = -1, float chest = -1, float leggings = -1, float feet = -1);
-    public native void setHandDropChances(float main = -1, float offhand = -1);
-    public native void setArmorItems(item_base head = null, item_base chest = null, item_base leggings = null, item_base feet = null);
-    public native void setHandItems(item_base main = null, item_base offhand = -1);
-    public native void setItem(Slot slot, item_base itm);
     public native void setDeathLootTable(String table);
     public native void setDeathLootTableSeed(long seed);
     public native void setPickUpLootEnabled(boolean enabled);

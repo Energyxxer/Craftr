@@ -316,7 +316,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
 
             @Override
             public ScoreHolder getPlayer() {
-                return genericInstance.getScoreHolder();
+                return genericInstance.getEntity();
             }
 
             private LocalizedObjectiveManager locObjMgr = Unit.this.getAnalyzer().getCompiler().getModule().createLocalizedObjectiveManager(this);

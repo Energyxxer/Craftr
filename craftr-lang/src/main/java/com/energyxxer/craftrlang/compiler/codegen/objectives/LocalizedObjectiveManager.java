@@ -10,7 +10,6 @@ public class LocalizedObjectiveManager {
     public final LocalizedObjectiveGroup GENERIC;
     public final LocalizedObjectiveGroup PARAMETER;
     public final LocalizedObjectiveGroup OPERATION;
-    public final LocalizedObjectiveGroup RETURN;
 
     public LocalizedObjectiveManager(CraftrCommandModule module, SemanticContext semanticContext) {
         this.module = module;
@@ -19,7 +18,6 @@ public class LocalizedObjectiveManager {
         GENERIC = new LocalizedObjectiveGroup(this, "g");
         PARAMETER = new LocalizedObjectiveGroup(this, "p");
         OPERATION = new LocalizedObjectiveGroup(this, "op");
-        RETURN = new LocalizedObjectiveGroup(this, "r");
     }
 
     public SemanticContext getSemanticContext() {

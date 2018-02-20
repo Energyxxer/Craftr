@@ -1,13 +1,14 @@
 package craftr.lang.entities;
 
+import craftr.lang.entities.features.*;
+
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public entity armor_stand extends entity_base {
+public entity armor_stand extends entity_base implements equippable {
     
     //Getters for NBT Data
     public native int getDisabledSlots();
-    public native item_base getItemForSlot(Slot slot);
     public native boolean isMarker();
     public native boolean isInvisible();
     public native boolean isBasePlateEnabled();
@@ -19,7 +20,6 @@ public entity armor_stand extends entity_base {
     //Setters for NBT Data
     public native void setDisabledSlots(int map);
     public native void setDisabledSlots(int mainhand = -1, int feet = -1, int legs = -1, int chest = -1, int head = -1);
-    public native void setItemForSlot(Slot slot, item_base itm);
     public native void setMarker(boolean marker);
     public native void setInvisible(boolean invisible);
     public native void setBasePlateEnabled(boolean enabled);

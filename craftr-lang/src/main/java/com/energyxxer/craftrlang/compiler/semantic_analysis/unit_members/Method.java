@@ -345,9 +345,9 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         return signature.hashCode();
     }
 
-    public Value writeCall(Function function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, SemanticContext semanticContext) {
+    public Value writeCall(Function function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder) {
         if(this.modifiers.contains(CraftrLang.Modifier.NATIVE)) {
-            return NativeMethods.execute(this, function, positionalParams, keywordParams, pattern, semanticContext);
+            return NativeMethods.execute(this, function, positionalParams, keywordParams, pattern, semanticContext, dataHolder);
         }
 
         if(codeBlock == null) {
@@ -402,6 +402,6 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
     @Override
     public ScoreHolder getPlayer() {
-        return this.isStatic() ? declaringUnit.getPlayer() : declaringUnit.getGenericInstance().getScoreHolder();
+        return this.isStatic() ? declaringUnit.getPlayer() : declaringUnit.getGenericInstance().getEntity();
     }
 }

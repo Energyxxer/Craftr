@@ -4,6 +4,7 @@ import com.energyxxer.commodore.module.Namespace;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.Compiler;
 import com.energyxxer.craftrlang.compiler.CraftrCommandModule;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.GlobalObjectiveManager;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.CraftrFile;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
@@ -35,11 +36,12 @@ public interface SemanticContext {
     default Compiler getCompiler() {
         return getAnalyzer().getCompiler();
     }
-
     default CraftrCommandModule getModule() {
         return getAnalyzer().getCompiler().getModule();
     }
-
+    default GlobalObjectiveManager getGlobalObjectiveManager() {
+        return getModule().getGlobalObjectiveManager();
+    }
     default Namespace getModuleNamespace() {
         return getModule().projectNS;
     }

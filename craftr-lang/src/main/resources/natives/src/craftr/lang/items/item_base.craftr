@@ -1,10 +1,5 @@
 package craftr.lang.items;
 
-import craftr.lang.*;
-import craftr.lang.util.*;
-import craftr.lang.entities.*;
-import craftr.lang.items.*;
-
 /**
 * Created by Energyxxer on 27/7/2017.
 */
