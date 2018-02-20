@@ -17,6 +17,8 @@ public class CraftrCommandModule extends CommandModule {
         super(name, description, prefix);
 
         this.projectNS = this.getNamespace(prefix);
+
+        this.objMgr.setPrefixEnabled(true);
     }
 
     public LocalizedObjectiveManager createLocalizedObjectiveManager(SemanticContext semanticContext) {
