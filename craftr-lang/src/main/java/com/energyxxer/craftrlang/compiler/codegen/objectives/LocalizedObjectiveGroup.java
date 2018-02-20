@@ -43,11 +43,6 @@ public class LocalizedObjectiveGroup {
         return parent.getModule();
     }
 
-    void release(LocalizedObjective localizedObjective) {
-        //Don't remove, just set to null
-        localizedObjectives.set(localizedObjective.getSlot(), null);
-    }
-
     @Override
     public String toString() {
         return "LocalizedObjectiveGroup:" + name;
