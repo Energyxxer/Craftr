@@ -98,6 +98,7 @@ public class CraftrEntity implements Entity {
         return selector.isPlayer();
     }
 
+    @Override
     public CraftrEntity limitToOne() {
         Selector newSelector = selector.clone();
         newSelector.addArgument(new LimitArgument(1));
