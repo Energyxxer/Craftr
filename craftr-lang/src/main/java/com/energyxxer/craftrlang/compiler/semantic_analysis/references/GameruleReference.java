@@ -37,4 +37,9 @@ public class GameruleReference implements DataReference {
         obj.dispose();
         return scoreRef.toNBT(function, entity, path, semanticContext);
     }
+
+    @Override
+    public String toString() {
+        return "gamerule: " + gamerule;
+    }
 }

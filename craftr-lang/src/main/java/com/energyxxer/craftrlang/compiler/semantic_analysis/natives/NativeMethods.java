@@ -1,6 +1,5 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.natives;
 
-import com.energyxxer.commodore.commands.data.DataGetCommand;
 import com.energyxxer.commodore.commands.execute.ExecuteCommand;
 import com.energyxxer.commodore.commands.execute.ExecuteStoreScore;
 import com.energyxxer.commodore.commands.time.TimeQueryCommand;
@@ -12,6 +11,8 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.NBTReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.ActualParameter;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.IntegerValue;
@@ -58,22 +59,16 @@ public class NativeMethods {
                     exec.addModifier(new ExecuteStoreScore(score));
                     function.append(exec);
 
-                    return new IntegerValue(score, semanticContext);
+                    return new IntegerValue(new ScoreReference(score), semanticContext);
 
                     //return new IntegerValue(reference.getUnresolvedObjectiveReference(), semanticContext);
                     //return null;
                 });
         //Entity Base
         methods.put("craftr.lang.entities.entity_base.getAir()",
-                (function, unused, unusedToo, pattern, semanticContext, instance) -> {
-                    LocalScore score = semanticContext.getGlobalObjectiveManager().RETURN;
-
-                    ExecuteCommand exec = new ExecuteCommand(new DataGetCommand(((ObjectInstance) instance).getEntity().limitToOne(), new NBTPath("Air")));
-                    exec.addModifier(new ExecuteStoreScore(score));
-                    function.append(exec);
-
-                    return new IntegerValue(score, semanticContext);
-                });
+                (function, unused, unusedToo, pattern, semanticContext, instance) ->
+                    new IntegerValue(new NBTReference(((ObjectInstance) instance).getEntity(),new NBTPath("Air")), semanticContext)
+                );
     }
 
     public static Value execute(Method method, Function function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder) {

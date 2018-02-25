@@ -1,19 +1,20 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
-import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitInt;
 
 /**
  * Created by Energyxxer on 07/11/2017.
  */
 public class IntegerValue extends NumericalValue {
 
-    private int value = 0;
+    private DataReference reference;
 
     public IntegerValue(SemanticContext semanticContext) {
         this(0, semanticContext);
@@ -21,10 +22,10 @@ public class IntegerValue extends NumericalValue {
 
     public IntegerValue(int value, SemanticContext semanticContext) {
         super(semanticContext);
-        this.value = value;
+        this.reference = new ExplicitInt(value);
     }
 
-    public IntegerValue(LocalScore reference, SemanticContext semanticContext) {
+    public IntegerValue(DataReference reference, SemanticContext semanticContext) {
         super(semanticContext);
         this.reference = reference;
     }
@@ -39,7 +40,7 @@ public class IntegerValue extends NumericalValue {
     @Override
     public NumericalValue coerce(NumericalValue other) {
         if(other instanceof IntegerValue) return this;
-        if(other instanceof FloatValue) return new FloatValue(this.value, semanticContext);
+        if(other instanceof FloatValue) return new FloatValue(this.reference, semanticContext);
         return null;
     }
 
@@ -78,21 +79,16 @@ public class IntegerValue extends NumericalValue {
 
     @Override
     public String toString() {
-        return "IntegerValue(" + ((this.isExplicit()) ? value : reference) + ")";
+        return "IntegerValue(" + reference + ")";
     }
 
     @Override
     public Integer getRawValue() {
-        return this.value;
+        return 0;
     }
 
     @Override
     public IntegerValue clone(Function function) {
-        if(this.isExplicit()) {
-            return new IntegerValue(this.value, semanticContext);
-        } else {
-            //TODO: THIS
-            return null;
-        }
+        return new IntegerValue(this.reference, semanticContext);
     }
 }

@@ -1,28 +1,27 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
-import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.report.Notice;
-import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitFloat;
 
 /**
  * Created by Energyxxer on 07/11/2017.
  */
 public class FloatValue extends NumericalValue {
 
-    private float value = 0;
+    private DataReference reference;
 
     public FloatValue(float value, SemanticContext semanticContext) {
         super(semanticContext);
-        this.value = value;
+        this.reference = new ExplicitFloat(value);
     }
 
-    public FloatValue(LocalScore reference, SemanticContext semanticContext) {
+    public FloatValue(DataReference reference, SemanticContext semanticContext) {
         super(reference, semanticContext);
     }
 
@@ -38,7 +37,7 @@ public class FloatValue extends NumericalValue {
 
     @Override
     protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
-
+        /*
         if(operator == Operator.ASSIGN) {
             if(operand instanceof NumericalValue && ((NumericalValue) operand).getWeight()<=this.getWeight()) {
                 if(operand instanceof IntegerValue) this.value = ((IntegerValue) operand).getRawValue().floatValue();
@@ -76,7 +75,7 @@ public class FloatValue extends NumericalValue {
             }
         } else if(operand instanceof StringValue && operator == Operator.ADD) {
             return new StringValue(String.valueOf(this.value)+((StringValue)operand).getRawValue(), this.semanticContext);
-        }
+        }*/
         return null;
     }
 
@@ -102,21 +101,16 @@ public class FloatValue extends NumericalValue {
 
     @Override
     public String toString() {
-        return String.valueOf(this.value);
+        return "FloatValue(" + reference + ")";
     }
 
     @Override
     public Float getRawValue() {
-        return this.value;
+        return 0.0f;
     }
 
     @Override
     public FloatValue clone(Function function) {
-        if(this.isExplicit()) {
-            return new FloatValue(this.value, semanticContext);
-        } else {
-            //TODO
-            return null;
-        }
+        return new FloatValue(reference, semanticContext);
     }
 }

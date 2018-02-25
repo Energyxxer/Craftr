@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit;
 
+import com.energyxxer.commodore.CommandUtils;
 import com.energyxxer.commodore.entity.Entity;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.nbt.NBTCompoundBuilder;
@@ -30,5 +31,10 @@ public class ExplicitString implements ExplicitValue {
         cb.put(path, new TagString(value));
 
         return new NBTReference(entity, path);
+    }
+
+    @Override
+    public String toString() {
+        return "\"" + CommandUtils.escape(value) + "\"";
     }
 }

@@ -1,30 +1,24 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
-import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.report.Notice;
-import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
-
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.NOT;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitByte;
 
 /**
  * Created by Energyxxer on 07/11/2017.
  */
 public class BooleanValue extends Value {
 
-    private boolean value = false;
-
     public BooleanValue(boolean value, SemanticContext semanticContext) {
-        super(semanticContext);
-        this.value = value;
+        super(new ExplicitByte((byte) (value ? 1 : 0)), semanticContext);
     }
 
-    public BooleanValue(LocalScore reference, SemanticContext semanticContext) {
+    public BooleanValue(DataReference reference, SemanticContext semanticContext) {
         super(reference, semanticContext);
     }
 
@@ -45,13 +39,16 @@ public class BooleanValue extends Value {
 
     @Override
     public Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
-        return (operator == NOT) ? new BooleanValue(!this.value, semanticContext) : null;
+        //TODO
+        return null;
+        //return (operator == NOT) ? new BooleanValue(!this.value, semanticContext) : null;
     }
 
     @Override
     public Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
+        //TODO
 
-        if(operator == Operator.ASSIGN) {
+        /*if(operator == Operator.ASSIGN) {
             if(operand instanceof BooleanValue) {
                 this.value = ((BooleanValue) operand).value;
                 this.reference = operand.clone(function).getReference();
@@ -69,23 +66,18 @@ public class BooleanValue extends Value {
                 return new BooleanValue(this.value || ((BooleanValue) operand).value, this.semanticContext);
             case EQUAL:
                 return new BooleanValue(this.value == ((BooleanValue) operand).value, this.semanticContext);
-        }
+        }*/
 
         return null;
     }
 
     @Override
     public String toString() {
-        return "" + value;
+        return "BooleanValue(" + reference + ")";
     }
 
     @Override
     public BooleanValue clone(Function function) {
-        if(this.isExplicit()) {
-            return new BooleanValue(this.value, semanticContext);
-        } else {
-            //TODO
-            return null;
-        }
+        return new BooleanValue(reference, semanticContext);
     }
 }

@@ -41,4 +41,9 @@ public class NBTReference implements DataReference {
             return new NBTReference(entity, path);
         } else return this;
     }
+
+    @Override
+    public String toString() {
+        return "nbt: " + entity + ":" + path;
+    }
 }

@@ -1,7 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
-import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -10,6 +9,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticCont
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 /**
@@ -17,13 +17,13 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
  */
 public abstract class Value implements TraversableStructure {
     protected final SemanticContext semanticContext;
-    protected LocalScore reference = null;
+    protected DataReference reference = null;
 
     public Value(SemanticContext semanticContext) {
         this.semanticContext = semanticContext;
     }
 
-    public Value(LocalScore reference, SemanticContext semanticContext) {
+    public Value(DataReference reference, SemanticContext semanticContext) {
         this.reference = reference;
         this.semanticContext = semanticContext;
     }
@@ -32,11 +32,11 @@ public abstract class Value implements TraversableStructure {
         return reference == null;
     }
 
-    public void setReference(LocalScore reference) {
+    public void setReference(DataReference reference) {
         this.reference = reference;
     }
 
-    public LocalScore getReference() {
+    public DataReference getReference() {
         return reference;
     }
 

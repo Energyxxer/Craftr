@@ -1,6 +1,5 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.data_types;
 
-import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.report.Notice;
@@ -10,7 +9,10 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticCont
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.*;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.BooleanValue;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.FloatValue;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.IntegerValue;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 
 import java.util.Arrays;
 import java.util.List;
@@ -148,11 +150,6 @@ public class DataType {
 
     public void setTypeOperationPromise(TypeOperationPromise typeOperationPromise) {
         this.typeOperationPromise = typeOperationPromise;
-    }
-
-    public Value createImplicit(LocalScore reference, SemanticContext semanticContext) {
-        if(referenceConstructor != null) return referenceConstructor.create(reference, semanticContext);
-        else return null;
     }
 
     public void setReferenceConstructor(ReferenceConstructor referenceConstructor) {

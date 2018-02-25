@@ -1,7 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.commodore.functions.Function;
-import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
@@ -16,6 +15,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
@@ -151,7 +151,7 @@ public class MethodCall extends Value implements TraversableStructure {
     }
 
     @Override
-    public LocalScore getReference() {
+    public DataReference getReference() {
         throw new IllegalStateException("Mate, don't access a method call reference directly, first unwrap.");
     }
 

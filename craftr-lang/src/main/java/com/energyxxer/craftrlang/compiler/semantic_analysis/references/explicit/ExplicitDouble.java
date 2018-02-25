@@ -33,4 +33,9 @@ public class ExplicitDouble implements ExplicitValue {
 
         return new NBTReference(entity, path);
     }
+
+    @Override
+    public String toString() {
+        return value + "d";
+    }
 }

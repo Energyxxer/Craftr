@@ -33,4 +33,9 @@ public class ScoreReference implements DataReference {
         exec.addModifier(new ExecuteStoreEntity(entity, path, NumericNBTType.DOUBLE));
         return new NBTReference(entity, path);
     }
+
+    @Override
+    public String toString() {
+        return "score: " + score;
+    }
 }

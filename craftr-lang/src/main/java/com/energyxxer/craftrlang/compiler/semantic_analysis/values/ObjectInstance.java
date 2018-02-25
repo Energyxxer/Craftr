@@ -1,7 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
-import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.commodore.selector.NameArgument;
 import com.energyxxer.commodore.selector.Selector;
 import com.energyxxer.craftrlang.compiler.codegen.entities.CraftrEntity;
@@ -15,6 +14,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolde
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -33,7 +33,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         this(unit, null, semanticContext);
     }
 
-    public ObjectInstance(Unit unit, LocalScore reference, SemanticContext semanticContext) {
+    public ObjectInstance(Unit unit, DataReference reference, SemanticContext semanticContext) {
         super(reference, semanticContext);
         this.unit = unit;
 
