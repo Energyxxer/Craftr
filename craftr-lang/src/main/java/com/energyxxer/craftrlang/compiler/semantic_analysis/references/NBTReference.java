@@ -31,11 +31,13 @@ public class NBTReference implements DataReference {
 
     @Override
     public NBTReference toNBT(Function function, Entity entity, NBTPath path) {
-        ExecuteCommand exec = new ExecuteCommand(new DataGetCommand(this.entity.limitToOne(), this.path));
-        exec.addModifier(new ExecuteStoreEntity(entity, path, NumericNBTType.DOUBLE)); //TODO: Dynamically choose data type
+        if(!this.entity.equals(entity) || !this.path.equals(path)) {
+            ExecuteCommand exec = new ExecuteCommand(new DataGetCommand(this.entity.limitToOne(), this.path));
+            exec.addModifier(new ExecuteStoreEntity(entity, path, NumericNBTType.DOUBLE)); //TODO: Dynamically choose data type
 
-        function.append(exec);
+            function.append(exec);
 
-        return new NBTReference(entity, path);
+            return new NBTReference(entity, path);
+        } else return this;
     }
 }
