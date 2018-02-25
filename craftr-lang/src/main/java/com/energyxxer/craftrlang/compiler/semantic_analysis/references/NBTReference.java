@@ -9,6 +9,7 @@ import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.nbt.NBTPath;
 import com.energyxxer.commodore.nbt.NumericNBTType;
 import com.energyxxer.commodore.score.LocalScore;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 
 public class NBTReference implements DataReference {
     private Entity entity;
@@ -20,7 +21,7 @@ public class NBTReference implements DataReference {
     }
 
     @Override
-    public ScoreReference toScore(Function function, LocalScore score) {
+    public ScoreReference toScore(Function function, LocalScore score, SemanticContext semanticContext) {
         ExecuteCommand exec = new ExecuteCommand(new DataGetCommand(this.entity.limitToOne(), this.path));
         exec.addModifier(new ExecuteStoreScore(score));
 
@@ -30,7 +31,7 @@ public class NBTReference implements DataReference {
     }
 
     @Override
-    public NBTReference toNBT(Function function, Entity entity, NBTPath path) {
+    public NBTReference toNBT(Function function, Entity entity, NBTPath path, SemanticContext semanticContext) {
         if(!this.entity.equals(entity) || !this.path.equals(path)) {
             ExecuteCommand exec = new ExecuteCommand(new DataGetCommand(this.entity.limitToOne(), this.path));
             exec.addModifier(new ExecuteStoreEntity(entity, path, NumericNBTType.DOUBLE)); //TODO: Dynamically choose data type
