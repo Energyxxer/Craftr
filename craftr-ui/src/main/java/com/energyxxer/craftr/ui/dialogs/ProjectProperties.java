@@ -1,34 +1,18 @@
 package com.energyxxer.craftr.ui.dialogs;
 
+import com.energyxxer.commodore.util.MinecraftUtils;
 import com.energyxxer.craftr.main.window.CraftrWindow;
-import com.energyxxer.craftr.ui.styledcomponents.StyledButton;
-import com.energyxxer.craftr.ui.styledcomponents.StyledFileField;
-import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
-import com.energyxxer.craftr.ui.styledcomponents.StyledList;
-import com.energyxxer.craftr.ui.styledcomponents.StyledTextField;
+import com.energyxxer.craftr.ui.styledcomponents.*;
 import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
-import com.energyxxer.craftrlang.minecraft.MinecraftConstants;
 import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.util.ImageManager;
 import com.energyxxer.util.StringUtil;
 import com.energyxxer.xswing.ComponentResizer;
 import com.energyxxer.xswing.XFileField;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-import java.awt.Point;
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 
 public class ProjectProperties {
@@ -187,7 +171,7 @@ public class ProjectProperties {
 						label.setFont(new Font(t.getString("ProjectProperties.content.label.font","General.font","default:Tahoma"),1,12));
 						content.add(label);
 					}
-					File file = new File(MinecraftConstants.getMinecraftDir() + File.separator + "saves");
+					File file = new File(MinecraftUtils.getMinecraftDir() + File.separator + "saves");
 					if(project.getWorld() != null) file = new File(project.getWorld());
 					cWorld = new StyledFileField(file,"ProjectProperties.content");
 					cWorld.setDialogTitle("Open world...");

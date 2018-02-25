@@ -1,12 +1,12 @@
 package com.energyxxer.craftr.ui.explorer;
 
+import com.energyxxer.commodore.util.MinecraftUtils;
 import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
 import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerSeparator;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
-import com.energyxxer.craftrlang.minecraft.MinecraftConstants;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 
 import java.awt.*;
@@ -105,7 +105,7 @@ public class ProjectExplorerMaster extends ExplorerMaster {
 
         this.children.add(new ExplorerSeparator(this));
 
-        File[] minecraftFiles = new File(MinecraftConstants.getMinecraftDir() + File.separator + "saves" + File.separator + "Snapshot Tests" + File.separator + "datapacks").listFiles();
+        File[] minecraftFiles = new File(MinecraftUtils.getMinecraftDir() + File.separator + "saves" + File.separator + "Snapshot Tests" + File.separator + "datapacks").listFiles();
         if(minecraftFiles != null) {
             for(File f : minecraftFiles) {
                 this.children.add(new ProjectExplorerItem(this, f, toOpen));
