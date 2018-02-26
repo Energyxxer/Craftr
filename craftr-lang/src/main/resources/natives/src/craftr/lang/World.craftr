@@ -16,4 +16,7 @@ public native abstract world World {
     
     //Setters
     public native void setDifficulty(Difficulty diff);
+
+    //Misc
+    public native void print(String message);
 }

@@ -2,17 +2,24 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.natives;
 
 import com.energyxxer.commodore.commands.execute.ExecuteCommand;
 import com.energyxxer.commodore.commands.execute.ExecuteStoreScore;
+import com.energyxxer.commodore.commands.tellraw.TellrawCommand;
 import com.energyxxer.commodore.commands.time.TimeQueryCommand;
+import com.energyxxer.commodore.entity.GenericEntity;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.nbt.NBTPath;
 import com.energyxxer.commodore.score.LocalScore;
+import com.energyxxer.commodore.selector.Selector;
+import com.energyxxer.commodore.textcomponents.StringTextComponent;
+import com.energyxxer.commodore.textcomponents.TextComponent;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.NBTReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitString;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.ActualParameter;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.IntegerValue;
@@ -63,6 +70,19 @@ public class NativeMethods {
 
                     //return new IntegerValue(reference.getUnresolvedObjectiveReference(), semanticContext);
                     //return null;
+                });
+        methods.put("craftr.lang.World.print(String)",
+                (function, positionalParams, unused, pattern, semanticContext, thisIsKindaStatic) -> {
+
+                    ActualParameter message = positionalParams.get(0);
+                    DataReference reference = message.getValue().getReference();
+                    if(reference instanceof ExplicitString) {
+                        TextComponent text = new StringTextComponent(((ExplicitString) reference).getValue());
+                        function.append(new TellrawCommand(new GenericEntity(new Selector(Selector.BaseSelector.ALL_PLAYERS)), text));
+                    } else {
+                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Implicit string parameter not supported"));
+                    }
+                    return null;
                 });
         //Entity Base
         methods.put("craftr.lang.entities.entity_base.getAir()",

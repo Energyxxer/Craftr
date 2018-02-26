@@ -37,4 +37,8 @@ public class ExplicitString implements ExplicitValue {
     public String toString() {
         return "\"" + CommandUtils.escape(value) + "\"";
     }
+
+    public String getValue() {
+        return value;
+    }
 }
