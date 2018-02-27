@@ -100,6 +100,8 @@ public final class ExprResolver {
                 return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, function, silent);
             } case "OPERATION": {
                 return analyzeStructure(((TokenGroup) pattern).getContents()[0], semanticContext, dataHolder, function, silent);
+            } case "PARENTHESIZED_VALUE": {
+                return analyzeValue(((TokenGroup) pattern).getContents()[1], semanticContext, dataHolder, function, silent);
             } case "OPERATION_LIST": {
                 TokenList list = (TokenList) pattern;
 

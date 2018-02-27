@@ -131,6 +131,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
             }
             if(this.value != null && !this.value.getDataType().instanceOf(this.getDataType())) {
                 semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
+                this.value = null;
             }
             if(this.value == null) this.value = new Null(semanticContext);
             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));

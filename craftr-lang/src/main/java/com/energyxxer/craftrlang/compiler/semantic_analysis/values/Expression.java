@@ -2,6 +2,8 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
@@ -38,16 +40,26 @@ public class Expression extends Value {
     public Value unwrap(Function function) {
 
         if(a instanceof Expression) a = a.unwrap(function);
+        if(a == null) return null;
         if(b instanceof Expression) b = b.unwrap(function);
+        if(b == null) return null;
 
         if(op.getLeftOperandType() == OperandType.VALUE && a instanceof Variable) {
             a = ((Variable) a).getValue();
+        } else if(op.getLeftOperandType() == OperandType.REFERENCE && !(a instanceof Variable)) {
+            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid left-hand side in " + op.getSymbol() + " operation", pattern.getFormattedPath()));
+            return null;
         }
         if(op.getRightOperandType() == OperandType.VALUE && b instanceof Variable) {
             b = ((Variable) b).getValue();
+        } else if(op.getRightOperandType() == OperandType.REFERENCE && !(b instanceof Variable)) {
+            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid right-hand side in " + op.getSymbol() + " operation", pattern.getFormattedPath()));
+            return null;
         }
 
-        return a.runOperation(this.op, b, pattern, function, this.silent);
+        Value returnValue = a.runOperation(this.op, b, pattern, function, this.silent);
+        if(returnValue == null) semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + op.getSymbol() + " is not defined for data types " + a.getDataType() + ", " + b.getDataType()));
+        return returnValue;
     }
 
     public Value simplify() {
