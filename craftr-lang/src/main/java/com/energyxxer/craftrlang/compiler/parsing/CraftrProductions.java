@@ -513,14 +513,6 @@ public class CraftrProductions {
                 g.append(new TokenListMatch(VALUE, new TokenItemMatch(CraftrLang.OPERATOR).setName("OPERATOR")).setName("OPERATION_LIST"));
                 EXPRESSION.add(g);
             }
-
-            {
-                TokenGroupMatch g = new TokenGroupMatch().setName("PARENTHESIZED_EXPRESSION");
-                g.append(new TokenItemMatch(CraftrLang.BRACE,"("));
-                g.append(EXPRESSION);
-                g.append(new TokenItemMatch(CraftrLang.BRACE,")"));
-                EXPRESSION.add(g);
-            }
             
             {
                 TokenGroupMatch g = new TokenGroupMatch().setName("UNARY_OPERATION_R");
@@ -551,14 +543,14 @@ public class CraftrProductions {
             VALUE.add(new TokenItemMatch(CraftrLang.NULL).setName("NULL"));
             {
                 // [NEGATION_OPERATOR][-VALUE-]
-                TokenGroupMatch g = new TokenGroupMatch();
+                TokenGroupMatch g = new TokenGroupMatch().setName("LOGICAL_NEGATIVE_VALUE");
                 g.append(new TokenItemMatch(CraftrLang.LOGICAL_NEGATION_OPERATOR));
                 g.append(VALUE);
                 VALUE.add(g);
             }
             {
                 // [NEGATION_OPERATOR][-VALUE-]
-                TokenGroupMatch g = new TokenGroupMatch();
+                TokenGroupMatch g = new TokenGroupMatch().setName("NUMERICAL_NEGATIVE_VALUE");
                 {
                     TokenStructureMatch s = new TokenStructureMatch("SIGN");
                     s.add(new TokenItemMatch(CraftrLang.OPERATOR,"+"));
@@ -566,6 +558,15 @@ public class CraftrProductions {
                     g.append(s);
                 }
                 g.append(VALUE);
+                VALUE.add(g);
+            }
+            {
+                //Parenthesized value
+                TokenGroupMatch g = new TokenGroupMatch().setName("PARENTHESIZED_VALUE");
+                g.append(new TokenItemMatch(CraftrLang.BRACE, "("));
+                g.append(VALUE);
+                g.append(new TokenItemMatch(CraftrLang.BRACE, ")"));
+
                 VALUE.add(g);
             }
             // [-EXPRESSION-]
