@@ -71,7 +71,7 @@ public class NativeMethods {
                     //return new IntegerValue(reference.getUnresolvedObjectiveReference(), semanticContext);
                     //return null;
                 });
-        methods.put("craftr.lang.World.print(String)",
+        methods.put("craftr.lang.World.print(craftr.lang.String)",
                 (function, positionalParams, unused, pattern, semanticContext, thisIsKindaStatic) -> {
 
                     ActualParameter message = positionalParams.get(0);

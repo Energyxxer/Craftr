@@ -114,7 +114,9 @@ public final class ExprResolver {
                         if((i & 1) == 0) {
                             //Operand
                             Value value = analyzeValueOrReference(contents[i], semanticContext, null, function, silent);
-                            if(value == null) return null;
+                            if(value == null) {
+                                return null;
+                            }
                             flatValues.add(value);
                         } else {
                             //Operator
@@ -187,6 +189,9 @@ public final class ExprResolver {
                             }
                             case '\\': {
                                 sb.append("\\\\"); break;
+                            }
+                            case '\"': {
+                                sb.append("\""); break;
                             }
                             default: {
                                 if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal escape character in a string literal", pattern.getFormattedPath()));
