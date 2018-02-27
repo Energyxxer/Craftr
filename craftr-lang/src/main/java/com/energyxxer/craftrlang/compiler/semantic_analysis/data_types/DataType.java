@@ -12,12 +12,12 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.BooleanValue;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.FloatValue;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.IntegerValue;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator.*;
+import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator.*;
 
 /**
  * Created by User on 3/1/2017.

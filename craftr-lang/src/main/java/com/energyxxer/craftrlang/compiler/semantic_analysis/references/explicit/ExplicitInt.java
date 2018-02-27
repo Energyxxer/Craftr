@@ -34,6 +34,10 @@ public class ExplicitInt implements ExplicitValue {
         return new NBTReference(entity, path);
     }
 
+    public int getValue() {
+        return value;
+    }
+
     @Override
     public String toString() {
         return value + "";

@@ -8,6 +8,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitFloat;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 
 /**
  * Created by Energyxxer on 07/11/2017.
@@ -31,12 +32,12 @@ public class FloatValue extends NumericalValue {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent) {
         /*
         if(operator == Operator.ASSIGN) {
             if(operand instanceof NumericalValue && ((NumericalValue) operand).getWeight()<=this.getWeight()) {
@@ -52,8 +53,8 @@ public class FloatValue extends NumericalValue {
 
         if(operand instanceof NumericalValue) {
             int weightDiff = this.getWeight() - ((NumericalValue) operand).getWeight();
-            if(weightDiff > 0) return operation(operator, ((NumericalValue) operand).coerce(this), pattern, function, fromVariable, silent);
-            else if(weightDiff < 0) return this.coerce((NumericalValue) operand).operation(operator, operand, pattern, function, fromVariable, silent);
+            if(weightDiff > 0) return runOperation(operator, ((NumericalValue) operand).coerce(this), pattern, function, fromVariable, silent);
+            else if(weightDiff < 0) return this.coerce((NumericalValue) operand).runOperation(operator, operand, pattern, function, fromVariable, silent);
             else {
                 //We can be certain that if this code is running, then both operands are FloatValues
 

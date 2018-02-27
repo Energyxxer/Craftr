@@ -8,6 +8,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitByte;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 
 /**
  * Created by Energyxxer on 07/11/2017.
@@ -38,14 +39,14 @@ public class BooleanValue extends Value {
     }
 
     @Override
-    public Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent) {
         //TODO
         return null;
         //return (operator == NOT) ? new BooleanValue(!this.value, semanticContext) : null;
     }
 
     @Override
-    public Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent) {
         //TODO
 
         /*if(operator == Operator.ASSIGN) {

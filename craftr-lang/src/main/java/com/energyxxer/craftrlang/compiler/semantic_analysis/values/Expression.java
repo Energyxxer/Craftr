@@ -7,6 +7,9 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperandType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 public class Expression extends Value {
     protected boolean silent = false;
@@ -28,24 +31,36 @@ public class Expression extends Value {
 
     @Override
     public boolean isExplicit() {
-        return false;
+        return a.isExplicit() && b.isExplicit();
     }
 
     @Override
     public Value unwrap(Function function) {
-        return this.writeToFunction(function);
+
+        if(a instanceof Expression) a = a.unwrap(function);
+        if(b instanceof Expression) b = b.unwrap(function);
+
+        if(op.getLeftOperandType() == OperandType.VALUE && a instanceof Variable) {
+            a = ((Variable) a).getValue();
+        }
+        if(op.getRightOperandType() == OperandType.VALUE && b instanceof Variable) {
+            b = ((Variable) b).getValue();
+        }
+
+        return a.runOperation(this.op, b, pattern, function, this.silent);
     }
 
     public Value simplify() {
 
-        if(a == null || b == null) return this;
+        /*if(a == null || b == null) return this;
 
         if(a instanceof Expression) a = ((Expression) a).simplify();
         if(b instanceof Expression) b = ((Expression) b).simplify();
 
         if(a.isExplicit() && b.isExplicit()) {
-            return a.runOperation(this.op, b, pattern, null, false, silent);
-        } return this;
+            return a.runOperation(this.op, b, pattern, null, silent);
+        } return this;*/
+        return this;
     }
 
     @Override
@@ -64,12 +79,12 @@ public class Expression extends Value {
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent) {
         return null;
     }
 
@@ -79,7 +94,7 @@ public class Expression extends Value {
     }
 
     public Value writeToFunction(Function function) {
-        return a.runOperation(this.op, b, pattern, function, false, silent);
+        return a.runOperation(this.op, b, pattern, function, silent);
     }
 
     @Override

@@ -14,6 +14,8 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodCall;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperationOrder;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 import java.util.ArrayList;
@@ -135,7 +137,7 @@ public final class ExprResolver {
                                 topOperator = op;
                             } else if(topOperator.getPrecedence() >= op.getPrecedence()) {
 
-                                if(topOperator.getPrecedence() > op.getPrecedence() || topOperator.isRightToLeft()) {
+                                if(topOperator.getPrecedence() > op.getPrecedence() || topOperator.getOrder() == OperationOrder.RTL) {
                                     index = i;
                                     topOperator = op;
                                 }

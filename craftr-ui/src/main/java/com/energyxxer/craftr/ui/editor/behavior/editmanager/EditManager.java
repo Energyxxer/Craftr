@@ -14,7 +14,7 @@ public class EditManager {
     private CaretProfile lastProfile = null;
 
     /**
-     * Time interval in milliseconds within text editing operation will be done and undone together in the edit manager.
+     * Time interval in milliseconds within text editing runOperation will be done and undone together in the edit manager.
      * */
     private static final int EDIT_GROUP_DELAY = 300;
 

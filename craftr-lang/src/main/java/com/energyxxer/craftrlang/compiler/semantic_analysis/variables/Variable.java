@@ -22,8 +22,8 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Null;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -126,7 +126,9 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
             }
 
             this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getInstanceSemanticContext() : semanticContext, null, initializerFunction);
-            if(this.value != null) this.value = this.value.unwrap(initializerFunction);
+            if(this.value != null) {
+                this.value = this.value.unwrap(initializerFunction);
+            }
             if(this.value != null && !this.value.getDataType().instanceOf(this.getDataType())) {
                 semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
             }
@@ -184,12 +186,12 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent) {
         return null;
     }
 
     @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent) {
         //fromVariable SHOULD be false
         if(operand != null && operand instanceof Variable) {
             operand = ((Variable) operand).value;
@@ -223,7 +225,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
             }
             return value.clone(function);
         }
-        if(!value.isNull()) return value.runOperation(operator, operand, pattern, function, true, silent);
+        if(!value.isNull()) return value.runOperation(operator, operand, pattern, function, silent);
         else {
             if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable might not have been defined", pattern.getFormattedPath()));
             return value;
