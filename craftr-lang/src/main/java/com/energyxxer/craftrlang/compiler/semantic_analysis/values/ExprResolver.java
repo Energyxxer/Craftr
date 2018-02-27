@@ -1,10 +1,12 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.*;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.CompoundSymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
@@ -15,6 +17,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodC
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Energyxxer on 07/11/2017.
@@ -53,7 +56,7 @@ public final class ExprResolver {
     //    return analyzeStructure(pattern, semanticContext, dataHolder, function, false);
     //}
 
-    public static TraversableStructure analyzeStructure(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, Function function, boolean silent) {
+    private static TraversableStructure analyzeStructure(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, Function function, boolean silent) {
         try{
         switch(pattern.getName()) {
             case "NUMBER": {
@@ -63,7 +66,7 @@ public final class ExprResolver {
                 }
                 if(raw.matches("\\d+\\.\\d+")) { //IS A FLOAT
                     try {
-                        return new FloatValue(Float.parseFloat(raw), semanticContext);
+                        return new FloatValue(Float.parseFloat(raw), semanticContext); //TODO: CONVERT THIS TO DOUBLE
                     } catch(NumberFormatException x) {
                         if(!silent) System.err.println("[Something went slightly wrong] Number structure '" + raw + "'is not a valid number. (?)");
                         return null;
@@ -207,7 +210,22 @@ public final class ExprResolver {
                     if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "WHOA WHOA THERE, THERE'S NO DATA HOLDER??? CRUD", pattern.getFormattedPath()));
                     return null;
                 }
-                return new MethodCall(pattern, dataHolder, function, semanticContext);
+                return new MethodCall(pattern, dataHolder, function, semanticContext).evaluate();
+            } case "INSTANTIATION": {
+                TokenPattern<?> methodCall = ((TokenGroup) pattern).getContents()[1];
+
+                Token unitName = ((TokenItem) methodCall.find("METHOD_CALL_NAME")).getContents();
+
+                Symbol sym = semanticContext.getDeclaringFile().getReferenceTable().getSymbol(Collections.singletonList(unitName), semanticContext, silent);
+
+                if(sym == null) return null;
+
+                if(!(sym instanceof Unit)) {
+                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Expected unit name", unitName.getFormattedPath()));
+                    return null;
+                } else dataHolder = (Unit) sym;
+
+                return analyzeValue(methodCall, semanticContext, dataHolder, function, silent);
             } case "SINGLE_IDENTIFIER": {
                 if(dataHolder == null) dataHolder = semanticContext.getDataHolder();
                 if(dataHolder == null) {
@@ -238,7 +256,9 @@ public final class ExprResolver {
                         if(symbol instanceof TraversableStructure) return (TraversableStructure) symbol;
                     } return null;
                 }
-                if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                if(!silent) {
+                    semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                }
                 return null;
             } case "POINTER": {
                 if(dataHolder == null) dataHolder = semanticContext.getDataHolder();
@@ -269,11 +289,15 @@ public final class ExprResolver {
 
                     if(s != null) {
                         if(s instanceof DataHolder) return analyzeStructure(pattern.find("NESTED_POINTER"), semanticContext, (DataHolder) s, function, silent);
-                        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                        if(!silent) {
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                        }
                     }
                     return null;
                 }
-                if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                if(!silent) {
+                    semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                }
                 return null;
             } case "NESTED_POINTER": {
                 return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, function, silent);
@@ -285,7 +309,9 @@ public final class ExprResolver {
                 if(next == null) return s;
                 else if(s != null) {
                     if(s instanceof DataHolder) return analyzeStructure(pattern.find("POINTER_NEXT"), semanticContext, (DataHolder) s, function, silent);
-                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                    if(!silent) {
+                        semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                    }
                 }
                 return null;
             } case "POINTER_SEGMENT": {

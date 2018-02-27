@@ -6,6 +6,8 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -14,7 +16,7 @@ import java.util.HashMap;
 /**
  * Created by User on 4/9/2017.
  */
-public class Package implements Symbol, TraversableStructure {
+public class Package implements Symbol, TraversableStructure, DataHolder {
     private Package parent; //Null if root
     private String name;
 
@@ -98,6 +100,11 @@ public class Package implements Symbol, TraversableStructure {
     @Override
     public @NotNull SymbolTable getSubSymbolTable() {
         return symbolTable;
+    }
+
+    @Override
+    public MethodLog getMethodLog() {
+        return null;
     }
 
     @Override

@@ -140,7 +140,7 @@ public class Compiler {
             return;
         }
         module.getObjectiveManager().setCreationFunction(module.projectNS.getFunctionManager().create("init"));
-        if(projectOutput != null) module.compile(projectOutput, ModulePackGenerator.OutputType.FOLDER);
+        if(projectOutput != null && !report.hasErrors()) module.compile(projectOutput, ModulePackGenerator.OutputType.FOLDER);
         this.setProgress("Compilation completed with " + report.getTotalsString());
         finalizeCompilation();
     }

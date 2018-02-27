@@ -45,10 +45,11 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
     private LocalizedObjectiveManager locObjMgr;
     private CodeBlock codeBlock;
+    private Function function;
 
     private final MethodSignature signature;
 
-    public Method(TokenPattern<?> pattern, Unit declaringUnit, MethodType type, List<CraftrLang.Modifier> modifiers, DataType returnType, String name, boolean validName, List<FormalParameter> positionalParams, HashMap<String, FormalParameter> keywordParams, LocalizedObjectiveManager locObjMgr, CodeBlock codeBlock, MethodSignature signature) {
+    public Method(TokenPattern<?> pattern, Unit declaringUnit, MethodType type, List<CraftrLang.Modifier> modifiers, DataType returnType, String name, boolean validName, List<FormalParameter> positionalParams, HashMap<String, FormalParameter> keywordParams, LocalizedObjectiveManager locObjMgr, CodeBlock codeBlock, Function function, MethodSignature signature) {
         super(pattern);
         this.declaringUnit = declaringUnit;
         this.type = type;
@@ -60,6 +61,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         this.keywordParams = keywordParams;
         this.locObjMgr = locObjMgr;
         this.codeBlock = codeBlock;
+        this.function = function;
         this.signature = signature;
     }
 
@@ -180,6 +182,8 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
         this.signature = new MethodSignature(declaringUnit, name, positionalParams);
 
+        this.function = getModule().projectNS.getFunctionManager().create(declaringUnit.getFunctionPath() + "/" + type.getPrefix() + "@" + this.name, true);
+
         this.locObjMgr = getCompiler().getModule().createLocalizedObjectiveManager(this);
 
         TokenPattern<?> body = pattern.find("METHOD_BODY");
@@ -195,7 +199,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
     }
 
     public Method duplicate() {
-        return new Method(pattern, declaringUnit, type, modifiers, returnType, name, validName, positionalParams, keywordParams, locObjMgr, codeBlock, signature);
+        return new Method(pattern, declaringUnit, type, modifiers, returnType, name, validName, positionalParams, keywordParams, locObjMgr, codeBlock, function, signature);
     }
 
     public boolean isStatic() {
@@ -382,7 +386,15 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
             }
         }
         codeBlock.setSilent(true);
-        return codeBlock.writeToFunction(function);
+        return codeBlock.evaluate(function);
+    }
+
+    public MethodType getMethodType() {
+        return type;
+    }
+
+    public Function getFunction() {
+        return function;
     }
 
     @Override

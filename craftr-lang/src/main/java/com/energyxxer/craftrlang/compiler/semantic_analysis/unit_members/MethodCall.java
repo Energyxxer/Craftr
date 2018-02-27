@@ -11,36 +11,40 @@ import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MethodCall extends Value implements TraversableStructure {
+public class MethodCall implements TraversableStructure {
     private final TokenPattern<?> pattern;
+    private final SemanticContext semanticContext;
     private String methodName;
     private ArrayList<ActualParameter> positionalParams = new ArrayList<>();
     private HashMap<String, ActualParameter> keywordParams = new HashMap<>();
-    private DataHolder dataHolder = null;
+    private DataHolder dataHolder;
     private Method method = null;
+    private Function function;
 
     public MethodCall(TokenPattern<?> pattern, DataHolder dataHolder, Function function, SemanticContext semanticContext) {
-        super(semanticContext);
+        this.semanticContext = semanticContext;
         this.pattern = pattern;
+        this.function = function;
         this.methodName = ((TokenItem) pattern.find("METHOD_CALL_NAME")).getContents().value;
 
         if(dataHolder instanceof Unit) {
             dataHolder = ((Unit) dataHolder).getDataHolder(); //Unwrap one more time to get the instance data holder of singleton units
         }
         this.dataHolder = dataHolder;
+
+        if(methodName.equals("this")) {
+            if(dataHolder instanceof Unit) methodName = ((Unit) dataHolder).getName(); //For consistency with field-handling of 'this';
+            else methodName = semanticContext.getUnit().getName();
+        }
 
         TokenList parameterListWrapper = (TokenList) pattern.find("PARAMETER_LIST");
 
@@ -97,66 +101,13 @@ public class MethodCall extends Value implements TraversableStructure {
         }
     }
 
-    @Override
-    public boolean isExplicit() {
-        return false;
-    }
-
     public Method getMethod() {
         return method;
     }
 
-    @Override
-    public DataType getDataType() {
-        return (method != null) ? method.getReturnType() : DataType.VOID;
-    }
-
-    @Override
-    public SymbolTable getSubSymbolTable() {
-        return (method != null) ? method.getReturnType().getSubSymbolTable() : null;
-    }
-
-    @Override
-    public MethodLog getMethodLog() {
-        return (method != null) ? method.getReturnType().getMethodLog() : null;
-    }
-
-    @Override
-    protected Value operation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
-        return null;
-    }
-
-    @Override
-    protected Value operation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
-        return null;
-    }
-
-    @Override
-    public Value unwrap(Function function) {
-        return (method != null) ? method.writeCall(function, positionalParams, keywordParams, pattern, semanticContext, dataHolder) : null;
-    }
-
-    @Override
-    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
-        Value unwrapped = this.unwrap(function);
-        if(unwrapped != null) return unwrapped.runOperation(operator, pattern, function, fromVariable, silent);
-        return null;
-    }
-
-    @Override
-    public Value runOperation(Operator operator, Value value, TokenPattern<?> pattern, Function function, boolean fromVariable, boolean silent) {
-        Value unwrapped = this.unwrap(function);
-        if(unwrapped != null) return unwrapped.runOperation(operator, value, pattern, function, fromVariable, silent);
-        else return null;
-    }
-
-    @Override
-    public DataReference getReference() {
-        throw new IllegalStateException("Mate, don't access a method call reference directly, first unwrap.");
-    }
-
-    @Override
-    public Value clone(Function function) {
-        throw new IllegalStateException("Mate, don't clone the method call, first unwrap.");
+    public Value evaluate() {
+        if(method != null) {
+            return method.writeCall(this.function, positionalParams, keywordParams, pattern, semanticContext, dataHolder);
+        } else return null;
     }
 }

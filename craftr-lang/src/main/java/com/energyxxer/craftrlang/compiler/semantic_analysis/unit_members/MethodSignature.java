@@ -18,6 +18,15 @@ public class MethodSignature {
         this.positionalParams = positionalParams;
     }
 
+    public boolean matches(MethodSignature formalSignature) {
+        if(!this.name.equals(formalSignature.name)) return false;
+        if(positionalParams.size() != formalSignature.positionalParams.size()) return false;
+        for(int i = 0; i < positionalParams.size(); i++) {
+            if(!positionalParams.get(i).matches(formalSignature.positionalParams.get(i))) return false;
+        }
+        return true;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

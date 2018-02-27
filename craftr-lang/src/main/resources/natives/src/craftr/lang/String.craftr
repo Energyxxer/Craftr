@@ -10,4 +10,7 @@ import craftr.lang.items.*;
 */
 public final class String {
     public native int length();
+
+    public native String toLowerCase();
+    public native String toUpperCase();
 }

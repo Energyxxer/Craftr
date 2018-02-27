@@ -64,7 +64,7 @@ public abstract class Value implements TraversableStructure {
 
         Value returnValue = thisUnwrapped.operation(operator, operandUnwrapped, pattern, function, fromVariable, silent);
         if(returnValue == null) {
-            if(!silent) this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator '" + operator.getSymbol() + "' cannot be applied to types '" + thisUnwrapped.getDataType() + "', '" + operandUnwrapped.getDataType() + "'", pattern.getFormattedPath()));
+            //if(!silent) this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator '" + operator.getSymbol() + "' cannot be applied to types '" + thisUnwrapped.getDataType() + "', '" + operandUnwrapped.getDataType() + "'", pattern.getFormattedPath()));
         }
         return returnValue;
     }

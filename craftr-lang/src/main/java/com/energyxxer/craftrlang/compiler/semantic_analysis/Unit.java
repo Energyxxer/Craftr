@@ -20,6 +20,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodSignature;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 import com.energyxxer.util.out.Console;
@@ -516,7 +517,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
                 } else if(component.getName().equals("METHOD")) {
                     Method method = new Method(this, component);
                     if(staticMethodLog.findMethod(method.getSignature()) == null && instanceMethodLog.findMethod(method.getSignature()) == null) {
-                        ((method.isStatic()) ? staticMethodLog : instanceMethodLog).addMethod(method);
+                        ((method.isStatic() || method.getMethodType() == MethodType.CONSTRUCTOR) ? staticMethodLog : instanceMethodLog).addMethod(method);
                     } else {
                         getAnalyzer().getCompiler().getReport().addNotice(new Notice(
                                 NoticeType.ERROR,

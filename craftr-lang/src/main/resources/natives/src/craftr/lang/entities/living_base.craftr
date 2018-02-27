@@ -33,4 +33,5 @@ public abstract entity living_base extends entity_base implements equippable {
     //Helper procedures
     public native void addEffect(StatusEffect effect);
     public native void clearEffect(Effect id);
+    public native void setInvisible(boolean invisible);
 }

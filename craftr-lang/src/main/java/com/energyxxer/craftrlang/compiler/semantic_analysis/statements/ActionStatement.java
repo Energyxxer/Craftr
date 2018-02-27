@@ -4,6 +4,7 @@ import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.functions.FunctionComment;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
 public class ActionStatement extends Statement {
     public ActionStatement(TokenPattern<?> pattern, SemanticContext semanticContext, Function function) {
@@ -11,7 +12,8 @@ public class ActionStatement extends Statement {
     }
 
     @Override
-    public void writeCommands(Function function) {
+    public Value evaluate(Function function) {
         function.append(new FunctionComment("Action statement"));
+        return null;
     }
 }

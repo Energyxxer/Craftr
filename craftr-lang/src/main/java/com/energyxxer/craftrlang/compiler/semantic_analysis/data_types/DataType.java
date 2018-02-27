@@ -28,6 +28,7 @@ public class DataType {
     private final boolean primitive;
     private final Unit unit;
     private final boolean nullType;
+    private InheritanceValidator inheritanceValidator = null;
 
     private ReferenceConstructor referenceConstructor;
     private TypeOperationPromise typeOperationPromise;
@@ -36,11 +37,16 @@ public class DataType {
         this(name, false);
     }
 
-    public DataType(String name, boolean primitive) {
+    public DataType(String name, boolean primitive, InheritanceValidator inheritanceValidator) {
         this.name = name;
         this.primitive = primitive;
         this.unit = null;
         this.nullType = false;
+        this.inheritanceValidator = inheritanceValidator;
+    }
+
+    public DataType(String name, boolean primitive) {
+        this(name, primitive, null);
     }
 
     public DataType(Unit unit) {
@@ -48,6 +54,7 @@ public class DataType {
         this.primitive = false;
         this.unit = unit;
         this.nullType = false;
+        this.inheritanceValidator = null;
     }
 
     //Null data type
@@ -56,6 +63,7 @@ public class DataType {
         this.primitive = true;
         this.unit = null;
         this.nullType = true;
+        this.inheritanceValidator = null;
     }
 
     public String getName() {
@@ -75,7 +83,7 @@ public class DataType {
     public static final DataType LONG = new DataType("long", true);
     public static final DataType BOOLEAN = new DataType("boolean", true);
 
-    public static final DataType NULL = new DataType();
+    public static final DataType NULL = new DataType("null", true, t -> true);
 
     public static final DataType OBJECT = new DataType("craftr.lang.Object", false);
     public static final DataType STRING = new DataType("craftr.lang.String", false);
@@ -87,9 +95,13 @@ public class DataType {
     static {
         INT.setReferenceConstructor(IntegerValue::new);
         FLOAT.setReferenceConstructor(FloatValue::new);
-        //INT.setReferenceConstructor(IntegerValue::new);
+        INT.setReferenceConstructor(IntegerValue::new);
         BOOLEAN.setReferenceConstructor(BooleanValue::new);
         //OBJECT.setReferenceConstructor({});
+
+        CHAR.setInheritanceValidator(t -> t == INT || t == FLOAT || t == DOUBLE || t == LONG);
+        INT.setInheritanceValidator(t -> t == FLOAT || t == DOUBLE || t == LONG);
+        FLOAT.setInheritanceValidator(t -> t == DOUBLE || t == LONG);
 
         INT.setTypeOperationPromise((op, other)->{
             if(Arrays.asList(INT, FLOAT, DOUBLE, LONG).contains(other)) {
@@ -156,6 +168,14 @@ public class DataType {
         this.referenceConstructor = referenceConstructor;
     }
 
+    public InheritanceValidator getInheritanceValidator() {
+        return inheritanceValidator;
+    }
+
+    public void setInheritanceValidator(InheritanceValidator inheritanceValidator) {
+        this.inheritanceValidator = inheritanceValidator;
+    }
+
     public SymbolTable getSubSymbolTable() {
         //DO SOMETHING ABOUT THE FIELD TABLE THING
         return (unit != null) ? unit.getStaticFieldLog() : null;
@@ -170,12 +190,16 @@ public class DataType {
     }
 
     public boolean instanceOf(DataType type) {
+        return (inheritanceValidator != null && inheritanceValidator.validate(type)) || validateFirst(type);
+    }
+
+    private boolean validateFirst(DataType type) {
         if(this.isNullType()) return true; //Yeah yeah null can be anything it wants to be, now get lost.
-        if(type.isNullType()) return false; //Woah woah there buddy, null is unique; nobody else can be null.
+        if(type.isNullType()) return false; //Whoa whoa there buddy, null is unique; nobody else can be null.
 
         if(this.primitive || type.primitive) return this.equals(type);
         if(this.unit != null && type.unit != null)
-        return this.unit.instanceOf(type.unit);
+            return this.unit.instanceOf(type.unit);
         else return this.name.equals(type.name);
     }
 
@@ -198,4 +222,8 @@ public class DataType {
     public String toString() {
         return name;
     }
+}
+
+interface InheritanceValidator {
+    boolean validate(DataType other);
 }

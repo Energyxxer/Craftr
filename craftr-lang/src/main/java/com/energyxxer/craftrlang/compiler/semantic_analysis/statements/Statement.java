@@ -1,11 +1,11 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
 import com.energyxxer.commodore.functions.Function;
-import com.energyxxer.craftrlang.compiler.codegen.CommandWriter;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
-public abstract class Statement implements CommandWriter {
+public abstract class Statement {
     protected final TokenPattern<?> pattern;
     protected final SemanticContext semanticContext;
     protected final Function function;
@@ -41,4 +41,6 @@ public abstract class Statement implements CommandWriter {
     public void setSilent(boolean silent) {
         this.silent = silent;
     }
+
+    public abstract Value evaluate(Function function);
 }

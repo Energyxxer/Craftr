@@ -31,7 +31,7 @@ import java.util.List;
 public class CodeBlock extends Statement implements SemanticContext, DataHolder {
     private boolean closed = false;
 
-    private LocalizedObjectiveManager locObjMgr = null;
+    private LocalizedObjectiveManager locObjMgr;
 
     private CodeBlock parentBlock = null;
     private SymbolTable symbolTable = new SymbolTable() {
@@ -54,15 +54,12 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     private boolean initialized = false;
 
     public CodeBlock(TokenPattern<?> pattern, SemanticContext semanticContext) {
-        super(pattern, semanticContext, semanticContext.getModuleNamespace().getFunctionManager().create(
-                (semanticContext instanceof Method) ?
-                        semanticContext.getUnit().getFunctionPath() + "/met@" + ((Method) semanticContext).getName()
+        super(pattern, semanticContext, (semanticContext instanceof Method) ? ((Method) semanticContext).getFunction() : semanticContext.getModuleNamespace().getFunctionManager().create(
+                ((semanticContext instanceof CodeBlock) ?
+                        ((CodeBlock) semanticContext).function.getFullName()
                         :
-                        ((semanticContext instanceof CodeBlock) ?
-                                ((CodeBlock) semanticContext).function.getFullName()
-                                :
-                                semanticContext.getUnit().getFunctionPath() + "/met@" + semanticContext.getDeclaringFile().getIOFile().getName()
-                        ), true
+                        semanticContext.getUnit().getFunctionPath() + "/cbk@" + semanticContext.getDeclaringFile().getIOFile().getName()
+                ), true
         ));
 
         if(semanticContext instanceof CodeBlock) {
@@ -103,7 +100,7 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
 
                 if(statement != null) {
                     statement.setSilent(silent);
-                    statement.writeCommands(function);
+                    Value value = statement.evaluate(function);
                     if(statement instanceof ReturnStatement) {
                         //returnValue = value;
                         closed = true;
@@ -128,44 +125,9 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     }
 
     @Override
-    public void writeCommands(Function function) {
+    public Value evaluate(Function function) {
         function.append(new FunctionCommand(this.function));
-    }
-
-    //TODO: Replace all old instances of FunctionWriter with a new CommandWriter that writes commands instead of whatever tf this used to write
-    @Deprecated
-    public Value writeToFunction(Function function) {
-        if(true) return null;
-        TokenPattern<?> inner = (TokenPattern<?>) pattern.getContents();
-
-        closed = false;
-        Value returnValue = null;
-
-        TokenList list = (TokenList) inner.find("STATEMENT_LIST");
-        if(list != null) {
-            TokenPattern<?>[] rawStatements = list.getContents();
-            for(TokenPattern<?> rawStatement : rawStatements) {
-                if(closed) {
-                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unreachable statement", rawStatement.getFormattedPath()));
-                    return returnValue;
-                }
-                if(!(rawStatement instanceof TokenStructure)) continue;
-
-                Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this, function);
-
-                if(statement != null) {
-                    statement.setSilent(silent);
-                    //Value value = statement.writeToFunction(function);
-                    if(statement instanceof ReturnStatement) {
-                        //returnValue = value;
-                        closed = true;
-                    }
-                    //TEMPORARY. DO MORE STUFF OFC
-                }
-            }
-        }
-
-        return returnValue;
+        return null;
     }
 
     @Override

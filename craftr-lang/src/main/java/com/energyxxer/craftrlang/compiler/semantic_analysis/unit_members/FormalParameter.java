@@ -32,6 +32,10 @@ public class FormalParameter {
         return name;
     }
 
+    public boolean matches(FormalParameter formalParam) {
+        return type.instanceOf(formalParam.type);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

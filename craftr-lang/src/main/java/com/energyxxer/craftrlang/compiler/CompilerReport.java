@@ -46,12 +46,24 @@ public class CompilerReport {
         return errors;
     }
 
+    public boolean hasErrors() {
+        return !errors.isEmpty();
+    }
+
     public ArrayList<Notice> getWarnings() {
         return warnings;
     }
 
+    public boolean hasWarnings() {
+        return !warnings.isEmpty();
+    }
+
     public ArrayList<Notice> getInfo() {
         return info;
+    }
+
+    public boolean hasInfo() {
+        return !info.isEmpty();
     }
 
     public HashMap<String, ArrayList<Notice>> groupByLabel() {
