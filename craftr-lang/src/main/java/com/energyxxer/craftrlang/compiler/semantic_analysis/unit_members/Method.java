@@ -3,6 +3,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.commodore.score.ScoreHolder;
+import com.energyxxer.commodore.types.FunctionReference;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
@@ -172,7 +173,6 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                         keywordParams.put(param.getName(),param);
                     } else positionalParams.add(param);
                 }
-
             }
         }
 
@@ -182,7 +182,23 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
         this.signature = new MethodSignature(declaringUnit, name, positionalParams);
 
-        this.function = getModule().projectNS.getFunctionManager().create(declaringUnit.getFunctionPath() + "/" + type.getPrefix() + "@" + this.name, true);
+        this.function = getModule().projectNS.getFunctionManager().create(declaringUnit.getFunctionPath() + "/" + type.getPrefix() + "-" + this.name, true);
+
+        if(type == MethodType.EVENT) {
+            switch(name) {
+                case "onTick": {
+                    getModule().tickTag.addValue(new FunctionReference(function));
+                    break;
+                }
+                case "onLoad": {
+                    getModule().loadTag.addValue(new FunctionReference(function));
+                    break;
+                }
+                default: {
+                    getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unknown event type '" + name + "'"));
+                }
+            }
+        }
 
         this.locObjMgr = getCompiler().getModule().createLocalizedObjectiveManager(this);
 

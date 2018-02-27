@@ -598,7 +598,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
     }
 
     public String getFunctionPath() {
-        return getFullyQualifiedName().replace("\\.","/");
+        return getFullyQualifiedName().replace(".","/");
     }
 
     public FieldLog getStaticFieldLog() {
