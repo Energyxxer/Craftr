@@ -1,7 +1,10 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.variables;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
+import com.energyxxer.commodore.score.Objective;
 import com.energyxxer.craftrlang.CraftrLang;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjective;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -9,15 +12,14 @@ import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.UnitInstanceContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.*;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
@@ -37,34 +39,39 @@ import java.util.List;
 public class Variable extends Value implements Symbol, DataHolder, TraversableStructure {
     public final TokenPattern<?> pattern;
 
-    private SymbolVisibility visibility = SymbolVisibility.BLOCK;
+    private SymbolVisibility visibility;
     private List<CraftrLang.Modifier> modifiers;
 
     private DataType dataType;
     private String name;
-    private boolean validName;
+    private boolean field = false;
 
     private CodeBlock block = null;
     private Method method = null;
 
-    private Value value;
+    private Objective objective;
 
-    public Variable(TokenPattern<?> pattern, SemanticContext semanticContext, SymbolVisibility visibility, List<CraftrLang.Modifier> modifiers, DataType dataType, String name, boolean validName, CodeBlock block, Method method, Value value) {
-        super(semanticContext);
-        this.pattern = pattern;
-        this.visibility = visibility;
-        this.modifiers = modifiers;
-        this.dataType = dataType;
-        this.name = name;
-        this.validName = validName;
-        this.block = block;
-        this.method = method;
+    private Value value;
+    private ScoreReference reference = null;
+
+    private Variable(Variable that) {
+        super(that.semanticContext);
+        this.pattern = that.pattern;
+        this.visibility = that.visibility;
+        this.modifiers = that.modifiers;
+        this.dataType = that.dataType;
+        this.name = that.name;
+        this.field = that.field;
+        this.block = that.block;
+        this.method = that.method;
         if(value == null) this.value = new Null(semanticContext);
-        else this.value = value;
+        else this.value = that.value;
+        this.objective = that.objective;
+        this.reference = that.reference;
     }
 
     private Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext) {
-        super(semanticContext);
+        super((semanticContext instanceof Unit) ? ((Unit) semanticContext).getInstanceSemanticContext() : semanticContext);
         this.pattern = pattern;
         this.modifiers = new ArrayList<>(modifiers);
         this.dataType = dataType;
@@ -73,15 +80,17 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                 (modifiers.contains(CraftrLang.Modifier.PUBLIC) ? SymbolVisibility.GLOBAL :
                 modifiers.contains(CraftrLang.Modifier.PROTECTED) ? SymbolVisibility.UNIT_INHERITED :
                 modifiers.contains(CraftrLang.Modifier.PRIVATE) ? SymbolVisibility.UNIT :
-                semanticContext instanceof CodeBlock ? SymbolVisibility.BLOCK : SymbolVisibility.PACKAGE));
+                this.semanticContext instanceof CodeBlock ? SymbolVisibility.BLOCK : SymbolVisibility.PACKAGE));
 
         this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
-        this.validName = !CraftrLang.isPseudoIdentifier(this.name);
 
-        if(!validName) {
-            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME").getFormattedPath()));
+        if(CraftrLang.isPseudoIdentifier(this.name)) {
+            this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME").getFormattedPath()));
         }
-        this.value = new Null(semanticContext);
+        this.value = new Null(this.semanticContext);
+        this.field = this.semanticContext.getContextType() == ContextType.UNIT;
+
+        this.claimObjective();
     }
 
     public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, Method method, Value value) {
@@ -91,16 +100,21 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.modifiers = new ArrayList<>(modifiers);
         this.dataType = dataType;
         this.name = name;
-        this.validName = !CraftrLang.isPseudoIdentifier(this.name);
+        //this.validName = !CraftrLang.isPseudoIdentifier(this.name);
         this.block = null;
         this.method = method;
         if(value == null) this.value = new Null(semanticContext);
         else this.value = value;
+
+        this.claimObjective();
     }
 
-    public Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, Unit parentUnit) {
-        this(pattern, modifiers, dataType, (SemanticContext) parentUnit);
-
+    private void claimObjective() {
+        LocalizedObjective locObj = (field ? semanticContext.getLocalizedObjectiveManager().FIELD : semanticContext.getLocalizedObjectiveManager().VARIABLE).create();
+        locObj.capture();
+        //Never dispose
+        this.objective = locObj.getObjective();
+        //this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getPlayer()));
     }
 
     public void initializeValue() {
@@ -111,10 +125,9 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
             Function initializerFunction;
             if(semanticContext instanceof Unit) {
-                if(modifiers.contains(CraftrLang.Modifier.STATIC))
-                    initializerFunction = ((Unit) semanticContext).getStaticInitializer();
-                else
-                    initializerFunction = ((Unit) semanticContext).getInstanceInitializer();
+                initializerFunction = ((Unit) semanticContext).getStaticInitializer();
+            } else if(semanticContext instanceof UnitInstanceContext) {
+                initializerFunction = semanticContext.getUnit().getInstanceInitializer();
             } else if(semanticContext instanceof CodeBlock) {
                 initializerFunction = ((CodeBlock) semanticContext).getFunction();
             } else if(semanticContext instanceof Method) {
@@ -163,22 +176,26 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
         for(TokenPattern<?> p : declarationList) {
             if(!p.getName().equals("VARIABLE_DECLARATION")) continue;
-            variables.add(new Variable(p, modifiers, dataType, unit));
+            variables.add(new Variable(p, modifiers, dataType, (SemanticContext) unit));
         }
 
         return variables;
     }
 
     public Variable duplicate() {
-        return new Variable(pattern, semanticContext, visibility, modifiers, dataType, name, validName, block, method, value);
+        return new Variable(this);
     }
 
-    public String getObjectiveName() {
-        return name;
+    public Objective getObjective() {
+        return objective;
     }
 
     public Value getValue() {
         return value;
+    }
+
+    public boolean isField() {
+        return field;
     }
 
     @Override
@@ -193,38 +210,20 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
     @Override
     public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent) {
-        //fromVariable SHOULD be false
-        if(operand != null && operand instanceof Variable) {
-            operand = ((Variable) operand).value;
-        }
-        if(operand == null) {
-            if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Operand is null", pattern.getFormattedPath()));
-            return null;
-        }
-        /*if(operator.isAssignment()) {
-            switch(operator) {
-                case ASSIGN: {
-                    if(operand.getDataType().instanceOf(this.getDataType())) {
-                        value = operand;
-                    } else {
-                        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
+        switch(operator) {
+            case ASSIGN: {
+                if(operand.getDataType().instanceOf(this.getDataType())) {
+                    this.value = operand;
+
+                    if(!operand.isNull()) {
+                        this.reference = operand.getReference().toScore(function, new LocalScore(objective, semanticContext.getPlayer()), semanticContext);
                     }
-                    return value;
+                } else {
+                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
+                    this.value = new Null(semanticContext);
                 }
-                default: return null;
+                return value;
             }
-        } else {
-        }*/
-        if(operand.isNull() && operator == Operator.ASSIGN) {
-            this.value = operand;
-            return value;
-        } else if(value.isNull() && operator == Operator.ASSIGN) {
-            if(operand.getDataType().instanceOf(this.getDataType())) {
-                value = operand.clone(function);
-            } else {
-                if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
-            }
-            return value.clone(function);
         }
         if(!value.isNull()) return value.runOperation(operator, operand, pattern, function, silent);
         else {
@@ -273,10 +272,8 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     @Override
-    public @Nullable Unit getUnit() {
-        if(semanticContext instanceof CodeBlock) return semanticContext.getUnit(); else if(semanticContext instanceof Unit) return ((Unit) semanticContext);
-        semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Variable with no unit: " + this, pattern.getFormattedPath()));
-        return null;
+    public Unit getUnit() {
+        return semanticContext.getUnit();
     }
 
     @Override

@@ -425,7 +425,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
     @Override
     public LocalizedObjectiveManager getLocalizedObjectiveManager() {
-        return null;
+        return locObjMgr;
     }
 
     @Override

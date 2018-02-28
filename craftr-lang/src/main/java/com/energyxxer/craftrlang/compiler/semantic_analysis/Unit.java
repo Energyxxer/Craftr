@@ -268,65 +268,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         this.staticMethodLog = new MethodLog(this);
         this.instanceMethodLog = new MethodLog(this);
 
-        this.instanceSemanticContext = new SemanticContext() {
-
-            @Override
-            public CraftrFile getDeclaringFile() {
-                return file;
-            }
-
-            @Override
-            public Unit getUnit() {
-                return Unit.this;
-            }
-
-            @Override
-            public ContextType getContextType() {
-                return ContextType.UNIT;
-            }
-
-            @Override
-            public SemanticAnalyzer getAnalyzer() {
-                return Unit.this.getAnalyzer();
-            }
-
-            @Override
-            public boolean isStatic() {
-                return false;
-            }
-
-            @Override
-            public SemanticContext getParent() {
-                return Unit.this;
-            }
-
-            @Override
-            public SymbolTable getReferenceTable() {
-                return null; //WHAT TO DO
-            }
-
-            @Override
-            public DataHolder getDataHolder() {
-                return genericInstance;
-            }
-
-            @Override
-            public ObjectInstance getInstance() {
-                return genericInstance;
-            }
-
-            @Override
-            public ScoreHolder getPlayer() {
-                return genericInstance.getEntity();
-            }
-
-            private LocalizedObjectiveManager locObjMgr = Unit.this.getAnalyzer().getCompiler().getModule().createLocalizedObjectiveManager(this);
-
-            @Override
-            public LocalizedObjectiveManager getLocalizedObjectiveManager() {
-                return locObjMgr;
-            }
-        };
+        this.instanceSemanticContext = new UnitInstanceContext(this);
 
         staticPlayer = new FakePlayer(name.toUpperCase());
 

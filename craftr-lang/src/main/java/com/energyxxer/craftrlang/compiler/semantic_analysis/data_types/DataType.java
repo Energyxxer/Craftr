@@ -63,7 +63,7 @@ public class DataType {
         this.primitive = true;
         this.unit = null;
         this.nullType = true;
-        this.inheritanceValidator = null;
+        this.inheritanceValidator = t -> true;
     }
 
     public String getName() {
@@ -83,7 +83,7 @@ public class DataType {
     public static final DataType LONG = new DataType("long", true);
     public static final DataType BOOLEAN = new DataType("boolean", true);
 
-    public static final DataType NULL = new DataType("null", true, t -> true);
+    public static final DataType NULL = new DataType();
 
     public static final DataType OBJECT = new DataType("craftr.lang.Object", false);
     public static final DataType STRING = new DataType("craftr.lang.String", false);

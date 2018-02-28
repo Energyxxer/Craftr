@@ -10,6 +10,8 @@ public class LocalizedObjectiveManager {
     public final LocalizedObjectiveGroup GENERIC;
     public final LocalizedObjectiveGroup PARAMETER;
     public final LocalizedObjectiveGroup OPERATION;
+    public final LocalizedObjectiveGroup VARIABLE;
+    public final LocalizedObjectiveGroup FIELD;
 
     public LocalizedObjectiveManager(CraftrCommandModule module, SemanticContext semanticContext) {
         this.module = module;
@@ -18,6 +20,8 @@ public class LocalizedObjectiveManager {
         GENERIC = new LocalizedObjectiveGroup(this, "g");
         PARAMETER = new LocalizedObjectiveGroup(this, "p");
         OPERATION = new LocalizedObjectiveGroup(this, "op");
+        VARIABLE = new LocalizedObjectiveGroup(this, "v");
+        FIELD = new LocalizedObjectiveGroup(this, "f", true);
     }
 
     public SemanticContext getSemanticContext() {
