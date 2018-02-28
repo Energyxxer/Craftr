@@ -199,7 +199,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         String rawType = ((TokenItem) header.find("UNIT_TYPE")).getContents().value.toUpperCase();
         this.type = UnitType.valueOf(rawType);
 
-        if(this.type == UnitType.ENTITY && !Character.isLowerCase(name.charAt(0))) declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Entity name '" + this.name + "' does not follow Craftr naming conventions", header.find("UNIT_NAME").getFormattedPath()));
+        if(this.type == UnitType.ENTITY && !Character.isLowerCase(name.charAt(0))) declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "Entity name '" + this.name + "' does not follow Craftr naming conventions", header.find("UNIT_NAME")));
 
         List<CraftrLang.Modifier> modifiers = SemanticUtils.getModifiers(header.deepSearchByName("UNIT_MODIFIER"), file.getAnalyzer());
 
@@ -209,13 +209,13 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
             switch(actionType) {
                 case "extends": {
                     if(rawUnitExtends != null) {
-                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit action 'extends'", p.getFormattedPath()));
+                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit action 'extends'", p));
                         break;
                     }
 
                     List<TokenPattern<?>> references = p.deepSearchByName("UNIT_ACTION_REFERENCE");
                     if(references.size() > 1) {
-                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unit cannot extend multiple units", p.getFormattedPath()));
+                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unit cannot extend multiple units", p));
                     }
 
                     rawUnitExtends = references.get(0).flattenTokens();
@@ -223,7 +223,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
                 }
                 case "implements": {
                     if(rawUnitImplements != null) {
-                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit action 'implements'", p.getFormattedPath()));
+                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit action 'implements'", p));
                         break;
                     }
                     rawUnitImplements = new ArrayList<>();
@@ -232,19 +232,19 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
                     for(TokenPattern<?> reference : references) {
                         List<Token> flat = reference.flattenTokens();
                         if(!rawUnitImplements.contains(flat)) rawUnitImplements.add(flat);
-                        else file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit '" + reference.flatten(false) + "'", p.getFormattedPath()));
+                        else file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit '" + reference.flatten(false) + "'", p));
                     }
                     break;
                 }
                 case "requires": {
                     if(rawUnitRequires != null) {
-                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit action 'requires'", p.getFormattedPath()));
+                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate unit action 'requires'", p));
                         break;
                     }
 
                     List<TokenPattern<?>> references = p.deepSearchByName("UNIT_ACTION_REFERENCE");
                     if(references.size() > 1) {
-                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unit cannot require multiple units", p.getFormattedPath()));
+                        file.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unit cannot require multiple units", p));
                     }
 
                     rawUnitRequires = references.get(0).flattenTokens();
@@ -288,7 +288,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
                 if(symbol instanceof Unit && ((Unit) symbol).type == this.type) {
                     superUnit = (Unit) symbol;
                 } else {
-                    declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, this.type.getName() + " name expected", rawUnitExtends.get(rawUnitExtends.size()-1).getFormattedPath()));
+                    declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, this.type.getName() + " name expected", rawUnitExtends.get(rawUnitExtends.size()-1)));
                 }
             }
         }
@@ -338,7 +338,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
                     if(symbol instanceof Unit && ((Unit) symbol).type == UnitType.FEATURE) {
                         this.features.add((Unit) symbol);
                     } else {
-                        declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, UnitType.FEATURE.getName() + " name expected", path.get(path.size()-1).getFormattedPath()));
+                        declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, UnitType.FEATURE.getName() + " name expected", path.get(path.size()-1)));
                     }
                 }
             }
@@ -346,7 +346,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
 
         if(rawUnitRequires != null) {
             if(this.type != UnitType.FEATURE) {
-                declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "'requires' action is only valid for " + UnitType.FEATURE.getName() + " units", rawUnitRequires.get(rawUnitRequires.size()-1).getFormattedPath()));
+                declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "'requires' action is only valid for " + UnitType.FEATURE.getName() + " units", rawUnitRequires.get(rawUnitRequires.size()-1)));
             } else {
                 Symbol symbol = declaringFile.getReferenceTable().getSymbol(rawUnitRequires, this);
                 if(symbol != null) {
@@ -354,10 +354,10 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
                         if(((Unit) symbol).type != UnitType.FEATURE) {
                             this.requirement = (Unit) symbol;
                         } else {
-                            declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-" + UnitType.FEATURE.getName().toLowerCase() + " unit name expected", rawUnitRequires.get(rawUnitRequires.size() - 1).getFormattedPath()));
+                            declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-" + UnitType.FEATURE.getName().toLowerCase() + " unit name expected", rawUnitRequires.get(rawUnitRequires.size() - 1)));
                         }
                     } else {
-                        declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unit name expected", rawUnitRequires.get(rawUnitRequires.size()-1).getFormattedPath()));
+                        declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unit name expected", rawUnitRequires.get(rawUnitRequires.size()-1)));
                     }
                 }
             }
@@ -375,7 +375,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         Unit current = this;
         while(current != null) {
             if(knownParents.contains(current)) {
-                declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cyclic inheritance involving '" + current.getFullyQualifiedName() + "'", this.pattern.find("UNIT_DECLARATION").getFormattedPath()));
+                declaringFile.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cyclic inheritance involving '" + current.getFullyQualifiedName() + "'", this.pattern.find("UNIT_DECLARATION")));
                 break;
             } else {
                 knownParents.add(current);
@@ -430,7 +430,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
                                 "'" + method.getSignature() + "' in '" + method.getUnit().getFullyQualifiedName() +
                                         "' clashes with '" + clashingMethod.getSignature() + "' in '" +
                                         clashingMethod.getUnit().getFullyQualifiedName() +
-                                        "'; attempting to use incompatible return type", this.pattern.find("UNIT_DECLARATION").getFormattedPath()));
+                                        "'; attempting to use incompatible return type", this.pattern.find("UNIT_DECLARATION")));
                     }
                 } else allMethods.put(method.getSignature(), method);
             }
@@ -452,7 +452,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
                             getAnalyzer().getCompiler().getReport().addNotice(new Notice(
                                     NoticeType.ERROR,
                                     "Variable '" + name + "' already declared in the scope",
-                                    field.pattern.find("VARIABLE_NAME").getFormattedPath()
+                                    field.pattern.find("VARIABLE_NAME")
                             ));
                         }
                     }
@@ -464,7 +464,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
                         getAnalyzer().getCompiler().getReport().addNotice(new Notice(
                                 NoticeType.ERROR,
                                 "'" + method.getSignature() + "' is already defined in '" + this.getFullyQualifiedName() + "'",
-                                component.getFormattedPath()
+                                component
                         ));
                     }
                 }

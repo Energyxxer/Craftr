@@ -42,7 +42,7 @@ public class Parser {
 			TokenMatchResponse match = CraftrProductions.FILE.match(f);
 
 			if(!match.matched) {
-				notices.add(new Notice(NoticeType.ERROR, match.getErrorMessage(), match.faultyToken.getFormattedPath()));
+				notices.add(new Notice(NoticeType.ERROR, match.getErrorMessage(), match.faultyToken));
 				continue;
 			}
 

@@ -47,18 +47,18 @@ public class Expression extends Value {
         if(op.getLeftOperandType() == OperandType.VALUE && a instanceof Variable) {
             a = ((Variable) a).getValue();
         } else if(op.getLeftOperandType() == OperandType.REFERENCE && !(a instanceof Variable)) {
-            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid left-hand side in " + op.getSymbol() + " operation", pattern.getFormattedPath()));
+            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid left-hand side in " + op.getSymbol() + " operation", pattern));
             return null;
         }
         if(op.getRightOperandType() == OperandType.VALUE && b instanceof Variable) {
             b = ((Variable) b).getValue();
         } else if(op.getRightOperandType() == OperandType.REFERENCE && !(b instanceof Variable)) {
-            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid right-hand side in " + op.getSymbol() + " operation", pattern.getFormattedPath()));
+            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid right-hand side in " + op.getSymbol() + " operation", pattern));
             return null;
         }
 
         Value returnValue = a.runOperation(this.op, b, pattern, function, this.silent);
-        if(returnValue == null) semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + op.getSymbol() + " is not defined for data types " + a.getDataType() + ", " + b.getDataType()));
+        if(returnValue == null) semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + op.getSymbol() + " is not defined for data types " + a.getDataType() + ", " + b.getDataType(), pattern));
         return returnValue;
     }
 

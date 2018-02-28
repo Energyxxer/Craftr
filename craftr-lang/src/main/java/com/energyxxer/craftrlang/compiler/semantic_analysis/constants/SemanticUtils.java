@@ -21,9 +21,9 @@ public final class SemanticUtils {
             try {
                 CraftrLang.Modifier modifier = CraftrLang.Modifier.valueOf(value.toUpperCase());
                 if(!modifiers.contains(modifier)) modifiers.add(modifier);
-                else analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate modifier '" + value + "'", p.getFormattedPath()));
+                else analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate modifier '" + value + "'", p));
             } catch(IllegalArgumentException x) {
-                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unknown modifier '" + value + "'", p.getFormattedPath()));
+                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unknown modifier '" + value + "'", p));
             }
         }
         return modifiers;

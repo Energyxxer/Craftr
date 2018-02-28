@@ -45,7 +45,7 @@ public class NativeMethods {
 
                         return new IntegerValue((int) Math.pow(base, exponent), semanticContext);
                     } else {
-                        semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Math::pow hasn't been defined for implicit values yet btw.", pattern.getFormattedPath()));
+                        semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Math::pow hasn't been defined for implicit values yet btw.", pattern));
                     }
                     return null;
                 }
@@ -97,7 +97,7 @@ public class NativeMethods {
         if(executor != null) {
             return executor.writeCall(function, positionalParams, keywordParams, pattern, semanticContext, dataHolder);
         }
-        else semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Native Methods", NoticeType.INFO, "Require native implementation for '" + fullSignature + "'", method.pattern.getFormattedPath()));
+        else semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Native Methods", NoticeType.INFO, "Require native implementation for '" + fullSignature + "'", method.pattern));
         return null;
     }
 }

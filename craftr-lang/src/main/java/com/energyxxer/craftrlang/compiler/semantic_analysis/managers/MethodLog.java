@@ -56,11 +56,11 @@ public class MethodLog {
     public Method findMethod(MethodSignature signature, TokenPattern<?> pattern, SemanticContext semanticContext, ObjectInstance instance) {
         Method method = this.findMethod(signature);
         if(method == null) {
-            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method '" + signature + "'", pattern.getFormattedPath()));
+            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method '" + signature + "'", pattern));
             return null;
         }
         if(!method.isStatic() && instance == null && method.getMethodType() != MethodType.CONSTRUCTOR) { //TODO SOMETHING ABOUT THE INSTANCE PLEASE
-            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-static method '" + method.getSignature() + "' cannot be accessed from a static semanticContext", pattern.getFormattedPath()));
+            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-static method '" + method.getSignature() + "' cannot be accessed from a static semanticContext", pattern));
         }
 
         switch(method.getVisibility()) {
@@ -81,7 +81,7 @@ public class MethodLog {
                         NoticeType.ERROR,
                         "Cannot access method '" + signature.getFullyQualifiedName()
                                 + "' from current semanticContext.",
-                        pattern.getFormattedPath()
+                        pattern
                 )
         );
         //I can't believe after all this error checking I'm returning the method anyways...

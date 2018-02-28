@@ -97,7 +97,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         }
         this.validName = !CraftrLang.isPseudoIdentifier(this.name);
         if(!validName) {
-            getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal method name", pattern.find("METHOD_NAME").getFormattedPath()));
+            getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal method name", pattern.find("METHOD_NAME")));
         }
 
         boolean validConstructor = this.type == MethodType.CONSTRUCTOR;
@@ -107,7 +107,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                     new Notice(
                             NoticeType.ERROR,
                             "Invalid method declaration; return type required",
-                            pattern.find("METHOD_NAME").getFormattedPath()
+                            pattern.find("METHOD_NAME")
                     )
             );
             validConstructor = false;
@@ -133,7 +133,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                             new Notice(
                                     NoticeType.ERROR,
                                     "Positional parameters must not follow keyword parameters",
-                                    rawParam.getFormattedPath()
+                                    rawParam
                             )
                     );
                 }
@@ -148,7 +148,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                                 new Notice(
                                         NoticeType.ERROR,
                                         "Variable '" + param.getName() + "' already defined in the scope",
-                                        rawParam.find("PARAMETER_NAME").getFormattedPath()
+                                        rawParam.find("PARAMETER_NAME")
                                 )
                         );
                         isDuplicate = true;
@@ -161,7 +161,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                                 new Notice(
                                         NoticeType.ERROR,
                                         "Variable '" + param.getName() + "' already defined in the scope",
-                                        rawParam.find("PARAMETER_NAME").getFormattedPath()
+                                        rawParam.find("PARAMETER_NAME")
                                 )
                         );
                         isDuplicate = true;
@@ -206,7 +206,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         boolean omitted = body.find("OMITTED_BODY") != null;
         if(omitted) {
             if(!(modifiers.contains(CraftrLang.Modifier.NATIVE) || modifiers.contains(CraftrLang.Modifier.ABSTRACT))) {
-                declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Missing method body", body.getFormattedPath()));
+                declaringUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Missing method body", body));
             }
         } else {
             TokenPattern<?> block = body.find("DELIMITED_CODE_BLOCK");
@@ -371,7 +371,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         }
 
         if(codeBlock == null) {
-            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Method '" + this.getSignature().getFullyQualifiedName() + "' hasn't been defined... for some reason... how did you even call this method?", pattern.getFormattedPath()));
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Method '" + this.getSignature().getFullyQualifiedName() + "' hasn't been defined... for some reason... how did you even call this method?", pattern));
             return null;
         }
 
@@ -392,13 +392,13 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         //TODO: NULL VALUES IF KEYWORD PARAMETERS OMITTED
         for(Map.Entry<String, ActualParameter> entry : keywordParams.entrySet()) {
             if(!this.keywordParams.containsKey(entry.getKey())) {
-                semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unknown keyword parameter label '" + entry.getKey() + "'", entry.getValue().pattern.getFormattedPath()));
+                semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unknown keyword parameter label '" + entry.getKey() + "'", entry.getValue().pattern));
                 continue;
             }
             if(entry.getValue().getDataType().instanceOf(this.keywordParams.get(entry.getKey()).getType())) {
                 codeBlock.getSymbolTable().put(new Variable(entry.getKey(), Collections.emptyList(), this.keywordParams.get(entry.getKey()).getType(), this, entry.getValue().getValue()));
             } else {
-                semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + entry.getValue().getDataType() + " cannot be converted to " + this.keywordParams.get(entry.getKey()).getType(), entry.getValue().pattern.getFormattedPath()));
+                semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + entry.getValue().getDataType() + " cannot be converted to " + this.keywordParams.get(entry.getKey()).getType(), entry.getValue().pattern));
             }
         }
         codeBlock.setSilent(true);

@@ -145,11 +145,11 @@ public class DataType {
         }
         Symbol symbol = table.getSymbol(flatTokens, semanticContext);
         if(symbol == null) {
-            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Symbol not found:" + flatTokens + " at semanticContext" + semanticContext, flatTokens.get(0).getFormattedPath()));
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Symbol not found:" + flatTokens + " at semanticContext" + semanticContext, flatTokens.get(0)));
             return OBJECT;
         }
         if(!(symbol instanceof Unit)) {
-            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "'" + flatTokens.get(flatTokens.size()-1).value + "' is not a unit",flatTokens.get(flatTokens.size()-1).getFormattedPath()));
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "'" + flatTokens.get(flatTokens.size()-1).value + "' is not a unit",flatTokens.get(flatTokens.size()-1)));
             return OBJECT;
         }
 

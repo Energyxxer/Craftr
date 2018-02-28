@@ -85,7 +85,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.name = ((TokenItem) pattern.find("VARIABLE_NAME")).getContents().value;
 
         if(CraftrLang.isPseudoIdentifier(this.name)) {
-            this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME").getFormattedPath()));
+            this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME")));
         }
         this.value = new Null(this.semanticContext);
         this.field = this.semanticContext.getContextType() == ContextType.UNIT;
@@ -134,7 +134,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                 return; //There's no variable initialization in method parameters;
                         // also this class isn't the one that parses method params so no point in having this;
             } else {
-                semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Something went wrong: Variable semanticContext is of unrecognized type: " + semanticContext.getClass().getSimpleName(), pattern.getFormattedPath()));
+                semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Something went wrong: Variable semanticContext is of unrecognized type: " + semanticContext.getClass().getSimpleName(), pattern));
                 return;
             }
 
@@ -143,11 +143,11 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                 this.value = this.value.unwrap(initializerFunction);
             }
             if(this.value != null && !this.value.getDataType().instanceOf(this.getDataType())) {
-                semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE").getFormattedPath()));
+                semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE")));
                 this.value = null;
             }
             if(this.value == null) this.value = new Null(semanticContext);
-            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern.getFormattedPath()));
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern));
         }
     }
 
@@ -219,7 +219,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                         this.reference = operand.getReference().toScore(function, new LocalScore(objective, semanticContext.getPlayer()), semanticContext);
                     }
                 } else {
-                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern.getFormattedPath()));
+                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern));
                     this.value = new Null(semanticContext);
                 }
                 return value;
@@ -227,7 +227,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         }
         if(!value.isNull()) return value.runOperation(operator, operand, pattern, function, silent);
         else {
-            if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable might not have been defined", pattern.getFormattedPath()));
+            if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable might not have been defined", pattern));
             return value;
         }
     }

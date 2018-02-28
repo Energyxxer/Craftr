@@ -35,7 +35,7 @@ public final class ExprResolver {
         if(s != null) {
             if(s instanceof Variable) return ((Variable) s).getValue();
             if(s instanceof Value) return (Value) s;
-            if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Value expected", pattern.getFormattedPath()));
+            if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Value expected", pattern));
         }
         return null;
     }
@@ -49,7 +49,7 @@ public final class ExprResolver {
         if(s != null) {
             if(s instanceof Variable) return (Variable) s;
             if(s instanceof Value) return (Value) s;
-            if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Value expected", pattern.getFormattedPath()));
+            if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Value expected", pattern));
         }
         return null;
     }
@@ -198,7 +198,7 @@ public final class ExprResolver {
                                 sb.append("\""); break;
                             }
                             default: {
-                                if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal escape character in a string literal", pattern.getFormattedPath()));
+                                if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal escape character in a string literal", pattern));
                             }
                         }
                     } else {
@@ -216,7 +216,7 @@ public final class ExprResolver {
             } case "METHOD_CALL_INNER": {
                 if(dataHolder == null) dataHolder = semanticContext.getInstance();
                 if(dataHolder == null) {
-                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "WHOA WHOA THERE, THERE'S NO DATA HOLDER??? CRUD", pattern.getFormattedPath()));
+                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "WHOA WHOA THERE, THERE'S NO DATA HOLDER??? CRUD", pattern));
                     return null;
                 }
                 return new MethodCall(pattern, dataHolder, function, semanticContext).evaluate();
@@ -230,7 +230,7 @@ public final class ExprResolver {
                 if(sym == null) return null;
 
                 if(!(sym instanceof Unit)) {
-                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Expected unit name", unitName.getFormattedPath()));
+                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Expected unit name", unitName));
                     return null;
                 } else dataHolder = (Unit) sym;
 
@@ -238,7 +238,7 @@ public final class ExprResolver {
             } case "SINGLE_IDENTIFIER": {
                 if(dataHolder == null) dataHolder = semanticContext.getDataHolder();
                 if(dataHolder == null) {
-                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "WHOA WHOA THERE, THERE'S NO DATA HOLDER??? CRUD", pattern.getFormattedPath()));
+                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "WHOA WHOA THERE, THERE'S NO DATA HOLDER??? CRUD", pattern));
                     return null;
                 }
                 if(dataHolder.getSubSymbolTable() != null) {
@@ -266,13 +266,13 @@ public final class ExprResolver {
                     } return null;
                 }
                 if(!silent) {
-                    semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                    semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern));
                 }
                 return null;
             } case "POINTER": {
                 if(dataHolder == null) dataHolder = semanticContext.getDataHolder();
                 if(dataHolder == null) {
-                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "WHOA WHOA THERE, THERE'S NO DATA HOLDER??? CRUD", pattern.getFormattedPath()));
+                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "WHOA WHOA THERE, THERE'S NO DATA HOLDER??? CRUD", pattern));
                     return null;
                 }
                 if(dataHolder.getSubSymbolTable() != null) {
@@ -299,13 +299,13 @@ public final class ExprResolver {
                     if(s != null) {
                         if(s instanceof DataHolder) return analyzeStructure(pattern.find("NESTED_POINTER"), semanticContext, (DataHolder) s, function, silent);
                         if(!silent) {
-                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern));
                         }
                     }
                     return null;
                 }
                 if(!silent) {
-                    semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                    semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern));
                 }
                 return null;
             } case "NESTED_POINTER": {
@@ -319,7 +319,7 @@ public final class ExprResolver {
                 else if(s != null) {
                     if(s instanceof DataHolder) return analyzeStructure(pattern.find("POINTER_NEXT"), semanticContext, (DataHolder) s, function, silent);
                     if(!silent) {
-                        semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern.getFormattedPath()));
+                        semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern));
                     }
                 }
                 return null;
@@ -336,7 +336,7 @@ public final class ExprResolver {
             throw npe;
         }
 
-        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Unresolved Expressions", NoticeType.INFO, "Non-registered exit: " + pattern.getName(), pattern.getFormattedPath()));
+        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Unresolved Expressions", NoticeType.INFO, "Non-registered exit: " + pattern.getName(), pattern));
         return null;
     }
 }

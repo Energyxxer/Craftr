@@ -133,7 +133,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
 
         if(match != null && !match.matched) {
             CraftrWindow.setStatus(match.getErrorMessage());
-            newNotices.add(new Notice(NoticeType.ERROR, match.getErrorMessage(), match.faultyToken.getFormattedPath()));
+            newNotices.add(new Notice(NoticeType.ERROR, match.getErrorMessage(), match.faultyToken));
             sd.setCharacterAttributes(match.faultyToken.loc.index, match.faultyToken.value.length(), CraftrEditorComponent.this.getStyle("error"), true);
         }
 

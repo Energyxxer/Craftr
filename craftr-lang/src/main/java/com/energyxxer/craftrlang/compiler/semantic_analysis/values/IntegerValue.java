@@ -70,14 +70,14 @@ public class IntegerValue extends NumericalValue {
                 case MULTIPLY: result = a * b; break;
                 case DIVIDE: {
                     if(b == 0) {
-                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unable to divide by zero", pattern.getFormattedPath()));
+                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unable to divide by zero", pattern));
                         result = a;
                     } else result = a % b;
                     break;
                 }
                 case MODULO: {
                     if(b == 0) {
-                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unable to divide by zero", pattern.getFormattedPath()));
+                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unable to divide by zero", pattern));
                         result = a;
                     } else result = a % b;
                     break;

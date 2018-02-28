@@ -39,7 +39,7 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
         public Symbol getSymbol(List<Token> flatTokens, SemanticContext semanticContext, boolean silent) {
             if(flatTokens.size() > 1) {
                 //I don't think this should even be allowed
-                if(!silent && !CodeBlock.this.silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Trying to get a symbol of more than one token from a code block...?", flatTokens.get(0).getFormattedPath()));
+                if(!silent && !CodeBlock.this.silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Trying to get a symbol of more than one token from a code block...?", flatTokens.get(0)));
                 return super.getSymbol(flatTokens, semanticContext, silent);
             }
 
@@ -91,7 +91,7 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
             TokenPattern<?>[] rawStatements = list.getContents();
             for(TokenPattern<?> rawStatement : rawStatements) {
                 if(closed) {
-                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unreachable statement", rawStatement.getFormattedPath()));
+                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unreachable statement", rawStatement));
                     return;
                 }
                 if(!(rawStatement instanceof TokenStructure)) continue;

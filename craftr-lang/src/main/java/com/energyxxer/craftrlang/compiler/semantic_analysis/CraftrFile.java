@@ -52,7 +52,7 @@ public class CraftrFile extends AbstractFileComponent implements SemanticContext
         TokenPattern<?> packagePattern = pattern.find("PACKAGE");
         if(packagePattern == null) {
             if(realPackage != null) {
-                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Missing package statement", pattern.getFormattedPath()));
+                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Missing package statement", pattern));
             }
             parentPackage = analyzer.getPackageManager().getRoot();
         } else {
@@ -60,9 +60,9 @@ public class CraftrFile extends AbstractFileComponent implements SemanticContext
 
             String packageStatement = packagePathPattern.flatten(false);
             if(realPackage == null) {
-                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Package name '" + packageStatement + "' does not correspond to the file path ''", packagePathPattern.getFormattedPath()));
+                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Package name '" + packageStatement + "' does not correspond to the file path ''", packagePathPattern));
             } else if(!realPackage.equals(packageStatement)) {
-                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Package name '" + packageStatement + "' does not correspond to the file path '" + realPackage + "'", packagePathPattern.getFormattedPath()));
+                analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Package name '" + packageStatement + "' does not correspond to the file path '" + realPackage + "'", packagePathPattern));
             }
             this.parentPackage = analyzer.getPackageManager().createPackage(packagePathPattern.flatten(false));
         }
@@ -120,7 +120,7 @@ public class CraftrFile extends AbstractFileComponent implements SemanticContext
                 if(itemToImport != null) {
                     if(wildcard) {
                         if(itemToImport.getSubSymbolTable() == null) {
-                            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' is not a data structure", identifier.getFormattedPath()));
+                            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' is not a data structure", identifier));
                         } else {
                             for(Symbol symbol : itemToImport.getSubSymbolTable()) {
                                 this.importTable.put(symbol);
@@ -128,7 +128,7 @@ public class CraftrFile extends AbstractFileComponent implements SemanticContext
                         }
                     } else {
                         if(!(itemToImport instanceof Unit)) {
-                            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' isn't a unit", identifier.getFormattedPath()));
+                            analyzer.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid import: '" + itemToImport.getName() + "' isn't a unit", identifier));
                             continue;
                         }
                         this.importTable.put(itemToImport);

@@ -1,5 +1,8 @@
 package com.energyxxer.craftrlang.compiler.report;
 
+import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
+import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+
 /**
  * Created by User on 5/15/2017.
  */
@@ -18,12 +21,28 @@ public class Notice {
         this(null, type, message);
     }
 
-    public Notice(NoticeType type, String message, String formattedPath) {
-        this(null, type, message, formattedPath);
+    public Notice(String label, NoticeType type, String message) {
+        this(label, type, message, (String) null);
     }
 
-    public Notice(String label, NoticeType type, String message) {
-        this(label, type, message, null);
+    public Notice(NoticeType type, String message, TokenPattern<?> pattern) {
+        this(null, type, message, pattern);
+    }
+
+    public Notice(String label, NoticeType type, String message, TokenPattern<?> pattern) {
+        this(label, type, message, (pattern != null) ? pattern.getFormattedPath() : null);
+    }
+
+    public Notice(NoticeType type, String message, Token token) {
+        this(null, type, message, token);
+    }
+
+    public Notice(String label, NoticeType type, String message, Token token) {
+        this(label, type, message, (token != null) ? token.getFormattedPath() : null);
+    }
+
+    public Notice(NoticeType type, String message, String formattedPath) {
+        this(null, type, message, formattedPath);
     }
 
     public Notice(String label, NoticeType type, String message, String formattedPath) {

@@ -60,7 +60,7 @@ public class MethodCall implements TraversableStructure {
                     if(rawLabel != null) {
                         label = ((TokenItem) rawLabel.find("PARAMETER_LABEL")).getContents().value;
                         if(CraftrLang.isPseudoIdentifier(label)) {
-                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal keyword parameter label", rawLabel.getFormattedPath()));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal keyword parameter label", rawLabel));
                         }
                     }
                     TokenPattern<?> rawValue = rawParam.find("VALUE");
@@ -69,14 +69,14 @@ public class MethodCall implements TraversableStructure {
                     if(label == null) {
                         positionalParams.add(new ActualParameter(rawParam, value));
                         if(value == null) {
-                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Actual positional parameter is null: " + rawValue, rawValue.getFormattedPath()));
-                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... semanticContext:" + semanticContext, rawValue.getFormattedPath()));
-                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... semanticContext.isStatic():" + semanticContext.isStatic(), rawValue.getFormattedPath()));
-                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... semanticContext.getUnit():" + semanticContext.getUnit(), rawValue.getFormattedPath()));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Actual positional parameter is null: " + rawValue, rawValue));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... semanticContext:" + semanticContext, rawValue));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... semanticContext.isStatic():" + semanticContext.isStatic(), rawValue));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "... semanticContext.getUnit():" + semanticContext.getUnit(), rawValue));
                         }
                     } else {
                         if(keywordParams.containsKey(label)) {
-                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate keyword parameter", rawLabel.getFormattedPath()));
+                            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Duplicate keyword parameter", rawLabel));
                         }
                         keywordParams.put(label, new ActualParameter(rawParam, label, value));
                     }
@@ -89,7 +89,7 @@ public class MethodCall implements TraversableStructure {
         positionalParams.forEach(p -> formalParams.add(p.toFormal()));
 
         if(dataHolder.getMethodLog() == null) {
-            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method from an undefined data holder", pattern.getFormattedPath()));
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method from an undefined data holder", pattern));
         } else {
             MethodSignature signature = new MethodSignature(dataHolder.getMethodLog().getDeclaringUnit(), methodName, formalParams);
 

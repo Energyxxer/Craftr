@@ -24,7 +24,7 @@ public class FormalParameter {
         this.name = ((TokenItem) rawParam.find("PARAMETER_NAME")).getContents().value;
 
         if(type == DataType.VOID) {
-            semanticContext.getUnit().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal type 'void'", rawParam.find("DATA_TYPE").getFormattedPath()));
+            semanticContext.getUnit().getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal type 'void'", rawParam.find("DATA_TYPE")));
         }
     }
 

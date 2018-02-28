@@ -46,7 +46,7 @@ public class FieldLog extends SymbolTable {
 
         if(flatTokens.size() > 1) {
             //I don't think this should even be allowed
-            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Trying to get a symbol of more than one token from a field log...?", flatTokens.get(0).getFormattedPath()));
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Something went wrong", NoticeType.WARNING, "Trying to get a symbol of more than one token from a field log...?", flatTokens.get(0)));
             return super.getSymbol(flatTokens, semanticContext, silent);
         }
 
@@ -66,7 +66,7 @@ public class FieldLog extends SymbolTable {
             }
             if(sym2 != null) return sym2;
         }
-        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + flatTokens.get(0).value + "'", flatTokens.get(0).getFormattedPath()));
+        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + flatTokens.get(0).value + "'", flatTokens.get(0)));
         return null;
     }
 
