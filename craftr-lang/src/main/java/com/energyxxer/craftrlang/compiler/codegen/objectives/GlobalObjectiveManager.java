@@ -18,4 +18,8 @@ public class GlobalObjectiveManager {
 
         this.RETURN = new LocalScore(global, new FakePlayer("RETURN"));
     }
+
+    public Objective getGlobal() {
+        return global;
+    }
 }

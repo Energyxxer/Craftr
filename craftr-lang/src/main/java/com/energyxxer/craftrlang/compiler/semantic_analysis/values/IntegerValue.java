@@ -29,6 +29,10 @@ public class IntegerValue extends NumericalValue {
     public IntegerValue(DataReference reference, SemanticContext semanticContext) {
         super(semanticContext);
         this.reference = reference;
+
+        if(reference == null) {
+            String debug = "here";
+        }
     }
 
     /**

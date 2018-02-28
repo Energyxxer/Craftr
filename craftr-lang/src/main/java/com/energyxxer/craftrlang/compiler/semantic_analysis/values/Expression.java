@@ -58,7 +58,9 @@ public class Expression extends Value {
         }
 
         Value returnValue = a.runOperation(this.op, b, pattern, function, this.silent);
-        if(returnValue == null) semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + op.getSymbol() + " is not defined for data types " + a.getDataType() + ", " + b.getDataType(), pattern));
+        if(returnValue == null) {
+            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + op.getSymbol() + " is not defined for data types " + a.getDataType() + ", " + b.getDataType(), pattern));
+        }
         return returnValue;
     }
 

@@ -9,37 +9,31 @@ import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.nbt.NBTPath;
 import com.energyxxer.commodore.nbt.NumericNBTType;
 import com.energyxxer.commodore.score.LocalScore;
+import com.energyxxer.craftrlang.compiler.codegen.entities.CraftrEntity;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 
-public class ScoreReference implements DataReference {
-    private LocalScore score;
+public class EntityReference implements DataReference {
 
-    public ScoreReference(LocalScore score) {
-        this.score = score;
+    private CraftrEntity entity;
+
+    public EntityReference(CraftrEntity entity) {
+        this.entity = entity;
+    }
+
+    private LocalScore getId(SemanticContext semanticContext) {
+        return new LocalScore(semanticContext.getModule().glObjMgr.getGlobal(), entity);
     }
 
     @Override
     public ScoreReference toScore(Function function, LocalScore score, SemanticContext semanticContext) {
-        if(!score.equals(this.score)) {
-            function.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.ASSIGN, this.score));
-            return new ScoreReference(score);
-        }
-        return this;
+        function.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.ASSIGN, getId(semanticContext)));
+        return new ScoreReference(score);
     }
 
     @Override
     public NBTReference toNBT(Function function, Entity entity, NBTPath path, SemanticContext semanticContext) {
-        ExecuteCommand exec = new ExecuteCommand(new ScoreGet(this.score));
-        exec.addModifier(new ExecuteStoreEntity(entity, path, NumericNBTType.DOUBLE));
+        ExecuteCommand exec = new ExecuteCommand(new ScoreGet(getId(semanticContext)));
+        exec.addModifier(new ExecuteStoreEntity(entity, path, NumericNBTType.INT));
         return new NBTReference(entity, path);
-    }
-
-    public LocalScore getScore() {
-        return score;
-    }
-
-    @Override
-    public String toString() {
-        return "score: " + score;
     }
 }

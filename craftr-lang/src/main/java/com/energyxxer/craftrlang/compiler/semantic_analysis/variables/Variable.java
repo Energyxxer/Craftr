@@ -64,8 +64,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.field = that.field;
         this.block = that.block;
         this.method = that.method;
-        if(value == null) this.value = new Null(semanticContext);
-        else this.value = that.value;
+        this.value = dataType.create(that.reference, this.semanticContext);
         this.objective = that.objective;
         this.reference = that.reference;
     }
@@ -87,13 +86,13 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         if(CraftrLang.isPseudoIdentifier(this.name)) {
             this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME")));
         }
-        this.value = new Null(this.semanticContext);
+        this.value = null;
         this.field = this.semanticContext.getContextType() == ContextType.UNIT;
 
         this.claimObjective();
     }
 
-    public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, Method method, Value value) {
+    public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, Method method, Value value, Function function) {
         super(method);
         this.pattern = null;
         this.visibility = SymbolVisibility.METHOD;
@@ -103,18 +102,28 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         //this.validName = !CraftrLang.isPseudoIdentifier(this.name);
         this.block = null;
         this.method = method;
-        if(value == null) this.value = new Null(semanticContext);
-        else this.value = value;
+        this.claimObjective(); //Claim the parameter objective
+        this.updateReference();
+        this.reference = value.getReference().toScore(function, this.reference.getScore(), semanticContext); //Clone the value into the parameter objective
+        this.value = dataType.create(this.reference, semanticContext); //Make a non-null value that points to the parameter objective. This shouldn't
 
         this.claimObjective();
     }
 
     private void claimObjective() {
-        LocalizedObjective locObj = (field ? semanticContext.getLocalizedObjectiveManager().FIELD : semanticContext.getLocalizedObjectiveManager().VARIABLE).create();
+        LocalizedObjective locObj = (
+                field ?
+                        semanticContext.getLocalizedObjectiveManager().FIELD :
+                        (semanticContext instanceof Method ?
+                                semanticContext.getLocalizedObjectiveManager().PARAMETER :
+                                semanticContext.getLocalizedObjectiveManager().VARIABLE)).create();
         locObj.capture();
         //Never dispose
         this.objective = locObj.getObjective();
-        //this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getPlayer()));
+    }
+
+    private void updateReference() {
+        this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getPlayer()));
     }
 
     public void initializeValue() {
@@ -148,7 +157,11 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
             }
             if(this.value == null) this.value = new Null(semanticContext);
             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern));
+        } else {
+            this.value = new Null(this.semanticContext);
         }
+
+        reference = new ScoreReference(new LocalScore(objective, semanticContext.getPlayer()));
     }
 
     /*
@@ -215,8 +228,10 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                 if(operand.getDataType().instanceOf(this.getDataType())) {
                     this.value = operand;
 
-                    if(!operand.isNull()) {
+                    if(!operand.isNull() && operand.getReference() != null) {
                         this.reference = operand.getReference().toScore(function, new LocalScore(objective, semanticContext.getPlayer()), semanticContext);
+                    } else {
+                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Assigned value may not have been initialized", pattern));
                     }
                 } else {
                     if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern));

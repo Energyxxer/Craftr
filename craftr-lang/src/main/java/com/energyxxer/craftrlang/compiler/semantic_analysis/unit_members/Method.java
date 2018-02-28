@@ -385,7 +385,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
             }
             param = param.unwrap(function);
 
-            codeBlock.getSymbolTable().put(new Variable(this.positionalParams.get(i).getName(), Collections.emptyList(), this.positionalParams.get(i).getType(), this, param));
+            codeBlock.getSymbolTable().put(new Variable(this.positionalParams.get(i).getName(), Collections.emptyList(), this.positionalParams.get(i).getType(), this, param, function));
         }
 
         //Assign actual keyword params to code block
@@ -396,7 +396,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                 continue;
             }
             if(entry.getValue().getDataType().instanceOf(this.keywordParams.get(entry.getKey()).getType())) {
-                codeBlock.getSymbolTable().put(new Variable(entry.getKey(), Collections.emptyList(), this.keywordParams.get(entry.getKey()).getType(), this, entry.getValue().getValue()));
+                codeBlock.getSymbolTable().put(new Variable(entry.getKey(), Collections.emptyList(), this.keywordParams.get(entry.getKey()).getType(), this, entry.getValue().getValue(), function));
             } else {
                 semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + entry.getValue().getDataType() + " cannot be converted to " + this.keywordParams.get(entry.getKey()).getType(), entry.getValue().pattern));
             }
