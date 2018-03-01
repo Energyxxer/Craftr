@@ -10,9 +10,9 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.FieldInitContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.UnitInstanceContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.*;
@@ -47,7 +47,6 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     private boolean field = false;
 
     private CodeBlock block = null;
-    private Method method = null;
 
     private Objective objective;
 
@@ -63,14 +62,13 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.name = that.name;
         this.field = that.field;
         this.block = that.block;
-        this.method = that.method;
         this.value = dataType.create(that.reference, this.semanticContext);
         this.objective = that.objective;
         this.reference = that.reference;
     }
 
     private Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext) {
-        super((semanticContext instanceof Unit) ? ((Unit) semanticContext).getInstanceSemanticContext() : semanticContext);
+        super((semanticContext instanceof Unit) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext);
         this.pattern = pattern;
         this.modifiers = new ArrayList<>(modifiers);
         this.dataType = dataType;
@@ -92,8 +90,9 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.claimObjective();
     }
 
-    public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, Method method, Value value, Function function) {
-        super(method);
+    //FOR PARAMETER
+    public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext, Value value, Function function) {
+        super(semanticContext);
         this.pattern = null;
         this.visibility = SymbolVisibility.METHOD;
         this.modifiers = new ArrayList<>(modifiers);
@@ -101,7 +100,6 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.name = name;
         //this.validName = !CraftrLang.isPseudoIdentifier(this.name);
         this.block = null;
-        this.method = method;
         this.claimObjective(); //Claim the parameter objective
         this.updateReference();
         this.reference = value.getReference().toScore(function, this.reference.getScore(), semanticContext); //Clone the value into the parameter objective
@@ -135,7 +133,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
             Function initializerFunction;
             if(semanticContext instanceof Unit) {
                 initializerFunction = ((Unit) semanticContext).getStaticInitializer();
-            } else if(semanticContext instanceof UnitInstanceContext) {
+            } else if(semanticContext instanceof FieldInitContext) {
                 initializerFunction = semanticContext.getUnit().getInstanceInitializer();
             } else if(semanticContext instanceof CodeBlock) {
                 initializerFunction = ((CodeBlock) semanticContext).getFunction();
@@ -147,7 +145,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                 return;
             }
 
-            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getInstanceSemanticContext() : semanticContext, null, initializerFunction);
+            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext, null, initializerFunction); //TODO replace instance semantic context with new field initialization context
             if(this.value != null) {
                 this.value = this.value.unwrap(initializerFunction);
             }
@@ -195,7 +193,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         return variables;
     }
 
-    public Variable duplicate() {
+    public Variable createEmpty() {
         return new Variable(this);
     }
 

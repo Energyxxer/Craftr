@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler;
 
 import com.energyxxer.commodore.module.ModulePackGenerator;
+import com.energyxxer.commodore.standard.StandardDefinitionPacks;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftrlang.compiler.parsing.Parser;
@@ -112,6 +113,7 @@ public class Compiler {
 
         analyzer = new SemanticAnalyzer(this, allPatterns, source);
         module = new CraftrCommandModule(projectName, projectPrefix);
+        StandardDefinitionPacks.MINECRAFT_J_1_13.initialize(module);
         if(library != null) {
             LibraryLoad callback = (c,r) -> {
                 module.join(c.module);

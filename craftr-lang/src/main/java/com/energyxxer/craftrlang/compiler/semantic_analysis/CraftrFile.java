@@ -173,7 +173,6 @@ public class CraftrFile extends AbstractFileComponent implements SemanticContext
         units.forEach(Unit::initCodeBlocks);
     }
 
-    @Override
     public SymbolTable getReferenceTable() {
         return referenceTable;
     }

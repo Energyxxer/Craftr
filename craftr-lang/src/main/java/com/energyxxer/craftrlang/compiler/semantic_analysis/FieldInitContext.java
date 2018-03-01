@@ -4,17 +4,24 @@ import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 
-public class UnitInstanceContext implements SemanticContext {
+public class FieldInitContext implements SemanticContext {
     private final Unit unit;
     private final LocalizedObjectiveManager locObjMgr;
 
-    public UnitInstanceContext(Unit unit) {
+    private ObjectInstance ownerInstance;
+
+    //private final CraftrEntity entity;
+
+    public FieldInitContext(Unit unit) {
         this.unit = unit;
-        locObjMgr = unit.getAnalyzer().getCompiler().getModule().createLocalizedObjectiveManager(this);
+        this.locObjMgr = unit.getAnalyzer().getCompiler().getModule().createLocalizedObjectiveManager(this);
+
+        this.ownerInstance = new ObjectInstance(unit, this);
+
+        //this.entity = new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(getCompiler().getPrefix() + "_init"))); //TODO Make this a getter in the Unit class so it can be made the sender of the initialization function
     }
 
     @Override
@@ -48,27 +55,17 @@ public class UnitInstanceContext implements SemanticContext {
     }
 
     @Override
-    public SymbolTable getReferenceTable() {
-        return null; //WHAT TO DO
+    public LocalizedObjectiveManager getLocalizedObjectiveManager() {
+        return locObjMgr;
     }
 
     @Override
     public DataHolder getDataHolder() {
-        return unit.getGenericInstance();
-    }
-
-    @Override
-    public ObjectInstance getInstance() {
-        return unit.getGenericInstance();
+        return ownerInstance;
     }
 
     @Override
     public ScoreHolder getPlayer() {
-        return unit.getGenericInstance().getEntity();
-    }
-
-    @Override
-    public LocalizedObjectiveManager getLocalizedObjectiveManager() {
-        return locObjMgr;
+        return ownerInstance.getEntity();
     }
 }

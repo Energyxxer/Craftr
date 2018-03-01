@@ -18,7 +18,10 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUtils;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.context.*;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.natives.NativeMethods;
@@ -47,6 +50,8 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
     private LocalizedObjectiveManager locObjMgr;
     private CodeBlock codeBlock;
     private Function function;
+
+    private ObjectInstance ownerInstance;
 
     private final MethodSignature signature;
 
@@ -262,7 +267,11 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
     public void initCodeBlock() {
         if(codeBlock != null) {
+
+            if(!isStatic()) this.ownerInstance = new ObjectInstance(declaringUnit, this);
+
             codeBlock.clearSymbols();
+
             ArrayList<LocalScore> paramReferences = new ArrayList<>();
 
             for(FormalParameter param : positionalParams) {
@@ -301,7 +310,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                 );*/
             }
             codeBlock.setSilent(false);
-            codeBlock.initialize();
+            codeBlock.initialize(ownerInstance);
             //paramReferences.forEach(p -> p.setInUse(false));
 
             //System.out.println(codeBlock.getFunction().build());
@@ -335,11 +344,6 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
     @Override
     public @NotNull Package getPackage() {
         return declaringUnit.getPackage();
-    }
-
-    @Override
-    public SymbolTable getReferenceTable() {
-        return null;
     }
 
     public List<FormalParameter> getPositionalParams() {
@@ -385,7 +389,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
             }
             param = param.unwrap(function);
 
-            codeBlock.getSymbolTable().put(new Variable(this.positionalParams.get(i).getName(), Collections.emptyList(), this.positionalParams.get(i).getType(), this, param, function));
+            codeBlock.getSymbolTable().put(new Variable(this.positionalParams.get(i).getName(), Collections.emptyList(), this.positionalParams.get(i).getType(), semanticContext, param, function));
         }
 
         //Assign actual keyword params to code block
@@ -415,12 +419,12 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
     @Override
     public DataHolder getDataHolder() {
-        return this.isStatic() ? declaringUnit : declaringUnit.getGenericInstance();
+        return this.isStatic() ? declaringUnit : ownerInstance;
     }
 
     @Override
     public ObjectInstance getInstance() {
-        return (!this.isStatic()) ? declaringUnit.getGenericInstance() : null;
+        return (!this.isStatic()) ? ownerInstance : null;
     }
 
     @Override
@@ -430,6 +434,13 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
     @Override
     public ScoreHolder getPlayer() {
-        return this.isStatic() ? declaringUnit.getPlayer() : declaringUnit.getGenericInstance().getEntity();
+        if(this.isStatic()) {
+            return declaringUnit.getPlayer();
+        } else {
+            if(ownerInstance == null) {
+                throw new IllegalStateException("bOOO");
+            }
+            return ownerInstance.getEntity();
+        }
     }
 }

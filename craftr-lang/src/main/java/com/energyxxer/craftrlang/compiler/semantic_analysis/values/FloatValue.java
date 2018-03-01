@@ -15,8 +15,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Op
  */
 public class FloatValue extends NumericalValue {
 
-    private DataReference reference;
-
     public FloatValue(float value, SemanticContext semanticContext) {
         super(semanticContext);
         this.reference = new ExplicitFloat(value);

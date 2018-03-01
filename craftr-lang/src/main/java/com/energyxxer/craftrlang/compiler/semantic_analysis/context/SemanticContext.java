@@ -25,7 +25,6 @@ public interface SemanticContext {
 
     LocalizedObjectiveManager getLocalizedObjectiveManager();
 
-    SymbolTable getReferenceTable();
     DataHolder getDataHolder();
 
     default ObjectInstance getInstance() {

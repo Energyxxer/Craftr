@@ -1,8 +1,8 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
-import com.energyxxer.commodore.selector.NameArgument;
 import com.energyxxer.commodore.selector.Selector;
+import com.energyxxer.commodore.selector.TagArgument;
 import com.energyxxer.craftrlang.compiler.codegen.entities.CraftrEntity;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
@@ -45,8 +45,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         this.fieldLog.put("this", this);
 
         //TODO: Actual entity constructor...
-        //this.entity = new ScoreHolderEntity(semanticContext.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager(), this);
-        this.entity = new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new NameArgument(unit.getName())));
+        this.entity = new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName())));
         if(reference == null) this.reference = new EntityReference(this.entity);
     }
 

@@ -57,6 +57,11 @@ public class Expression extends Value {
             return null;
         }
 
+        if(b == null) {
+            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Right-hand side variable may not have been initialized", pattern));
+            return null;
+        }
+
         Value returnValue = a.runOperation(this.op, b, pattern, function, this.silent);
         if(returnValue == null) {
             semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + op.getSymbol() + " is not defined for data types " + a.getDataType() + ", " + b.getDataType(), pattern));

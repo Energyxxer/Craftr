@@ -41,10 +41,6 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
      * */
     private final CraftrFile declaringFile;
     /**
-     * The semanticContext used for instance things...? I don't think we even need this.
-     * */
-    private final SemanticContext instanceSemanticContext;
-    /**
      * The visibility of this unit. Either:
      * <ul>
      *     <li><code>SymbolVisibility.GLOBAL</code></li>
@@ -124,12 +120,6 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
      * */
     private List<Token> rawUnitRequires = null;
 
-    /**
-     * The generic instance for this unit, used for non-static analysis.
-     * <br><br>
-     *     This may be null until compilation stage 5.
-     * */
-    private ObjectInstance genericInstance = null;
     /**
      * The data type that represents this unit.
      * */
@@ -267,8 +257,6 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
 
         this.staticMethodLog = new MethodLog(this);
         this.instanceMethodLog = new MethodLog(this);
-
-        this.instanceSemanticContext = new UnitInstanceContext(this);
 
         staticPlayer = new FakePlayer(name.toUpperCase());
 
@@ -471,8 +459,6 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
             }
         }
 
-        this.genericInstance = new ObjectInstance(this, this.instanceSemanticContext);
-
         unitComponentsInitialized = true;
     }
 
@@ -490,9 +476,24 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         instanceMethodLog.initCodeBlocks();
     }
 
+    public boolean isSingleton() {
+        return type.isSingleton();
+    }
+
+    private ObjectInstance singletonInstance = null;
+
+    public ObjectInstance getSingletonInstance() {
+        if(!isSingleton()) throw new IllegalStateException("Unit is not singleton, cannot get singleton instance");
+        if(singletonInstance == null) {
+            //create singleton instance
+            singletonInstance = new ObjectInstance(this, this);
+        }
+        return singletonInstance;
+    }
+
     @Override
     public DataHolder getDataHolder() {
-        return (type.isSingleton()) ? genericInstance : this;
+        return (this.isSingleton()) ? getSingletonInstance() : this;
     }
 
     @Override
@@ -591,10 +592,6 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         return (type.isSingleton()) ? instanceMethodLog : staticMethodLog;
     }
 
-    public ObjectInstance getGenericInstance() {
-        return genericInstance;
-    }
-
     @Override
     public ObjectInstance getInstance() {
         return null;
@@ -605,26 +602,24 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         return true;
     }
 
-    public SemanticContext getInstanceSemanticContext() {
-        return this.instanceSemanticContext;
+    private SemanticContext fieldInitContext;
+
+    public SemanticContext getFieldInitContext() {
+        if(fieldInitContext == null) fieldInitContext = new FieldInitContext(this);
+        return fieldInitContext;
     }
 
     public List<Unit> getInheritanceMap() {
         return inheritanceMap;
     }
 
+    public DataType getDataType() {
+        return dataType;
+    }
+
     @Override
     public SemanticContext getParent() {
         return declaringFile;
-    }
-
-    @Override
-    public SymbolTable getReferenceTable() {
-        return null;
-    }
-
-    public DataType getDataType() {
-        return dataType;
     }
 
     @Override

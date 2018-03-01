@@ -36,7 +36,7 @@ public class FieldLog extends SymbolTable {
 
         for(Symbol symbol : parentUnit.getInstanceFieldLog().getMap().values()) {
             if(symbol instanceof Variable) {
-                this.put(((Variable) symbol).duplicate());
+                this.put(((Variable) symbol).createEmpty());
             }
         }
     }

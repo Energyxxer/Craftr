@@ -33,6 +33,8 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
 
     private LocalizedObjectiveManager locObjMgr;
 
+    private ObjectInstance ownerInstance;
+
     private CodeBlock parentBlock = null;
     private SymbolTable symbolTable = new SymbolTable() {
         @Override
@@ -47,7 +49,10 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
             if(sym != null) return sym;
             if(parentBlock != null) return parentBlock.getSymbolTable().getSymbol(flatTokens, semanticContext, silent || CodeBlock.this.silent);
             if(isStatic()) return semanticContext.getUnit().getStaticFieldLog().getSymbol(flatTokens, semanticContext, silent || CodeBlock.this.silent);
-            else return semanticContext.getUnit().getGenericInstance().getSubSymbolTable().getSymbol(flatTokens, semanticContext, silent || CodeBlock.this.silent);
+            else {
+                if(ownerInstance == null) throw new IllegalArgumentException("Code block's initialize method hasn't been called yet, cannot get symbols");
+                return ownerInstance.getSubSymbolTable().getSymbol(flatTokens, semanticContext, silent || CodeBlock.this.silent);
+            }
         }
     };
 
@@ -80,8 +85,11 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
         this.symbolTable.clear();
     }
 
-    public void initialize() {
+    public void initialize(ObjectInstance ownerInstance) {
         if(initialized) return;
+
+        this.ownerInstance = (ownerInstance != null) ? ownerInstance : new ObjectInstance(semanticContext.getUnit(), this);
+
         TokenPattern<?> inner = (TokenPattern<?>) pattern.getContents();
 
         closed = false;
@@ -161,11 +169,6 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     }
 
     @Override
-    public SymbolTable getReferenceTable() {
-        return null;
-    }
-
-    @Override
     public DataHolder getDataHolder() {
         return this;
     }
@@ -177,7 +180,12 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
 
     @Override
     public MethodLog getMethodLog() {
-        return this.isStatic() ? semanticContext.getUnit().getMethodLog() : semanticContext.getUnit().getGenericInstance().getMethodLog();
+        if(isStatic()) {
+            return semanticContext.getUnit().getMethodLog();
+        } else {
+            if(ownerInstance == null) throw new IllegalStateException("Code block's initialize method hasn't been called yet, cannot get method log");
+            return ownerInstance.getMethodLog();
+        }
     }
 
     @Override
@@ -187,7 +195,7 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
 
     @Override
     public LocalizedObjectiveManager getLocalizedObjectiveManager() {
-        return null;
+        return locObjMgr;
     }
 
     @Override
