@@ -44,7 +44,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
     private DataType dataType;
     private String name;
-    private boolean field = false;
+    private VariableType type;
 
     private CodeBlock block = null;
 
@@ -60,7 +60,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.modifiers = that.modifiers;
         this.dataType = that.dataType;
         this.name = that.name;
-        this.field = that.field;
+        this.type = that.type;
         this.block = that.block;
         this.value = dataType.create(that.reference, this.semanticContext);
         this.objective = that.objective;
@@ -85,7 +85,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
             this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME")));
         }
         this.value = null;
-        this.field = this.semanticContext.getContextType() == ContextType.UNIT;
+        this.type = (this.semanticContext.getContextType() == ContextType.UNIT) ? VariableType.FIELD : VariableType.VARIABLE;
 
         this.claimObjective();
     }
@@ -100,6 +100,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.name = name;
         //this.validName = !CraftrLang.isPseudoIdentifier(this.name);
         this.block = null;
+        this.type = VariableType.PARAMETER;
         this.claimObjective(); //Claim the parameter objective
         this.updateReference();
         this.reference = value.getReference().toScore(function, this.reference.getScore(), semanticContext); //Clone the value into the parameter objective
@@ -109,12 +110,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     private void claimObjective() {
-        LocalizedObjective locObj = (
-                field ?
-                        semanticContext.getLocalizedObjectiveManager().FIELD :
-                        (semanticContext instanceof Method ?
-                                semanticContext.getLocalizedObjectiveManager().PARAMETER :
-                                semanticContext.getLocalizedObjectiveManager().VARIABLE)).create();
+        LocalizedObjective locObj = type.getGroup(semanticContext.getLocalizedObjectiveManager()).create();
         locObj.capture();
         //Never dispose
         this.objective = locObj.getObjective();
@@ -205,8 +201,8 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         return value;
     }
 
-    public boolean isField() {
-        return field;
+    public VariableType getType() {
+        return type;
     }
 
     @Override
