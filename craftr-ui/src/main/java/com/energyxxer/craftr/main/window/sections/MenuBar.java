@@ -300,7 +300,7 @@ public class MenuBar extends JMenuBar {
                         if (protocol.equals("file")) {
                             File packagedNatives = new File(url.getFile());
 
-                            Files.walkFileTree(packagedNatives.toPath(), new FileVisitor<>() {
+                            Files.walkFileTree(packagedNatives.toPath(), new FileVisitor<Path>() {
                                 @Override
                                 public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                                     return CONTINUE;
