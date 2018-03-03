@@ -45,7 +45,8 @@ public class ProjectManager {
 	}
 	
 	public static String getIconFor(File file) {
-		for(Project project : loadedProjects) {
+		Project project = getAssociatedProject(file);
+		if(project != null) {
 			String icon = project.getIconFor(file);
 			if(icon != null) return icon;
 		}
@@ -65,8 +66,9 @@ public class ProjectManager {
 				return "audio";
 			} else if(filename.endsWith(".nbt")) {
 				return "structure";
+			} else if(filename.endsWith(".mcfunction")) {
+				return "function";
 			}
-
 			//TODO: Make this extension-to-icon mapping data-driven by the selected UI theme.
 
             /*
@@ -78,6 +80,18 @@ blockstates/*.json = blockstate
 *.ogg = audio
 *.nbt = structure
             */
+		} else {
+			//Check for file roots
+			if(project != null) {
+				if(file.getParentFile().equals(project.getDirectory())) {
+					switch(filename) {
+						case "src":
+						case "resources":
+						case "data":
+							return filename;
+					}
+				}
+			}
 		}
 		return null;
 	}

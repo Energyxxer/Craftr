@@ -350,6 +350,12 @@ public class ProjectExplorerItem extends ExplorerElement {
 
             String projectDir = (project != null) ? project.getDirectory().getPath() + File.separator : null;
 
+            for(FileType type : FileType.values()) {
+                if(type.canCreate(projectDir, path + File.separator)) {
+                    newMenu.add(type.createMenuItem(newPath));
+                }
+            }
+            /*
             if((projectDir != null && (path + File.separator).startsWith(projectDir + "src" + File.separator)) || (path + File.separator).startsWith(Resources.nativeLib.getDir().getPath() + File.separator)) {
 
                 StyledMenuItem entityItem = new StyledMenuItem("Entity", "entity");
@@ -433,7 +439,7 @@ public class ProjectExplorerItem extends ExplorerElement {
             StyledMenuItem packageItem = new StyledMenuItem("Package", "package");
             packageItem.addActionListener(e -> FileType.PACKAGE.create(newPath));
 
-            newMenu.add(packageItem);
+            newMenu.add(packageItem);*/
 
         }
         menu.addSeparator();

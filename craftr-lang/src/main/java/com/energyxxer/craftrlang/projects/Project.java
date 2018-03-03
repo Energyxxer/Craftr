@@ -105,7 +105,7 @@ public class Project {
 	public boolean canFlatten(File file) {
 		if(getRelativePath(file) == null) return true;
 		if(!file.getParentFile().equals(this.getDirectory())) return true;
-		return !Arrays.asList("src","resources").contains(file.getName());
+		return !Arrays.asList("src","resources","data").contains(file.getName());
 	}
 	
 	public void updateConfig() {

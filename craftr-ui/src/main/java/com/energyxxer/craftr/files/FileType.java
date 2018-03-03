@@ -1,42 +1,63 @@
 package com.energyxxer.craftr.files;
 
-import com.energyxxer.craftr.ui.dialogs.file_dialogs.PackageDialog;
 import com.energyxxer.craftr.ui.dialogs.file_dialogs.MCMETADialog;
 import com.energyxxer.craftr.ui.dialogs.file_dialogs.ModelDialog;
+import com.energyxxer.craftr.ui.dialogs.file_dialogs.PackageDialog;
 import com.energyxxer.craftr.ui.dialogs.file_dialogs.ProjectDialog;
 import com.energyxxer.craftr.ui.dialogs.file_dialogs.ResourceDialog;
 import com.energyxxer.craftr.ui.dialogs.file_dialogs.UnitDialog;
+import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
+
+import java.io.File;
 
 /**
  * Created by User on 2/9/2017.
  */
 public enum FileType {
-    PROJECT("Project", ProjectDialog::create),
-    ENTITY("Entity", UnitDialog::create),
-    ITEM("Item", UnitDialog::create),
-    CLASS("Class", UnitDialog::create),
-    ENUM("Enum", UnitDialog::create),
-    FEATURE("Feature", UnitDialog::create),
-    WORLD("World", UnitDialog::create),
-    MODEL("Model", ModelDialog::create),
-    LANG("Language File", ResourceDialog::create),
-    META("Meta File", MCMETADialog::create),
-    PACKAGE("Package", PackageDialog::create);
+    PROJECT(0, "Project", "project", ProjectDialog::create, (pr, pth) -> true),
+    ENTITY(1, "Entity", "entity", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
+    ITEM(1, "Item", "item", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
+    CLASS(1, "Class", "class", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
+    ENUM(1, "Enum", "enum", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
+    FEATURE(1, "Feature", "feature", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
+    WORLD(8, "World", "world", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
+    MODEL(1, "Model", "model", ModelDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "resources" + File.separator)),
+    LANG(1, "Language File", "lang", ResourceDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "resources" + File.separator)),
+    META(2, "Meta File", "meta", MCMETADialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "resources" + File.separator)),
+    PACKAGE(3, "Package", "package", PackageDialog::create, (pr, pth) -> true),
+    FUNCTION(1, "Function", "function", MCMETADialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "data" + File.separator)),
+    JSON(2, "JSON File", "json", MCMETADialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "data" + File.separator));
 
+    public final int group;
     public final String name;
+    public final String icon;
     public final FileTypeDialog dialog;
+    public final DirectoryValidator validator;
 
-    FileType(String name, FileTypeDialog dialog) {
+    FileType(int group, String name, String icon, FileTypeDialog dialog, DirectoryValidator validator) {
+        this.group = group;
         this.name = name;
+        this.icon = icon;
         this.dialog = dialog;
+        this.validator = validator;
     }
 
     public void create(String destination) {
         this.dialog.create(this, destination);
     }
 
+    public StyledMenuItem createMenuItem(String newPath) {
+        StyledMenuItem item = new StyledMenuItem(name, icon);
+        item.addActionListener(e -> create(newPath));
+        return item;
+    }
+
     @Override
     public String toString() {
         return name;
+    }
+
+    public boolean canCreate(String projectDir, String path) {
+        return validator.canCreate(projectDir, path);
     }
 }
