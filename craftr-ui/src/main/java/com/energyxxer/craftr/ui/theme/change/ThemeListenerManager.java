@@ -27,7 +27,6 @@ public class ThemeListenerManager implements Disposable {
     @Override
     public void dispose() {
         if(listeners != null) {
-            System.out.println("Disposing of " + listeners.size() + " listeners");
             listeners.forEach(ThemeChangeListener::dispose);
             listeners.clear();
             listeners = null;

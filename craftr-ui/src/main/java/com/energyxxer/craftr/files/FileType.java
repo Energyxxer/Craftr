@@ -1,11 +1,6 @@
 package com.energyxxer.craftr.files;
 
-import com.energyxxer.craftr.ui.dialogs.file_dialogs.MCMETADialog;
-import com.energyxxer.craftr.ui.dialogs.file_dialogs.ModelDialog;
-import com.energyxxer.craftr.ui.dialogs.file_dialogs.PackageDialog;
-import com.energyxxer.craftr.ui.dialogs.file_dialogs.ProjectDialog;
-import com.energyxxer.craftr.ui.dialogs.file_dialogs.ResourceDialog;
-import com.energyxxer.craftr.ui.dialogs.file_dialogs.UnitDialog;
+import com.energyxxer.craftr.ui.dialogs.file_dialogs.*;
 import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 
 import java.io.File;
@@ -20,13 +15,13 @@ public enum FileType {
     CLASS(1, "Class", "class", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
     ENUM(1, "Enum", "enum", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
     FEATURE(1, "Feature", "feature", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
-    WORLD(8, "World", "world", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
     MODEL(1, "Model", "model", ModelDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "resources" + File.separator)),
     LANG(1, "Language File", "lang", ResourceDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "resources" + File.separator)),
-    META(2, "Meta File", "meta", MCMETADialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "resources" + File.separator)),
-    PACKAGE(3, "Package", "package", PackageDialog::create, (pr, pth) -> true),
     FUNCTION(1, "Function", "function", MCMETADialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "data" + File.separator)),
-    JSON(2, "JSON File", "json", MCMETADialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "data" + File.separator));
+    META(2, "Meta File", "meta", MCMETADialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "resources" + File.separator)),
+    JSON(2, "JSON File", "json", MCMETADialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "data" + File.separator)),
+    WORLD(3, "World", "world", UnitDialog::create, (pr, pth) -> pr != null && pth.startsWith(pr + "src" + File.separator)),
+    PACKAGE(4, "Package", "package", PackageDialog::create, (pr, pth) -> true);
 
     public final int group;
     public final String name;

@@ -1,11 +1,7 @@
 package com.energyxxer.craftr.ui.explorer;
 
 import com.energyxxer.craftr.files.FileType;
-import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.craftr.global.FileManager;
-import com.energyxxer.craftr.global.Preferences;
-import com.energyxxer.craftr.global.Resources;
-import com.energyxxer.craftr.global.TabManager;
+import com.energyxxer.craftr.global.*;
 import com.energyxxer.craftr.ui.common.MenuItems;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
@@ -19,13 +15,7 @@ import com.energyxxer.craftrlang.projects.ProjectManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -344,14 +334,18 @@ public class ProjectExplorerItem extends ExplorerElement {
 
             // --------------------------------------------------
 
-            boolean hasElements = false;
-
             Project project = ProjectManager.getAssociatedProject(new File(path));
 
             String projectDir = (project != null) ? project.getDirectory().getPath() + File.separator : null;
 
+            int lastGroup = 0;
+
             for(FileType type : FileType.values()) {
                 if(type.canCreate(projectDir, path + File.separator)) {
+                    if(type.group != lastGroup) {
+                        newMenu.addSeparator();
+                        lastGroup = type.group;
+                    }
                     newMenu.add(type.createMenuItem(newPath));
                 }
             }
