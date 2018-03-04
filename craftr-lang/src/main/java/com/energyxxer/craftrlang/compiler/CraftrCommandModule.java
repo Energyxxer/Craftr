@@ -2,6 +2,7 @@ package com.energyxxer.craftrlang.compiler;
 
 import com.energyxxer.commodore.module.CommandModule;
 import com.energyxxer.commodore.module.Namespace;
+import com.energyxxer.commodore.module.options.UnusedCommandPolicy;
 import com.energyxxer.commodore.tags.FunctionTag;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.GlobalObjectiveManager;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
@@ -28,6 +29,8 @@ public class CraftrCommandModule extends CommandModule {
 
         this.tickTag = minecraft.getTagManager().getFunctionGroup().createNew("tick");
         this.loadTag = minecraft.getTagManager().getFunctionGroup().createNew("load");
+
+        this.optMgr.UNUSED_COMMAND_POLICY.setValue(UnusedCommandPolicy.COMMENT_OUT);
     }
 
     public LocalizedObjectiveManager createLocalizedObjectiveManager(SemanticContext semanticContext) {

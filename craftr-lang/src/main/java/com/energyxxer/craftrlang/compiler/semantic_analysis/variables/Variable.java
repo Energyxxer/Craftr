@@ -103,7 +103,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.type = VariableType.PARAMETER;
         this.claimObjective(); //Claim the parameter objective
         this.updateReference();
-        this.reference = value.getReference().toScore(function, this.reference.getScore(), semanticContext); //Clone the value into the parameter objective
+        if(value != null) this.reference = value.getReference().toScore(function, this.reference.getScore(), semanticContext); //Clone the value into the parameter objective
         this.value = dataType.create(this.reference, semanticContext); //Make a non-null value that points to the parameter objective. This shouldn't
 
         this.claimObjective();
@@ -183,7 +183,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
         for(TokenPattern<?> p : declarationList) {
             if(!p.getName().equals("VARIABLE_DECLARATION")) continue;
-            variables.add(new Variable(p, modifiers, dataType, (SemanticContext) unit));
+            variables.add(new Variable(p, modifiers, dataType, unit));
         }
 
         return variables;

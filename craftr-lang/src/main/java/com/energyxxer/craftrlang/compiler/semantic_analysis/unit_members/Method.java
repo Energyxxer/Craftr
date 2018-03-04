@@ -275,39 +275,11 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
             ArrayList<LocalScore> paramReferences = new ArrayList<>();
 
             for(FormalParameter param : positionalParams) {
-                /*LocalScore paramReference = this.getPlayer().PARAMETER.get();
-                paramReference.setInUse(true);
-                paramReferences.add(paramReference);
-                codeBlock.getSymbolTable().put(
-                        new Variable(
-                                param.getName(),
-                                Collections.emptyList(),
-                                param.getType(),
-                                this,
-                                param.getType().createImplicit(
-                                        paramReference,
-                                        this
-                                )
-                        )
-                );*/
+                codeBlock.getSymbolTable().put(new Variable(param.getName(), Collections.emptyList(), param.getType(), this, null, function));
             }
             FormalParameter[] keywordArr = keywordParams.values().toArray(new FormalParameter[0]);
             for(FormalParameter param : keywordArr) {
-                /*LocalScore paramReference = this.getPlayer().PARAMETER.get();
-                paramReference.setInUse(true);
-                paramReferences.add(paramReference);
-                codeBlock.getSymbolTable().put(
-                        new Variable(
-                                param.getName(),
-                                Collections.emptyList(),
-                                param.getType(),
-                                this,
-                                param.getType().createImplicit(
-                                        paramReference,
-                                        this
-                                )
-                        )
-                );*/
+                codeBlock.getSymbolTable().put(new Variable(param.getName(), Collections.emptyList(), param.getType(), this, null, function));
             }
             codeBlock.setSilent(false);
             codeBlock.initialize(ownerInstance);
