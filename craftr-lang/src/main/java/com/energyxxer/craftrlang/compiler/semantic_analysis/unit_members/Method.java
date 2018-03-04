@@ -1,7 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.commodore.functions.Function;
-import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.commodore.types.FunctionReference;
 import com.energyxxer.craftrlang.CraftrLang;
@@ -268,11 +267,11 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
     public void initCodeBlock() {
         if(codeBlock != null) {
 
-            if(!isStatic()) this.ownerInstance = new ObjectInstance(declaringUnit, this);
+            if(!isStatic()) {
+                this.ownerInstance = new ObjectInstance(declaringUnit, this);
+            }
 
             codeBlock.clearSymbols();
-
-            ArrayList<LocalScore> paramReferences = new ArrayList<>();
 
             for(FormalParameter param : positionalParams) {
                 codeBlock.getSymbolTable().put(new Variable(param.getName(), Collections.emptyList(), param.getType(), this, null, function));

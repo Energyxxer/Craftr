@@ -20,6 +20,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolde
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitValue;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
@@ -52,6 +53,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
     private Value value;
     private ScoreReference reference = null;
+    //TODO: Add a flag that says whether this variable has been accessed through or written to a scoreboard
 
     private Variable(Variable that) {
         super(that.semanticContext);
@@ -103,7 +105,9 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.type = VariableType.PARAMETER;
         this.claimObjective(); //Claim the parameter objective
         this.updateReference();
-        if(value != null) this.reference = value.getReference().toScore(function, this.reference.getScore(), semanticContext); //Clone the value into the parameter objective
+        if(value != null) {
+            this.reference = value.getReference().toScore(function, this.reference.getScore(), semanticContext); //Clone the value into the parameter objective
+        }
         this.value = dataType.create(this.reference, semanticContext); //Make a non-null value that points to the parameter objective. This shouldn't
 
         this.claimObjective();
@@ -223,7 +227,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                     this.value = operand;
 
                     if(!operand.isNull() && operand.getReference() != null) {
-                        this.reference = operand.getReference().toScore(function, new LocalScore(objective, semanticContext.getPlayer()), semanticContext);
+                        if(this.type == VariableType.FIELD || !(operand.getReference() instanceof ExplicitValue)) this.reference = operand.getReference().toScore(function, new LocalScore(objective, semanticContext.getPlayer()), semanticContext);
                     } else {
                         semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Assigned value may not have been initialized", pattern));
                     }

@@ -113,6 +113,7 @@ public class Compiler {
 
         analyzer = new SemanticAnalyzer(this, allPatterns, source);
         module = new CraftrCommandModule(projectName, projectPrefix);
+        this.setProgress("Importing data definitions... [" + projectName + "]");
         StandardDefinitionPacks.MINECRAFT_J_1_13.initialize(module);
         if(library != null) {
             LibraryLoad callback = (c,r) -> {

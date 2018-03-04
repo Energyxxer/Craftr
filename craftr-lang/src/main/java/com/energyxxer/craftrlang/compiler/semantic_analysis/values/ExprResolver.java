@@ -68,9 +68,9 @@ public final class ExprResolver {
                 }
                 if(raw.matches("\\d+\\.\\d+")) { //IS A FLOAT
                     try {
-                        return new FloatValue(Float.parseFloat(raw), semanticContext); //TODO: CONVERT THIS TO DOUBLE
+                        return new DoubleValue(Double.parseDouble(raw), semanticContext);
                     } catch(NumberFormatException x) {
-                        if(!silent) System.err.println("[Something went slightly wrong] Number structure '" + raw + "'is not a valid number. (?)");
+                        if(!silent) semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "[Something went slightly wrong] Number structure is not a valid number. (?)", raw));
                         return null;
                     }
                 } else { //IS AN INTEGER

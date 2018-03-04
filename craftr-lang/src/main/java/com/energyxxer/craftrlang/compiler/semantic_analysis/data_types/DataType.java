@@ -10,10 +10,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.BooleanValue;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.FloatValue;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.IntegerValue;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.*;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 
 import java.util.Arrays;
@@ -97,6 +94,7 @@ public class DataType {
     static {
         INT.setReferenceConstructor(IntegerValue::new);
         FLOAT.setReferenceConstructor(FloatValue::new);
+        DOUBLE.setReferenceConstructor(DoubleValue::new);
         INT.setReferenceConstructor(IntegerValue::new);
         BOOLEAN.setReferenceConstructor(BooleanValue::new);
         //OBJECT.setReferenceConstructor({});
@@ -206,7 +204,9 @@ public class DataType {
     }
 
     public Value create(DataReference reference, SemanticContext semanticContext) {
-        return (referenceConstructor != null) ? referenceConstructor.create(reference, semanticContext) : null;
+        if(referenceConstructor == null) {
+            throw new RuntimeException("No reference constructor found for data type " + this);
+        } else return referenceConstructor.create(reference, semanticContext);
     }
 
     @Override

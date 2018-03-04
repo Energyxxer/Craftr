@@ -29,7 +29,8 @@ public class CraftrEntity implements Entity {
     public CraftrEntity(Unit unit, Selector selector) {
         this.unit = unit;
         this.selector = selector;
-        addMacroHolder(new MacroScoreHolder("GE#" + this.hashCode()));
+        addMacroHolder(new MacroScoreHolder("CE:" + unit.getName() + "#" + this.hashCode()));
+        addMacroHolder(new MacroScoreHolder("CE:INSTANCEOF:" + unit.getFullyQualifiedName()));
     }
 
     @Override

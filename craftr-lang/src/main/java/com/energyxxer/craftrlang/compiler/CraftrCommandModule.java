@@ -31,6 +31,7 @@ public class CraftrCommandModule extends CommandModule {
         this.loadTag = minecraft.getTagManager().getFunctionGroup().createNew("load");
 
         this.optMgr.UNUSED_COMMAND_POLICY.setValue(UnusedCommandPolicy.COMMENT_OUT);
+        this.optMgr.EXPORT_ACCESS_LOGS.setValue(false);
     }
 
     public LocalizedObjectiveManager createLocalizedObjectiveManager(SemanticContext semanticContext) {
