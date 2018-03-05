@@ -429,7 +429,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         if(unitComponentsInitialized) return;
         TokenPattern<?> componentList = (type == UnitType.ENUM) ? pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST_WRAPPER.UNIT_COMPONENT_LIST") : pattern.find("UNIT_BODY.UNIT_COMPONENT_LIST");
         if(componentList != null) {
-            for (TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
+            for(TokenPattern<?> p : componentList.searchByName("UNIT_COMPONENT")) {
                 TokenStructure component = (TokenStructure) p.getContents();
                 if (component.getName().equals("VARIABLE")) {
                     List<Variable> newFields = Variable.parseDeclaration(component, this);

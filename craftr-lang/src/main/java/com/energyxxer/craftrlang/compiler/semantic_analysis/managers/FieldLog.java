@@ -10,6 +10,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -20,6 +21,8 @@ public class FieldLog extends SymbolTable {
     private final Unit parentUnit;
     private final boolean isStatic;
     private ObjectInstance parentInstance;
+
+    private ArrayList<Symbol> orderedSymbols = new ArrayList<>();
 
     public FieldLog(Unit parentUnit) {
         super(parentUnit.getVisibility(), parentUnit.getDeclaringFile().getPackage().getSubSymbolTable());
@@ -81,6 +84,12 @@ public class FieldLog extends SymbolTable {
         this.put(field.getName(), field);
     }
 
+    @Override
+    public void put(String name, Symbol symbol) {
+        super.put(name, symbol);
+        this.orderedSymbols.add(symbol);
+    }
+
     public FieldLog createForInstance(ObjectInstance instance) {
         return new FieldLog(instance);
     }
@@ -90,7 +99,7 @@ public class FieldLog extends SymbolTable {
     }
 
     public void forEachVar(Consumer<? super Variable> action) {
-        for(Symbol symbol : this) {
+        for(Symbol symbol : orderedSymbols) {
             if(symbol instanceof Variable) {
                 action.accept((Variable) symbol);
             }

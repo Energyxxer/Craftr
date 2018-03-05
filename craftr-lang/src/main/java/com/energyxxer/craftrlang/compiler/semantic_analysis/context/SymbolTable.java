@@ -17,7 +17,7 @@ import java.util.List;
 public class SymbolTable implements Iterable<Symbol> {
     private final Compiler compiler;
     private final SymbolVisibility visibility;
-    private SymbolTable parent = null;
+    private SymbolTable parent;
 
     private HashMap<String, Symbol> table = new HashMap<>();
 
