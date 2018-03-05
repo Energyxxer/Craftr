@@ -263,8 +263,8 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         dataType = new DataType(this);
         dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, r, c));
 
-        staticInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/$initStatic");
-        instanceInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/$init");
+        staticInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/init-static");
+        instanceInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/init-instance");
     }
 
     void initUnitActions() {

@@ -7,6 +7,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.NullReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 
 /**
@@ -15,7 +16,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Op
 public class Null extends Value {
 
     public Null(SemanticContext semanticContext) {
-        super(semanticContext);
+        super(new NullReference(), semanticContext);
     }
 
     @Override
@@ -56,11 +57,6 @@ public class Null extends Value {
     @Override
     public void setReference(DataReference reference) {
         //null
-    }
-
-    @Override
-    public DataReference getReference() {
-        return null;
     }
 
     @Override

@@ -70,7 +70,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     private Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext) {
-        super((semanticContext instanceof Unit) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext);
+        super((semanticContext instanceof Unit && !modifiers.contains(CraftrLang.Modifier.STATIC)) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext);
         this.pattern = pattern;
         this.modifiers = new ArrayList<>(modifiers);
         this.dataType = dataType;
@@ -155,11 +155,11 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
             }
             if(this.value == null) this.value = new Null(semanticContext);
             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern));
+            reference = this.value.getReference().toScore(initializerFunction, new LocalScore(objective, semanticContext.getPlayer()), semanticContext);
         } else {
             this.value = new Null(this.semanticContext);
         }
 
-        reference = new ScoreReference(new LocalScore(objective, semanticContext.getPlayer()));
     }
 
     /*
