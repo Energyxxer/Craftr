@@ -96,4 +96,9 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     public CraftrEntity getEntity() {
         return entity;
     }
+
+    @Override
+    public String toString() {
+        return "ObjectInstance:" + unit.getName() + "@" + hashCode();
+    }
 }

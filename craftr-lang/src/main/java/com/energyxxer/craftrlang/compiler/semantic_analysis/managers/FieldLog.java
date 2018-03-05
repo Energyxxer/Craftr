@@ -66,7 +66,9 @@ public class FieldLog extends SymbolTable {
             }
             if(sym2 != null) return sym2;
         }
-        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + flatTokens.get(0).value + "'", flatTokens.get(0)));
+        if(!silent) {
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + flatTokens.get(0).value + "'", flatTokens.get(0)));
+        }
         return null;
     }
 
@@ -93,5 +95,10 @@ public class FieldLog extends SymbolTable {
                 action.accept((Variable) symbol);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return (isStatic ? "Static" : "Instance") + " FieldLog for " + (isStatic ? "unit" : "instance of unit") + " " + parentUnit.getFullyQualifiedName() + (isStatic ? "" : " " + parentInstance);
     }
 }

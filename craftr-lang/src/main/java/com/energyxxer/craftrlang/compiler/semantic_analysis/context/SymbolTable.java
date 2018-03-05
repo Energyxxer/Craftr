@@ -118,7 +118,9 @@ public class SymbolTable implements Iterable<Symbol> {
             }
             return next;
         }
-        if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + raw + "'", token));
+        if(!silent) {
+            semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol '" + raw + "'", token));
+        }
         return null;
     }
 

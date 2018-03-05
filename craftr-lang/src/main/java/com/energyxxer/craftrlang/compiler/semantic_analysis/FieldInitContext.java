@@ -19,8 +19,6 @@ public class FieldInitContext implements SemanticContext {
         this.unit = unit;
         this.locObjMgr = unit.getAnalyzer().getCompiler().getModule().createLocalizedObjectiveManager(this);
 
-        this.ownerInstance = new ObjectInstance(unit, this);
-
         //this.entity = new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(getCompiler().getPrefix() + "_init"))); //TODO Make this a getter in the Unit class so it can be made the sender of the initialization function
     }
 
@@ -59,13 +57,23 @@ public class FieldInitContext implements SemanticContext {
         return locObjMgr;
     }
 
-    @Override
-    public DataHolder getDataHolder() {
+    public ObjectInstance getOwnerInstance() {
+        if(ownerInstance == null) ownerInstance = new ObjectInstance(unit, this);
         return ownerInstance;
     }
 
     @Override
+    public DataHolder getDataHolder() {
+        return getOwnerInstance();
+    }
+
+    @Override
     public ScoreHolder getPlayer() {
-        return ownerInstance.getEntity();
+        return getOwnerInstance().getEntity();
+    }
+
+    @Override
+    public String toString() {
+        return "FieldInitContext for " + unit.getFullyQualifiedName();
     }
 }

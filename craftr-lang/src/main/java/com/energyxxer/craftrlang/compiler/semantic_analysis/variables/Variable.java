@@ -293,4 +293,9 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     public Value clone(Function function) {
         throw new IllegalStateException("Dude, don't clone the variable, clone the value!");
     }
+
+    @Override
+    public String toString() {
+        return type.toString().toLowerCase() + " '" + name + "': " + semanticContext;
+    }
 }
