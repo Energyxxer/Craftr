@@ -37,7 +37,7 @@ public class ExplicitString implements ExplicitValue {
 
     private EntityReference getStringEntity(Function function, SemanticContext semanticContext) {
         if(stringEntityReference == null) {
-            function.append(new SummonCommand(semanticContext.getModule().minecraft.getTypeManager().entity.get("area_effect_cloud"), new CoordinateSet(0, 0, 0, Coordinate.Type.RELATIVE), new TagCompound(new TagString(CommandUtils.escape(value)))));
+            function.append(new SummonCommand(semanticContext.getModule().minecraft.getTypeManager().entity.get("area_effect_cloud"), new CoordinateSet(0, 0, 0, Coordinate.Type.RELATIVE), new TagCompound(new TagString("CustomName", "\"" + CommandUtils.escape(value) + "\""))));
             stringEntityReference = new EntityReference(new CraftrEntity((Unit) semanticContext.getAnalyzer().getLangPackage().getSubSymbolTable().getMap().get("String"), new Selector(Selector.BaseSelector.ALL_ENTITIES, new NameArgument(value), new LimitArgument(1))));
         }
         return stringEntityReference;

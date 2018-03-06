@@ -10,3 +10,4 @@ Syntax Themes:
 -JSON Syntax Dark
 -Properties Syntax Dark
 -Properties Syntax Light
+-MCFunction Syntax Dark

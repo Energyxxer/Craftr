@@ -38,6 +38,7 @@ public class ThemeReader {
     }
 
     private Theme read(Theme.ThemeType type, String name, List<String> lines) throws ThemeParserException {
+        currentLine = 0;
         themeValues = new HashMap<>();
         for(String rawLine : lines) {
             currentLine++;

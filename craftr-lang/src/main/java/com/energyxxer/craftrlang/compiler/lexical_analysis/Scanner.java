@@ -119,6 +119,7 @@ public class Scanner {
 
 			for(ScannerContext ctx : profile.contexts) {
 				if(ctx.getCondition() == ScannerContext.ContextCondition.LEADING_WHITESPACE && token.length() > 0) continue;
+				if(ctx.getCondition() == ScannerContext.ContextCondition.LINE_START && column != 1) continue;
 				ScannerContextResponse response = ctx.analyze(sub);
 				if(response.errorMessage != null) {
 					notices.add(new Notice(NoticeType.ERROR, response.errorMessage, "\b" + file.getAbsolutePath() + "\b" + (i + response.errorIndex) + "\b" + response.errorLength));

@@ -61,7 +61,7 @@ public class ThemeManager {
                             Theme theme = tr.read(Theme.ThemeType.GUI_THEME, file);
                             if(theme != null) gui_themes.put(theme.getName(),theme);
                         } catch(ThemeParserException e) {
-                            Console.warn.println(e.getMessage());
+                            System.err.println(e.getMessage());
                         }
                     }
                 }

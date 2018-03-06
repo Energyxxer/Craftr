@@ -76,6 +76,10 @@ public class Token {
 
 	@Override
 	public String toString() {
+    	boolean verbose = true;
+    	if(verbose) {
+    		return type.getHumanReadableName() + " '" + value + "' (" + (isSignificant() ? "" : "in") + "significant)";
+		} else
 		return value;
 	}
 	

@@ -9,15 +9,21 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenSection;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
-import com.energyxxer.craftrlang.compiler.parsing.CraftrProductions;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 
-import javax.swing.*;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.Timer;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import javax.swing.text.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Style;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
@@ -74,11 +80,14 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
         ArrayList<Notice> newNotices = new ArrayList<>();
         newNotices.addAll(sc.getNotices());
 
-        boolean doParsing = false;
+        Lang lang = Lang.getLangForFile(parent.associatedTab.path);
+
+        boolean doParsing = lang != null && lang.getParserProduction() != null;
 
         ArrayList<Token> tokens = new ArrayList<>(sc.getStream().tokens);
-        if(tokens.get(0).attributes.get("TYPE").equals("craftr")) doParsing = true;
+        //if(tokens.get(0).attributes.get("TYPE").equals("craftr")) doParsing = true;
         tokens.remove(0);
+        System.out.println("tokens = " + tokens);
 
         TokenMatchResponse match = null;
 
@@ -86,9 +95,11 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
             ArrayList<Token> f = new ArrayList<>(tokens);
             f.removeIf(t -> !t.isSignificant());
 
-            match = CraftrProductions.FILE.match(f);
+            match = lang.getParserProduction().match(f);
 
             match.pattern.validate();
+
+            System.out.println("match.pattern = " + match.pattern);
         }
 
         for(Token token : tokens) {

@@ -138,6 +138,7 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 	}
 
 	private void setSyntax(Theme newSyntax) {
+		System.out.println("Setting syntax to " + newSyntax);
 		if(newSyntax == null) {
 			for(String key : this.styles) {
 				editorComponent.removeStyle(key);
@@ -151,7 +152,7 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 
 		this.styles.clear();
 		this.parserStyles.clear();
-		syntax = newSyntax;
+		this.syntax = newSyntax;
 		for(String value : syntax.getValues().keySet()) {
 			if(!value.contains(".")) continue;
 			//if(sections.length > 2) continue;
@@ -261,14 +262,10 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 		);
 		tln.setFont(new Font(t.getString("CraftrEditorModule.lineNumber.font","default:monospaced"),0,12));
 
-		for(Lang lang : Lang.values()) {
-			for(String extension : lang.getExtensions()) {
-				if(associatedTab.path.endsWith("." + extension)) {
-					setSyntax(ThemeManager.getSyntaxForGUITheme(lang, t));
-					editorComponent.highlight();
-					return;
-				}
-			}
+		Lang lang = Lang.getLangForFile(associatedTab.path);
+		if(lang != null) {
+			setSyntax(ThemeManager.getSyntaxForGUITheme(lang, t));
+			editorComponent.highlight();
 		}
 	}
 

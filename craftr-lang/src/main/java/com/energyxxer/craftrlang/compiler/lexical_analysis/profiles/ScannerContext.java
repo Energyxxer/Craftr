@@ -19,6 +19,6 @@ public interface ScannerContext {
     }
 
     enum ContextCondition {
-        NONE, LEADING_WHITESPACE
+        NONE, LINE_START, LEADING_WHITESPACE
     }
 }
