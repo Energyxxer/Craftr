@@ -59,7 +59,7 @@ public class TokenItemMatch extends TokenPatternMatch {
 		boolean matched;
 		Token faultyToken = null;
 
-		matched = tokens.size() == 0 && (this.type == null || tokens.get(0).type == this.type) && (stringMatch == null || tokens.get(0).value.equals(stringMatch));
+		matched = tokens.size() > 0 && (this.type == null || tokens.get(0).type == this.type) && (stringMatch == null || tokens.get(0).value.equals(stringMatch));
 
 		if (!matched && tokens.size() > 0) {
 			faultyToken = tokens.get(0);
