@@ -73,7 +73,7 @@ public final class ExprResolver {
                         if(!silent) semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "[Something went slightly wrong] Number structure is not a valid number. (?)", raw));
                         return null;
                     }
-                } else { //IS AN INTEGER
+                } else { //IS AN INTEGER_NUMBER
                     try {
                         return new IntegerValue(Integer.parseInt(raw), semanticContext);
                     } catch(NumberFormatException x) {

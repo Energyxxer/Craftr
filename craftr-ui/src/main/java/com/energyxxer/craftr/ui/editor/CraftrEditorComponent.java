@@ -13,17 +13,10 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchRes
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Style;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
@@ -137,7 +130,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
                     }
                     Style attrStyle = CraftrEditorComponent.this.getStyle(entry.getKey());
                     if(attrStyle == null) continue;
-                    sd.setCharacterAttributes(token.loc.index, token.value.length(), attrStyle, true);
+                    sd.setCharacterAttributes(token.loc.index, token.value.length(), attrStyle, false);
                 }
             }
         }

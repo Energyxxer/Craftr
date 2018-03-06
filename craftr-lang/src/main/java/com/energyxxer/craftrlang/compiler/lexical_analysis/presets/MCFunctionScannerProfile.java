@@ -107,7 +107,7 @@ public class MCFunctionScannerProfile extends ScannerProfile {
         contexts.add(new ScannerContext() {
 
             String[] patterns = { ".", ",", ":", "=", "(", ")", "[", "]", "{", "}", "~", "^", "\n" };
-            TokenType[] types = { MCFunction.DOT, MCFunction.COMMA, MCFunction.EQUALS, MCFunction.COLON, MCFunction.BRACE, MCFunction.BRACE, MCFunction.BRACE, MCFunction.BRACE, MCFunction.BRACE, MCFunction.BRACE, MCFunction.TILDE, MCFunction.CARET, MCFunction.NEWLINE };
+            TokenType[] types = { MCFunction.DOT, MCFunction.COMMA, MCFunction.COLON, MCFunction.EQUALS, MCFunction.BRACE, MCFunction.BRACE, MCFunction.BRACE, MCFunction.BRACE, MCFunction.BRACE, MCFunction.BRACE, MCFunction.TILDE, MCFunction.CARET, MCFunction.NEWLINE };
 
             @Override
             public ScannerContextResponse analyze(String str) {
@@ -146,7 +146,11 @@ public class MCFunctionScannerProfile extends ScannerProfile {
 
     @Override
     public boolean canMerge(char ch0, char ch1) {
-        return Character.isJavaIdentifierPart(ch0) && Character.isJavaIdentifierPart(ch1);
+        return isValidIdentifierPart(ch0) && isValidIdentifierPart(ch1);
+    }
+
+    private boolean isValidIdentifierPart(char ch) {
+        return ch != '$' && Character.isJavaIdentifierPart(ch);
     }
 
     @Override
