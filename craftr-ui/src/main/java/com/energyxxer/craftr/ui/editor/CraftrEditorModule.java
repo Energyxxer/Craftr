@@ -11,24 +11,14 @@ import com.energyxxer.craftr.util.linenumber.TextLineNumber;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.Lang;
 import com.energyxxer.util.out.Console;
 
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
+import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -137,12 +127,22 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 		editorComponent.getDocument().addUndoableEditListener(this);
 	}
 
+	private void clearStyles() {
+		for(String key : this.styles) {
+			editorComponent.removeStyle(key);
+		}
+		for(String key : this.parserStyles.keySet()) {
+			editorComponent.removeStyle(key);
+		}
+		this.styles.clear();
+		this.parserStyles.clear();
+	}
+
 	private void setSyntax(Theme newSyntax) {
 		System.out.println("Setting syntax to " + newSyntax);
 		if(newSyntax == null) {
-			for(String key : this.styles) {
-				editorComponent.removeStyle(key);
-			}
+			syntax = null;
+			clearStyles();
 			return;
 		}
 		if(newSyntax.getThemeType() != Theme.ThemeType.SYNTAX_THEME) {
@@ -150,9 +150,8 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 			return;
 		}
 
-		this.styles.clear();
-		this.parserStyles.clear();
 		this.syntax = newSyntax;
+		clearStyles();
 		for(String value : syntax.getValues().keySet()) {
 			if(!value.contains(".")) continue;
 			//if(sections.length > 2) continue;
