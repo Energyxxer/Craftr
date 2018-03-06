@@ -98,7 +98,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
         for(Token token : tokens) {
             Style style = CraftrEditorComponent.this.getStyle(token.type.toString().toLowerCase());
             if(style != null)
-                sd.setCharacterAttributes(token.loc.index, token.value.length(), style, true);
+                sd.setCharacterAttributes(token.loc.index, token.value.length(), style, false);
             else
                 sd.setCharacterAttributes(token.loc.index, token.value.length(), defaultStyle, true);
 
@@ -117,7 +117,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
             for(String tag : token.tags) {
                 Style attrStyle = CraftrEditorComponent.this.getStyle("$" + tag.toLowerCase());
                 if(attrStyle == null) continue;
-                sd.setCharacterAttributes(token.loc.index, token.value.length(), attrStyle, true);
+                sd.setCharacterAttributes(token.loc.index, token.value.length(), attrStyle, false);
             }
 
             if(doParsing) {

@@ -1,11 +1,16 @@
 package com.energyxxer.craftrlang.compiler.parsing;
 
+import com.energyxxer.commodore.defpacks.DefinitionBlueprint;
+import com.energyxxer.commodore.defpacks.DefinitionPack;
+import com.energyxxer.commodore.standard.StandardDefinitionPacks;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.presets.mcfunction.MCFunction;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenGroupMatch;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenItemMatch;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenListMatch;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenStructureMatch;
+
+import java.util.HashMap;
 
 public class MCFunctionProductions {
 
@@ -35,6 +40,8 @@ public class MCFunctionProductions {
     public static final TokenStructureMatch NBT_COMPOUND = new TokenStructureMatch("NBT_COMPOUND");
     public static final TokenStructureMatch NBT_VALUE = new TokenStructureMatch("NBT_VALUE");
 
+    public static final TokenStructureMatch NBT_PATH = new TokenStructureMatch("NBT_PATH");
+
     public static final TokenStructureMatch ENTITY = new TokenStructureMatch("ENTITY");
 
     public static final TokenStructureMatch SINGLE_COORDINATE = new TokenStructureMatch("SINGLE_COORDINATE");
@@ -51,7 +58,17 @@ public class MCFunctionProductions {
     public static final TokenStructureMatch INTEGER_NUMBER_RANGE = new TokenStructureMatch("INTEGER_NUMBER_RANGE");
     public static final TokenStructureMatch REAL_NUMBER_RANGE = new TokenStructureMatch("REAL_NUMBER_RANGE");
 
+    public static final TokenStructureMatch BLOCK_ID = new TokenStructureMatch("BLOCK_ID");
+    public static final TokenStructureMatch ITEM_ID = new TokenStructureMatch("ITEM_ID");
+    public static final TokenStructureMatch ENTITY_ID = new TokenStructureMatch("ENTITY_ID");
+    public static final TokenStructureMatch EFFECT_ID = new TokenStructureMatch("EFFECT_ID");
+    public static final TokenStructureMatch PARTICLE_ID = new TokenStructureMatch("PARTICLE_ID");
+    public static final TokenStructureMatch ENCHANTMENT_ID = new TokenStructureMatch("ENCHANTMENT_ID");
+    public static final TokenStructureMatch DIMENSION_ID = new TokenStructureMatch("DIMENSION_ID");
+
     public static final TokenStructureMatch GAMEMODE = new TokenStructureMatch("GAMEMODE");
+    public static final TokenStructureMatch STRUCTURE = new TokenStructureMatch("STRUCTURE");
+    public static final TokenStructureMatch DIFFICULTY = new TokenStructureMatch("DIFFICULTY");
     public static final TokenStructureMatch SORTING = new TokenStructureMatch("SORTING");
 
     static {
@@ -89,7 +106,7 @@ public class MCFunctionProductions {
         {
             TokenGroupMatch g = new TokenGroupMatch();
             g.append(new TokenGroupMatch(true).append(NAMESPACE));
-            g.append(new TokenListMatch(ANY_STRING, new TokenItemMatch(null, "/")));
+            g.append(new TokenListMatch(new TokenItemMatch(TokenType.UNKNOWN), new TokenItemMatch(null, "/")));
 
             RESOURCE_LOCATION.add(g);
         }
@@ -116,20 +133,35 @@ public class MCFunctionProductions {
         }
 
         {
-            TokenGroupMatch g = new TokenGroupMatch();
-            g.append(RESOURCE_LOCATION);
+            TokenGroupMatch g = new TokenGroupMatch().setName("CONCRETE_RESOURCE");
+            g.append(new TokenGroupMatch().append(BLOCK_ID).setName("RESOURCE_NAME"));
             g.append(new TokenGroupMatch(true).append(BLOCKSTATE));
             g.append(new TokenGroupMatch(true).append(NBT_COMPOUND));
             BLOCK.add(g);
-            BLOCK_TAGGED.add(new TokenGroupMatch().append(new TokenItemMatch(null, "#", true).setName("TAG_HEADER")).append(BLOCK));
+            BLOCK_TAGGED.add(BLOCK);
         }
 
         {
-            TokenGroupMatch g = new TokenGroupMatch();
-            g.append(RESOURCE_LOCATION);
+            TokenGroupMatch g = new TokenGroupMatch().setName("ABSTRACT_RESOURCE");
+            g.append(new TokenGroupMatch().append(new TokenItemMatch(null, "#").setName("TAG_HEADER")).append(RESOURCE_LOCATION).setName("RESOURCE_NAME"));
+            g.append(new TokenGroupMatch(true).append(BLOCKSTATE));
+            g.append(new TokenGroupMatch(true).append(NBT_COMPOUND));
+            BLOCK_TAGGED.add(g);
+        }
+
+        {
+            TokenGroupMatch g = new TokenGroupMatch().setName("CONCRETE_RESOURCE");
+            g.append(new TokenGroupMatch().append(ITEM_ID).setName("RESOURCE_NAME"));
             g.append(new TokenGroupMatch(true).append(NBT_COMPOUND));
             ITEM.add(g);
-            ITEM_TAGGED.add(new TokenGroupMatch().append(new TokenItemMatch(null, "#", true).setName("TAG_HEADER")).append(ITEM));
+            ITEM_TAGGED.add(ITEM);
+        }
+
+        {
+            TokenGroupMatch g = new TokenGroupMatch().setName("ABSTRACT_RESOURCE");
+            g.append(new TokenGroupMatch().append(new TokenItemMatch(null, "#").setName("TAG_HEADER")).append(RESOURCE_LOCATION).setName("RESOURCE_NAME"));
+            g.append(new TokenGroupMatch(true).append(NBT_COMPOUND));
+            ITEM_TAGGED.add(g);
         }
 
         {
@@ -238,10 +270,27 @@ public class MCFunctionProductions {
         }
 
         {
-            GAMEMODE.add(new TokenItemMatch(null, "survival"));
-            GAMEMODE.add(new TokenItemMatch(null, "creative"));
-            GAMEMODE.add(new TokenItemMatch(null, "adventure"));
-            GAMEMODE.add(new TokenItemMatch(null, "spectator"));
+            TokenStructureMatch NBT_PATH_NODE = new TokenStructureMatch("NBT_PATH_NODE");
+
+            TokenGroupMatch NBT_PATH_KEY = new TokenGroupMatch().setName("NBT_PATH_KEY");
+            NBT_PATH_KEY.append(new TokenItemMatch(MCFunction.DOT).setName("NBT_PATH_SEPARATOR"));
+            NBT_PATH_KEY.append(new TokenItemMatch(TokenType.UNKNOWN).setName("NBT_PATH_KEY_LABEL"));
+            NBT_PATH_NODE.add(NBT_PATH_KEY);
+
+            TokenGroupMatch NBT_PATH_INDEX = new TokenGroupMatch().setName("NBT_PATH_INDEX");
+            NBT_PATH_INDEX.append(new TokenItemMatch(MCFunction.BRACE, "["));
+            NBT_PATH_INDEX.append(INTEGER_NUMBER);
+            NBT_PATH_INDEX.append(new TokenItemMatch(MCFunction.BRACE, "]"));
+            NBT_PATH_NODE.add(NBT_PATH_INDEX);
+
+            TokenGroupMatch g = new TokenGroupMatch();
+            g.append(new TokenGroupMatch().append(new TokenItemMatch(TokenType.UNKNOWN).setName("NBT_PATH_KEY_LABEL")).setName("NBT_PATH_KEY"));
+            g.append(new TokenListMatch(NBT_PATH_NODE, true));
+
+            NBT_PATH.add(g);
+        }
+
+        {
 
             SORTING.add(new TokenItemMatch(null, "nearest"));
             SORTING.add(new TokenItemMatch(null, "farthest"));
@@ -250,6 +299,100 @@ public class MCFunctionProductions {
 
             BOOLEAN.add(new TokenItemMatch(null, "true"));
             BOOLEAN.add(new TokenItemMatch(null, "false"));
+
+            DefinitionPack defpack = StandardDefinitionPacks.MINECRAFT_J_1_13;
+
+            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.STRUCTURE)) {
+                STRUCTURE.add(new TokenItemMatch(null, def.getName()));
+            }
+
+            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.DIFFICULTY)) {
+                DIFFICULTY.add(new TokenItemMatch(null, def.getName()));
+            }
+
+            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.GAMEMODE)) {
+                GAMEMODE.add(new TokenItemMatch(null, def.getName()));
+            }
+
+            HashMap<String, TokenStructureMatch> namespaceGroups = new HashMap<>();
+
+            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.BLOCK)) {
+
+                TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
+
+                if(s == null) {
+                    TokenGroupMatch g = new TokenGroupMatch().setName("BLOCK_ID");
+
+                    TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
+                    ns.append(new TokenItemMatch(TokenType.UNKNOWN, def.getNamespace()));
+                    ns.append(new TokenItemMatch(MCFunction.COLON));
+
+                    g.append(ns);
+
+                    s = new TokenStructureMatch("BLOCK_NAME");
+                    g.append(s);
+
+                    namespaceGroups.put(def.getNamespace(), s);
+
+                    BLOCK_ID.add(g);
+                }
+
+                s.add(new TokenItemMatch(TokenType.UNKNOWN, def.getName()));
+            }
+
+            namespaceGroups.clear();
+
+            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.ITEM)) {
+
+                TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
+
+                if(s == null) {
+                    TokenGroupMatch g = new TokenGroupMatch().setName("ITEM_ID");
+
+                    TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
+                    ns.append(new TokenItemMatch(TokenType.UNKNOWN, def.getNamespace()));
+                    ns.append(new TokenItemMatch(MCFunction.COLON));
+
+                    g.append(ns);
+
+                    s = new TokenStructureMatch("ITEM_NAME");
+                    g.append(s);
+
+                    namespaceGroups.put(def.getNamespace(), s);
+
+                    ITEM_ID.add(g);
+                }
+
+                s.add(new TokenItemMatch(TokenType.UNKNOWN, def.getName()));
+            }
+
+            namespaceGroups.clear();
+
+            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.ENTITY)) {
+
+                TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
+
+                if(s == null) {
+                    TokenGroupMatch g = new TokenGroupMatch().setName("ENTITY_ID");
+
+                    TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
+                    ns.append(new TokenItemMatch(TokenType.UNKNOWN, def.getNamespace()));
+                    ns.append(new TokenItemMatch(MCFunction.COLON));
+
+                    g.append(ns);
+
+                    s = new TokenStructureMatch("ENTITY_NAME");
+                    g.append(s);
+
+                    namespaceGroups.put(def.getNamespace(), s);
+
+                    ENTITY_ID.add(g);
+                }
+
+                s.add(new TokenItemMatch(TokenType.UNKNOWN, def.getName()));
+            }
+
+            namespaceGroups.clear();
         }
 
         {
@@ -372,7 +515,6 @@ public class MCFunctionProductions {
             TokenGroupMatch g = new TokenGroupMatch().setName("STRING_ARGUMENT");
 
             TokenStructureMatch s = new TokenStructureMatch("SELECTOR_ARGUMENT_KEY");
-            s.add(new TokenItemMatch(null, "type"));
             s.add(new TokenItemMatch(null, "name"));
             s.add(new TokenItemMatch(null, "tag"));
             s.add(new TokenItemMatch(null, "team"));
@@ -382,8 +524,7 @@ public class MCFunctionProductions {
             g.append(new TokenItemMatch(null, "!", true));
 
             TokenStructureMatch s2 = new TokenStructureMatch("SELECTOR_ARGUMENT_VALUE", true);
-            s2.add(new TokenItemMatch(MCFunction.STRING_LITERAL));
-            s2.add(ANY_STRING);
+            s2.add(POSSIBLE_STRING);
 
             g.append(s2);
 
@@ -402,6 +543,24 @@ public class MCFunctionProductions {
 
             TokenStructureMatch s2 = new TokenStructureMatch("SELECTOR_ARGUMENT_VALUE");
             s2.add(new TokenGroupMatch().append(new TokenItemMatch(null, "!", true)).append(GAMEMODE));
+
+            g.append(s2);
+
+            SELECTOR_ARGUMENT.add(g);
+        }
+
+        {
+            //Type argument
+            TokenGroupMatch g = new TokenGroupMatch().setName("TYPE_ARGUMENT");
+
+            TokenStructureMatch s = new TokenStructureMatch("SELECTOR_ARGUMENT_KEY");
+            s.add(new TokenItemMatch(null, "type"));
+
+            g.append(s);
+            g.append(new TokenItemMatch(MCFunction.EQUALS));
+
+            TokenStructureMatch s2 = new TokenStructureMatch("SELECTOR_ARGUMENT_VALUE");
+            s2.add(new TokenGroupMatch().append(new TokenItemMatch(null, "!", true)).append(ENTITY_ID));
 
             g.append(s2);
 
@@ -688,6 +847,168 @@ public class MCFunctionProductions {
 
                 cmd.append(new TokenGroupMatch(true).append(following));
             }
+
+            COMMAND.add(cmd);
+        }
+
+        //data command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("DATA_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "data")).setName("COMMAND_HEADER"));
+
+            TokenStructureMatch ENTITY_OR_BLOCK = new TokenStructureMatch("ENTITY_OR_BLOCK");
+            {
+                TokenGroupMatch g = new TokenGroupMatch().setName("DATA_BLOCK");
+                g.append(new TokenItemMatch(null, "block").setName("COMMAND_NODE"));
+                g.append(COORDINATE_SET);
+                ENTITY_OR_BLOCK.add(g);
+            }
+            {
+                TokenGroupMatch g = new TokenGroupMatch().setName("DATA_ENTITY");
+                g.append(new TokenItemMatch(null, "entity").setName("COMMAND_NODE"));
+                g.append(ENTITY);
+                ENTITY_OR_BLOCK.add(g);
+            }
+
+            {
+                TokenStructureMatch following = new TokenStructureMatch("DATA_BRANCH");
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenGroupMatch().append(new TokenItemMatch(null, "get").setName("DATA_MODE")).setName("COMMAND_NODE"));
+                    g.append(ENTITY_OR_BLOCK);
+                    g.append(new TokenGroupMatch(true).append(NBT_PATH).append(new TokenGroupMatch(true).append(REAL_NUMBER)));
+                    following.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenGroupMatch().append(new TokenItemMatch(null, "remove").setName("DATA_MODE")).setName("COMMAND_NODE"));
+                    g.append(ENTITY_OR_BLOCK);
+                    g.append(NBT_PATH);
+                    following.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenGroupMatch().append(new TokenItemMatch(null, "merge").setName("DATA_MODE")).setName("COMMAND_NODE"));
+                    g.append(ENTITY_OR_BLOCK);
+                    g.append(NBT_COMPOUND);
+                    following.add(g);
+                }
+
+                cmd.append(following);
+            }
+
+            COMMAND.add(cmd);
+        }
+
+        //datapack command
+        {
+            //disable
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("DATAPACK_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "datapack")).setName("COMMAND_HEADER"));
+
+            TokenStructureMatch action = new TokenStructureMatch("DATAPACK_COMMAND_ACTION");
+            action.add(new TokenItemMatch(null, "disable"));
+            action.add(new TokenItemMatch(null, "disable"));
+            cmd.append(new TokenGroupMatch().setName("COMMAND_NODE").append(action));
+
+            cmd.append(POSSIBLE_STRING);
+
+            COMMAND.add(cmd);
+        }
+        {
+            //enable
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("DATAPACK_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "datapack")).setName("COMMAND_HEADER"));
+
+            TokenStructureMatch action = new TokenStructureMatch("DATAPACK_COMMAND_ACTION");
+            action.add(new TokenItemMatch(null, "enable"));
+            action.add(new TokenItemMatch(null, "enable"));
+            cmd.append(new TokenGroupMatch().setName("COMMAND_NODE").append(action));
+
+            cmd.append(POSSIBLE_STRING);
+
+            {
+                TokenStructureMatch following = new TokenStructureMatch("DATAPACK_BRANCH");
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    TokenStructureMatch order = new TokenStructureMatch("DATAPACK_ORDER");
+                    order.add(new TokenItemMatch(null, "after").setName("COMMAND_NODE"));
+                    order.add(new TokenItemMatch(null, "before").setName("COMMAND_NODE"));
+                    g.append(order);
+                    g.append(POSSIBLE_STRING);
+                    following.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    TokenStructureMatch order = new TokenStructureMatch("DATAPACK_ORDER");
+                    order.add(new TokenItemMatch(null, "first").setName("COMMAND_NODE"));
+                    order.add(new TokenItemMatch(null, "last").setName("COMMAND_NODE"));
+                    g.append(order);
+                    following.add(g);
+                }
+                cmd.append(new TokenGroupMatch(true).append(following));
+            }
+
+            COMMAND.add(cmd);
+        }
+        {
+            //list
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("DATAPACK_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "datapack")).setName("COMMAND_HEADER"));
+
+            TokenStructureMatch action = new TokenStructureMatch("DATAPACK_COMMAND_ACTION");
+            action.add(new TokenItemMatch(null, "list"));
+            action.add(new TokenItemMatch(null, "list"));
+            cmd.append(new TokenGroupMatch().setName("COMMAND_NODE").append(action));
+
+            {
+                TokenStructureMatch DATAPACK_FILTER = new TokenStructureMatch("DATAPACK_FILTER");
+                DATAPACK_FILTER.add(new TokenItemMatch(null, "available"));
+                DATAPACK_FILTER.add(new TokenItemMatch(null, "enabled"));
+                cmd.append(new TokenGroupMatch(true).setName("COMMAND_NODE").append(DATAPACK_FILTER));
+            }
+
+            COMMAND.add(cmd);
+        }
+
+        //defaultgamemode command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("DEFAULTGAMEMODE_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "defaultgamemode")).setName("COMMAND_HEADER"));
+
+            cmd.append(GAMEMODE);
+
+            COMMAND.add(cmd);
+        }
+
+        //difficulty command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("DIFFICULTY_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "difficulty")).setName("COMMAND_HEADER"));
+
+            cmd.append(new TokenGroupMatch(true).append(DIFFICULTY));
+
+            COMMAND.add(cmd);
+        }
+
+        //locate command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("LOCATE_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "locate")).setName("COMMAND_HEADER"));
+
+            cmd.append(STRUCTURE);
+
+            COMMAND.add(cmd);
+        }
+
+        //summon command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("SUMMON_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "summon")).setName("COMMAND_HEADER"));
+
+            cmd.append(ENTITY_ID);
+
+            cmd.append(new TokenGroupMatch(true).append(COORDINATE_SET).append(new TokenGroupMatch(true).append(NBT_COMPOUND)));
 
             COMMAND.add(cmd);
         }
