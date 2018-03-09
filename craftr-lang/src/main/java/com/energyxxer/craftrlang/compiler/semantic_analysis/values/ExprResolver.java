@@ -256,6 +256,11 @@ public final class ExprResolver {
                         public MethodLog getMethodLog() {
                             return originalDataHolder.getMethodLog();
                         }
+
+                        @Override
+                        public ObjectInstance asObjectInstance() {
+                            return originalDataHolder.asObjectInstance();
+                        }
                     };
                 }
 
@@ -289,6 +294,11 @@ public final class ExprResolver {
                         @Override
                         public MethodLog getMethodLog() {
                             return originalDataHolder.getMethodLog();
+                        }
+
+                        @Override
+                        public ObjectInstance asObjectInstance() {
+                            return originalDataHolder.asObjectInstance();
                         }
                     };
                 }

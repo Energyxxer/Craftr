@@ -12,5 +12,7 @@ public class Object {
     
     public native boolean equals(Object o);
     public native String toString();
+
+    public static native World getWorld();
     
 }

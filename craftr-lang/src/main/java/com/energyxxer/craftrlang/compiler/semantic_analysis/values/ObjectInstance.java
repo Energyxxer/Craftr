@@ -93,6 +93,11 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         return new ObjectInstance(this.unit, this.reference, this.semanticContext);
     }
 
+    @Override
+    public ObjectInstance asObjectInstance() {
+        return this;
+    }
+
     public CraftrEntity getEntity() {
         return entity;
     }

@@ -60,7 +60,7 @@ public class MethodLog {
             return null;
         }
         if(!method.isStatic() && instance == null && method.getMethodType() != MethodType.CONSTRUCTOR) { //TODO SOMETHING ABOUT THE INSTANCE PLEASE
-            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-static method '" + method.getSignature() + "' cannot be accessed from a static semanticContext", pattern));
+            parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-static method '" + method.getSignature() + "' cannot be accessed from a static context", pattern));
         }
 
         switch(method.getVisibility()) {

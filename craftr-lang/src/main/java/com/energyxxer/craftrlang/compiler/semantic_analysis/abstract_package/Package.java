@@ -8,6 +8,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibility;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -110,6 +111,11 @@ public class Package implements Symbol, TraversableStructure, DataHolder {
     @Override
     public String toString() {
         return getFullyQualifiedName();
+    }
+
+    @Override
+    public ObjectInstance asObjectInstance() {
+        return null;
     }
 
     public boolean isRoot() {

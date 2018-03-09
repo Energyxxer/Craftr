@@ -44,7 +44,6 @@ public abstract entity entity_base {
     public native void setGlowing(boolean glowing);
     
     //Helper procedures
-    public native World getWorld();
     public native void execute(String rawCommand);
     public native void move(Vector3D offset);
     public native void move(double x, double y, double z);

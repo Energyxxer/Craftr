@@ -635,6 +635,11 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
     }
 
     @Override
+    public ObjectInstance asObjectInstance() {
+        return null;
+    }
+
+    @Override
     public String toString() {
         return getFullyQualifiedName();
         /*return "" + modifiers + " " + type + " " + name + ""

@@ -14,7 +14,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticCont
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
 import java.util.ArrayList;
@@ -93,7 +92,7 @@ public class MethodCall implements TraversableStructure {
         } else {
             MethodSignature signature = new MethodSignature(dataHolder.getMethodLog().getDeclaringUnit(), methodName, formalParams);
 
-            this.method = dataHolder.getMethodLog().findMethod(signature, pattern, semanticContext, (dataHolder instanceof ObjectInstance) ? ((ObjectInstance) dataHolder) : null);
+            this.method = dataHolder.getMethodLog().findMethod(signature, pattern, semanticContext, dataHolder.asObjectInstance());
         }
 
         if(method != null && method.getReturnType() != DataType.VOID) {

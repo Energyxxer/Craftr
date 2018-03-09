@@ -25,6 +25,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Null;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 import org.jetbrains.annotations.Nullable;
@@ -292,6 +293,11 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     @Override
     public Value clone(Function function) {
         throw new IllegalStateException("Dude, don't clone the variable, clone the value!");
+    }
+
+    @Override
+    public ObjectInstance asObjectInstance() {
+        return (value != null && value instanceof ObjectInstance) ? (ObjectInstance) value : null;
     }
 
     @Override
