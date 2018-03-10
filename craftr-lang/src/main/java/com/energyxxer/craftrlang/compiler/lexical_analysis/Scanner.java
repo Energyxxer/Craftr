@@ -112,7 +112,7 @@ public class Scanner {
 
 			if (c.equals("\n")) {
 				line++;
-				column = 0;
+				column = -1;
 			} else {
 				column++;
 			}
