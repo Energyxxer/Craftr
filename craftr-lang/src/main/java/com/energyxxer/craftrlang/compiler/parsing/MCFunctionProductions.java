@@ -1348,6 +1348,16 @@ public class MCFunctionProductions {
             COMMAND.add(cmd);
         }
 
+        //function command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("FUNCTION_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "function")).setName("COMMAND_HEADER"));
+
+            cmd.append(RESOURCE_LOCATION);
+
+            COMMAND.add(cmd);
+        }
+
         //tag command
         {
             //add/remove
@@ -1363,6 +1373,21 @@ public class MCFunctionProductions {
             cmd.append(new TokenGroupMatch().setName("COMMAND_NODE").append(action));
 
             cmd.append(ANY_STRING);
+
+            COMMAND.add(cmd);
+        }
+        {
+            //list
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("TAG_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "tag")).setName("COMMAND_HEADER"));
+
+            cmd.append(ENTITY);
+
+            TokenStructureMatch action = new TokenStructureMatch("TAG_COMMAND_ACTION");
+            action.add(new TokenItemMatch(null, "list"));
+            action.add(new TokenItemMatch(null, "list"));
+
+            cmd.append(new TokenGroupMatch().setName("COMMAND_NODE").append(action));
 
             COMMAND.add(cmd);
         }

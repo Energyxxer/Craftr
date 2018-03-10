@@ -33,6 +33,12 @@ public class CraftrEntity implements Entity {
         addMacroHolder(new MacroScoreHolder("CE:INSTANCEOF:" + unit.getFullyQualifiedName()));
     }
 
+    private CraftrEntity(CraftrEntity that) {
+        this.unit = that.unit;
+        this.selector = that.selector.clone();
+        this.macroHolders.addAll(that.macroHolders);
+    }
+
     @Override
     public int getLimit() {
         return selector.getLimit();
@@ -51,9 +57,7 @@ public class CraftrEntity implements Entity {
 
     @Override
     public CraftrEntity clone() {
-        CraftrEntity copy = new CraftrEntity(unit, selector.clone());
-        copy.addMacroHolders(macroHolders);
-        return copy;
+        return new CraftrEntity(this);
     }
 
     @Override

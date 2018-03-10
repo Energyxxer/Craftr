@@ -54,9 +54,11 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
 
     private Value value;
     private ScoreReference reference = null;
-    //TODO: Add a flag that says whether this variable has been accessed through or written to a scoreboard
 
-    private Variable(Variable that) {
+    private ObjectInstance ownerInstance;
+    //TODO: Add a flag that says whether this variable has had an implicit value
+
+    private Variable(Variable that, ObjectInstance ownerInstance) {
         super(that.semanticContext);
         this.pattern = that.pattern;
         this.visibility = that.visibility;
@@ -66,6 +68,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.type = that.type;
         this.block = that.block;
         this.value = dataType.create(that.reference, this.semanticContext);
+        this.ownerInstance = ownerInstance;
         this.objective = that.objective;
         this.reference = that.reference;
     }
@@ -146,7 +149,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                 return;
             }
 
-            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext, null, initializerFunction); //TODO replace instance semantic context with new field initialization context
+            this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext, null, initializerFunction);
             if(this.value != null) {
                 this.value = this.value.unwrap(initializerFunction);
             }
@@ -194,8 +197,8 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         return variables;
     }
 
-    public Variable createEmpty() {
-        return new Variable(this);
+    public Variable createEmpty(ObjectInstance ownerInstance) {
+        return new Variable(this, ownerInstance);
     }
 
     public Objective getObjective() {
@@ -228,7 +231,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                     this.value = operand;
 
                     if(!operand.isNull() && operand.getReference() != null) {
-                        if(this.type == VariableType.FIELD || !(operand.getReference() instanceof ExplicitValue)) this.reference = operand.getReference().toScore(function, new LocalScore(objective, semanticContext.getPlayer()), semanticContext);
+                        if(this.type == VariableType.FIELD || !(operand.getReference() instanceof ExplicitValue)) this.reference = operand.getReference().toScore(function, new LocalScore(objective, ownerInstance.getEntity()), semanticContext);
                     } else {
                         semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Assigned value may not have been initialized", pattern));
                     }

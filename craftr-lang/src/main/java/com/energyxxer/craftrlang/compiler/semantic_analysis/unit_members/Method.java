@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.inspection.ExecutionContext;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.commodore.types.FunctionReference;
 import com.energyxxer.craftrlang.CraftrLang;
@@ -264,11 +265,15 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         return signature;
     }
 
+    private boolean codeBlockInitialized = false;
+
     public void initCodeBlock() {
+        if(codeBlockInitialized) return;
         if(codeBlock != null) {
 
             if(!isStatic()) {
                 this.ownerInstance = new ObjectInstance(declaringUnit, this);
+                function.setExecutionContext(new ExecutionContext(ownerInstance.getEntity()));
             }
 
             codeBlock.clearSymbols();
@@ -286,6 +291,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
             //System.out.println(codeBlock.getFunction().build());
         }
+        codeBlockInitialized = true;
     }
 
     public CodeBlock getCodeBlock() {
