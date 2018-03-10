@@ -1,7 +1,6 @@
 package com.energyxxer.craftr.global;
 
 import com.energyxxer.craftr.main.WorkspaceDialog;
-import com.energyxxer.craftr.main.window.CraftrWindow;
 
 import java.io.File;
 import java.util.prefs.BackingStoreException;
@@ -15,7 +14,7 @@ public class Preferences {
     static {
         if(prefs.get("theme",null) == null) prefs.put("theme", "Electron Dark");
         if (prefs.get("workspace_dir", null) == null) {
-            promptWorkspace();
+            //promptWorkspace();
         }
         if(prefs.get("username",null) == null) prefs.put("username", "User");
         if(prefs.get("nativelib",null) == null) prefs.put("nativelib",System.getProperty("user.home") + File.separator + "Craftr" + File.separator + "natives" + File.separator + "src" + File.separator);

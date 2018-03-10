@@ -57,12 +57,12 @@ public class ProjectExplorerMaster extends ExplorerMaster {
     }
 
     private void updateRoot() {
-        this.root = new File(Preferences.get("workspace_dir"));
+        this.root = new File(Preferences.get("workspace_dir", Preferences.DEFAULT_WORKSPACE_PATH));
     }
 
     @Override
     public void refresh() {
-        ProjectManager.setWorkspaceDir(Preferences.get("workspace_dir"));
+        ProjectManager.setWorkspaceDir(Preferences.get("workspace_dir", Preferences.DEFAULT_WORKSPACE_PATH));
         ProjectManager.loadWorkspace();
 
         updateRoot();

@@ -1,5 +1,6 @@
 package com.energyxxer.craftr.main;
 
+import com.energyxxer.craftr.global.Preferences;
 import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.main.window.CraftrWindow;
@@ -7,16 +8,8 @@ import com.energyxxer.craftr.util.Version;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 import com.energyxxer.util.ImageManager;
 
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.RenderingHints;
+import javax.swing.*;
+import java.awt.*;
 
 public class Craftr {
 	public static Craftr craftr;
@@ -56,12 +49,17 @@ public class Craftr {
 		Resources.load();
 
 		craftr = new Craftr();
-		
-		ProjectManager.loadWorkspace();
 
 		CraftrWindow.setVisible(true);
-		splash.setVisible(false);
-		splash.dispose();
+
+        splash.setVisible(false);
+        splash.dispose();
+
+        if(Preferences.get("workspace_dir", null) == null) {
+            WorkspaceDialog.prompt();
+        }
+
+        ProjectManager.loadWorkspace();
 
 		CraftrWindow.welcomePane.tipScreen.start(1000);
 		TabManager.openSavedTabs();
