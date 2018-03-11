@@ -45,7 +45,7 @@ public abstract class Value implements TraversableStructure {
     public abstract MethodLog getMethodLog();
 
     public abstract Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent);
-    public abstract Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent);
+    public abstract Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent);
 
     public abstract Value clone(Function function);
 

@@ -68,7 +68,7 @@ public class Expression extends Value {
             return null;
         }
 
-        Value returnValue = a.runOperation(this.op, b, pattern, function, resultReference, this.silent);
+        Value returnValue = a.runOperation(this.op, b, pattern, function, semanticContext, resultReference, this.silent);
         if(returnValue == null) {
             semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + op.getSymbol() + " is not defined for data types " + a.getDataType() + ", " + b.getDataType(), pattern));
         } else if(resultReference != null) {
@@ -111,7 +111,7 @@ public class Expression extends Value {
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
         return null;
     }
 

@@ -65,10 +65,10 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.name = that.name;
         this.type = that.type;
         this.block = that.block;
-        this.value = dataType.create(that.reference, this.semanticContext);
+        this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.getEntity()));
+        this.value = dataType.create(this.reference, this.semanticContext);
         this.ownerInstance = ownerInstance;
         this.objective = that.objective;
-        this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.getEntity()));
     }
 
     private Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext) {
@@ -222,29 +222,29 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
         switch(operator) {
             case ASSIGN: {
                 if(operand.getDataType().instanceOf(this.getDataType())) {
                     this.value = operand;
 
                     if(!operand.isNull() && operand.getReference() != null) {
-                        if(this.type == VariableType.FIELD || !(operand.getReference() instanceof ExplicitValue)) this.reference = operand.getReference().toScore(function, new LocalScore(objective, ownerInstance.getEntity()), semanticContext);
+                        if(this.type == VariableType.FIELD || !(operand.getReference() instanceof ExplicitValue)) this.reference = operand.getReference().toScore(function, new LocalScore(objective, ownerInstance.getEntity()), this.semanticContext);
                     } else {
-                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Assigned value may not have been initialized", pattern));
+                        this.semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Assigned value may not have been initialized", pattern));
                     }
                 } else {
-                    if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern));
-                    this.value = new Null(semanticContext);
+                    if(!silent) this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern));
+                    this.value = new Null(this.semanticContext);
                 }
                 return value;
             }
         }
         if(!value.isNull()) {
-            Value returnValue = value.runOperation(operator, operand, pattern, function, (operator == ASSIGN) ? this.getReference() : null, silent);
+            Value returnValue = value.runOperation(operator, operand, pattern, function, semanticContext, (operator == ASSIGN) ? this.getReference() : null, silent);
             return returnValue;
         } else {
-            if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable might not have been defined", pattern));
+            if(!silent) this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable might not have been defined", pattern));
             return value;
         }
     }

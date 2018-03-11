@@ -36,7 +36,7 @@ public class FloatValue extends NumericalValue {
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
         /*
         if(operator == Operator.ASSIGN) {
             if(operand instanceof NumericalValue && ((NumericalValue) operand).getWeight()<=this.getWeight()) {

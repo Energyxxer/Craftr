@@ -46,7 +46,7 @@ public class StringValue extends Value {
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
         return null;
     }
 
