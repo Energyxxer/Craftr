@@ -1,6 +1,10 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
+import com.energyxxer.commodore.commands.scoreboard.ScoreAdd;
+import com.energyxxer.commodore.commands.scoreboard.ScorePlayersOperation;
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.score.LocalScore;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjective;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -9,6 +13,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitInt;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 
@@ -99,6 +104,51 @@ public class IntegerValue extends NumericalValue {
             }
 
             return new IntegerValue(new ExplicitInt(result), semanticContext);
+        } else {
+            DataReference a = this.reference;
+            DataReference b = operand.reference;
+
+            ScoreReference bScore = null;
+            LocalizedObjective tempB = null;
+            if(b instanceof ScoreReference) bScore = (ScoreReference) b;
+            else if(!(b instanceof ExplicitInt)) {
+                tempB = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
+                tempB.capture();
+                bScore = b.toScore(function, new LocalScore(tempB.getObjective(), semanticContext.getPlayer()), semanticContext);
+            }
+
+            LocalizedObjective op = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
+            op.capture();
+
+            LocalScore opScore = new LocalScore(op.getObjective(), semanticContext.getPlayer());
+
+            switch(operator) {
+                case ADD: {
+                    a.toScore(function, opScore, semanticContext);
+                    if(b instanceof ExplicitInt) {
+                        function.append(new ScoreAdd(opScore, ((ExplicitInt) b).getValue()));
+                    } else {
+                        function.append(new ScorePlayersOperation(opScore, ScorePlayersOperation.Operation.ADD, bScore.getScore()));
+                    }
+                    if(tempB != null) tempB.dispose();
+                    op.dispose();
+                    return new IntegerValue(new ScoreReference(opScore), semanticContext);
+                }
+                case SUBTRACT: {
+                    a.toScore(function, opScore, semanticContext);
+                    if(b instanceof ExplicitInt) {
+                        function.append(new ScoreAdd(opScore, -((ExplicitInt) b).getValue()));
+                    } else {
+                        function.append(new ScorePlayersOperation(opScore, ScorePlayersOperation.Operation.SUBTRACT, bScore.getScore()));
+                    }
+                    if(tempB != null) tempB.dispose();
+                    op.dispose();
+                    return new IntegerValue(new ScoreReference(opScore), semanticContext);
+                }
+                default: {
+                    semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operation not supported for implicit values", pattern));
+                }
+            }
         }
 
         return null;
