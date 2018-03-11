@@ -16,6 +16,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.EntityReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,14 +40,14 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         super(reference, semanticContext);
         this.unit = unit;
 
+        //TODO: Actual entity constructor...
+        this.entity = new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName())));
+        if(reference == null) this.reference = new EntityReference(this.entity);
+
         this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
         this.methodLog = unit.getInstanceMethodLog().createForInstance(this);
 
         this.fieldLog.put("this", this);
-
-        //TODO: Actual entity constructor...
-        this.entity = new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName())));
-        if(reference == null) this.reference = new EntityReference(this.entity);
     }
 
     public @NotNull Unit getUnit() {
@@ -74,7 +75,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent) {
         return null;
     }
 

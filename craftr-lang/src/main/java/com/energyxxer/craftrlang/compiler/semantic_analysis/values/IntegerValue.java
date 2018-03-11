@@ -63,7 +63,7 @@ public class IntegerValue extends NumericalValue {
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent) {
 
         if(this.reference instanceof ExplicitInt
                 &&
@@ -71,24 +71,24 @@ public class IntegerValue extends NumericalValue {
             int a = ((ExplicitInt) this.reference).getValue();
             int b = ((ExplicitInt) operand.reference).getValue();
 
-            int result;
+            int explicitResult;
 
             switch(operator) {
-                case ADD: result = a + b; break;
-                case SUBTRACT: result = a - b; break;
-                case MULTIPLY: result = a * b; break;
+                case ADD: explicitResult = a + b; break;
+                case SUBTRACT: explicitResult = a - b; break;
+                case MULTIPLY: explicitResult = a * b; break;
                 case DIVIDE: {
                     if(b == 0) {
                         semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unable to divide by zero", pattern));
-                        result = a;
-                    } else result = a % b;
+                        explicitResult = a;
+                    } else explicitResult = a % b;
                     break;
                 }
                 case MODULO: {
                     if(b == 0) {
                         semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Unable to divide by zero", pattern));
-                        result = a;
-                    } else result = a % b;
+                        explicitResult = a;
+                    } else explicitResult = a % b;
                     break;
                 }
                 case EQUAL: return new BooleanValue(a == b, semanticContext);
@@ -103,7 +103,7 @@ public class IntegerValue extends NumericalValue {
                 }
             }
 
-            return new IntegerValue(new ExplicitInt(result), semanticContext);
+            return new IntegerValue(new ExplicitInt(explicitResult), semanticContext);
         } else {
             DataReference a = this.reference;
             DataReference b = operand.reference;
@@ -117,33 +117,38 @@ public class IntegerValue extends NumericalValue {
                 bScore = b.toScore(function, new LocalScore(tempB.getObjective(), semanticContext.getPlayer()), semanticContext);
             }
 
-            LocalizedObjective op = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
-            op.capture();
+            LocalizedObjective op = null;
 
-            LocalScore opScore = new LocalScore(op.getObjective(), semanticContext.getPlayer());
+            if(resultReference == null) {
+                op = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
+                op.capture();
+                resultReference = new ScoreReference(new LocalScore(op.getObjective(), semanticContext.getPlayer()));
+            }
+
+            LocalScore score = resultReference.getScore();
 
             switch(operator) {
                 case ADD: {
-                    a.toScore(function, opScore, semanticContext);
+                    a.toScore(function, score, semanticContext);
                     if(b instanceof ExplicitInt) {
-                        function.append(new ScoreAdd(opScore, ((ExplicitInt) b).getValue()));
+                        function.append(new ScoreAdd(score, ((ExplicitInt) b).getValue()));
                     } else {
-                        function.append(new ScorePlayersOperation(opScore, ScorePlayersOperation.Operation.ADD, bScore.getScore()));
+                        function.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.ADD, bScore.getScore()));
                     }
                     if(tempB != null) tempB.dispose();
-                    op.dispose();
-                    return new IntegerValue(new ScoreReference(opScore), semanticContext);
+                    if(op != null) op.dispose();
+                    return new IntegerValue(new ScoreReference(score), semanticContext);
                 }
                 case SUBTRACT: {
-                    a.toScore(function, opScore, semanticContext);
+                    a.toScore(function, score, semanticContext);
                     if(b instanceof ExplicitInt) {
-                        function.append(new ScoreAdd(opScore, -((ExplicitInt) b).getValue()));
+                        function.append(new ScoreAdd(score, -((ExplicitInt) b).getValue()));
                     } else {
-                        function.append(new ScorePlayersOperation(opScore, ScorePlayersOperation.Operation.SUBTRACT, bScore.getScore()));
+                        function.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.SUBTRACT, bScore.getScore()));
                     }
                     if(tempB != null) tempB.dispose();
-                    op.dispose();
-                    return new IntegerValue(new ScoreReference(opScore), semanticContext);
+                    if(op != null) op.dispose();
+                    return new IntegerValue(new ScoreReference(score), semanticContext);
                 }
                 default: {
                     semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operation not supported for implicit values", pattern));

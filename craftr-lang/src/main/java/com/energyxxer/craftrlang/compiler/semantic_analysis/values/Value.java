@@ -8,6 +8,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitValue;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 
@@ -43,12 +44,8 @@ public abstract class Value implements TraversableStructure {
     public abstract SymbolTable getSubSymbolTable();
     public abstract MethodLog getMethodLog();
 
-    public Value unwrap(Function function) {
-        return this;
-    }
-
     public abstract Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent);
-    public abstract Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent);
+    public abstract Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent);
 
     public abstract Value clone(Function function);
 

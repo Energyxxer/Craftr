@@ -9,6 +9,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperandType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
@@ -36,12 +37,17 @@ public class Expression extends Value {
         return a.isExplicit() && b.isExplicit();
     }
 
-    @Override
-    public Value unwrap(Function function) {
+    public Value unwrap(Function function, ScoreReference resultReference) {
 
-        if(a instanceof Expression) a = a.unwrap(function);
+        if(a instanceof Expression) a = ((Expression) a).unwrap(function, null);
         if(a == null) return null;
-        if(b instanceof Expression) b = b.unwrap(function);
+        if(b instanceof Expression) {
+            if(op == Operator.ASSIGN && a instanceof Variable && a.getReference() instanceof ScoreReference) {
+                b = ((Expression) b).unwrap(function, (ScoreReference) a.getReference());
+            } else {
+                b = ((Expression) b).unwrap(function, null);
+            }
+        }
         if(b == null) return null;
 
         if(op.getLeftOperandType() == OperandType.VALUE && a instanceof Variable) {
@@ -62,9 +68,11 @@ public class Expression extends Value {
             return null;
         }
 
-        Value returnValue = a.runOperation(this.op, b, pattern, function, this.silent);
+        Value returnValue = a.runOperation(this.op, b, pattern, function, resultReference, this.silent);
         if(returnValue == null) {
             semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + op.getSymbol() + " is not defined for data types " + a.getDataType() + ", " + b.getDataType(), pattern));
+        } else if(resultReference != null) {
+            //returnValue.getReference().toScore(function, resultReference.getScore(), semanticContext);
         }
         return returnValue;
     }
@@ -103,17 +111,13 @@ public class Expression extends Value {
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent) {
         return null;
     }
 
     @Override
     public String toString() {
         return "(" + a + " " + op.getSymbol() + " " + b + ")";
-    }
-
-    public Value writeToFunction(Function function) {
-        return a.runOperation(this.op, b, pattern, function, silent);
     }
 
     @Override

@@ -3,7 +3,7 @@ package craftr.lang.entities;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public entity creeper extends living_base {
+public scoreHolder creeper extends living_base {
     
     //Getters for NBT Data
     public native boolean isPowered();

@@ -23,10 +23,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreRefe
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitValue;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Null;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.*;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator.ASSIGN;
 
 /**
  * Created by Energyxxer on 07/10/2017.
@@ -53,7 +52,6 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     private Objective objective;
 
     private Value value;
-    private ScoreReference reference = null;
 
     private ObjectInstance ownerInstance;
     //TODO: Add a flag that says whether this variable has had an implicit value
@@ -70,7 +68,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.value = dataType.create(that.reference, this.semanticContext);
         this.ownerInstance = ownerInstance;
         this.objective = that.objective;
-        this.reference = that.reference;
+        this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.getEntity()));
     }
 
     private Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext) {
@@ -110,7 +108,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         this.claimObjective(); //Claim the parameter objective
         this.updateReference();
         if(value != null) {
-            this.reference = value.getReference().toScore(function, this.reference.getScore(), semanticContext); //Clone the value into the parameter objective
+            this.reference = value.getReference().toScore(function, this.getReference().getScore(), semanticContext); //Clone the value into the parameter objective
         }
         this.value = dataType.create(this.reference, semanticContext); //Make a non-null value that points to the parameter objective. This shouldn't
 
@@ -149,9 +147,10 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                 return;
             }
 
+            this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getPlayer()));
             this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext, null, initializerFunction);
-            if(this.value != null) {
-                this.value = this.value.unwrap(initializerFunction);
+            if(this.value instanceof Expression) {
+                this.value = ((Expression) this.value).unwrap(initializerFunction, getReference());
             }
             if(this.value != null && !this.value.getDataType().instanceOf(this.getDataType())) {
                 semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + this.value.getDataType() + " cannot be converted to " + this.dataType, initialization.find("VALUE")));
@@ -159,7 +158,6 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
             }
             if(this.value == null) this.value = new Null(semanticContext);
             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern));
-            reference = this.value.getReference().toScore(initializerFunction, new LocalScore(objective, semanticContext.getPlayer()), semanticContext);
         } else {
             this.value = new Null(this.semanticContext);
         }
@@ -224,7 +222,7 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent) {
         switch(operator) {
             case ASSIGN: {
                 if(operand.getDataType().instanceOf(this.getDataType())) {
@@ -242,11 +240,18 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                 return value;
             }
         }
-        if(!value.isNull()) return value.runOperation(operator, operand, pattern, function, silent);
-        else {
+        if(!value.isNull()) {
+            Value returnValue = value.runOperation(operator, operand, pattern, function, (operator == ASSIGN) ? this.getReference() : null, silent);
+            return returnValue;
+        } else {
             if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable might not have been defined", pattern));
             return value;
         }
+    }
+
+    @Override
+    public ScoreReference getReference() {
+        return (ScoreReference) reference;
     }
 
     @Override

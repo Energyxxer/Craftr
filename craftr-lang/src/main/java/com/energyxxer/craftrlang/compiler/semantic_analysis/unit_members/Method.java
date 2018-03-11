@@ -26,6 +26,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolde
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.natives.NativeMethods;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Expression;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
@@ -364,7 +365,10 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                 codeBlock.getSymbolTable().put(this.positionalParams.get(i).getName(), null);
                 continue;
             }
-            param = param.unwrap(function);
+            if(param instanceof Expression) {
+                throw new IllegalArgumentException("wtf parameter is an expression!?!?!?!?");
+            }
+            //param = param.unwrap(function);
 
             codeBlock.getSymbolTable().put(new Variable(this.positionalParams.get(i).getName(), Collections.emptyList(), this.positionalParams.get(i).getType(), semanticContext, param, function));
         }

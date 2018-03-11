@@ -5,6 +5,6 @@ import craftr.lang.entities.features.*;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public entity mooshroom extends living_base implements breedable {
+public scoreHolder mooshroom extends living_base implements breedable {
     
 }

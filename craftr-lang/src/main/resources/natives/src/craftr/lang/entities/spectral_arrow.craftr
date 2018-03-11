@@ -3,7 +3,7 @@ package craftr.lang.entities;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public entity spectral_arrow extends projectile_base {
+public scoreHolder spectral_arrow extends projectile_base {
     
     //Getters for NBT Data
     public native int getShake(); //More experimentation needed on the shake tag

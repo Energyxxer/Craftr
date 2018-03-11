@@ -8,6 +8,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.NullReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 
 /**
@@ -40,7 +41,7 @@ public class Null extends Value {
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, ScoreReference resultReference, boolean silent) {
         return null;
     }
 

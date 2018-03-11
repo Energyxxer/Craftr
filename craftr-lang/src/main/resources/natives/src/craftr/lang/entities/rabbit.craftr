@@ -5,7 +5,7 @@ import craftr.lang.entities.features.*;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public entity rabbit extends living_base implements breedable {
+public scoreHolder rabbit extends living_base implements breedable {
     
     //Getters for NBT Data
     public native int getRabbitType();
