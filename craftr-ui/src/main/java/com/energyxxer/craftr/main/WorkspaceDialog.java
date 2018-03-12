@@ -135,9 +135,6 @@ public class WorkspaceDialog {
             dialog.setLocation(center);
 
             dialog.setVisible(true);
-
-            Preferences.put("workspace_dir",field.getFile().getAbsolutePath());
-            if(CraftrWindow.projectExplorer != null) CraftrWindow.projectExplorer.refresh();
         });
     }
 }
