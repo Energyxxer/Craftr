@@ -13,7 +13,7 @@ public class Preferences {
 
     static {
         if(prefs.get("theme",null) == null) prefs.put("theme", "Electron Dark");
-        if (prefs.get("workspace_dir", null) == null) {
+        if(prefs.get("workspace_dir", null) == null) {
             //promptWorkspace();
         }
         if(prefs.get("username",null) == null) prefs.put("username", "User");

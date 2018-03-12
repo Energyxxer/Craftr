@@ -14,6 +14,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dialog;
@@ -95,7 +96,6 @@ public class WorkspaceDialog {
         //</editor-fold>
 
         dialog.setContentPane(pane);
-        dialog.pack();
         dialog.setResizable(false);
 
         dialog.setTitle("Setup Workspace");
@@ -110,7 +110,6 @@ public class WorkspaceDialog {
 
         Preferences.put("workspace_dir",field.getFile().getAbsolutePath());
         CraftrWindow.projectExplorer.refresh();
-
         dialog.setVisible(false);
     }
 
@@ -120,23 +119,25 @@ public class WorkspaceDialog {
     }
 
     public static void prompt() {
+        SwingUtilities.invokeLater(() -> {
+            if (!initialized) {
+                initialize();
+            }
 
-        if (!initialized) {
-            initialize();
-        }
+            field.setFile(new File(Preferences.get("workspace_dir",Preferences.DEFAULT_WORKSPACE_PATH)));
+            validateInput();
+            dialog.pack();
 
-        field.setFile(new File(Preferences.get("workspace_dir",Preferences.DEFAULT_WORKSPACE_PATH)));
-        validateInput();
+            Point center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
+            center.x -= dialog.getWidth()/2;
+            center.y -= dialog.getHeight()/2;
 
-        Point center = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
-        center.x -= dialog.getWidth()/2;
-        center.y -= dialog.getHeight()/2;
+            dialog.setLocation(center);
 
-        dialog.setLocation(center);
+            dialog.setVisible(true);
 
-        dialog.setVisible(true);
-
-        Preferences.put("workspace_dir",field.getFile().getAbsolutePath());
-        if(CraftrWindow.projectExplorer != null) CraftrWindow.projectExplorer.refresh();
+            Preferences.put("workspace_dir",field.getFile().getAbsolutePath());
+            if(CraftrWindow.projectExplorer != null) CraftrWindow.projectExplorer.refresh();
+        });
     }
 }
