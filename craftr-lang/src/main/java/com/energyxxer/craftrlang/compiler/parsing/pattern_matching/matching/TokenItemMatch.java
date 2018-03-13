@@ -40,7 +40,7 @@ public class TokenItemMatch extends TokenPatternMatch {
 	}
 	
 	public TokenMatchResponse match(List<Token> tokens) {
-		return match(tokens,new Stack());
+		return match(tokens, null, new Stack());
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class TokenItemMatch extends TokenPatternMatch {
 		return this;
 	}
 
-	public TokenMatchResponse match(List<Token> tokens, Stack st) {
+	public TokenMatchResponse match(List<Token> tokens, Token lastToken, Stack st) {
 		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
 
 		if(tokens.size() <= 0 || st.find(thisInvoc)) {

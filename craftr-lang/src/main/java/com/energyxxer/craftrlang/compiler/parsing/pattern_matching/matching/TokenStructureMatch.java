@@ -32,7 +32,7 @@ public class TokenStructureMatch extends TokenPatternMatch {
 	}
 	
 	public TokenMatchResponse match(List<Token> tokens) {
-		return match(tokens,new Stack());
+		return match(tokens, null, new Stack());
 	}
 	
 	@Override
@@ -42,7 +42,7 @@ public class TokenStructureMatch extends TokenPatternMatch {
 	}
 
 	@Override
-	public TokenMatchResponse match(List<Token> tokens, Stack st) {
+	public TokenMatchResponse match(List<Token> tokens, Token lastToken, Stack st) {
 		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[]{"List<Token>"}, new Object[]{tokens});
 		st.push(thisInvoc);
 
@@ -53,7 +53,7 @@ public class TokenStructureMatch extends TokenPatternMatch {
 			List<Token> subList = tokens.subList(0,tokens.size());
 			MethodInvocation newInvoc = new MethodInvocation(entry, "match", new String[]{"List<Token>"}, new Object[]{subList});
 			if(st.find(newInvoc)) continue;
-			TokenMatchResponse itemMatch = entry.match(subList,st);
+			TokenMatchResponse itemMatch = entry.match(subList, lastToken, st);
 
 			if (longestMatch == null) {
 				longestMatch = itemMatch;

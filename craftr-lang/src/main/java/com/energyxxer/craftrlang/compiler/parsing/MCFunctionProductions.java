@@ -5,10 +5,7 @@ import com.energyxxer.commodore.defpacks.DefinitionPack;
 import com.energyxxer.commodore.standard.StandardDefinitionPacks;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.presets.mcfunction.MCFunction;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenGroupMatch;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenItemMatch;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenListMatch;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenStructureMatch;
+import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.*;
 
 import java.util.HashMap;
 
@@ -81,6 +78,8 @@ public class MCFunctionProductions {
     public static final TokenStructureMatch DIFFICULTY = new TokenStructureMatch("DIFFICULTY");
     public static final TokenStructureMatch SORTING = new TokenStructureMatch("SORTING");
 
+    private static final TokenGlue GLUE = new TokenGlue(new TokenItemMatch(MCFunction.NEWLINE));
+
     static {
         FILE.add(new TokenGroupMatch().append(new TokenListMatch(LINE, new TokenItemMatch(MCFunction.NEWLINE))).append(new TokenItemMatch(TokenType.END_OF_FILE)));
 
@@ -145,6 +144,7 @@ public class MCFunctionProductions {
         {
             TokenGroupMatch g = new TokenGroupMatch().setName("CONCRETE_RESOURCE");
             g.append(new TokenGroupMatch().append(BLOCK_ID).setName("RESOURCE_NAME"));
+            g.append(GLUE);
             g.append(new TokenGroupMatch(true).append(BLOCKSTATE));
             g.append(new TokenGroupMatch(true).append(NBT_COMPOUND));
             BLOCK.add(g);
@@ -177,13 +177,13 @@ public class MCFunctionProductions {
         {
 
             TokenStructureMatch LOCAL_COORDINATE = new TokenStructureMatch("LOCAL_COORDINATE");
-            LOCAL_COORDINATE.add(new TokenGroupMatch().append(new TokenItemMatch(MCFunction.CARET).setName("CARET")).append(new TokenGroupMatch(true).append(REAL_NUMBER)));
+            LOCAL_COORDINATE.add(new TokenGroupMatch().append(new TokenItemMatch(MCFunction.CARET).setName("CARET")).append(new TokenGroupMatch(true).append(GLUE).append(REAL_NUMBER)));
 
             TokenStructureMatch ABSOLUTE_COORDINATE = new TokenStructureMatch("ABSOLUTE_COORDINATE");
             ABSOLUTE_COORDINATE.add(REAL_NUMBER);
 
             TokenStructureMatch RELATIVE_COORDINATE = new TokenStructureMatch("RELATIVE_COORDINATE");
-            RELATIVE_COORDINATE.add(new TokenGroupMatch().append(new TokenItemMatch(MCFunction.TILDE).setName("TILDE")).append(new TokenGroupMatch(true).append(REAL_NUMBER)));
+            RELATIVE_COORDINATE.add(new TokenGroupMatch().append(new TokenItemMatch(MCFunction.TILDE).setName("TILDE")).append(new TokenGroupMatch(true).append(GLUE).append(REAL_NUMBER)));
 
             TokenStructureMatch MIXABLE_COORDINATE = new TokenStructureMatch("MIXABLE_COORDINATE");
             MIXABLE_COORDINATE.add(ABSOLUTE_COORDINATE);
@@ -235,7 +235,7 @@ public class MCFunctionProductions {
             ABSOLUTE_ROTATION.add(REAL_NUMBER);
 
             TokenStructureMatch RELATIVE_ROTATION = new TokenStructureMatch("RELATIVE_ROTATION");
-            RELATIVE_ROTATION.add(new TokenGroupMatch().append(new TokenItemMatch(MCFunction.TILDE).setName("TILDE")).append(new TokenGroupMatch(true).append(REAL_NUMBER)));
+            RELATIVE_ROTATION.add(new TokenGroupMatch().append(new TokenItemMatch(MCFunction.TILDE).setName("TILDE")).append(new TokenGroupMatch(true).append(GLUE).append(REAL_NUMBER)));
 
             SINGLE_ROTATION.add(ABSOLUTE_ROTATION);
             SINGLE_ROTATION.add(RELATIVE_ROTATION);
@@ -308,19 +308,24 @@ public class MCFunctionProductions {
             TokenStructureMatch NBT_PATH_NODE = new TokenStructureMatch("NBT_PATH_NODE");
 
             TokenGroupMatch NBT_PATH_KEY = new TokenGroupMatch().setName("NBT_PATH_KEY");
+            NBT_PATH_KEY.append(GLUE);
             NBT_PATH_KEY.append(new TokenItemMatch(MCFunction.DOT).setName("NBT_PATH_SEPARATOR"));
+            NBT_PATH_KEY.append(GLUE);
             NBT_PATH_KEY.append(new TokenItemMatch(TokenType.UNKNOWN).setName("NBT_PATH_KEY_LABEL"));
             NBT_PATH_NODE.add(NBT_PATH_KEY);
 
             TokenGroupMatch NBT_PATH_INDEX = new TokenGroupMatch().setName("NBT_PATH_INDEX");
+            NBT_PATH_INDEX.append(GLUE);
             NBT_PATH_INDEX.append(new TokenItemMatch(MCFunction.BRACE, "["));
+            NBT_PATH_INDEX.append(GLUE);
             NBT_PATH_INDEX.append(INTEGER_NUMBER);
+            NBT_PATH_INDEX.append(GLUE);
             NBT_PATH_INDEX.append(new TokenItemMatch(MCFunction.BRACE, "]"));
             NBT_PATH_NODE.add(NBT_PATH_INDEX);
 
             TokenGroupMatch g = new TokenGroupMatch();
             g.append(new TokenGroupMatch().append(new TokenItemMatch(TokenType.UNKNOWN).setName("NBT_PATH_KEY_LABEL")).setName("NBT_PATH_KEY"));
-            g.append(new TokenListMatch(NBT_PATH_NODE, true));
+            g.append(new TokenListMatch(NBT_PATH_NODE, GLUE, true));
 
             NBT_PATH.add(g);
         }

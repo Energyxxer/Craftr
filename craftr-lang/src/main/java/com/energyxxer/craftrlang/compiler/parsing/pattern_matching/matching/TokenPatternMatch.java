@@ -15,7 +15,7 @@ public abstract class TokenPatternMatch {
 	
 	public abstract TokenMatchResponse match(List<Token> tokens);
 
-	public abstract TokenMatchResponse match(List<Token> tokens, Stack st);
+	public abstract TokenMatchResponse match(List<Token> tokens, Token lastToken, Stack st);
 	
 	public TokenPatternMatch setName(String name) {
 		this.name = name;

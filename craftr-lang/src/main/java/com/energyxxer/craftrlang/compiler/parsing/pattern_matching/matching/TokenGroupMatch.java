@@ -9,9 +9,7 @@ import com.energyxxer.util.Stack;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse.COMPLETE_MATCH;
-import static com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse.NO_MATCH;
-import static com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse.PARTIAL_MATCH;
+import static com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse.*;
 
 /**
  * Represents a group of token items. This represents a structure a sequence of
@@ -36,7 +34,7 @@ public class TokenGroupMatch extends TokenPatternMatch {
 	}
 	
 	public TokenMatchResponse match(List<Token> tokens) {
-		return match(tokens,new Stack());
+		return match(tokens, null, new Stack());
 	}
 	
 	@Override
@@ -46,7 +44,7 @@ public class TokenGroupMatch extends TokenPatternMatch {
 	}
 
 	@Override
-	public TokenMatchResponse match(List<Token> tokens, Stack st) {
+	public TokenMatchResponse match(List<Token> tokens, Token lastToken, Stack st) {
 		if(items.size() == 0) return new TokenMatchResponse(true, null, 0, null, new TokenGroup());
 
 		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
@@ -73,7 +71,7 @@ public class TokenGroupMatch extends TokenPatternMatch {
 
 			List<Token> subList = tokens.subList(currentToken, tokens.size());
 
-			TokenMatchResponse itemMatch = items.get(i).match(subList,st);
+			TokenMatchResponse itemMatch = items.get(i).match(subList, lastToken, st);
 			switch(itemMatch.getMatchType()) {
 				case NO_MATCH: {
 					if(!items.get(i).optional) {
@@ -85,22 +83,24 @@ public class TokenGroupMatch extends TokenPatternMatch {
 					break;
 				}
 				case PARTIAL_MATCH: {
-					if(!(items.get(i).optional && i+1 < items.size() && items.get(i+1).match(subList,st).matched)) {
+					if(!(items.get(i).optional && i+1 < items.size() && items.get(i+1).match(subList, lastToken, st).matched)) {
 						hasMatched = false;
 						length += itemMatch.length;
 						faultyToken = itemMatch.faultyToken;
 						expected = itemMatch.expected;
 						break itemLoop;
 					} else {
-						continue itemLoop;
+						break;
 					}
 				}
 				case COMPLETE_MATCH: {
-					group.add(itemMatch.pattern);
+					if(itemMatch.pattern != null) group.add(itemMatch.pattern);
 					currentToken += itemMatch.length;
 					length += itemMatch.length;
 				}
 			}
+
+			if(currentToken > 0) lastToken = tokens.get(currentToken-1);
 		}
 		st.pop();
 		return new TokenMatchResponse(hasMatched, faultyToken, length, expected, group);

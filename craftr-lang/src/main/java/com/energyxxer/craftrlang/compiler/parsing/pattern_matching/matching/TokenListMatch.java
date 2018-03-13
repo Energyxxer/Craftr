@@ -9,9 +9,7 @@ import com.energyxxer.util.Stack;
 
 import java.util.List;
 
-import static com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse.COMPLETE_MATCH;
-import static com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse.NO_MATCH;
-import static com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse.PARTIAL_MATCH;
+import static com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse.*;
 
 /**
  * Represents a sequence of tokens of a given type, of an undefined length.
@@ -71,11 +69,11 @@ public class TokenListMatch extends TokenPatternMatch {
 	}
 	
 	public TokenMatchResponse match(List<Token> tokens) {
-		return match(tokens,new Stack());
+		return match(tokens, null, new Stack());
 	}
 
 	@Override
-	public TokenMatchResponse match(List<Token> tokens, Stack st) {
+	public TokenMatchResponse match(List<Token> tokens, Token lastToken, Stack st) {
 		MethodInvocation thisInvoc = new MethodInvocation(this, "match", new String[] {"List<Token>"}, new Object[] {tokens});
 		if(tokens.size() <= 0 || st.find(thisInvoc)) {
 			return new TokenMatchResponse(false, null, 0, this.pattern, null);
@@ -98,10 +96,11 @@ public class TokenListMatch extends TokenPatternMatch {
 			tempStack.push(tempInvoc);
 
 			if (this.separator != null && expectSeparator) {
-				TokenMatchResponse itemMatch = this.separator.match(subList, tempStack);
+				TokenMatchResponse itemMatch = this.separator.match(subList, lastToken, tempStack);
 				expectSeparator = false;
 				switch(itemMatch.getMatchType()) {
 					case NO_MATCH: {
+
 						break itemLoop;
 					}
 					case PARTIAL_MATCH: {
@@ -109,25 +108,25 @@ public class TokenListMatch extends TokenPatternMatch {
 						faultyToken = itemMatch.faultyToken;
 						expected = itemMatch.expected;
 						length += itemMatch.length;
-						list.add(itemMatch.pattern);
+						if(itemMatch.pattern != null) list.add(itemMatch.pattern);
 						break itemLoop;
 					}
 					case COMPLETE_MATCH: {
 						i += itemMatch.length;
 						length += itemMatch.length;
-						list.add(itemMatch.pattern);
+                        if(itemMatch.pattern != null) list.add(itemMatch.pattern);
 					}
 				}
 			} else {
 				if (this.separator != null) {
-					TokenMatchResponse itemMatch = this.pattern.match(subList, tempStack);
+					TokenMatchResponse itemMatch = this.pattern.match(subList, lastToken, tempStack);
 					switch(itemMatch.getMatchType()) {
 						case NO_MATCH: {
 							hasMatched = false;
 							faultyToken = itemMatch.faultyToken;
 							expected = itemMatch.expected;
 							length += itemMatch.length;
-							list.add(itemMatch.pattern);
+                            if(itemMatch.pattern != null) list.add(itemMatch.pattern);
 							break itemLoop;
 						}
 						case PARTIAL_MATCH: {
@@ -135,18 +134,18 @@ public class TokenListMatch extends TokenPatternMatch {
 							faultyToken = itemMatch.faultyToken;
 							expected = itemMatch.expected;
 							length += itemMatch.length;
-							list.add(itemMatch.pattern);
+                            if(itemMatch.pattern != null) list.add(itemMatch.pattern);
 							break itemLoop;
 						}
 						case COMPLETE_MATCH: {
 							i += itemMatch.length;
 							length += itemMatch.length;
-							list.add(itemMatch.pattern);
+                            if(itemMatch.pattern != null) list.add(itemMatch.pattern);
 							expectSeparator = true;
 						}
 					}
 				} else {
-					TokenMatchResponse itemMatch = this.pattern.match(subList, tempStack);
+					TokenMatchResponse itemMatch = this.pattern.match(subList, lastToken, tempStack);
 					length += itemMatch.length;
 					switch(itemMatch.getMatchType()) {
 						case NO_MATCH: {
@@ -155,27 +154,26 @@ public class TokenListMatch extends TokenPatternMatch {
 								faultyToken = itemMatch.faultyToken;
 								expected = itemMatch.expected;
 								length += itemMatch.length;
-								list.add(itemMatch.pattern);
-								break itemLoop;
-							} else {
-								break itemLoop;
+                                if(itemMatch.pattern != null) list.add(itemMatch.pattern);
 							}
+							break itemLoop;
 						}
 						case PARTIAL_MATCH: {
 							hasMatched = false;
 							faultyToken = itemMatch.faultyToken;
 							expected = itemMatch.expected;
-							list.add(itemMatch.pattern);
+                            if(itemMatch.pattern != null) list.add(itemMatch.pattern);
 							break itemLoop;
 						}
 						case COMPLETE_MATCH: {
 							i += itemMatch.length;
-							list.add(itemMatch.pattern);
+                            if(itemMatch.pattern != null) list.add(itemMatch.pattern);
 						}
 					}
 				}
 			}
 			tempStack.pop();
+			lastToken = tokens.get(i-1);
 		}
 		st.pop();
 		return new TokenMatchResponse(hasMatched, faultyToken, length, expected, list);
