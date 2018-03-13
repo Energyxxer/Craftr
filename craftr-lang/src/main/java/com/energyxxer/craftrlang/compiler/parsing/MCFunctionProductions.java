@@ -107,6 +107,7 @@ public class MCFunctionProductions {
         {
             TokenGroupMatch g = new TokenGroupMatch();
             g.append(new TokenItemMatch(TokenType.UNKNOWN));
+            g.append(GLUE);
             g.append(new TokenItemMatch(MCFunction.COLON));
 
             NAMESPACE.add(g);
@@ -114,8 +115,8 @@ public class MCFunctionProductions {
 
         {
             TokenGroupMatch g = new TokenGroupMatch();
-            g.append(new TokenGroupMatch(true).append(NAMESPACE));
-            g.append(new TokenListMatch(new TokenItemMatch(TokenType.UNKNOWN), new TokenItemMatch(null, "/")));
+            g.append(new TokenGroupMatch(true).append(NAMESPACE).append(GLUE));
+            g.append(new TokenListMatch(new TokenItemMatch(TokenType.UNKNOWN), new TokenGroupMatch().append(GLUE).append(new TokenItemMatch(null, "/")).append(GLUE)));
 
             RESOURCE_LOCATION.add(g);
         }
@@ -144,33 +145,32 @@ public class MCFunctionProductions {
         {
             TokenGroupMatch g = new TokenGroupMatch().setName("CONCRETE_RESOURCE");
             g.append(new TokenGroupMatch().append(BLOCK_ID).setName("RESOURCE_NAME"));
-            g.append(GLUE);
-            g.append(new TokenGroupMatch(true).append(BLOCKSTATE));
-            g.append(new TokenGroupMatch(true).append(NBT_COMPOUND));
+            g.append(new TokenGroupMatch(true).append(GLUE).append(BLOCKSTATE));
+            g.append(new TokenGroupMatch(true).append(GLUE).append(NBT_COMPOUND));
             BLOCK.add(g);
             BLOCK_TAGGED.add(BLOCK);
         }
 
         {
             TokenGroupMatch g = new TokenGroupMatch().setName("ABSTRACT_RESOURCE");
-            g.append(new TokenGroupMatch().append(new TokenItemMatch(null, "#").setName("TAG_HEADER")).append(RESOURCE_LOCATION).setName("RESOURCE_NAME"));
-            g.append(new TokenGroupMatch(true).append(BLOCKSTATE));
-            g.append(new TokenGroupMatch(true).append(NBT_COMPOUND));
+            g.append(new TokenGroupMatch().append(new TokenItemMatch(null, "#").setName("TAG_HEADER")).append(GLUE).append(RESOURCE_LOCATION).setName("RESOURCE_NAME"));
+            g.append(new TokenGroupMatch(true).append(GLUE).append(BLOCKSTATE));
+            g.append(new TokenGroupMatch(true).append(GLUE).append(NBT_COMPOUND));
             BLOCK_TAGGED.add(g);
         }
 
         {
             TokenGroupMatch g = new TokenGroupMatch().setName("CONCRETE_RESOURCE");
             g.append(new TokenGroupMatch().append(ITEM_ID).setName("RESOURCE_NAME"));
-            g.append(new TokenGroupMatch(true).append(NBT_COMPOUND));
+            g.append(new TokenGroupMatch(true).append(GLUE).append(NBT_COMPOUND));
             ITEM.add(g);
             ITEM_TAGGED.add(ITEM);
         }
 
         {
             TokenGroupMatch g = new TokenGroupMatch().setName("ABSTRACT_RESOURCE");
-            g.append(new TokenGroupMatch().append(new TokenItemMatch(null, "#").setName("TAG_HEADER")).append(RESOURCE_LOCATION).setName("RESOURCE_NAME"));
-            g.append(new TokenGroupMatch(true).append(NBT_COMPOUND));
+            g.append(new TokenGroupMatch().append(new TokenItemMatch(null, "#").setName("TAG_HEADER")).append(GLUE).append(RESOURCE_LOCATION).setName("RESOURCE_NAME"));
+            g.append(new TokenGroupMatch(true).append(GLUE).append(NBT_COMPOUND));
             ITEM_TAGGED.add(g);
         }
 
@@ -563,6 +563,7 @@ public class MCFunctionProductions {
 
             {
                 TokenGroupMatch g2 = new TokenGroupMatch(true);
+                g2.append(GLUE);
                 g2.append(new TokenItemMatch(MCFunction.BRACE, "["));
                 g2.append(new TokenListMatch(SELECTOR_ARGUMENT, new TokenItemMatch(MCFunction.COMMA), true));
                 g2.append(new TokenItemMatch(MCFunction.BRACE, "]"));
@@ -578,15 +579,19 @@ public class MCFunctionProductions {
             {
                 TokenGroupMatch g = new TokenGroupMatch();
                 g.append(INTEGER_NUMBER);
+                g.append(GLUE);
                 g.append(new TokenItemMatch(MCFunction.DOT));
+                g.append(GLUE);
                 g.append(new TokenItemMatch(MCFunction.DOT));
-                g.append(new TokenGroupMatch(true).append(INTEGER_NUMBER));
+                g.append(new TokenGroupMatch(true).append(GLUE).append(INTEGER_NUMBER));
                 INTEGER_NUMBER_RANGE.add(g);
             }
             {
                 TokenGroupMatch g = new TokenGroupMatch();
                 g.append(new TokenItemMatch(MCFunction.DOT));
+                g.append(GLUE);
                 g.append(new TokenItemMatch(MCFunction.DOT));
+                g.append(GLUE);
                 g.append(INTEGER_NUMBER);
                 INTEGER_NUMBER_RANGE.add(g);
             }
@@ -595,15 +600,19 @@ public class MCFunctionProductions {
             {
                 TokenGroupMatch g = new TokenGroupMatch();
                 g.append(REAL_NUMBER);
+                g.append(GLUE);
                 g.append(new TokenItemMatch(MCFunction.DOT));
+                g.append(GLUE);
                 g.append(new TokenItemMatch(MCFunction.DOT));
-                g.append(new TokenGroupMatch(true).append(REAL_NUMBER));
+                g.append(new TokenGroupMatch(true).append(GLUE).append(REAL_NUMBER));
                 REAL_NUMBER_RANGE.add(g);
             }
             {
                 TokenGroupMatch g = new TokenGroupMatch();
                 g.append(new TokenItemMatch(MCFunction.DOT));
+                g.append(GLUE);
                 g.append(new TokenItemMatch(MCFunction.DOT));
+                g.append(GLUE);
                 g.append(REAL_NUMBER);
                 REAL_NUMBER_RANGE.add(g);
             }
@@ -617,6 +626,7 @@ public class MCFunctionProductions {
             s.add(new TokenItemMatch(null, "level"));
 
             g.append(new TokenGroupMatch().setName("INTEGER_ARGUMENT_VALUE").append(s));
+            g.append(GLUE);
             g.append(new TokenItemMatch(MCFunction.EQUALS));
             g.append(INTEGER_NUMBER_RANGE);
 
@@ -633,6 +643,7 @@ public class MCFunctionProductions {
             s.add(new TokenItemMatch(null, "y_rotation"));
 
             g.append(new TokenGroupMatch().setName("REAL_NUMBER_RANGE_ARGUMENT_VALUE").append(s));
+            g.append(GLUE);
             g.append(new TokenItemMatch(MCFunction.EQUALS));
             g.append(REAL_NUMBER_RANGE);
 
@@ -647,6 +658,7 @@ public class MCFunctionProductions {
             s.add(new TokenItemMatch(null, "limit"));
 
             g.append(new TokenGroupMatch().setName("INTEGER_RANGE_ARGUMENT_VALUE").append(s));
+            g.append(GLUE);
             g.append(new TokenItemMatch(MCFunction.EQUALS));
             g.append(INTEGER_NUMBER);
 
@@ -666,6 +678,7 @@ public class MCFunctionProductions {
             s.add(new TokenItemMatch(null, "dz"));
 
             g.append(new TokenGroupMatch().setName("REAL_NUMBER_ARGUMENT_VALUE").append(s));
+            g.append(GLUE);
             g.append(new TokenItemMatch(MCFunction.EQUALS));
             g.append(REAL_NUMBER);
 
@@ -682,6 +695,7 @@ public class MCFunctionProductions {
             s.add(new TokenItemMatch(null, "team"));
 
             g.append(s);
+            g.append(GLUE);
             g.append(new TokenItemMatch(MCFunction.EQUALS));
             g.append(new TokenItemMatch(null, "!", true));
 
@@ -701,6 +715,7 @@ public class MCFunctionProductions {
             s.add(new TokenItemMatch(null, "gamemode"));
 
             g.append(s);
+            g.append(GLUE);
             g.append(new TokenItemMatch(MCFunction.EQUALS));
 
             TokenStructureMatch s2 = new TokenStructureMatch("SELECTOR_ARGUMENT_VALUE");
@@ -719,6 +734,7 @@ public class MCFunctionProductions {
             s.add(new TokenItemMatch(null, "type"));
 
             g.append(s);
+            g.append(GLUE);
             g.append(new TokenItemMatch(MCFunction.EQUALS));
 
             TokenStructureMatch s2 = new TokenStructureMatch("SELECTOR_ARGUMENT_VALUE");
@@ -737,6 +753,7 @@ public class MCFunctionProductions {
             s.add(new TokenItemMatch(null, "sort"));
 
             g.append(s);
+            g.append(GLUE);
             g.append(new TokenItemMatch(MCFunction.EQUALS));
 
             TokenStructureMatch s2 = new TokenStructureMatch("SELECTOR_ARGUMENT_VALUE");
@@ -1552,13 +1569,13 @@ public class MCFunctionProductions {
 
                 {
                     TokenGroupMatch g2 = new TokenGroupMatch(true);
-                    //g2.append(REAL_NUMBER); //delta-x
-                    //g2.append(REAL_NUMBER); //delta-y
-                    //g2.append(REAL_NUMBER); //delta-z
+                    g2.append(REAL_NUMBER); //delta-x
+                    g2.append(REAL_NUMBER); //delta-y
+                    g2.append(REAL_NUMBER); //delta-z
 
-                    //g2.append(REAL_NUMBER); //speed
+                    g2.append(REAL_NUMBER); //speed
 
-                    //g2.append(INTEGER_NUMBER); //count
+                    g2.append(INTEGER_NUMBER); //count
 
                     {
                         TokenGroupMatch g3 = new TokenGroupMatch(true);
@@ -1567,10 +1584,10 @@ public class MCFunctionProductions {
 
                         g3.append(new TokenGroupMatch(true).append(ENTITY));
 
-                        //g2.append(g3);
+                        g2.append(g3);
                     }
 
-                    //g.append(g2);
+                    g.append(g2);
                 }
 
                 cmd.append(g);
