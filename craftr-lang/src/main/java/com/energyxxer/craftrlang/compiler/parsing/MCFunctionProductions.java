@@ -551,6 +551,8 @@ public class MCFunctionProductions {
                     }
                 }
 
+                g2.append(argsGroup);
+
                 PARTICLE.add(g2);
             }
 
