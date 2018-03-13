@@ -1326,6 +1326,135 @@ public class MCFunctionProductions {
             COMMAND.add(cmd);
         }
 
+        //experience command
+        {
+            TokenStructureMatch EXPERIENCE_UNIT = new TokenStructureMatch("EXPERIENCE_UNIT");
+            EXPERIENCE_UNIT.add(new TokenItemMatch(null, "points"));
+            EXPERIENCE_UNIT.add(new TokenItemMatch(null, "levels"));
+
+            { //add/set
+                TokenGroupMatch cmd = new TokenGroupMatch().setName("EXPERIENCE_COMMAND");
+                cmd.append(new TokenStructureMatch("COMMAND_HEADER").add(new TokenItemMatch(null, "experience")).add(new TokenItemMatch(null, "xp")));
+
+                cmd.append(new TokenStructureMatch("EXPERIENCE_ACTION").add(new TokenItemMatch(null, "set").setName("COMMAND_NODE")).add(new TokenItemMatch(null, "add").setName("COMMAND_NODE")));
+
+                cmd.append(ENTITY);
+
+                cmd.append(INTEGER_NUMBER);
+
+                cmd.append(new TokenGroupMatch(true).append(EXPERIENCE_UNIT));
+
+                COMMAND.add(cmd);
+            }
+
+            { //query
+                TokenGroupMatch cmd = new TokenGroupMatch().setName("EXPERIENCE_COMMAND");
+                cmd.append(new TokenStructureMatch("COMMAND_HEADER").add(new TokenItemMatch(null, "experience")).add(new TokenItemMatch(null, "xp")));
+
+                cmd.append(new TokenStructureMatch("EXPERIENCE_ACTION").add(new TokenItemMatch(null, "query").setName("COMMAND_NODE")).add(new TokenItemMatch(null, "query").setName("COMMAND_NODE")));
+
+                cmd.append(ENTITY);
+
+                cmd.append(new TokenGroupMatch().append(EXPERIENCE_UNIT));
+
+                COMMAND.add(cmd);
+            }
+        }
+
+        //fill command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("FILL_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "fill")).setName("COMMAND_HEADER"));
+
+            cmd.append(COORDINATE_SET);
+            cmd.append(COORDINATE_SET);
+
+            cmd.append(BLOCK);
+
+            TokenStructureMatch following = new TokenStructureMatch("FILL_BRANCH");
+            TokenStructureMatch FILL_MODE = new TokenStructureMatch("FILL_MODE");
+            FILL_MODE.add(new TokenItemMatch(null, "keep").setName("COMMAND_NODE"));
+            FILL_MODE.add(new TokenItemMatch(null, "replace").setName("COMMAND_NODE"));
+            FILL_MODE.add(new TokenItemMatch(null, "outline").setName("COMMAND_NODE"));
+            FILL_MODE.add(new TokenItemMatch(null, "hollow").setName("COMMAND_NODE"));
+            FILL_MODE.add(new TokenItemMatch(null, "destroy").setName("COMMAND_NODE"));
+
+            {
+                TokenGroupMatch g = new TokenGroupMatch();
+                g.append(FILL_MODE);
+                following.add(g);
+            }
+            {
+                TokenGroupMatch g = new TokenGroupMatch();
+                g.append(new TokenGroupMatch().setName("FILL_MODE").append(new TokenItemMatch(null, "replace").setName("COMMAND_NODE")));
+                g.append(BLOCK_TAGGED);
+                following.add(g);
+            }
+
+            cmd.append(new TokenGroupMatch(true).append(following));
+
+            COMMAND.add(cmd);
+        }
+
+        //function command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("FUNCTION_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "function")).setName("COMMAND_HEADER"));
+
+            cmd.append(RESOURCE_LOCATION);
+
+            COMMAND.add(cmd);
+        }
+
+        //gamemode command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("GAMEMODE_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "gamemode")).setName("COMMAND_HEADER"));
+
+            cmd.append(GAMEMODE);
+            cmd.append(new TokenGroupMatch(true).append(ENTITY));
+
+            COMMAND.add(cmd);
+        }
+
+        //give command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("GIVE_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "give")).setName("COMMAND_HEADER"));
+
+            cmd.append(ENTITY);
+            cmd.append(ITEM);
+            cmd.append(new TokenGroupMatch(true).append(INTEGER_NUMBER));
+
+            COMMAND.add(cmd);
+        }
+
+        //help command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("HELP_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "help")).setName("COMMAND_HEADER"));
+
+            COMMAND.add(cmd);
+        }
+
+        //kill command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("KILL_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "kill")).setName("COMMAND_HEADER"));
+
+            cmd.append(ENTITY);
+
+            COMMAND.add(cmd);
+        }
+
+        //list command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("LIST_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "list")).setName("COMMAND_HEADER"));
+
+            COMMAND.add(cmd);
+        }
+
         //locate command
         {
             TokenGroupMatch cmd = new TokenGroupMatch().setName("LOCATE_COMMAND");
@@ -1344,16 +1473,6 @@ public class MCFunctionProductions {
             cmd.append(ENTITY_ID);
 
             cmd.append(new TokenGroupMatch(true).append(COORDINATE_SET).append(new TokenGroupMatch(true).append(NBT_COMPOUND)));
-
-            COMMAND.add(cmd);
-        }
-
-        //function command
-        {
-            TokenGroupMatch cmd = new TokenGroupMatch().setName("FUNCTION_COMMAND");
-            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "function")).setName("COMMAND_HEADER"));
-
-            cmd.append(RESOURCE_LOCATION);
 
             COMMAND.add(cmd);
         }
