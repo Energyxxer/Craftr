@@ -229,7 +229,9 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
                     this.value = operand;
 
                     if(!operand.isNull() && operand.getReference() != null) {
-                        if(this.type == VariableType.FIELD || !(operand.getReference() instanceof ExplicitValue)) this.reference = operand.getReference().toScore(function, new LocalScore(objective, ownerInstance.getEntity()), this.semanticContext);
+                        if(this.type == VariableType.FIELD || !(operand.getReference() instanceof ExplicitValue)) {
+                            this.reference = operand.getReference().toScore(function, new LocalScore(objective, (isStatic()) ? (this.semanticContext.getUnit().getPlayer()) : ownerInstance.getEntity()), this.semanticContext);
+                        }
                     } else {
                         this.semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Assigned value may not have been initialized", pattern));
                     }

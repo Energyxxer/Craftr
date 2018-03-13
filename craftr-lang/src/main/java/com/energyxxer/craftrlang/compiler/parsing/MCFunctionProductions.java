@@ -32,10 +32,14 @@ public class MCFunctionProductions {
 
     public static final TokenStructureMatch BLOCKSTATE = new TokenStructureMatch("BLOCKSTATE");
 
+    public static final TokenStructureMatch COLOR = new TokenStructureMatch("COLOR");
+
     public static final TokenStructureMatch BLOCK = new TokenStructureMatch("BLOCK");
     public static final TokenStructureMatch BLOCK_TAGGED = new TokenStructureMatch("BLOCK_TAGGED");
     public static final TokenStructureMatch ITEM = new TokenStructureMatch("ITEM");
     public static final TokenStructureMatch ITEM_TAGGED = new TokenStructureMatch("ITEM_TAGGED");
+
+    public static final TokenStructureMatch PARTICLE = new TokenStructureMatch("PARTICLE");
 
     public static final TokenStructureMatch NBT_COMPOUND = new TokenStructureMatch("NBT_COMPOUND");
     public static final TokenStructureMatch NBT_VALUE = new TokenStructureMatch("NBT_VALUE");
@@ -215,6 +219,15 @@ public class MCFunctionProductions {
                 g.append(LOCAL_COORDINATE);
                 TWO_COORDINATE_SET.add(g);
             }
+        }
+
+        {
+            TokenGroupMatch g = new TokenGroupMatch();
+            g.append(new TokenGroupMatch().append(REAL_NUMBER).setName("RED_COLOR"));
+            g.append(new TokenGroupMatch().append(REAL_NUMBER).setName("GREEN_COLOR"));
+            g.append(new TokenGroupMatch().append(REAL_NUMBER).setName("BLUE_COLOR"));
+
+            COLOR.add(g);
         }
 
         {
@@ -478,6 +491,62 @@ public class MCFunctionProductions {
                 }
 
                 s.add(new TokenItemMatch(TokenType.UNKNOWN, def.getName()));
+            }
+
+            namespaceGroups.clear();
+
+            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.PARTICLE)) {
+                TokenGroupMatch g = new TokenGroupMatch().setName("PARTICLE_ID");
+
+                TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
+                ns.append(new TokenItemMatch(TokenType.UNKNOWN, def.getNamespace()));
+                ns.append(new TokenItemMatch(MCFunction.COLON));
+
+                g.append(ns);
+
+                g.append(new TokenItemMatch(TokenType.UNKNOWN, def.getName()).setName("PARTICLE_NAME"));
+
+                PARTICLE_ID.add(g);
+
+                TokenGroupMatch g2 = new TokenGroupMatch();
+
+                g2.append(g);
+
+                TokenGroupMatch argsGroup = new TokenGroupMatch().setName("PARTICLE_ARGUMENTS");
+
+                String allArgs = def.getProperties().get("argument");
+                if(!allArgs.equals("none")) {
+                    String[] args = allArgs.split("-");
+                    for(String arg : args) {
+                        switch(arg) {
+                            case "int": {
+                                argsGroup.append(INTEGER_NUMBER);
+                                break;
+                            }
+                            case "double": {
+                                argsGroup.append(REAL_NUMBER);
+                                break;
+                            }
+                            case "color": {
+                                argsGroup.append(COLOR);
+                                break;
+                            }
+                            case "block": {
+                                argsGroup.append(BLOCK);
+                                break;
+                            }
+                            case "item": {
+                                argsGroup.append(ITEM);
+                                break;
+                            }
+                            default: {
+                                System.err.println("Invalid particle argument type '" + arg + "', could not be added to .mcfunction particle production");
+                            }
+                        }
+                    }
+                }
+
+                PARTICLE.add(g2);
             }
 
             namespaceGroups.clear();
@@ -1461,6 +1530,46 @@ public class MCFunctionProductions {
             cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "locate")).setName("COMMAND_HEADER"));
 
             cmd.append(STRUCTURE);
+
+            COMMAND.add(cmd);
+        }
+
+        //particle command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("PARTICLE_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "particle")).setName("COMMAND_HEADER"));
+
+            cmd.append(PARTICLE);
+
+            {
+                TokenGroupMatch g = new TokenGroupMatch(true);
+                g.append(COORDINATE_SET);
+
+                {
+                    TokenGroupMatch g2 = new TokenGroupMatch(true);
+                    //g2.append(REAL_NUMBER); //delta-x
+                    //g2.append(REAL_NUMBER); //delta-y
+                    //g2.append(REAL_NUMBER); //delta-z
+
+                    //g2.append(REAL_NUMBER); //speed
+
+                    //g2.append(INTEGER_NUMBER); //count
+
+                    {
+                        TokenGroupMatch g3 = new TokenGroupMatch(true);
+
+                        g3.append(new TokenStructureMatch("PARTICLE_MODE").add(new TokenItemMatch(null, "normal").setName("COMMAND_NODE")).add(new TokenItemMatch(null, "force").setName("COMMAND_NODE")));
+
+                        g3.append(new TokenGroupMatch(true).append(ENTITY));
+
+                        //g2.append(g3);
+                    }
+
+                    //g.append(g2);
+                }
+
+                cmd.append(g);
+            }
 
             COMMAND.add(cmd);
         }
