@@ -10,10 +10,14 @@ import java.util.List;
 
 public class TokenGlue extends TokenPatternMatch {
 
+    private ArrayList<TokenPatternMatch> required = new ArrayList<>();
     private ArrayList<TokenPatternMatch> ignored = new ArrayList<>();
 
-    public TokenGlue(TokenPatternMatch... ignored) {
-        this.ignored.addAll(Arrays.asList(ignored));
+    public TokenGlue(boolean required, TokenPatternMatch... patterns) {
+        if(required)
+            this.required.addAll(Arrays.asList(patterns));
+        else
+            this.ignored.addAll(Arrays.asList(patterns));
     }
 
     @Override
@@ -32,6 +36,17 @@ public class TokenGlue extends TokenPatternMatch {
                     break;
                 }
             }
+            if(matched && !this.required.isEmpty()) {
+                boolean valid = false;
+                for(TokenPatternMatch required : this.required) {
+                    TokenMatchResponse match = required.match(tokens, lastToken, st);
+                    if(match.matched) {
+                        valid = true;
+                        break;
+                    }
+                }
+                matched = valid;
+            }
             return new TokenMatchResponse(matched, null, 0, null);
         }
         return new TokenMatchResponse(false, lastToken, 0, this, null);
@@ -44,6 +59,6 @@ public class TokenGlue extends TokenPatternMatch {
 
     @Override
     public String toTrimmedString() {
-        return "not a space";
+        return "Anything but whitespace";
     }
 }

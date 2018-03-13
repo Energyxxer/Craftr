@@ -21,6 +21,7 @@ public class MCFunctionProductions {
     public static final TokenStructureMatch TYPED_NUMBER = new TokenStructureMatch("TYPED_NUMBER");
 
     public static final TokenStructureMatch ANY_STRING = new TokenStructureMatch("ANY_STRING");
+    public static final TokenStructureMatch LIMITED_STRING = new TokenStructureMatch("LIMITED_STRING");
     public static final TokenStructureMatch POSSIBLE_STRING = new TokenStructureMatch("POSSIBLE_STRING");
     public static final TokenStructureMatch BOOLEAN = new TokenStructureMatch("BOOLEAN");
     public static final TokenStructureMatch NAMESPACE = new TokenStructureMatch("NAMESPACE");
@@ -77,8 +78,9 @@ public class MCFunctionProductions {
     public static final TokenStructureMatch STRUCTURE = new TokenStructureMatch("STRUCTURE");
     public static final TokenStructureMatch DIFFICULTY = new TokenStructureMatch("DIFFICULTY");
     public static final TokenStructureMatch SORTING = new TokenStructureMatch("SORTING");
+    public static final TokenStructureMatch SOUND_CHANNEL = new TokenStructureMatch("SOUND_CHANNEL");
 
-    private static final TokenGlue GLUE = new TokenGlue(new TokenItemMatch(MCFunction.NEWLINE));
+    private static final TokenGlue GLUE = new TokenGlue(false, new TokenItemMatch(MCFunction.NEWLINE));
 
     static {
         FILE.add(new TokenGroupMatch().append(new TokenListMatch(LINE, new TokenItemMatch(MCFunction.NEWLINE))).append(new TokenItemMatch(TokenType.END_OF_FILE)));
@@ -98,10 +100,21 @@ public class MCFunctionProductions {
             TYPED_NUMBER.add(REAL_NUMBER);
             TYPED_NUMBER.add(new TokenItemMatch(MCFunction.TYPED_NUMBER));
 
-            ANY_STRING.add(new TokenItemMatch(TokenType.UNKNOWN));
+            ANY_STRING.add(new TokenListMatch(new TokenItemMatch(null), GLUE));
 
-            POSSIBLE_STRING.add(ANY_STRING);
+            {
+                TokenStructureMatch s = new TokenStructureMatch("LIMITED_STRING_PART");
+                s.add(new TokenItemMatch(TokenType.UNKNOWN));
+                s.add(new TokenItemMatch(MCFunction.DOT));
+                s.add(new TokenItemMatch(MCFunction.INTEGER_NUMBER));
+                s.add(new TokenItemMatch(MCFunction.REAL_NUMBER));
+                s.add(new TokenItemMatch(MCFunction.TYPED_NUMBER));
+
+                LIMITED_STRING.add(new TokenListMatch(s, new TokenGlue(true, s)));
+            }
+
             POSSIBLE_STRING.add(new TokenItemMatch(MCFunction.STRING_LITERAL));
+            POSSIBLE_STRING.add(LIMITED_STRING);
         }
 
         {
@@ -343,6 +356,17 @@ public class MCFunctionProductions {
             NUMERIC_DATA_TYPE.add(new TokenItemMatch(null, "int"));
             NUMERIC_DATA_TYPE.add(new TokenItemMatch(null, "long"));
             NUMERIC_DATA_TYPE.add(new TokenItemMatch(null, "short"));
+
+            SOUND_CHANNEL.add(new TokenItemMatch(null, "ambient"));
+            SOUND_CHANNEL.add(new TokenItemMatch(null, "block"));
+            SOUND_CHANNEL.add(new TokenItemMatch(null, "hostile"));
+            SOUND_CHANNEL.add(new TokenItemMatch(null, "master"));
+            SOUND_CHANNEL.add(new TokenItemMatch(null, "music"));
+            SOUND_CHANNEL.add(new TokenItemMatch(null, "neutral"));
+            SOUND_CHANNEL.add(new TokenItemMatch(null, "player"));
+            SOUND_CHANNEL.add(new TokenItemMatch(null, "record"));
+            SOUND_CHANNEL.add(new TokenItemMatch(null, "voice"));
+            SOUND_CHANNEL.add(new TokenItemMatch(null, "weather"));
 
             BOOLEAN.add(new TokenItemMatch(null, "true"));
             BOOLEAN.add(new TokenItemMatch(null, "false"));
@@ -1585,6 +1609,45 @@ public class MCFunctionProductions {
                         g3.append(new TokenStructureMatch("PARTICLE_MODE").add(new TokenItemMatch(null, "normal").setName("COMMAND_NODE")).add(new TokenItemMatch(null, "force").setName("COMMAND_NODE")));
 
                         g3.append(new TokenGroupMatch(true).append(ENTITY));
+
+                        g2.append(g3);
+                    }
+
+                    g.append(g2);
+                }
+
+                cmd.append(g);
+            }
+
+            COMMAND.add(cmd);
+        }
+
+        //playsound command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("PLAYSOUND_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "playsound")).setName("COMMAND_HEADER"));
+
+            cmd.append(new TokenGroupMatch(true).append(NAMESPACE));
+            cmd.append(LIMITED_STRING);
+            cmd.append(SOUND_CHANNEL);
+            cmd.append(ENTITY);
+
+
+
+            {
+                TokenGroupMatch g = new TokenGroupMatch(true);
+                g.append(COORDINATE_SET);
+
+                {
+                    TokenGroupMatch g2 = new TokenGroupMatch(true);
+                    g2.append(REAL_NUMBER); //volume
+
+                    {
+                        TokenGroupMatch g3 = new TokenGroupMatch(true);
+
+                        g3.append(REAL_NUMBER); //pitch
+
+                        g3.append(new TokenGroupMatch(true).append(REAL_NUMBER)); //min-volume
 
                         g2.append(g3);
                     }
