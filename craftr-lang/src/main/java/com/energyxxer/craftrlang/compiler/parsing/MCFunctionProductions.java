@@ -78,8 +78,11 @@ public class MCFunctionProductions {
     public static final TokenStructureMatch PARTICLE_ID = new TokenStructureMatch("PARTICLE_ID");
     public static final TokenStructureMatch ENCHANTMENT_ID = new TokenStructureMatch("ENCHANTMENT_ID");
     public static final TokenStructureMatch DIMENSION_ID = new TokenStructureMatch("DIMENSION_ID");
+    public static final TokenStructureMatch SLOT_ID = new TokenStructureMatch("SLOT_ID");
 
     public static final TokenStructureMatch GAMEMODE = new TokenStructureMatch("GAMEMODE");
+    public static final TokenStructureMatch GAMERULE = new TokenStructureMatch("GAMERULE");
+    public static final TokenStructureMatch GAMERULE_SETTER = new TokenStructureMatch("GAMERULE_SETTER");
     public static final TokenStructureMatch STRUCTURE = new TokenStructureMatch("STRUCTURE");
     public static final TokenStructureMatch DIFFICULTY = new TokenStructureMatch("DIFFICULTY");
     public static final TokenStructureMatch SORTING = new TokenStructureMatch("SORTING");
@@ -413,6 +416,19 @@ public class MCFunctionProductions {
                 DIMENSION_ID.add(new TokenItemMatch(null, def.getName()));
             }
 
+            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.SLOT)) {
+                String[] parts = def.getName().split("\\.");
+
+                TokenGroupMatch g = new TokenGroupMatch();
+
+                for(int i = 0; i < parts.length; i++) {
+                    g.append(new TokenItemMatch(null, parts[i]));
+                    if(i < parts.length-1) g.append(new TokenItemMatch(MCFunction.DOT));
+                }
+
+                SLOT_ID.add(g);
+            }
+
             HashMap<String, TokenStructureMatch> namespaceGroups = new HashMap<>();
 
             for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.BLOCK)) {
@@ -599,6 +615,58 @@ public class MCFunctionProductions {
                 g2.append(argsGroup);
 
                 PARTICLE.add(g2);
+            }
+
+            namespaceGroups.clear();
+
+            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.GAMERULE)) {
+                TokenGroupMatch g = new TokenGroupMatch().setName("GAMERULE_ID");
+
+                g.append(new TokenItemMatch(null, def.getName()).setName("GAMERULE_NAME"));
+
+                GAMERULE.add(g);
+
+                TokenGroupMatch g2 = new TokenGroupMatch();
+
+                g2.append(g);
+
+                TokenGroupMatch argsGroup = new TokenGroupMatch().setName("GAMERULE_ARGUMENT");
+
+                String arg = def.getProperties().get("argument");
+
+                switch(arg) {
+                    case "boolean": {
+                        argsGroup.append(BOOLEAN);
+                        break;
+                    }
+                    case "int": {
+                        argsGroup.append(INTEGER_NUMBER);
+                        break;
+                    }
+                    case "double": {
+                        argsGroup.append(REAL_NUMBER);
+                        break;
+                    }
+                    case "color": {
+                        argsGroup.append(COLOR);
+                        break;
+                    }
+                    case "block": {
+                        argsGroup.append(BLOCK);
+                        break;
+                    }
+                    case "item": {
+                        argsGroup.append(ITEM);
+                        break;
+                    }
+                    default: {
+                        System.err.println("Invalid gamerule argument type '" + arg + "', could not be added to .mcfunction gamerule setter production");
+                    }
+                }
+
+                g2.append(argsGroup);
+
+                GAMERULE_SETTER.add(g2);
             }
 
             namespaceGroups.clear();
@@ -1555,6 +1623,20 @@ public class MCFunctionProductions {
             COMMAND.add(cmd);
         }
 
+        //gamerule command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("GAMERULE_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "gamerule")).setName("COMMAND_HEADER"));
+
+            TokenStructureMatch s = new TokenStructureMatch("GAMERULE_BRANCH");
+            s.add(GAMERULE);
+            s.add(GAMERULE_SETTER);
+
+            cmd.append(s);
+
+            COMMAND.add(cmd);
+        }
+
         //give command
         {
             TokenGroupMatch cmd = new TokenGroupMatch().setName("GIVE_COMMAND");
@@ -1680,6 +1762,130 @@ public class MCFunctionProductions {
             COMMAND.add(cmd);
         }
 
+        //recipe command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("RECIPE_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "recipe")).setName("COMMAND_HEADER"));
+
+            TokenStructureMatch action = new TokenStructureMatch("RECIPE_ACTION");
+            action.add(new TokenItemMatch(null, "give").setName("COMMAND_NODE"));
+            action.add(new TokenItemMatch(null, "take").setName("COMMAND_NODE"));
+            cmd.append(action);
+
+            cmd.append(ENTITY);
+
+            TokenStructureMatch recipe = new TokenStructureMatch("RECIPE");
+            recipe.add(new TokenItemMatch(MCFunction.SYMBOL, "*"));
+            recipe.add(RESOURCE_LOCATION);
+            cmd.append(recipe);
+
+            COMMAND.add(cmd);
+        }
+
+        //replaceitem command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("REPLACEITEM_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "replaceitem")).setName("COMMAND_HEADER"));
+
+            {
+                TokenStructureMatch ENTITY_OR_BLOCK = new TokenStructureMatch("ENTITY_OR_BLOCK");
+                {
+                    TokenGroupMatch g = new TokenGroupMatch().setName("REPLACEITEM_BLOCK");
+                    g.append(new TokenItemMatch(null, "block").setName("COMMAND_NODE"));
+                    g.append(COORDINATE_SET);
+                    ENTITY_OR_BLOCK.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch().setName("REPLACEITEM_ENTITY");
+                    g.append(new TokenItemMatch(null, "entity").setName("COMMAND_NODE"));
+                    g.append(ENTITY);
+                    ENTITY_OR_BLOCK.add(g);
+                }
+                cmd.append(ENTITY_OR_BLOCK);
+            }
+
+            cmd.append(SLOT_ID);
+            cmd.append(ITEM);
+
+            cmd.append(new TokenGroupMatch(true).append(INTEGER_NUMBER));
+
+            COMMAND.add(cmd);
+        }
+
+        //seed command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("SEED_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "seed")).setName("COMMAND_HEADER"));
+
+            COMMAND.add(cmd);
+        }
+
+        //setblock command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("SETBLOCK_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "setblock")).setName("COMMAND_HEADER"));
+
+            cmd.append(COORDINATE_SET);
+            cmd.append(BLOCK);
+
+            TokenStructureMatch s = new TokenStructureMatch("OLD_BLOCK_HANDLING_TAG");
+            s.add(new TokenItemMatch(null, "destroy"));
+            s.add(new TokenItemMatch(null, "keep"));
+            s.add(new TokenItemMatch(null, "replace"));
+
+            cmd.append(new TokenGroupMatch(true).append(s));
+
+            COMMAND.add(cmd);
+        }
+
+        //setworldspawn command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("SETWORLDSPAWN_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "setworldspawn")).setName("COMMAND_HEADER"));
+
+            cmd.append(new TokenGroupMatch(true).append(COORDINATE_SET));
+
+            COMMAND.add(cmd);
+        }
+
+        //spawnpoint command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("SPAWNPOINT_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "spawnpoint")).setName("COMMAND_HEADER"));
+
+            cmd.append(new TokenGroupMatch(true).append(ENTITY).append(new TokenGroupMatch(true).append(COORDINATE_SET)));
+
+            COMMAND.add(cmd);
+        }
+
+        //spreadplayers command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("SPREADPLAYERS_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "spreadplayers")).setName("COMMAND_HEADER"));
+
+            cmd.append(TWO_COORDINATE_SET);
+            cmd.append(REAL_NUMBER);
+            cmd.append(REAL_NUMBER);
+            cmd.append(BOOLEAN);
+            cmd.append(ENTITY);
+
+            COMMAND.add(cmd);
+        }
+
+        //stopsound command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("STOPSOUND_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "stopsound")).setName("COMMAND_HEADER"));
+
+            cmd.append(ENTITY);
+
+            cmd.append(new TokenStructureMatch("NULLABLE_SOUND_CHANNEL").add(SOUND_CHANNEL).add(new TokenItemMatch(MCFunction.SYMBOL, "*")));
+
+            cmd.append(new TokenGroupMatch(true).append(RESOURCE_LOCATION));
+
+            COMMAND.add(cmd);
+        }
+
         //summon command
         {
             TokenGroupMatch cmd = new TokenGroupMatch().setName("SUMMON_COMMAND");
@@ -1725,20 +1931,51 @@ public class MCFunctionProductions {
 
             COMMAND.add(cmd);
         }
+
+        //tellraw command
         {
-            //list
-            TokenGroupMatch cmd = new TokenGroupMatch().setName("TAG_COMMAND");
-            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "tag")).setName("COMMAND_HEADER"));
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("TELLRAW_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "tellraw")).setName("COMMAND_HEADER"));
 
             cmd.append(ENTITY);
 
-            TokenStructureMatch action = new TokenStructureMatch("TAG_COMMAND_ACTION");
-            action.add(new TokenItemMatch(null, "list"));
-            action.add(new TokenItemMatch(null, "list"));
-
-            cmd.append(new TokenGroupMatch().setName("COMMAND_NODE").append(action));
+            cmd.append(TEXT_COMPONENT);
 
             COMMAND.add(cmd);
         }
+
+        //trigger command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("TRIGGER_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "trigger")).setName("COMMAND_HEADER"));
+
+            cmd.append(ANY_STRING);
+
+            {
+                TokenGroupMatch g = new TokenGroupMatch(true);
+
+                g.append(new TokenStructureMatch("TRIGGER_ACTION").add(new TokenItemMatch(null, "add").setName("COMMAND_NODE")).add(new TokenItemMatch(null, "set").setName("COMMAND_NODE")));
+
+                g.append(INTEGER_NUMBER);
+
+                cmd.append(g);
+            }
+
+            COMMAND.add(cmd);
+        }
+
+        //weather command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("WEATHER_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "weather")).setName("COMMAND_HEADER"));
+
+            cmd.append(new TokenStructureMatch("WEATHER_STATE").add(new TokenItemMatch(null, "clear").setName("COMMAND_NODE")).add(new TokenItemMatch(null, "rain").setName("COMMAND_NODE")).add(new TokenItemMatch(null, "thunder").setName("COMMAND_NODE")));
+
+            cmd.append(new TokenGroupMatch(true).append(INTEGER_NUMBER));
+
+            COMMAND.add(cmd);
+        }
+
+        //TODO: say, scoreboard, team, teleport, tell, time, title, worldborder
     }
 }
