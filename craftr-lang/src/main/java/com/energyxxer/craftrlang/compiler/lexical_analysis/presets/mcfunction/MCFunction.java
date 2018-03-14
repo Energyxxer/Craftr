@@ -20,5 +20,7 @@ public class MCFunction {
             //BOOLEAN = new TokenType("BOOLEAN"), // true, false
             NEWLINE = new TokenType("NEWLINE"),
             COMMENT = new TokenType("COMMENT"),
-            IDENTIFIER = new TokenType("IDENTIFIER"); // Anything else
+            LOWERCASE_IDENTIFIER = new TokenType("LOWERCASE_IDENTIFIER"), // Anything else
+            MIXED_IDENTIFIER = new TokenType("MIXED_IDENTIFIER"), // Anything els
+            SYMBOL = new TokenType("SYMBOL"); // Anything else
 }

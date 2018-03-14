@@ -145,6 +145,22 @@ public class MCFunctionScannerProfile extends ScannerProfile {
     }
 
     @Override
+    public boolean filter(Token token) {
+        if(token.type == TokenType.UNKNOWN) {
+            if(Character.isJavaIdentifierPart(token.value.charAt(0))) {
+                if(token.value.equals(token.value.toLowerCase())) {
+                    token.type = MCFunction.LOWERCASE_IDENTIFIER;
+                } else {
+                    token.type = MCFunction.MIXED_IDENTIFIER;
+                }
+            } else {
+                token.type = MCFunction.SYMBOL;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean canMerge(char ch0, char ch1) {
         return isValidIdentifierPart(ch0) && isValidIdentifierPart(ch1);
     }

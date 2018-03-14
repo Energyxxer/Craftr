@@ -20,8 +20,13 @@ public class MCFunctionProductions {
     public static final TokenStructureMatch REAL_NUMBER = new TokenStructureMatch("REAL_NUMBER");
     public static final TokenStructureMatch TYPED_NUMBER = new TokenStructureMatch("TYPED_NUMBER");
 
+    public static final TokenStructureMatch IDENTIFIER = new TokenStructureMatch("IDENTIFIER");
+
+    public static final TokenStructureMatch LIMITED_LOWERCASE_STRING_PART = new TokenStructureMatch("LIMITED_LOWERCASE_STRING_PART");
+
     public static final TokenStructureMatch ANY_STRING = new TokenStructureMatch("ANY_STRING");
     public static final TokenStructureMatch LIMITED_STRING = new TokenStructureMatch("LIMITED_STRING");
+    public static final TokenStructureMatch LIMITED_LOWERCASE_STRING = new TokenStructureMatch("LIMITED_LOWERCASE_STRING");
     public static final TokenStructureMatch POSSIBLE_STRING = new TokenStructureMatch("POSSIBLE_STRING");
     public static final TokenStructureMatch BOOLEAN = new TokenStructureMatch("BOOLEAN");
     public static final TokenStructureMatch NAMESPACE = new TokenStructureMatch("NAMESPACE");
@@ -100,15 +105,15 @@ public class MCFunctionProductions {
             TYPED_NUMBER.add(REAL_NUMBER);
             TYPED_NUMBER.add(new TokenItemMatch(MCFunction.TYPED_NUMBER));
 
+            IDENTIFIER.add(new TokenItemMatch(MCFunction.LOWERCASE_IDENTIFIER));
+            IDENTIFIER.add(new TokenItemMatch(MCFunction.MIXED_IDENTIFIER));
+
             ANY_STRING.add(new TokenListMatch(new TokenItemMatch(null), GLUE));
 
             {
                 TokenStructureMatch s = new TokenStructureMatch("LIMITED_STRING_PART");
-                s.add(new TokenItemMatch(TokenType.UNKNOWN));
-                s.add(new TokenItemMatch(MCFunction.DOT));
-                s.add(new TokenItemMatch(MCFunction.INTEGER_NUMBER));
-                s.add(new TokenItemMatch(MCFunction.REAL_NUMBER));
-                s.add(new TokenItemMatch(MCFunction.TYPED_NUMBER));
+                s.add(new TokenItemMatch(MCFunction.MIXED_IDENTIFIER));
+                s.add(LIMITED_LOWERCASE_STRING_PART);
 
                 LIMITED_STRING.add(new TokenListMatch(s, new TokenGlue(true, s)));
             }
@@ -119,7 +124,7 @@ public class MCFunctionProductions {
 
         {
             TokenGroupMatch g = new TokenGroupMatch();
-            g.append(new TokenItemMatch(TokenType.UNKNOWN));
+            g.append(LIMITED_LOWERCASE_STRING);
             g.append(GLUE);
             g.append(new TokenItemMatch(MCFunction.COLON));
 
@@ -127,9 +132,25 @@ public class MCFunctionProductions {
         }
 
         {
+            LIMITED_LOWERCASE_STRING_PART.add(new TokenItemMatch(MCFunction.LOWERCASE_IDENTIFIER));
+            LIMITED_LOWERCASE_STRING_PART.add(new TokenItemMatch(MCFunction.SYMBOL, "-"));
+            LIMITED_LOWERCASE_STRING_PART.add(new TokenItemMatch(MCFunction.DOT));
+            LIMITED_LOWERCASE_STRING_PART.add(new TokenItemMatch(MCFunction.INTEGER_NUMBER));
+            LIMITED_LOWERCASE_STRING_PART.add(new TokenItemMatch(MCFunction.REAL_NUMBER));
+            LIMITED_LOWERCASE_STRING_PART.add(new TokenItemMatch(MCFunction.TYPED_NUMBER));
+
+            LIMITED_LOWERCASE_STRING.add(new TokenListMatch(LIMITED_LOWERCASE_STRING_PART, new TokenGlue(true, LIMITED_LOWERCASE_STRING_PART)));
+        }
+
+        {
             TokenGroupMatch g = new TokenGroupMatch();
             g.append(new TokenGroupMatch(true).append(NAMESPACE).append(GLUE));
-            g.append(new TokenListMatch(new TokenItemMatch(TokenType.UNKNOWN), new TokenGroupMatch().append(GLUE).append(new TokenItemMatch(null, "/")).append(GLUE)));
+
+            TokenStructureMatch s = new TokenStructureMatch("RESOURCE_LOCATION_PART");
+            s.add(LIMITED_LOWERCASE_STRING_PART);
+            s.add(new TokenItemMatch(MCFunction.SYMBOL, "/"));
+
+            g.append(new TokenListMatch(s, new TokenGlue(true, s)));
 
             RESOURCE_LOCATION.add(g);
         }
@@ -139,13 +160,13 @@ public class MCFunctionProductions {
             g.append(new TokenItemMatch(MCFunction.BRACE, "["));
             {
                 TokenGroupMatch g2 = new TokenGroupMatch().setName("BLOCKSTATE_PROPERTY");
-                g2.append(new TokenItemMatch(TokenType.UNKNOWN).setName("BLOCKSTATE_PROPERTY_KEY"));
+                g2.append(new TokenItemMatch(MCFunction.LOWERCASE_IDENTIFIER).setName("BLOCKSTATE_PROPERTY_KEY"));
                 g2.append(new TokenItemMatch(MCFunction.EQUALS));
                 {
                     TokenStructureMatch s = new TokenStructureMatch("BLOCKSTATE_PROPERTY_VALUE");
                     s.add(REAL_NUMBER);
                     s.add(BOOLEAN);
-                    s.add(new TokenItemMatch(TokenType.UNKNOWN));
+                    s.add(IDENTIFIER);
                     g2.append(s);
                 }
                 g.append(new TokenListMatch(g2, new TokenItemMatch(MCFunction.COMMA), true));
@@ -324,7 +345,7 @@ public class MCFunctionProductions {
             NBT_PATH_KEY.append(GLUE);
             NBT_PATH_KEY.append(new TokenItemMatch(MCFunction.DOT).setName("NBT_PATH_SEPARATOR"));
             NBT_PATH_KEY.append(GLUE);
-            NBT_PATH_KEY.append(new TokenItemMatch(TokenType.UNKNOWN).setName("NBT_PATH_KEY_LABEL"));
+            NBT_PATH_KEY.append(new TokenGroupMatch().append(IDENTIFIER).setName("NBT_PATH_KEY_LABEL"));
             NBT_PATH_NODE.add(NBT_PATH_KEY);
 
             TokenGroupMatch NBT_PATH_INDEX = new TokenGroupMatch().setName("NBT_PATH_INDEX");
@@ -337,7 +358,7 @@ public class MCFunctionProductions {
             NBT_PATH_NODE.add(NBT_PATH_INDEX);
 
             TokenGroupMatch g = new TokenGroupMatch();
-            g.append(new TokenGroupMatch().append(new TokenItemMatch(TokenType.UNKNOWN).setName("NBT_PATH_KEY_LABEL")).setName("NBT_PATH_KEY"));
+            g.append(new TokenGroupMatch().append(new TokenGroupMatch().append(IDENTIFIER).setName("NBT_PATH_KEY_LABEL")).setName("NBT_PATH_KEY"));
             g.append(new TokenListMatch(NBT_PATH_NODE, GLUE, true));
 
             NBT_PATH.add(g);
@@ -402,7 +423,7 @@ public class MCFunctionProductions {
                     TokenGroupMatch g = new TokenGroupMatch().setName("BLOCK_ID");
 
                     TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                    ns.append(new TokenItemMatch(TokenType.UNKNOWN, def.getNamespace()));
+                    ns.append(new TokenItemMatch(null, def.getNamespace()));
                     ns.append(new TokenItemMatch(MCFunction.COLON));
 
                     g.append(ns);
@@ -415,7 +436,7 @@ public class MCFunctionProductions {
                     BLOCK_ID.add(g);
                 }
 
-                s.add(new TokenItemMatch(TokenType.UNKNOWN, def.getName()));
+                s.add(new TokenItemMatch(null, def.getName()));
             }
 
             namespaceGroups.clear();
@@ -428,7 +449,7 @@ public class MCFunctionProductions {
                     TokenGroupMatch g = new TokenGroupMatch().setName("ITEM_ID");
 
                     TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                    ns.append(new TokenItemMatch(TokenType.UNKNOWN, def.getNamespace()));
+                    ns.append(new TokenItemMatch(null, def.getNamespace()));
                     ns.append(new TokenItemMatch(MCFunction.COLON));
 
                     g.append(ns);
@@ -441,7 +462,7 @@ public class MCFunctionProductions {
                     ITEM_ID.add(g);
                 }
 
-                s.add(new TokenItemMatch(TokenType.UNKNOWN, def.getName()));
+                s.add(new TokenItemMatch(null, def.getName()));
             }
 
             namespaceGroups.clear();
@@ -454,7 +475,7 @@ public class MCFunctionProductions {
                     TokenGroupMatch g = new TokenGroupMatch().setName("ENTITY_ID");
 
                     TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                    ns.append(new TokenItemMatch(TokenType.UNKNOWN, def.getNamespace()));
+                    ns.append(new TokenItemMatch(null, def.getNamespace()));
                     ns.append(new TokenItemMatch(MCFunction.COLON));
 
                     g.append(ns);
@@ -467,7 +488,7 @@ public class MCFunctionProductions {
                     ENTITY_ID.add(g);
                 }
 
-                s.add(new TokenItemMatch(TokenType.UNKNOWN, def.getName()));
+                s.add(new TokenItemMatch(null, def.getName()));
             }
 
             namespaceGroups.clear();
@@ -480,7 +501,7 @@ public class MCFunctionProductions {
                     TokenGroupMatch g = new TokenGroupMatch().setName("EFFECT_ID");
 
                     TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                    ns.append(new TokenItemMatch(TokenType.UNKNOWN, def.getNamespace()));
+                    ns.append(new TokenItemMatch(null, def.getNamespace()));
                     ns.append(new TokenItemMatch(MCFunction.COLON));
 
                     g.append(ns);
@@ -493,7 +514,7 @@ public class MCFunctionProductions {
                     EFFECT_ID.add(g);
                 }
 
-                s.add(new TokenItemMatch(TokenType.UNKNOWN, def.getName()));
+                s.add(new TokenItemMatch(null, def.getName()));
             }
 
             namespaceGroups.clear();
@@ -506,7 +527,7 @@ public class MCFunctionProductions {
                     TokenGroupMatch g = new TokenGroupMatch().setName("ENCHANTMENT_ID");
 
                     TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                    ns.append(new TokenItemMatch(TokenType.UNKNOWN, def.getNamespace()));
+                    ns.append(new TokenItemMatch(null, def.getNamespace()));
                     ns.append(new TokenItemMatch(MCFunction.COLON));
 
                     g.append(ns);
@@ -519,7 +540,7 @@ public class MCFunctionProductions {
                     ENCHANTMENT_ID.add(g);
                 }
 
-                s.add(new TokenItemMatch(TokenType.UNKNOWN, def.getName()));
+                s.add(new TokenItemMatch(null, def.getName()));
             }
 
             namespaceGroups.clear();
@@ -528,12 +549,12 @@ public class MCFunctionProductions {
                 TokenGroupMatch g = new TokenGroupMatch().setName("PARTICLE_ID");
 
                 TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                ns.append(new TokenItemMatch(TokenType.UNKNOWN, def.getNamespace()));
+                ns.append(new TokenItemMatch(null, def.getNamespace()));
                 ns.append(new TokenItemMatch(MCFunction.COLON));
 
                 g.append(ns);
 
-                g.append(new TokenItemMatch(TokenType.UNKNOWN, def.getName()).setName("PARTICLE_NAME"));
+                g.append(new TokenItemMatch(null, def.getName()).setName("PARTICLE_NAME"));
 
                 PARTICLE_ID.add(g);
 
@@ -1254,7 +1275,7 @@ public class MCFunctionProductions {
                 //align
                 TokenGroupMatch g = new TokenGroupMatch().setName("ALIGN_SUBCOMMAND");
                 g.append(new TokenItemMatch(null, "align").setName("SUBCOMMAND_HEADER"));
-                g.append(new TokenItemMatch(TokenType.UNKNOWN));
+                g.append(new TokenItemMatch(MCFunction.LOWERCASE_IDENTIFIER));
                 EXECUTE_SUBCOMMAND.add(g);
             }
 
@@ -1628,11 +1649,9 @@ public class MCFunctionProductions {
             cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "playsound")).setName("COMMAND_HEADER"));
 
             cmd.append(new TokenGroupMatch(true).append(NAMESPACE));
-            cmd.append(LIMITED_STRING);
+            cmd.append(RESOURCE_LOCATION);
             cmd.append(SOUND_CHANNEL);
             cmd.append(ENTITY);
-
-
 
             {
                 TokenGroupMatch g = new TokenGroupMatch(true);
