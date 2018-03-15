@@ -28,6 +28,7 @@ public class MCFunctionProductions {
     public static final TokenStructureMatch LIMITED_STRING = new TokenStructureMatch("LIMITED_STRING");
     public static final TokenStructureMatch LIMITED_LOWERCASE_STRING = new TokenStructureMatch("LIMITED_LOWERCASE_STRING");
     public static final TokenStructureMatch POSSIBLE_STRING = new TokenStructureMatch("POSSIBLE_STRING");
+    public static final TokenStructureMatch OBJECTIVE = new TokenStructureMatch("OBJECTIVE");
     public static final TokenStructureMatch BOOLEAN = new TokenStructureMatch("BOOLEAN");
     public static final TokenStructureMatch NAMESPACE = new TokenStructureMatch("NAMESPACE");
     public static final TokenStructureMatch RESOURCE_LOCATION = new TokenStructureMatch("RESOURCE_LOCATION");
@@ -51,6 +52,7 @@ public class MCFunctionProductions {
     public static final TokenStructureMatch NUMERIC_DATA_TYPE = new TokenStructureMatch("NUMERIC_DATA_TYPE");
 
     public static final TokenStructureMatch ENTITY = new TokenStructureMatch("ENTITY");
+    public static final TokenStructureMatch SCORE_HOLDER = new TokenStructureMatch("SCORE_HOLDER");
 
     public static final TokenStructureMatch ANCHOR = new TokenStructureMatch("ANCHOR");
 
@@ -111,7 +113,7 @@ public class MCFunctionProductions {
             IDENTIFIER.add(new TokenItemMatch(MCFunction.LOWERCASE_IDENTIFIER));
             IDENTIFIER.add(new TokenItemMatch(MCFunction.MIXED_IDENTIFIER));
 
-            ANY_STRING.add(new TokenListMatch(new TokenItemMatch(null), GLUE));
+            ANY_STRING.add(new TokenListMatch(IDENTIFIER, GLUE));
 
             {
                 TokenStructureMatch s = new TokenStructureMatch("LIMITED_STRING_PART");
@@ -119,6 +121,7 @@ public class MCFunctionProductions {
                 s.add(LIMITED_LOWERCASE_STRING_PART);
 
                 LIMITED_STRING.add(new TokenListMatch(s, new TokenGlue(true, s)));
+                OBJECTIVE.add(LIMITED_STRING);
             }
 
             POSSIBLE_STRING.add(new TokenItemMatch(MCFunction.STRING_LITERAL));
@@ -687,6 +690,8 @@ public class MCFunctionProductions {
 
             SELECTOR.add(g);
             ENTITY.add(SELECTOR);
+            SCORE_HOLDER.add(ENTITY);
+            SCORE_HOLDER.add(new TokenItemMatch(MCFunction.SYMBOL, "*")); //wildcard
         }
 
         {
@@ -1425,10 +1430,10 @@ public class MCFunctionProductions {
                         TokenGroupMatch g3 = new TokenGroupMatch();
                         g3.append(new TokenStructureMatch("COMPARISON_OPERATOR")
                                 .add(new TokenItemMatch(null, "<"))
-                                .add(new TokenItemMatch(null, "<="))
+                                .add(new TokenGroupMatch().append(new TokenItemMatch(null, "<")).append(new TokenItemMatch(null, "=")))
                                 .add(new TokenItemMatch(null, "="))
                                 .add(new TokenItemMatch(null, ">"))
-                                .add(new TokenItemMatch(null, ">=")));
+                                .add(new TokenGroupMatch().append(new TokenItemMatch(null, ">")).append(new TokenItemMatch(null, "="))));
                         g3.append(ENTITY);
                         g3.append(ANY_STRING);
                         COMPARISON_CLAUSE.add(g3);
@@ -1442,6 +1447,7 @@ public class MCFunctionProductions {
                     g2.append(COMPARISON_CLAUSE);
                     CONDITIONAL_CLAUSE.add(g2);
                 }
+                g.append(CONDITIONAL_CLAUSE);
                 EXECUTE_SUBCOMMAND.add(g);
             }
 
@@ -1812,6 +1818,122 @@ public class MCFunctionProductions {
             COMMAND.add(cmd);
         }
 
+        //scoreboard command
+        {
+            //objectives
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("SCOREBOARD_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "scoreboard")).setName("COMMAND_HEADER"));
+
+            cmd.append(new TokenItemMatch(null, "objectives").setName("COMMAND_NODE"));
+
+            {
+                TokenStructureMatch branch = new TokenStructureMatch("SCOREBOARD_OBJECTIVES_COMMAND_BRANCH");
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenItemMatch(null, "add").setName("COMMAND_NODE"));
+                    g.append(OBJECTIVE); //name
+                    g.append(RESOURCE_LOCATION); //criteria
+                    g.append(new TokenGroupMatch(true).append(ANY_STRING)); //displayName
+                    branch.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenItemMatch(null, "list").setName("COMMAND_NODE"));
+                    branch.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenItemMatch(null, "remove").setName("COMMAND_NODE"));
+                    g.append(OBJECTIVE); //objective
+                    branch.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenItemMatch(null, "setdisplay").setName("COMMAND_NODE"));
+                    g.append(LIMITED_STRING); //slot
+                    g.append(new TokenGroupMatch(true).append(OBJECTIVE)); //objective
+                    branch.add(g);
+                }
+                cmd.append(branch);
+            }
+
+            COMMAND.add(cmd);
+        }
+        {
+            //players
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("SCOREBOARD_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "scoreboard")).setName("COMMAND_HEADER"));
+
+            cmd.append(new TokenItemMatch(null, "players").setName("COMMAND_NODE"));
+
+            {
+                TokenStructureMatch branch = new TokenStructureMatch("SCOREBOARD_PLAYERS_COMMAND_BRANCH");
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    TokenStructureMatch s = new TokenStructureMatch("SCOREBOARD_PLAYERS_SIMPLE_MANIPULATION");
+                    s.add(new TokenItemMatch(null, "set").setName("COMMAND_NODE"));
+                    s.add(new TokenItemMatch(null, "add").setName("COMMAND_NODE"));
+                    s.add(new TokenItemMatch(null, "remove").setName("COMMAND_NODE"));
+                    g.append(s);
+                    g.append(SCORE_HOLDER);
+                    g.append(OBJECTIVE);
+                    g.append(INTEGER_NUMBER);
+                    branch.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenItemMatch(null, "reset").setName("COMMAND_NODE"));
+                    g.append(SCORE_HOLDER);
+                    g.append(new TokenGroupMatch(true).append(OBJECTIVE));
+                    branch.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenItemMatch(null, "list").setName("COMMAND_NODE"));
+                    g.append(new TokenGroupMatch(true).append(SCORE_HOLDER));
+                    branch.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenItemMatch(null, "enable").setName("COMMAND_NODE"));
+                    g.append(SCORE_HOLDER);
+                    g.append(OBJECTIVE);
+                    branch.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenItemMatch(null, "get").setName("COMMAND_NODE"));
+                    g.append(SCORE_HOLDER);
+                    g.append(OBJECTIVE);
+                    branch.add(g);
+                }
+                {
+                    TokenGroupMatch g = new TokenGroupMatch();
+                    g.append(new TokenItemMatch(null, "operation").setName("COMMAND_NODE"));
+                    g.append(SCORE_HOLDER);
+                    g.append(OBJECTIVE);
+
+                    g.append(new TokenStructureMatch("SCORE_OPERATOR")
+                            .add(new TokenGroupMatch().append(new TokenItemMatch(null, "%")).append(new TokenItemMatch(null, "=")))
+                            .add(new TokenGroupMatch().append(new TokenItemMatch(null, "*")).append(new TokenItemMatch(null, "=")))
+                            .add(new TokenGroupMatch().append(new TokenItemMatch(null, "+")).append(new TokenItemMatch(null, "=")))
+                            .add(new TokenGroupMatch().append(new TokenItemMatch(null, "-")).append(new TokenItemMatch(null, "=")))
+                            .add(new TokenGroupMatch().append(new TokenItemMatch(null, "/")).append(new TokenItemMatch(null, "=")))
+                            .add(new TokenItemMatch(null, "<"))
+                            .add(new TokenItemMatch(null, "="))
+                            .add(new TokenItemMatch(null, ">"))
+                            .add(new TokenGroupMatch().append(new TokenItemMatch(null, ">")).append(new TokenItemMatch(null, "<"))));
+
+                    g.append(SCORE_HOLDER);
+                    g.append(OBJECTIVE);
+                    branch.add(g);
+                }
+                cmd.append(branch);
+            }
+
+            COMMAND.add(cmd);
+        }
+
         //seed command
         {
             TokenGroupMatch cmd = new TokenGroupMatch().setName("SEED_COMMAND");
@@ -1949,7 +2071,7 @@ public class MCFunctionProductions {
             TokenGroupMatch cmd = new TokenGroupMatch().setName("TRIGGER_COMMAND");
             cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "trigger")).setName("COMMAND_HEADER"));
 
-            cmd.append(ANY_STRING);
+            cmd.append(OBJECTIVE);
 
             {
                 TokenGroupMatch g = new TokenGroupMatch(true);
@@ -1976,6 +2098,6 @@ public class MCFunctionProductions {
             COMMAND.add(cmd);
         }
 
-        //TODO: say, scoreboard, team, teleport, tell, time, title, worldborder
+        //TODO: say, team, teleport, tell, time, title, worldborder
     }
 }
