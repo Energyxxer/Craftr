@@ -5,6 +5,7 @@ import com.energyxxer.commodore.inspection.ExecutionContext;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.commodore.types.FunctionReference;
 import com.energyxxer.craftrlang.CraftrLang;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjective;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
@@ -229,6 +230,14 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         return modifiers.contains(CraftrLang.Modifier.STATIC);
     }
 
+    public boolean isStaticAccess() {
+        return type.isStaticAccess() || modifiers.contains(CraftrLang.Modifier.STATIC);
+    }
+
+    public boolean isStaticInner() {
+        return modifiers.contains(CraftrLang.Modifier.STATIC);
+    }
+
     public String getPlayerName() {
         return declaringUnit.getName().toUpperCase();
     }
@@ -273,20 +282,35 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         if(codeBlockInitialized) return;
         if(codeBlock != null) {
 
-            if(!isStatic()) {
+            if(!isStaticInner()) {
                 this.ownerInstance = new ObjectInstance(declaringUnit, this);
                 function.setExecutionContext(new ExecutionContext(ownerInstance.getEntity()));
             }
 
             codeBlock.clearSymbols();
 
+            //FORMAL PARAMETERS
+
+            ArrayList<LocalizedObjective> paramObjectives = new ArrayList<>();
+
             for(FormalParameter param : positionalParams) {
-                codeBlock.getSymbolTable().put(new Variable(param.getName(), Collections.emptyList(), param.getType(), this, null, function));
+                LocalizedObjective objective = getLocalizedObjectiveManager().PARAMETER.create();
+                objective.claim();
+                paramObjectives.add(objective);
+                param.assignObjective(objective);
+                codeBlock.getSymbolTable().put(new Variable(param.getName(), Collections.emptyList(), param.getType(), this, null, function, param.getScore(this)));
             }
             FormalParameter[] keywordArr = keywordParams.values().toArray(new FormalParameter[0]);
             for(FormalParameter param : keywordArr) {
-                codeBlock.getSymbolTable().put(new Variable(param.getName(), Collections.emptyList(), param.getType(), this, null, function));
+                LocalizedObjective objective = getLocalizedObjectiveManager().PARAMETER.create();
+                objective.claim();
+                paramObjectives.add(objective);
+                param.assignObjective(objective);
+                codeBlock.getSymbolTable().put(new Variable(param.getName(), Collections.emptyList(), param.getType(), this, null, function, param.getScore(this)));
             }
+
+            paramObjectives.forEach(LocalizedObjective::release);
+
             codeBlock.setSilent(false);
             codeBlock.initialize(ownerInstance);
             //paramReferences.forEach(p -> p.setInUse(false));
@@ -358,6 +382,8 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
             return null;
         }
 
+        initCodeBlock();
+
         //positionalParams and this.positionalParams SHOULD NOT DIFFER IN LENGTH. IF THEY DO, WELL CRUD.
         //Assign actual positional params to code block
         for(int i = 0; i < this.positionalParams.size(); i++) {
@@ -367,11 +393,11 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                 continue;
             }
             if(param instanceof Expression) {
-                throw new IllegalArgumentException("wtf parameter is an expression!?!?!?!?");
+                throw new IllegalArgumentException("wtfffff parameter is an expression!?!?!?!?");
             }
             //param = param.unwrap(function);
 
-            codeBlock.getSymbolTable().put(new Variable(this.positionalParams.get(i).getName(), Collections.emptyList(), this.positionalParams.get(i).getType(), semanticContext, param, function));
+            codeBlock.getSymbolTable().put(new Variable(this.positionalParams.get(i).getName(), Collections.emptyList(), this.positionalParams.get(i).getType(), this, param, function, this.positionalParams.get(i).getScore(this)));
         }
 
         //Assign actual keyword params to code block
@@ -382,7 +408,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                 continue;
             }
             if(entry.getValue().getDataType().instanceOf(this.keywordParams.get(entry.getKey()).getType())) {
-                codeBlock.getSymbolTable().put(new Variable(entry.getKey(), Collections.emptyList(), this.keywordParams.get(entry.getKey()).getType(), this, entry.getValue().getValue(), function));
+                codeBlock.getSymbolTable().put(new Variable(entry.getKey(), Collections.emptyList(), this.keywordParams.get(entry.getKey()).getType(), this, entry.getValue().getValue(), function, this.keywordParams.get(entry.getKey()).getScore(this)));
             } else {
                 semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + entry.getValue().getDataType() + " cannot be converted to " + this.keywordParams.get(entry.getKey()).getType(), entry.getValue().pattern));
             }
@@ -404,12 +430,12 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
     @Override
     public DataHolder getDataHolder() {
-        return this.isStatic() ? declaringUnit : ownerInstance;
+        return this.isStaticInner() ? declaringUnit : ownerInstance;
     }
 
     @Override
     public ObjectInstance getInstance() {
-        return (!this.isStatic()) ? ownerInstance : null;
+        return (!this.isStaticInner()) ? ownerInstance : null;
     }
 
     @Override
@@ -419,7 +445,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
     @Override
     public ScoreHolder getPlayer() {
-        if(this.isStatic()) {
+        if(this.isStaticAccess()) {
             return declaringUnit.getPlayer();
         } else {
             if(ownerInstance == null) {

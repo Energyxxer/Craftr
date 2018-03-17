@@ -7,7 +7,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodSignature;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 
 import java.util.Collection;
@@ -59,7 +58,7 @@ public class MethodLog {
             parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve method '" + signature + "'", pattern));
             return null;
         }
-        if(!method.isStatic() && instance == null && method.getMethodType() != MethodType.CONSTRUCTOR) { //TODO SOMETHING ABOUT THE INSTANCE PLEASE
+        if(!method.isStaticAccess() && instance == null) { //TODO SOMETHING ABOUT THE INSTANCE PLEASE
             parentUnit.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Non-static method '" + method.getSignature() + "' cannot be accessed from a static context", pattern));
         }
 

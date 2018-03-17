@@ -25,14 +25,13 @@ public class LocalizedObjectiveGroup {
     private int getVacantSlot() {
         int i = 0;
         for (; i < localizedObjectives.size(); i++) {
-            if (!localizedObjectives.get(i).isCaptured()) return i;
+            if (localizedObjectives.get(i).getState() == LocalizedObjectiveState.UNCLAIMED) return i;
         }
         return i;
     }
 
     private void replace(int slot, LocalizedObjective localizedObjective) {
         if(slot < localizedObjectives.size()) {
-            localizedObjectives.get(slot).dispose();
             localizedObjectives.set(slot, localizedObjective);
         } else {
             localizedObjectives.add(localizedObjective);

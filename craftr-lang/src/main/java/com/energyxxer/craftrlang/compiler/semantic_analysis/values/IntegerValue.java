@@ -113,7 +113,7 @@ public class IntegerValue extends NumericalValue {
             if(b instanceof ScoreReference) bScore = (ScoreReference) b;
             else if(!(b instanceof ExplicitInt)) {
                 tempB = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
-                tempB.capture();
+                tempB.claim();
                 bScore = b.toScore(function, new LocalScore(tempB.getObjective(), semanticContext.getPlayer()), semanticContext);
             }
 
@@ -121,7 +121,7 @@ public class IntegerValue extends NumericalValue {
 
             if(resultReference == null) {
                 op = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
-                op.capture();
+                op.claim();
                 resultReference = new ScoreReference(new LocalScore(op.getObjective(), semanticContext.getPlayer()));
             }
 

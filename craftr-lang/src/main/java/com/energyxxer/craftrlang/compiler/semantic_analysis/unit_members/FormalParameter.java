@@ -1,11 +1,14 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
+import com.energyxxer.commodore.score.LocalScore;
+import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjective;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 
 /**
  * Created by User on 5/16/2017.
@@ -13,6 +16,8 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 public class FormalParameter {
     private DataType type;
     private String name;
+
+    private LocalizedObjective assignedObjective;
 
     public FormalParameter(DataType type, String name) {
         this.type = type;
@@ -30,6 +35,19 @@ public class FormalParameter {
 
     public String getName() {
         return name;
+    }
+
+    void assignObjective(LocalizedObjective objective) {
+        this.assignedObjective = objective;
+    }
+
+    LocalizedObjective getAssignedObjective() {
+        if(assignedObjective == null) throw new IllegalStateException("Objective unassigned");
+        return assignedObjective;
+    }
+
+    ScoreReference getScore(Method method) {
+        return new ScoreReference(new LocalScore(this.getAssignedObjective().getObjective(), method.getPlayer()));
     }
 
     public boolean matches(FormalParameter formalParam) {

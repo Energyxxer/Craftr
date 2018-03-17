@@ -95,7 +95,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
     }
 
     //FOR PARAMETER
-    public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext, Value value, Function function) {
+    public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext, Value value, Function function, ScoreReference paramReference) {
         super(semanticContext);
         this.pattern = null;
         this.visibility = SymbolVisibility.METHOD;
@@ -105,8 +105,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         //this.validName = !CraftrLang.isPseudoIdentifier(this.name);
         this.block = null;
         this.type = VariableType.PARAMETER;
-        this.claimObjective(); //Claim the parameter objective
-        this.updateReference();
+        this.reference = paramReference;
         if(value != null) {
             this.reference = value.getReference().toScore(function, this.getReference().getScore(), semanticContext); //Clone the value into the parameter objective
         }
@@ -117,7 +116,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
 
     private void claimObjective() {
         LocalizedObjective locObj = type.getGroup(semanticContext.getLocalizedObjectiveManager()).create();
-        locObj.capture();
+        locObj.claim();
         //Never dispose
         this.objective = locObj.getObjective();
     }
@@ -167,8 +166,6 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
             }
 
             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern));
-
-            //TODO: Fix: Values aren't being unwrapped into the variable score and instead stored as the return value
         } else {
             this.value = new Null(this.semanticContext);
         }

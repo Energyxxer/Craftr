@@ -31,7 +31,7 @@ public class GameruleReference implements DataReference {
     @Override
     public NBTReference toNBT(Function function, Entity entity, NBTPath path, SemanticContext semanticContext) {
         LocalizedObjective obj = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
-        obj.capture();
+        obj.claim();
         LocalScore locScr = new LocalScore(obj.getObjective(), entity);
         ScoreReference scoreRef = this.toScore(function, locScr, semanticContext);
         obj.dispose();

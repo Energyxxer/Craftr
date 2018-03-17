@@ -7,8 +7,7 @@ public class LocalizedObjective {
     private final Objective objective;
     private final int slot;
 
-    private boolean captured;
-    private boolean disposed = false;
+    private LocalizedObjectiveState state = LocalizedObjectiveState.UNCLAIMED;
 
     LocalizedObjective(LocalizedObjectiveGroup group, Objective objective, int slot) {
         this.group = group;
@@ -16,33 +15,34 @@ public class LocalizedObjective {
         this.slot = slot;
     }
 
-    public boolean isCaptured() {
-        return captured;
+    public void claim() {
+        if(state == LocalizedObjectiveState.UNCLAIMED) state = LocalizedObjectiveState.CLAIMED;
+        else throw new IllegalStateException("Cannot claim an already-claimed or disposed objective");
     }
 
-    public void capture() {
-        captured = true;
-    }
+    //Difference between release() and dispose() is in how subsequent uses of this object will play out;
+    //If released, contexts which still have a reference to this object will still be able to get its objective.
+    //If disposed, contexts which still have this object will throw an exception when the objective is attempted to get.
 
     public void release() {
-        captured = false;
-    }
-
-    public boolean isDisposed() {
-        return disposed;
+        if(state == LocalizedObjectiveState.CLAIMED) state = LocalizedObjectiveState.UNCLAIMED;
+        else throw new IllegalStateException("Cannot release an unclaimed or disposed objective");
     }
 
     public void dispose() {
-        release();
-        this.disposed = true;
+        state = LocalizedObjectiveState.DISPOSED;
     }
 
     public LocalizedObjectiveGroup getGroup() {
         return group;
     }
 
+    public LocalizedObjectiveState getState() {
+        return state;
+    }
+
     public Objective getObjective() {
-        if(disposed) throw new IllegalStateException("Attempted to retrieve a disposed localized objective");
+        if(state == LocalizedObjectiveState.DISPOSED) throw new IllegalStateException("Attempted to retrieve a disposed localized objective");
         return objective;
     }
 
@@ -52,6 +52,6 @@ public class LocalizedObjective {
 
     @Override
     public String toString() {
-        return "LocalizedObjective:" + objective + "(captured:" + captured + ")";
+        return "LocalizedObjective:" + objective + "(state:" + state + ")";
     }
 }
