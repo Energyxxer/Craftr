@@ -25,6 +25,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.*;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
+import com.energyxxer.util.Factory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -56,6 +57,8 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
     private ObjectInstance ownerInstance;
     //TODO: Add a flag that says whether this variable has had an implicit value
 
+    private Factory<Value> lazyFactory;
+
     private Variable(Variable that, ObjectInstance ownerInstance) {
         super(that.semanticContext);
         this.pattern = that.pattern;
@@ -66,7 +69,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         this.type = that.type;
         this.block = that.block;
         this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.getEntity()));
-        this.value = dataType.create(this.reference, this.semanticContext);
+        this.lazyFactory = () -> dataType.create(this.reference, this.semanticContext);
         this.ownerInstance = ownerInstance;
         this.objective = that.objective;
     }
@@ -211,7 +214,13 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         return objective;
     }
 
+    private void lazilyInstantiateValue() {
+        if(lazyFactory != null) value = lazyFactory.createInstance();
+        lazyFactory = null;
+    }
+
     public Value unwrap() {
+        lazilyInstantiateValue();
         return value;
     }
 
@@ -236,6 +245,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
 
     @Override
     public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
+        lazilyInstantiateValue();
         switch(operator) {
             case ASSIGN: {
                 if(operand.getDataType().instanceOf(this.getDataType())) {
@@ -273,6 +283,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
 
     @Override
     public boolean isExplicit() {
+        lazilyInstantiateValue();
         return value != null && value.isExplicit();
     }
 
@@ -287,11 +298,13 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
 
     @Override
     public @Nullable SymbolTable getSubSymbolTable() {
+        lazilyInstantiateValue();
         return (value != null) ? value.getSubSymbolTable() : null;
     }
 
     @Override
     public MethodLog getMethodLog() {
+        lazilyInstantiateValue();
         return (value != null) ? value.getMethodLog() : null;
     }
 
@@ -322,6 +335,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
 
     @Override
     public ObjectInstance asObjectInstance() {
+        lazilyInstantiateValue();
         return (value != null && value instanceof ObjectInstance) ? (ObjectInstance) value : null;
     }
 

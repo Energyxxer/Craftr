@@ -1,5 +1,8 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
+import com.energyxxer.commodore.commands.execute.ExecuteAsEntity;
+import com.energyxxer.commodore.commands.execute.ExecuteAtEntity;
+import com.energyxxer.commodore.commands.execute.ExecuteCommand;
 import com.energyxxer.commodore.commands.function.FunctionCommand;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.ScoreHolder;
@@ -134,7 +137,10 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
 
     @Override
     public Value evaluate(Function function) {
-        function.append(new FunctionCommand(this.function));
+        ExecuteCommand exec = new ExecuteCommand(new FunctionCommand(this.function));
+        exec.addModifier(new ExecuteAsEntity(ownerInstance.getEntity()));
+        exec.addModifier(new ExecuteAtEntity(ownerInstance.getEntity()));
+        function.append(exec);
         return null;
     }
 
