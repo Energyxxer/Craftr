@@ -22,6 +22,7 @@ public class MCFunctionProductions {
 
     public static final TokenStructureMatch IDENTIFIER = new TokenStructureMatch("IDENTIFIER");
 
+    public static final TokenStructureMatch ANY_STRING_PART = new TokenStructureMatch("ANY_STRING_PART");
     public static final TokenStructureMatch LIMITED_LOWERCASE_STRING_PART = new TokenStructureMatch("LIMITED_LOWERCASE_STRING_PART");
 
     public static final TokenStructureMatch ANY_STRING = new TokenStructureMatch("ANY_STRING");
@@ -52,6 +53,7 @@ public class MCFunctionProductions {
     public static final TokenStructureMatch NUMERIC_DATA_TYPE = new TokenStructureMatch("NUMERIC_DATA_TYPE");
 
     public static final TokenStructureMatch ENTITY = new TokenStructureMatch("ENTITY");
+    public static final TokenStructureMatch PLAYER_NAME = new TokenStructureMatch("PLAYER_NAME");
     public static final TokenStructureMatch SCORE_HOLDER = new TokenStructureMatch("SCORE_HOLDER");
 
     public static final TokenStructureMatch ANCHOR = new TokenStructureMatch("ANCHOR");
@@ -113,8 +115,6 @@ public class MCFunctionProductions {
             IDENTIFIER.add(new TokenItemMatch(MCFunction.LOWERCASE_IDENTIFIER));
             IDENTIFIER.add(new TokenItemMatch(MCFunction.MIXED_IDENTIFIER));
 
-            ANY_STRING.add(new TokenListMatch(IDENTIFIER, GLUE));
-
             {
                 TokenStructureMatch s = new TokenStructureMatch("LIMITED_STRING_PART");
                 s.add(new TokenItemMatch(MCFunction.MIXED_IDENTIFIER));
@@ -135,6 +135,17 @@ public class MCFunctionProductions {
             g.append(new TokenItemMatch(MCFunction.COLON));
 
             NAMESPACE.add(g);
+        }
+
+        {
+            for(TokenType type : MCFunction.ALL_TYPES) {
+                if(type != MCFunction.NEWLINE) ANY_STRING_PART.add(new TokenItemMatch(type));
+            }
+
+            ANY_STRING.add(new TokenListMatch(ANY_STRING_PART, new TokenGlue(true, ANY_STRING_PART)));
+
+            PLAYER_NAME.add(ANY_STRING);
+            ENTITY.add(PLAYER_NAME);
         }
 
         {
