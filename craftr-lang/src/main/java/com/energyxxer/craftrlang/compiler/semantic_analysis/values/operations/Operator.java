@@ -1,15 +1,15 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations;
 
-import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperandType.REFERENCE;
 import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperandType.VALUE;
+import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperandType.VARIABLE;
 import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperationOrder.LTR;
 import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperationOrder.RTL;
 import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperatorType.*;
 
 public enum Operator {
     //USED ON OPERATIONS
-    INCREMENT("++", 0, UNARY_ANY, LTR, REFERENCE),
-    DECREMENT("--", 0, UNARY_ANY, LTR, REFERENCE),
+    INCREMENT("++", 0, UNARY_ANY, LTR, VARIABLE),
+    DECREMENT("--", 0, UNARY_ANY, LTR, VARIABLE),
     NOT("!", 0, UNARY_LEFT, RTL, VALUE),
     MULTIPLY("*", 1, BINARY, LTR, VALUE),
     DIVIDE("/", 1, BINARY, LTR, VALUE),
@@ -25,15 +25,15 @@ public enum Operator {
     AND("&&", 5, BINARY, LTR, VALUE),
     OR("||", 6, BINARY, LTR, VALUE),
     //USED BY THE EXPRESSION PARSER INSTEAD OF THE EXPRESSION HANDLER
-    INSTANCEOF("instanceof", 3, BINARY, LTR, REFERENCE),
-    ASSIGN("=", 8, BINARY, RTL, REFERENCE),
-    ADD_THEN_ASSIGN("+=", 8, BINARY, RTL, REFERENCE),
-    SUBTRACT_THEN_ASSIGN("-=", 8, BINARY, RTL, REFERENCE),
-    MULTIPLY_THEN_ASSIGN("*=", 8, BINARY, RTL, REFERENCE),
-    DIVIDE_THEN_ASSIGN("/=", 8, BINARY, RTL, REFERENCE),
-    MODULO_THEN_ASSIGN("%=", 8, BINARY, RTL, REFERENCE),
-    AND_THEN_ASSIGN("&=", 8, BINARY, RTL, REFERENCE),
-    OR_THEN_ASSIGN("|=", 8, BINARY, RTL, REFERENCE);
+    INSTANCEOF("instanceof", 3, BINARY, LTR, VARIABLE),
+    ASSIGN("=", 8, BINARY, RTL, VARIABLE),
+    ADD_THEN_ASSIGN("+=", 8, BINARY, RTL, VARIABLE),
+    SUBTRACT_THEN_ASSIGN("-=", 8, BINARY, RTL, VARIABLE),
+    MULTIPLY_THEN_ASSIGN("*=", 8, BINARY, RTL, VARIABLE),
+    DIVIDE_THEN_ASSIGN("/=", 8, BINARY, RTL, VARIABLE),
+    MODULO_THEN_ASSIGN("%=", 8, BINARY, RTL, VARIABLE),
+    AND_THEN_ASSIGN("&=", 8, BINARY, RTL, VARIABLE),
+    OR_THEN_ASSIGN("|=", 8, BINARY, RTL, VARIABLE);
 
     private String symbol;
     private int precedence;

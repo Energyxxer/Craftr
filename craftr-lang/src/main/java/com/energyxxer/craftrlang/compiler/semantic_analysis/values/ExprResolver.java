@@ -16,7 +16,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodCall;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperationOrder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +32,7 @@ public final class ExprResolver {
     public static Value analyzeValue(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, Function function, boolean silent) {
         TraversableStructure s = analyzeStructure(pattern, semanticContext, dataHolder, function, silent);
         if(s != null) {
-            if(s instanceof Variable) return ((Variable) s).getValue();
+            if(s instanceof ValueWrapper) return ((ValueWrapper) s).unwrap(function);
             if(s instanceof Value) return (Value) s;
             if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Value expected", pattern));
         }
@@ -47,7 +46,7 @@ public final class ExprResolver {
     public static Value analyzeValueOrReference(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, Function function, boolean silent) {
         TraversableStructure s = analyzeStructure(pattern, semanticContext, dataHolder, function, silent);
         if(s != null) {
-            if(s instanceof Variable) return (Variable) s;
+            if(s instanceof ValueWrapper) return (ValueWrapper) s;
             if(s instanceof Value) return (Value) s;
             if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Value expected", pattern));
         }
@@ -211,15 +210,14 @@ public final class ExprResolver {
                 }
                 return new StringValue(sb.toString(), semanticContext);
             } case "METHOD_CALL": {
-                //Methods can only return values, not just any traversable object
-                return analyzeValue(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, function, silent);
+                return analyzeValueOrReference(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, function, silent);
             } case "METHOD_CALL_INNER": {
                 if(dataHolder == null) dataHolder = semanticContext.getInstance();
                 if(dataHolder == null) {
                     if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.WARNING, "WHOA WHOA THERE, THERE'S NO DATA HOLDER??? CRUD", pattern));
                     return null;
                 }
-                return new MethodCall(pattern, dataHolder, function, semanticContext).evaluate();
+                return new MethodCall(pattern, dataHolder, semanticContext);
             } case "INSTANTIATION": {
                 TokenPattern<?> methodCall = ((TokenGroup) pattern).getContents()[1];
 
@@ -322,9 +320,15 @@ public final class ExprResolver {
                 return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, function, silent);
             } case "NESTED_POINTER_INNER": {
                 //Promise that dataHolder won't be null in this case;
-                TraversableStructure s = analyzeStructure(pattern.find("POINTER_SEGMENT"), semanticContext, dataHolder, function, silent);
-
+                TraversableStructure s;
                 TokenPattern<?> next = pattern.find("POINTER_NEXT");
+
+                if(next == null){
+                    s = analyzeStructure(pattern.find("POINTER_SEGMENT"), semanticContext, dataHolder, function, silent);
+                } else {
+                    s = analyzeValue(pattern.find("POINTER_SEGMENT"), semanticContext, dataHolder, function, silent);
+                }
+
                 if(next == null) return s;
                 else if(s != null) {
                     if(s instanceof DataHolder) return analyzeStructure(pattern.find("POINTER_NEXT"), semanticContext, (DataHolder) s, function, silent);

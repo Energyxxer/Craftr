@@ -4,7 +4,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.semantic_analysis.AbstractFileComponent;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ValueWrapper;
 
 public class ActualParameter extends AbstractFileComponent {
     private String name = null;
@@ -35,7 +35,9 @@ public class ActualParameter extends AbstractFileComponent {
     }
 
     public void setValue(Value value) {
-        if(value instanceof Variable) this.value = ((Variable) value).getValue();
+        if(value instanceof ValueWrapper) {
+            throw new IllegalArgumentException("Should not have been passed a wrapped value");
+        }
         else this.value = value;
     }
 

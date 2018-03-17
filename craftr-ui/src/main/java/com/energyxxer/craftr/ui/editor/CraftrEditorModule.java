@@ -139,7 +139,6 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 	}
 
 	private void setSyntax(Theme newSyntax) {
-		System.out.println("Setting syntax to " + newSyntax);
 		if(newSyntax == null) {
 			syntax = null;
 			clearStyles();

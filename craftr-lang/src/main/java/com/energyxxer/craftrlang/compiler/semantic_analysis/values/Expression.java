@@ -10,6 +10,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodCall;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.OperandType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
@@ -38,7 +39,7 @@ public class Expression extends Value {
     }
 
     private boolean usesVariable(Variable variable) {
-        return a == variable || b == variable || a instanceof Expression && ((Expression) a).usesVariable(variable) || b instanceof Expression && ((Expression) b).usesVariable(variable);
+        return a == variable || b == variable || a instanceof Expression && ((Expression) a).usesVariable(variable) || b instanceof Expression && ((Expression) b).usesVariable(variable) || a instanceof MethodCall || b instanceof MethodCall;
     }
 
     public Value unwrap(Function function, ScoreReference resultReference) {
@@ -55,20 +56,30 @@ public class Expression extends Value {
         if(b == null) return null;
 
         if(op.getLeftOperandType() == OperandType.VALUE && a instanceof Variable) {
-            a = ((Variable) a).getValue();
-        } else if(op.getLeftOperandType() == OperandType.REFERENCE && !(a instanceof Variable)) {
+            a = ((Variable) a).unwrap();
+        } else if(op.getLeftOperandType() == OperandType.VARIABLE && !(a instanceof Variable)) {
             semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid left-hand side in " + op.getSymbol() + " operation", pattern));
             return null;
+        } else if(a instanceof ValueWrapper && op.getLeftOperandType() != OperandType.VARIABLE) {
+            a = ((ValueWrapper) a).unwrap(function);
         }
+
         if(op.getRightOperandType() == OperandType.VALUE && b instanceof Variable) {
-            b = ((Variable) b).getValue();
-        } else if(op.getRightOperandType() == OperandType.REFERENCE && !(b instanceof Variable)) {
+            b = ((Variable) b).unwrap();
+        } else if(op.getRightOperandType() == OperandType.VARIABLE && !(b instanceof Variable)) {
             semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid right-hand side in " + op.getSymbol() + " operation", pattern));
+            return null;
+        } else if(b instanceof ValueWrapper && op.getRightOperandType() != OperandType.VARIABLE) {
+            b = ((ValueWrapper) b).unwrap(function);
+        }
+
+        if(a == null) {
+            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Left-hand side value may not have been initialized", pattern));
             return null;
         }
 
         if(b == null) {
-            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Right-hand side variable may not have been initialized", pattern));
+            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Right-hand side value may not have been initialized", pattern));
             return null;
         }
 

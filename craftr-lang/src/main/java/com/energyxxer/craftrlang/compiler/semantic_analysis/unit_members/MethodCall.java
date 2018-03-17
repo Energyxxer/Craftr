@@ -15,24 +15,24 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolde
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ExprResolver;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ValueWrapper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class MethodCall implements TraversableStructure {
+public class MethodCall extends ValueWrapper implements TraversableStructure {
     private final TokenPattern<?> pattern;
-    private final SemanticContext semanticContext;
     private String methodName;
     private ArrayList<ActualParameter> positionalParams = new ArrayList<>();
     private HashMap<String, ActualParameter> keywordParams = new HashMap<>();
     private DataHolder dataHolder;
     private Method method = null;
-    private Function function;
 
-    public MethodCall(TokenPattern<?> pattern, DataHolder dataHolder, Function function, SemanticContext semanticContext) {
-        this.semanticContext = semanticContext;
+    private boolean initialized = false;
+
+    public MethodCall(TokenPattern<?> pattern, DataHolder dataHolder, SemanticContext semanticContext) {
+        super(semanticContext);
         this.pattern = pattern;
-        this.function = function;
         this.methodName = ((TokenItem) pattern.find("METHOD_CALL_NAME")).getContents().value;
 
         if(dataHolder instanceof Unit) {
@@ -43,6 +43,12 @@ public class MethodCall implements TraversableStructure {
         if(methodName.equals("this")) {
             if(dataHolder instanceof Unit) methodName = ((Unit) dataHolder).getName(); //For consistency with field-handling of 'this';
             else methodName = semanticContext.getUnit().getName();
+        }
+    }
+
+    private void initialize(Function function) {
+        if(initialized) {
+            throw new IllegalStateException("A MethodCall's initialize method shouldn't be called more than once what the schnitzel");
         }
 
         TokenList parameterListWrapper = (TokenList) pattern.find("PARAMETER_LIST");
@@ -98,15 +104,24 @@ public class MethodCall implements TraversableStructure {
         if(method != null && method.getReturnType() != DataType.VOID) {
             //this.reference = semanticContext.getAnalyzer().getCompiler().getDataPackBuilder().getScoreHolderManager().RETURN.GENERIC.get();
         }
+
+        initialized = true;
+    }
+
+    @Override
+    public Value unwrap(Function function) {
+        initialize(function);
+        if(method != null) {
+            return method.writeCall(function, positionalParams, keywordParams, pattern, semanticContext, dataHolder);
+        } else return null;
+    }
+
+    @Override
+    public DataType getDataType() {
+        return method.getReturnType();
     }
 
     public Method getMethod() {
         return method;
-    }
-
-    public Value evaluate() {
-        if(method != null) {
-            return method.writeCall(this.function, positionalParams, keywordParams, pattern, semanticContext, dataHolder);
-        } else return null;
     }
 }

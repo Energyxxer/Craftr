@@ -25,6 +25,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolVisibi
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.natives.NativeMethods;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.statements.CodeBlock;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Expression;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
@@ -387,7 +388,10 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
             }
         }
         codeBlock.setSilent(true);
-        return codeBlock.evaluate(function);
+        Value blockResult = codeBlock.evaluate(function);
+        if(returnType == DataType.VOID) return null;
+        if(blockResult != null) return blockResult;
+        return returnType.create(new ScoreReference(getGlobalObjectiveManager().RETURN), semanticContext);
     }
 
     public MethodType getMethodType() {

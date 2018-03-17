@@ -78,9 +78,7 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
         boolean doParsing = lang != null && lang.getParserProduction() != null;
 
         ArrayList<Token> tokens = new ArrayList<>(sc.getStream().tokens);
-        //if(tokens.get(0).attributes.get("TYPE").equals("craftr")) doParsing = true;
         tokens.remove(0);
-        System.out.println("tokens = " + tokens);
 
         TokenMatchResponse match = null;
 
@@ -91,8 +89,6 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
             match = lang.getParserProduction().match(f);
 
             match.pattern.validate();
-
-            System.out.println("match.pattern = " + match.pattern);
         }
 
         for(Token token : tokens) {

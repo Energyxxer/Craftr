@@ -37,7 +37,7 @@ import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operat
 /**
  * Created by Energyxxer on 07/10/2017.
  */
-public class Variable extends Value implements Symbol, DataHolder, TraversableStructure {
+public class Variable extends ValueWrapper implements Symbol, DataHolder, TraversableStructure {
     public final TokenPattern<?> pattern;
 
     private SymbolVisibility visibility;
@@ -158,6 +158,8 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
             }
             if(this.value == null) this.value = new Null(semanticContext);
             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern));
+
+            //TODO: Fix: Values aren't being unwrapped into the variable score and instead stored as the return value
         } else {
             this.value = new Null(this.semanticContext);
         }
@@ -203,8 +205,13 @@ public class Variable extends Value implements Symbol, DataHolder, TraversableSt
         return objective;
     }
 
-    public Value getValue() {
+    public Value unwrap() {
         return value;
+    }
+
+    @Override
+    public Value unwrap(Function function) {
+        return unwrap();
     }
 
     public VariableType getType() {
