@@ -37,12 +37,16 @@ public class Expression extends Value {
         return a.isExplicit() && b.isExplicit();
     }
 
+    private boolean usesVariable(Variable variable) {
+        return a == variable || b == variable || a instanceof Expression && ((Expression) a).usesVariable(variable) || b instanceof Expression && ((Expression) b).usesVariable(variable);
+    }
+
     public Value unwrap(Function function, ScoreReference resultReference) {
 
         if(a instanceof Expression) a = ((Expression) a).unwrap(function, null);
         if(a == null) return null;
         if(b instanceof Expression) {
-            if(op == Operator.ASSIGN && a instanceof Variable && a.getReference() instanceof ScoreReference) {
+            if(op == Operator.ASSIGN && a instanceof Variable && a.getReference() instanceof ScoreReference && !((Expression) b).usesVariable((Variable) a)) {
                 b = ((Expression) b).unwrap(function, (ScoreReference) a.getReference());
             } else {
                 b = ((Expression) b).unwrap(function, null);

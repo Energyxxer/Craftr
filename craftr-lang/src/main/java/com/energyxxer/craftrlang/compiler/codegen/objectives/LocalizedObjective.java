@@ -33,6 +33,7 @@ public class LocalizedObjective {
     }
 
     public void dispose() {
+        release();
         this.disposed = true;
     }
 
