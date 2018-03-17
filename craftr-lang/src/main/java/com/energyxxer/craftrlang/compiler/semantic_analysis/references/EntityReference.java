@@ -21,7 +21,7 @@ public class EntityReference implements DataReference {
     }
 
     private LocalScore getId(SemanticContext semanticContext) {
-        return new LocalScore(semanticContext.getModule().glObjMgr.getGlobal(), entity);
+        return new LocalScore(semanticContext.getModule().glObjMgr.id, entity);
     }
 
     @Override

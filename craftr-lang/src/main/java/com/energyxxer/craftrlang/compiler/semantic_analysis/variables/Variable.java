@@ -157,6 +157,15 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
                 this.value = null;
             }
             if(this.value == null) this.value = new Null(semanticContext);
+
+            if(this.value instanceof ValueWrapper) {
+                this.value = ((ValueWrapper) this.value).unwrap(initializerFunction);
+            }
+
+            if(!(this.value.getReference() instanceof ExplicitValue)) {
+                this.value = dataType.create(this.value.getReference().toScore(initializerFunction, getReference().getScore(), semanticContext), semanticContext);
+            }
+
             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern));
 
             //TODO: Fix: Values aren't being unwrapped into the variable score and instead stored as the return value
