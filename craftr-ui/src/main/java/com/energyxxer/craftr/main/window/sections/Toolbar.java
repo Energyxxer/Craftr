@@ -2,24 +2,17 @@ package com.energyxxer.craftr.main.window.sections;
 
 import com.energyxxer.craftr.files.FileType;
 import com.energyxxer.craftr.global.Commons;
-import com.energyxxer.craftr.global.Resources;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.ToolbarButton;
 import com.energyxxer.craftr.ui.ToolbarSeparator;
 import com.energyxxer.craftr.ui.styledcomponents.StyledLabel;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
-import com.energyxxer.craftrlang.compiler.Compiler;
 import com.energyxxer.craftrlang.projects.Project;
-import com.energyxxer.util.out.Console;
 import com.energyxxer.xswing.Padding;
 import com.energyxxer.xswing.hints.TextHint;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created by User on 12/15/2016.
@@ -133,19 +126,7 @@ public class Toolbar extends JPanel {
         {
             ToolbarButton button = new ToolbarButton("export",tlm);
             button.setHintText("Compile");
-            button.addActionListener(e -> {
-                if(Commons.getActiveProject() == null) return;
-                Compiler c = new Compiler(Commons.getActiveProject());
-                c.setLibrary(Resources.nativeLib);
-                c.addProgressListener(CraftrWindow::setStatus);
-                c.addCompletionListener(() -> {
-                    CraftrWindow.noticeExplorer.setNotices(c.getReport().groupByLabel());
-                    if(c.getReport().getTotal() > 0) CraftrWindow.noticeBoard.open();
-                    c.getReport().getWarnings().forEach(Console.warn::println);
-                    c.getReport().getErrors().forEach(Console.err::println);
-                });
-                c.compile();
-            });
+            button.addActionListener(e -> Commons.compileActive());
             buttonBar.add(button);
         }
 

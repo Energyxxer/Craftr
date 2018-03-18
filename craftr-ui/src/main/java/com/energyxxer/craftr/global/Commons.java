@@ -3,6 +3,7 @@ package com.energyxxer.craftr.global;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.Tab;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
+import com.energyxxer.craftrlang.compiler.Compiler;
 import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 import com.energyxxer.util.ImageManager;
@@ -71,5 +72,19 @@ public class Commons {
             selected = ProjectManager.getAssociatedProject(new File(selectedFiles.get(0)));
         }
         return selected;
+    }
+
+    public static void compileActive() {
+        if(Commons.getActiveProject() == null) return;
+        Compiler c = new Compiler(Commons.getActiveProject());
+        c.setLibrary(Resources.nativeLib);
+        c.addProgressListener(CraftrWindow::setStatus);
+        c.addCompletionListener(() -> {
+            CraftrWindow.noticeExplorer.setNotices(c.getReport().groupByLabel());
+            if(c.getReport().getTotal() > 0) CraftrWindow.noticeBoard.open();
+            c.getReport().getWarnings().forEach(Console.warn::println);
+            c.getReport().getErrors().forEach(Console.err::println);
+        });
+        c.compile();
     }
 }

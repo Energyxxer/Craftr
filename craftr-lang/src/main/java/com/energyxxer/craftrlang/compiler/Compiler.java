@@ -50,7 +50,7 @@ public class Compiler {
         this.projectOutput = new File(project.getWorld());
         this.source = project.getSource();
 
-        this.thread = new Thread(this::runCompilation,"Craftr-Compiler");
+        this.thread = new Thread(this::runCompilation,"Craftr-Compiler[" + projectName + "]");
 
         silent = false;
     }
@@ -62,7 +62,7 @@ public class Compiler {
         this.projectOutput = null;
         this.source = source;
 
-        this.thread = new Thread(this::runCompilation,"Craftr-Compiler");
+        this.thread = new Thread(this::runCompilation,"Craftr-Compiler[" + projectName + "]");
 
         silent = true;
     }

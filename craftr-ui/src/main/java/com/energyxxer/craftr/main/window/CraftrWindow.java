@@ -1,5 +1,6 @@
 package com.energyxxer.craftr.main.window;
 
+import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.global.Status;
 import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.main.Craftr;
@@ -20,6 +21,8 @@ import com.energyxxer.xswing.hints.HintManager;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -79,6 +82,15 @@ public class CraftrWindow {
 		jframe.getContentPane().add(mainContent, BorderLayout.CENTER);
 		mainContent.add(sidebar = new Sidebar(), BorderLayout.WEST);
 		mainContent.add(editArea = new EditArea(), BorderLayout.CENTER);
+
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher((e) -> {
+            if(e.getKeyCode() == KeyEvent.VK_X && e.getModifiers() == InputEvent.SHIFT_MASK + InputEvent.ALT_MASK) {
+            	Commons.compileActive();
+                return false;
+            }
+            return true;
+        });
+
 		toolBoard = new ToolBoardMaster();
 		mainContent.add(toolBoard, BorderLayout.SOUTH);
 
