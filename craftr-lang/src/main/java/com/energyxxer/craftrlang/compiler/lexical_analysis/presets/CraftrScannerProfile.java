@@ -9,12 +9,9 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenSection;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.util.StringLocation;
+import com.energyxxer.util.out.Console;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -114,6 +111,10 @@ public class CraftrScannerProfile extends ScannerProfile {
                 if(str.startsWith(singleLineComment) || str.startsWith(multiLineCommentStart)) {
                     multiline = str.startsWith(multiLineCommentStart);
 
+                    String fullComment;
+
+                    ScannerContextResponse response;
+
                     if(multiline) {
                         int end = str.substring(multiLineCommentStart.length()).indexOf(multiLineCommentEnd) + multiLineCommentStart.length() + multiLineCommentEnd.length();
                         boolean unclosed = false;
@@ -121,7 +122,7 @@ public class CraftrScannerProfile extends ScannerProfile {
                             unclosed = true;
                             end = str.length();
                         }
-                        String fullComment = str.substring(0,end);
+                        fullComment = str.substring(0,end);
                         StringLocation endLoc = new StringLocation(multiLineCommentStart.length(),0,multiLineCommentStart.length());
 
                         for(char c : fullComment.substring(multiLineCommentStart.length()).toCharArray()) {
@@ -134,17 +135,30 @@ public class CraftrScannerProfile extends ScannerProfile {
                             endLoc.index++;
                         }
 
-                        ScannerContextResponse response = new ScannerContextResponse(true, fullComment, endLoc, CraftrLang.COMMENT);
+                        response = new ScannerContextResponse(true, fullComment, endLoc, CraftrLang.COMMENT, new HashMap<>());
                         if(unclosed) {
                             response.setError("Unclosed comment", end-1, 1);
                         }
-                        return response;
                     } else {
                         int end = str.substring(singleLineComment.length()).indexOf("\n") + singleLineComment.length();
                         if(end < singleLineComment.length()) end = str.length();
-                        String fullComment = str.substring(0,end);
-                        return new ScannerContextResponse(true, fullComment, CraftrLang.COMMENT);
+                        fullComment = str.substring(0,end);
+                        response = new ScannerContextResponse(true, fullComment, CraftrLang.COMMENT, new HashMap<>());
                     }
+
+                    for(int i = 0; i < fullComment.length()-5; i++) {
+                        String substr = fullComment.substring(i,i+5);
+                        if(substr.equalsIgnoreCase("TODO:")) {
+                            Console.info.println("TODO found at " + i);
+                            int length = fullComment.indexOf('\n',i) - i;
+                            if(length < 0) {
+                                length = fullComment.length() - i - ((multiline) ? 2 : 0);
+                            }
+                            response.subSections.put(new TokenSection(i, length), "comment.todo");
+                        }
+                    }
+
+                    return response;
                 }
                 return new ScannerContextResponse(false);
             }

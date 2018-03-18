@@ -64,16 +64,15 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 
 		KeyStroke saveKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK);
 
+		KeyStroke reloadKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0);
+
 		//editorComponent.getInputMap().put(undoKeystroke, "undoKeystroke");
 		//editorComponent.getInputMap().put(redoKeystroke, "redoKeystroke");
 		editorComponent.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(closeKeystroke, "closeKeystroke");
+		editorComponent.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(reloadKeystroke, "reloadKeystroke");
 		editorComponent.getInputMap().put(saveKeystroke, "saveKeystroke");
 
 		editorComponent.getActionMap().put("closeKeystroke", new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 2L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -82,15 +81,19 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 		});
 
 		editorComponent.getActionMap().put("saveKeystroke", new AbstractAction() {
-			/**
-			 *
-			 */
-			private static final long serialVersionUID = 2L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Tab st = TabManager.getSelectedTab();
 				if(st != null) st.save();
+			}
+		});
+
+		editorComponent.getActionMap().put("reloadKeystroke", new AbstractAction() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setTextToFileContents();
 			}
 		});
 
@@ -111,9 +114,13 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 
 		addThemeChangeListener();
 
+		setTextToFileContents();
+	}
+
+	private void setTextToFileContents() {
 		byte[] encoded;
 		try {
-			encoded = Files.readAllBytes(Paths.get(tab.path));
+			encoded = Files.readAllBytes(Paths.get(this.associatedTab.path));
 			String s = new String(encoded);
 			setText(s);
 			editorComponent.setCaretPosition(0);
