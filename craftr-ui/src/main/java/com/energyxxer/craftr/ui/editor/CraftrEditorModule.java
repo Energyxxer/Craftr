@@ -60,25 +60,14 @@ public class CraftrEditorModule extends JScrollPane implements DisplayModule, Un
 
 		this.setBorder(BorderFactory.createEmptyBorder());
 
-		KeyStroke closeKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_MASK);
-
 		KeyStroke saveKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK);
 
 		KeyStroke reloadKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0);
 
 		//editorComponent.getInputMap().put(undoKeystroke, "undoKeystroke");
 		//editorComponent.getInputMap().put(redoKeystroke, "redoKeystroke");
-		editorComponent.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(closeKeystroke, "closeKeystroke");
 		editorComponent.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(reloadKeystroke, "reloadKeystroke");
 		editorComponent.getInputMap().put(saveKeystroke, "saveKeystroke");
-
-		editorComponent.getActionMap().put("closeKeystroke", new AbstractAction() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				TabManager.closeSelectedTab();
-			}
-		});
 
 		editorComponent.getActionMap().put("saveKeystroke", new AbstractAction() {
 

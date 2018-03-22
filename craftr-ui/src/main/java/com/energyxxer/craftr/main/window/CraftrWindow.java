@@ -84,12 +84,18 @@ public class CraftrWindow {
 		mainContent.add(editArea = new EditArea(), BorderLayout.CENTER);
 
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher((e) -> {
-            if(e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_X && e.getModifiers() == InputEvent.SHIFT_MASK + InputEvent.ALT_MASK) {
-                System.out.println();
-                Commons.compileActive();
-                return false;
+            if((e.getKeyCode() == KeyEvent.VK_X || Character.toLowerCase(e.getKeyChar()) == 'x') && e.getModifiers() == InputEvent.SHIFT_MASK + InputEvent.ALT_MASK) {
+                if(e.getID() == KeyEvent.KEY_PRESSED) {
+                    Commons.compileActive();
+                }
+                return true;
+            } else if((e.getKeyCode() == KeyEvent.VK_W || Character.toLowerCase(e.getKeyChar()) == 'w') && e.getModifiers() == InputEvent.CTRL_MASK) {
+                if(e.getID() == KeyEvent.KEY_PRESSED) {
+                    TabManager.closeSelectedTab();
+                }
+                return true;
             }
-            return true;
+            return false;
         });
 
 		toolBoard = new ToolBoardMaster();
