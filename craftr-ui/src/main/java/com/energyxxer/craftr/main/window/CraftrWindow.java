@@ -84,8 +84,9 @@ public class CraftrWindow {
 		mainContent.add(editArea = new EditArea(), BorderLayout.CENTER);
 
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher((e) -> {
-            if(e.getKeyCode() == KeyEvent.VK_X && e.getModifiers() == InputEvent.SHIFT_MASK + InputEvent.ALT_MASK) {
-            	Commons.compileActive();
+            if(e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_X && e.getModifiers() == InputEvent.SHIFT_MASK + InputEvent.ALT_MASK) {
+                System.out.println();
+                Commons.compileActive();
                 return false;
             }
             return true;
