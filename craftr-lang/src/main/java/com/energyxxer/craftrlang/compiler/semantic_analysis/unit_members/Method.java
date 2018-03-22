@@ -444,9 +444,9 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
     }
 
     @Override
-    public ScoreHolder getPlayer() {
+    public ScoreHolder getScoreHolder() {
         if(this.isStaticAccess()) {
-            return declaringUnit.getPlayer();
+            return declaringUnit.getScoreHolder();
         } else {
             if(ownerInstance == null) {
                 throw new IllegalStateException("bOOO");

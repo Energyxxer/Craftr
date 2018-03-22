@@ -34,6 +34,15 @@ public class ExplicitFloat implements ExplicitValue {
         return new NBTReference(entity, path);
     }
 
+    public float getValue() {
+        return value;
+    }
+
+    @Override
+    public Number asNumber() {
+        return getValue();
+    }
+
     @Override
     public String toString() {
         return value + "f";

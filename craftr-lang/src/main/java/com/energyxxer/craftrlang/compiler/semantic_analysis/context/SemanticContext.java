@@ -30,7 +30,7 @@ public interface SemanticContext {
     default ObjectInstance getInstance() {
         return null;
     }
-    ScoreHolder getPlayer();
+    ScoreHolder getScoreHolder();
 
     default Compiler getCompiler() {
         return getAnalyzer().getCompiler();

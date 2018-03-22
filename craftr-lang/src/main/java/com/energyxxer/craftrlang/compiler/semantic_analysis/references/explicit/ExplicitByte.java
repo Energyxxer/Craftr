@@ -39,6 +39,11 @@ public class ExplicitByte implements ExplicitValue {
     }
 
     @Override
+    public Number asNumber() {
+        return getValue();
+    }
+
+    @Override
     public String toString() {
         return value + "b";
     }

@@ -2,6 +2,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.references;
 
 import com.energyxxer.commodore.commands.execute.ExecuteCommand;
 import com.energyxxer.commodore.commands.execute.ExecuteStoreEntity;
+import com.energyxxer.commodore.commands.scoreboard.ScoreComparison;
 import com.energyxxer.commodore.commands.scoreboard.ScoreGet;
 import com.energyxxer.commodore.commands.scoreboard.ScorePlayersOperation;
 import com.energyxxer.commodore.entity.Entity;
@@ -11,6 +12,7 @@ import com.energyxxer.commodore.nbt.NumericNBTType;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.codegen.entities.CraftrEntity;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.booleans.BooleanResolution;
 
 public class EntityReference implements DataReference {
 
@@ -35,5 +37,10 @@ public class EntityReference implements DataReference {
         ExecuteCommand exec = new ExecuteCommand(new ScoreGet(getId(semanticContext)));
         exec.addModifier(new ExecuteStoreEntity(entity, path, NumericNBTType.INT));
         return new NBTReference(entity, path);
+    }
+
+    @Override
+    public BooleanResolution compare(Function function, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
+        return null;
     }
 }

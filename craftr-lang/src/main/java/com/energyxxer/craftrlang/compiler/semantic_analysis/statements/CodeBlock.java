@@ -205,8 +205,8 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     }
 
     @Override
-    public ScoreHolder getPlayer() {
-        return (isStatic() ? semanticContext.getUnit().getPlayer() : ownerInstance.getEntity());
+    public ScoreHolder getScoreHolder() {
+        return (isStatic() ? semanticContext.getUnit().getScoreHolder() : ownerInstance.getEntity());
     }
 
     @Override

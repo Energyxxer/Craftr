@@ -34,6 +34,15 @@ public class ExplicitShort implements ExplicitValue {
         return new NBTReference(entity, path);
     }
 
+    public short getValue() {
+        return value;
+    }
+
+    @Override
+    public Number asNumber() {
+        return getValue();
+    }
+
     @Override
     public String toString() {
         return value + "s";

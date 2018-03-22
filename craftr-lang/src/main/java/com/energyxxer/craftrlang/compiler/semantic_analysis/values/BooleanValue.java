@@ -8,8 +8,9 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitByte;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitBoolean;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by Energyxxer on 07/11/2017.
@@ -17,10 +18,10 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Op
 public class BooleanValue extends Value {
 
     public BooleanValue(boolean value, SemanticContext semanticContext) {
-        super(new ExplicitByte((byte) (value ? 1 : 0)), semanticContext);
+        super(new ExplicitBoolean(value), semanticContext);
     }
 
-    public BooleanValue(DataReference reference, SemanticContext semanticContext) {
+    public BooleanValue(@NotNull DataReference reference, SemanticContext semanticContext) {
         super(reference, semanticContext);
     }
 

@@ -60,4 +60,9 @@ public class ExplicitString implements ExplicitValue {
     public String getValue() {
         return value;
     }
+
+    @Override
+    public Number asNumber() {
+        return null;
+    }
 }

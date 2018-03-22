@@ -19,7 +19,7 @@ import java.util.Collections;
 public class CraftrEntity implements Entity {
 
     private Unit unit;
-    private final Selector selector;
+    private Selector selector;
     private Collection<ScoreboardAccess> scoreboardAccesses;
     private final ArrayList<MacroScoreHolder> macroHolders = new ArrayList<>();
 

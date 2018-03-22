@@ -125,7 +125,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
     }
 
     private void updateReference() {
-        this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getPlayer()));
+        this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getScoreHolder()));
     }
 
     public void initializeValue() {
@@ -149,7 +149,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
                 return;
             }
 
-            this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getPlayer()));
+            this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getScoreHolder()));
             this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext, null, initializerFunction);
             if(this.value instanceof Expression) {
                 this.value = ((Expression) this.value).unwrap(initializerFunction, getReference());
@@ -253,7 +253,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
 
                     if(!operand.isNull() && operand.getReference() != null) {
                         if(this.type == VariableType.FIELD || !(operand.getReference() instanceof ExplicitValue)) {
-                            this.reference = operand.getReference().toScore(function, new LocalScore(objective, (isStatic()) ? (this.semanticContext.getUnit().getPlayer()) : ownerInstance.getEntity()), this.semanticContext);
+                            this.reference = operand.getReference().toScore(function, new LocalScore(objective, (isStatic()) ? (this.semanticContext.getUnit().getScoreHolder()) : ownerInstance.getEntity()), this.semanticContext);
                             this.value = dataType.create(this.reference, semanticContext);
                             return this;
                         }

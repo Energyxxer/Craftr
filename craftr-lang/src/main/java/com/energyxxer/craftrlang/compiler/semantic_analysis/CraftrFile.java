@@ -223,7 +223,7 @@ public class CraftrFile extends AbstractFileComponent implements SemanticContext
     }
 
     @Override
-    public ScoreHolder getPlayer() {
+    public ScoreHolder getScoreHolder() {
         return null;
     }
 }

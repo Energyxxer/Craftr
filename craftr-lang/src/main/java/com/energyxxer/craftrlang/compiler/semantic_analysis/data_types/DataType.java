@@ -12,6 +12,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.*;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
@@ -203,7 +204,7 @@ public class DataType {
         else return this.name.equals(type.name);
     }
 
-    public Value create(DataReference reference, SemanticContext semanticContext) {
+    public Value create(@NotNull DataReference reference, SemanticContext semanticContext) {
         if(referenceConstructor == null) {
             throw new RuntimeException("No reference constructor found for data type " + this);
         } else return referenceConstructor.create(reference, semanticContext);

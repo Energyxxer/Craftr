@@ -72,7 +72,7 @@ public class FieldInitContext implements SemanticContext {
     }
 
     @Override
-    public ScoreHolder getPlayer() {
+    public ScoreHolder getScoreHolder() {
         return getOwnerInstance().getEntity();
     }
 

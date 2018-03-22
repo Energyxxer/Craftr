@@ -624,7 +624,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
     }
 
     @Override
-    public ScoreHolder getPlayer() {
+    public ScoreHolder getScoreHolder() {
         return staticPlayer;
     }
 

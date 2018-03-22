@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.commands.scoreboard.ScoreAdd;
+import com.energyxxer.commodore.commands.scoreboard.ScoreComparison;
 import com.energyxxer.commodore.commands.scoreboard.ScorePlayersOperation;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.LocalScore;
@@ -14,13 +15,15 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.booleans.NegatedBooleanReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.booleans.ScoreComparisonBooleanReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitInt;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 
 /**
  * Created by Energyxxer on 07/11/2017.
  */
-public class IntegerValue extends NumericalValue {
+public class IntegerValue extends NumericValue {
 
     public IntegerValue(SemanticContext semanticContext) {
         this(0, semanticContext);
@@ -48,7 +51,7 @@ public class IntegerValue extends NumericalValue {
      * Otherwise, this value is converted to whatever type <code>other</code> is.
      * */
     @Override
-    public NumericalValue coerce(NumericalValue other) {
+    public NumericValue coerce(NumericValue other) {
         if(other instanceof IntegerValue) return this;
         if(other instanceof FloatValue) return new FloatValue(this.reference, semanticContext);
         return null;
@@ -114,7 +117,7 @@ public class IntegerValue extends NumericalValue {
             else if(!(b instanceof ExplicitInt)) {
                 tempB = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
                 tempB.claim();
-                bScore = b.toScore(function, new LocalScore(tempB.getObjective(), semanticContext.getPlayer()), semanticContext);
+                bScore = b.toScore(function, new LocalScore(tempB.getObjective(), semanticContext.getScoreHolder()), semanticContext);
             }
 
             LocalizedObjective op = null;
@@ -122,7 +125,7 @@ public class IntegerValue extends NumericalValue {
             if(resultReference == null) {
                 op = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
                 op.claim();
-                resultReference = new ScoreReference(new LocalScore(op.getObjective(), semanticContext.getPlayer()));
+                resultReference = new ScoreReference(new LocalScore(op.getObjective(), semanticContext.getScoreHolder()));
             }
 
             LocalScore score = resultReference.getScore();
@@ -149,6 +152,24 @@ public class IntegerValue extends NumericalValue {
                     if(tempB != null) tempB.dispose();
                     if(op != null) op.dispose();
                     return new IntegerValue(new ScoreReference(score), semanticContext);
+                }
+                case EQUAL: {
+                    return new BooleanValue(new ScoreComparisonBooleanReference(a, ScoreComparison.EQUAL, b), semanticContext);
+                }
+                case NOT_EQUAL: {
+                    return new BooleanValue(new NegatedBooleanReference(new ScoreComparisonBooleanReference(a, ScoreComparison.EQUAL, b)), semanticContext);
+                }
+                case LESS_THAN: {
+                    return new BooleanValue(new ScoreComparisonBooleanReference(a, ScoreComparison.LESS_THAN, b), semanticContext);
+                }
+                case LESS_THAN_OR_EQUAL: {
+                    return new BooleanValue(new ScoreComparisonBooleanReference(a, ScoreComparison.LESS_THAN_EQUAL, b), semanticContext);
+                }
+                case GREATER_THAN: {
+                    return new BooleanValue(new ScoreComparisonBooleanReference(a, ScoreComparison.GREATER_THAN, b), semanticContext);
+                }
+                case GREATER_THAN_OR_EQUAL: {
+                    return new BooleanValue(new ScoreComparisonBooleanReference(a, ScoreComparison.GREATER_THAN_EQUAL, b), semanticContext);
                 }
                 default: {
                     semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operation not supported for implicit values", pattern));

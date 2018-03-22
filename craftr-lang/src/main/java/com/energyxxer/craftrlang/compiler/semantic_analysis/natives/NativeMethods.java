@@ -15,11 +15,7 @@ import com.energyxxer.commodore.effect.StatusEffect;
 import com.energyxxer.commodore.entity.Entity;
 import com.energyxxer.commodore.entity.GenericEntity;
 import com.energyxxer.commodore.functions.Function;
-import com.energyxxer.commodore.nbt.NBTCompoundBuilder;
-import com.energyxxer.commodore.nbt.NBTPath;
-import com.energyxxer.commodore.nbt.TagByte;
-import com.energyxxer.commodore.nbt.TagCompound;
-import com.energyxxer.commodore.nbt.TagString;
+import com.energyxxer.commodore.nbt.*;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.commodore.selector.Selector;
 import com.energyxxer.commodore.textcomponents.StringTextComponent;
@@ -33,7 +29,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolde
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.NBTReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitByte;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitBoolean;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitString;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitValue;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.ActualParameter;
@@ -111,15 +107,16 @@ public class NativeMethods {
                     Entity entity = ((ObjectInstance) instance).getEntity();
 
                     DataReference seamless = positionalParams.get(0).getValue().getReference();
+                    System.out.println("seamless = " + seamless);
                     if(seamless instanceof ExplicitValue) {
-                        if(seamless instanceof ExplicitByte) {
-                            if(((ExplicitByte) seamless).getValue() == 0) {
-                                function.append(new KillCommand(entity));
-                            } else {
+                        if(seamless instanceof ExplicitBoolean) {
+                            if(((ExplicitBoolean) seamless).getValue()) {
                                 function.append(new TeleportCommand(entity, new BlockDestination(new CoordinateSet(0, -512, 0))));
+                            } else {
+                                function.append(new KillCommand(entity));
                             }
                         } else {
-                            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Got non-byte explicit boolean data reference: " + seamless.getClass().getSimpleName(), pattern));
+                            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Got non-boolean explicit data reference: " + seamless.getClass().getSimpleName(), pattern));
                         }
                     } else {
                         semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Implicit parameters not currently supported for this method", pattern));
@@ -136,14 +133,14 @@ public class NativeMethods {
 
                     DataReference invisible = positionalParams.get(0).getValue().getReference();
                     if(invisible instanceof ExplicitValue) {
-                        if(invisible instanceof ExplicitByte) {
-                            if(((ExplicitByte) invisible).getValue() == 0) {
-                                function.append(new EffectClearCommand(entity, invisibility));
-                            } else {
+                        if(invisible instanceof ExplicitBoolean) {
+                            if(((ExplicitBoolean) invisible).getValue()) {
                                 function.append(new EffectGiveCommand(entity, new StatusEffect(invisibility, 100000, 0, StatusEffect.ParticleVisibility.HIDDEN)));
+                            } else {
+                                function.append(new EffectClearCommand(entity, invisibility));
                             }
                         } else {
-                            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Got non-byte explicit boolean data reference: " + invisible.getClass().getSimpleName(), pattern));
+                            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Got non-boolean explicit data reference: " + invisible.getClass().getSimpleName(), pattern));
                         }
                     } else {
                         semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Implicit parameters not currently supported for this method", pattern));
@@ -160,12 +157,12 @@ public class NativeMethods {
 
                     DataReference invulnerable = positionalParams.get(0).getValue().getReference();
                     if(invulnerable instanceof ExplicitValue) {
-                        if(invulnerable instanceof ExplicitByte) {
+                        if(invulnerable instanceof ExplicitBoolean) {
                             NBTCompoundBuilder cb = new NBTCompoundBuilder();
-                            cb.put(path, new TagByte(((ExplicitByte) invulnerable).getValue()));
+                            cb.put(path, new TagByte(((ExplicitBoolean) invulnerable).getValue() ? 1 : 0));
                             function.append(new DataMergeCommand(entity, cb.getCompound()));
                         } else {
-                            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Got non-byte explicit boolean data reference: " + invulnerable.getClass().getSimpleName(), pattern));
+                            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Got non-boolean explicit data reference: " + invulnerable.getClass().getSimpleName(), pattern));
                         }
                     } else {
                         invulnerable.toNBT(function, entity, path, semanticContext);
@@ -182,12 +179,12 @@ public class NativeMethods {
 
                     DataReference invisible = positionalParams.get(0).getValue().getReference();
                     if(invisible instanceof ExplicitValue) {
-                        if(invisible instanceof ExplicitByte) {
+                        if(invisible instanceof ExplicitBoolean) {
                             NBTCompoundBuilder cb = new NBTCompoundBuilder();
-                            cb.put(path, new TagByte(((ExplicitByte) invisible).getValue()));
+                            cb.put(path, new TagByte(((ExplicitBoolean) invisible).getValue() ? 1 : 0));
                             function.append(new DataMergeCommand(entity, cb.getCompound()));
                         } else {
-                            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Got non-byte explicit boolean data reference: " + invisible.getClass().getSimpleName(), pattern));
+                            semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Got non-boolean explicit data reference: " + invisible.getClass().getSimpleName(), pattern));
                         }
                     } else {
                         invisible.toNBT(function, entity, path, semanticContext);

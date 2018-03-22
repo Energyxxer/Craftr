@@ -14,7 +14,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Op
 /**
  * Created by Energyxxer on 07/11/2017.
  */
-public class FloatValue extends NumericalValue {
+public class FloatValue extends NumericValue {
 
     public FloatValue(float value, SemanticContext semanticContext) {
         super(semanticContext);
@@ -26,7 +26,7 @@ public class FloatValue extends NumericalValue {
     }
 
     @Override
-    public NumericalValue coerce(NumericalValue value) {
+    public NumericValue coerce(NumericValue value) {
         return this;
     }
 
@@ -39,7 +39,7 @@ public class FloatValue extends NumericalValue {
     public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
         /*
         if(operator == Operator.ASSIGN) {
-            if(operand instanceof NumericalValue && ((NumericalValue) operand).getWeight()<=this.getWeight()) {
+            if(operand instanceof NumericValue && ((NumericValue) operand).getWeight()<=this.getWeight()) {
                 if(operand instanceof IntegerValue) this.value = ((IntegerValue) operand).getRawValue().floatValue();
                 if(operand instanceof FloatValue) this.value = ((FloatValue) operand).value;
                 this.reference = operand.clone(function).getReference();
@@ -50,10 +50,10 @@ public class FloatValue extends NumericalValue {
             }
         }
 
-        if(operand instanceof NumericalValue) {
-            int weightDiff = this.getWeight() - ((NumericalValue) operand).getWeight();
-            if(weightDiff > 0) return runOperation(operator, ((NumericalValue) operand).coerce(this), pattern, function, fromVariable, silent);
-            else if(weightDiff < 0) return this.coerce((NumericalValue) operand).runOperation(operator, operand, pattern, function, fromVariable, silent);
+        if(operand instanceof NumericValue) {
+            int weightDiff = this.getWeight() - ((NumericValue) operand).getWeight();
+            if(weightDiff > 0) return runOperation(operator, ((NumericValue) operand).coerce(this), pattern, function, fromVariable, silent);
+            else if(weightDiff < 0) return this.coerce((NumericValue) operand).runOperation(operator, operand, pattern, function, fromVariable, silent);
             else {
                 //We can be certain that if this code is running, then both operands are FloatValues
 
