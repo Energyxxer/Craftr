@@ -32,6 +32,10 @@ public abstract class Value implements TraversableStructure {
         return reference instanceof ExplicitValue;
     }
 
+    public boolean isImplicit() {
+        return !(reference instanceof ExplicitValue);
+    }
+
     public void setReference(DataReference reference) {
         this.reference = reference;
     }

@@ -2040,8 +2040,8 @@ public class MCFunctionProductions {
             cmd.append(ENTITY);
 
             TokenStructureMatch action = new TokenStructureMatch("TAG_COMMAND_ACTION");
-            action.add(new TokenItemMatch(null, "add"));
-            action.add(new TokenItemMatch(null, "remove"));
+            action.add(new TokenItemMatch(null, "add").setName("COMMAND_NODE"));
+            action.add(new TokenItemMatch(null, "remove").setName("COMMAND_NODE"));
 
             cmd.append(new TokenGroupMatch().setName("COMMAND_NODE").append(action));
 
@@ -2057,8 +2057,8 @@ public class MCFunctionProductions {
             cmd.append(ENTITY);
 
             TokenStructureMatch action = new TokenStructureMatch("TAG_COMMAND_ACTION");
-            action.add(new TokenItemMatch(null, "list"));
-            action.add(new TokenItemMatch(null, "list"));
+            action.add(new TokenItemMatch(null, "list").setName("COMMAND_NODE"));
+            action.add(new TokenItemMatch(null, "list").setName("COMMAND_NODE"));
 
             cmd.append(new TokenGroupMatch().setName("COMMAND_NODE").append(action));
 
@@ -2073,6 +2073,40 @@ public class MCFunctionProductions {
             cmd.append(ENTITY);
 
             cmd.append(TEXT_COMPONENT);
+
+            COMMAND.add(cmd);
+        }
+
+        //time command
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("TIME_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "time")).setName("COMMAND_HEADER"));
+
+            TokenStructureMatch action = new TokenStructureMatch("TIME_COMMAND_ACTION");
+            action.add(new TokenItemMatch(null, "set").setName("COMMAND_NODE"));
+            action.add(new TokenItemMatch(null, "add").setName("COMMAND_NODE"));
+
+            cmd.append(new TokenGroupMatch().setName("COMMAND_NODE").append(action));
+
+            cmd.append(INTEGER_NUMBER);
+
+            COMMAND.add(cmd);
+        }
+        {
+            TokenGroupMatch cmd = new TokenGroupMatch().setName("TIME_COMMAND");
+            cmd.append(new TokenGroupMatch().append(new TokenItemMatch(null, "time")).setName("COMMAND_HEADER"));
+
+            TokenStructureMatch action = new TokenStructureMatch("TIME_COMMAND_ACTION");
+            action.add(new TokenItemMatch(null, "query").setName("COMMAND_NODE"));
+            action.add(new TokenItemMatch(null, "query").setName("COMMAND_NODE"));
+
+            cmd.append(new TokenGroupMatch().setName("COMMAND_NODE").append(action));
+
+            TokenStructureMatch time = new TokenStructureMatch("TIME_QUERY_UNIT");
+            time.add(new TokenItemMatch(null, "day"));
+            time.add(new TokenItemMatch(null, "daytime"));
+            time.add(new TokenItemMatch(null, "gametime"));
+            cmd.append(time);
 
             COMMAND.add(cmd);
         }

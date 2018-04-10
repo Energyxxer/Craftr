@@ -206,6 +206,26 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         return variables;
     }
 
+    public void createDataReference() {
+        if(reference != null) return;
+        reference = new ScoreReference(new LocalScore(objective, semanticContext.getScoreHolder()));
+    }
+
+    public Value assign(Value value, Function function, SemanticContext semanticContext, boolean silent) {
+        if(!value.getDataType().instanceOf(this.getDataType())) {
+            if(!silent) this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + value.getDataType() + " cannot be converted to " + this.getDataType(), pattern));
+            this.value = new Null(this.semanticContext);
+            return null;
+        }
+
+        if(value.isImplicit()) {
+            createDataReference();
+        }
+
+        this.value = value.getDataType().create(value.getReference().toScore(function, ((ScoreReference) reference).getScore(), semanticContext), semanticContext);
+        return this.value;
+    }
+
     public Variable createEmpty(ObjectInstance ownerInstance) {
         return new Variable(this, ownerInstance);
     }
@@ -248,6 +268,8 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         lazilyInstantiateValue();
         switch(operator) {
             case ASSIGN: {
+                return this.assign(operand, function, semanticContext, silent);
+                /*
                 if(operand.getDataType().instanceOf(this.getDataType())) {
                     if(operand.isExplicit()) this.value = operand;
 
@@ -264,7 +286,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
                     if(!silent) this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern));
                     this.value = new Null(this.semanticContext);
                 }
-                return value;
+                return value;*/
             }
         }
         if(!value.isNull()) {
