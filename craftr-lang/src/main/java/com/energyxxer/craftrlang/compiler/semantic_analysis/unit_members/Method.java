@@ -284,7 +284,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
             if(!isStaticInner()) {
                 this.ownerInstance = new ObjectInstance(declaringUnit, this);
-                function.setExecutionContext(new ExecutionContext(ownerInstance.getEntity()));
+                function.setExecutionContext(new ExecutionContext(ownerInstance.requestEntity()));
             }
 
             codeBlock.clearSymbols();
@@ -451,7 +451,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
             if(ownerInstance == null) {
                 throw new IllegalStateException("bOOO");
             }
-            return ownerInstance.getEntity();
+            return ownerInstance.requestEntity();
         }
     }
 }

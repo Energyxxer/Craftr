@@ -656,6 +656,13 @@ public class CraftrProductions {
                 g.append(new TokenItemMatch(CraftrLang.END_OF_STATEMENT));
                 STATEMENT.add(g);
             }
+            {
+                TokenGroupMatch g = new TokenGroupMatch().setName("DEBUG_STATEMENT");
+                g.append(new TokenItemMatch(CraftrLang.KEYWORD, "debug"));
+                g.append(new TokenItemMatch(CraftrLang.IDENTIFIER).setName("DEBUG_LABEL"));
+                g.append(new TokenItemMatch(CraftrLang.END_OF_STATEMENT));
+                STATEMENT.add(g);
+            }
         }
 
 

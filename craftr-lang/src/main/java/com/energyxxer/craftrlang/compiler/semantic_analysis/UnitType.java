@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
 import com.energyxxer.craftrlang.CraftrLang;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.implicity.ImplicityState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,15 +10,17 @@ import java.util.List;
  * Created by Energyxxer on 07/14/2017.
  */
 public enum UnitType {
-    ENTITY("name:Entity,plural:Entities"), ITEM("name:Item,plural:Items"), FEATURE("name:Feature,plural:Features"), CLASS("name:Class,plural:Classes"), ENUM("name:Enum,plural:Enums"), WORLD("name:World,plural:Worlds,singleton:true");
+    ENTITY("name:Entity,plural:Entities",ImplicityState.IMPLICIT), ITEM("name:Item,plural:Items",ImplicityState.EXPLICIT), FEATURE("name:Feature,plural:Features",ImplicityState.EXPLICIT), CLASS("name:Class,plural:Classes",ImplicityState.EXPLICIT), ENUM("name:Enum,plural:Enums",ImplicityState.EXPLICIT), WORLD("name:World,plural:Worlds,singleton:true",ImplicityState.EXPLICIT);
 
     private String name;
     private String plural;
     private List<CraftrLang.Modifier> inferredModifiers;
+    private ImplicityState implicity;
     private boolean singleton = false;
 
-    UnitType(String raw) {
+    UnitType(String raw, ImplicityState implicity) {
         this.inferredModifiers = new ArrayList<>();
+        this.implicity = implicity;
 
         String[] params = raw.split(",");
         for(String param : params) {

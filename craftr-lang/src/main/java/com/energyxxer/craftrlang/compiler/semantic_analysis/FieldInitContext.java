@@ -61,7 +61,7 @@ public class FieldInitContext implements SemanticContext {
     public ObjectInstance getOwnerInstance() {
         if(ownerInstance == null) {
             ownerInstance = new ObjectInstance(unit, this);
-            unit.getInstanceInitializer().setExecutionContext(new ExecutionContext(ownerInstance.getEntity()));
+            unit.getInstanceInitializer().setExecutionContext(new ExecutionContext(ownerInstance.requestEntity()));
         }
         return ownerInstance;
     }

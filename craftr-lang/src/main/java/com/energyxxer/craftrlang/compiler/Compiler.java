@@ -47,7 +47,7 @@ public class Compiler {
         this.project = project;
         this.projectName = project.getName();
         this.projectPrefix = project.getPrefix();
-        this.projectOutput = new File(project.getWorld());
+        this.projectOutput = (project.getWorld() != null) ? new File(project.getWorld()) : null;
         this.source = project.getSource();
 
         this.thread = new Thread(this::runCompilation,"Craftr-Compiler[" + projectName + "]");

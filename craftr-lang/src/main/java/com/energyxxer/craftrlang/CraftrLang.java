@@ -42,7 +42,7 @@ public class CraftrLang {
         unit_types = Arrays.asList("entity", "item", "feature", "class", "enum", "world"),
         unit_actions = Arrays.asList("extends", "implements", "requires"),
         data_types = Arrays.asList("int", "float", "double", "long", "boolean", "void", "char"),
-        keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "setup", "package", "import", "operator", "overrides"),
+        keywords = Arrays.asList("if", "else", "while", "for", "switch", "case", "default", "new", "event", "setup", "package", "import", "operator", "overrides", "debug"),
         action_keywords = Arrays.asList("break", "continue", "return"),
         booleans = Arrays.asList("true", "false"),
         nulls = Collections.singletonList("null"),

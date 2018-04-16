@@ -9,9 +9,8 @@ import com.energyxxer.craftr.ui.styledcomponents.StyledMenuItem;
 import com.energyxxer.craftr.ui.styledcomponents.StyledPopupMenu;
 import com.energyxxer.craftrlang.projects.Project;
 
-import javax.swing.ImageIcon;
-import java.awt.Font;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -144,6 +143,7 @@ public class TabManager {
 		}
 
 		Commons.updateActiveProject();
+		saveOpenTabs();
 	}
 
 	public static Tab getSelectedTab() {

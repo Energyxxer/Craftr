@@ -14,7 +14,6 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolde
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.EntityReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
@@ -32,17 +31,28 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
 
     private CraftrEntity entity;
 
-    public ObjectInstance(Unit unit, SemanticContext semanticContext) {
-        this(unit, null, semanticContext);
+    public ObjectInstance(ObjectInstance other) {
+        super(other.reference, other.semanticContext);
+        this.unit = other.unit;
+        this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
+        this.methodLog = unit.getInstanceMethodLog().createForInstance(this);
+        this.entity = other.entity;
+
+        this.fieldLog.put("this", this);
     }
 
-    public ObjectInstance(Unit unit, DataReference reference, SemanticContext semanticContext) {
-        super(reference, semanticContext);
+    public ObjectInstance(Unit unit, SemanticContext semanticContext) {
+        this(unit, true, semanticContext);
+    }
+
+    public ObjectInstance(Unit unit, boolean explicit, SemanticContext semanticContext) {
+        super(semanticContext);
         this.unit = unit;
 
-        //TODO: Actual entity constructor...
-        this.entity = new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName())));
-        if(reference == null) this.reference = new EntityReference(this.entity);
+        if(!explicit) {
+            //TODO: Actual entity constructor...
+            setEntity(new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName()))));
+        }
 
         this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
         this.methodLog = unit.getInstanceMethodLog().createForInstance(this);
@@ -91,7 +101,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
 
     @Override
     public ObjectInstance clone(Function function) {
-        return new ObjectInstance(this.unit, this.reference, this.semanticContext);
+        return new ObjectInstance(this);
     }
 
     @Override
@@ -101,6 +111,28 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
 
     public CraftrEntity getEntity() {
         return entity;
+    }
+
+    private void setEntity(CraftrEntity entity) {
+        this.entity = entity;
+        this.reference = new EntityReference(entity);
+    }
+
+    public CraftrEntity requestEntity() {
+        if(entity == null) {
+            setEntity(new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName()))));
+        }
+        return entity;
+    }
+
+    @Override
+    public boolean isExplicit() {
+        return entity == null;
+    }
+
+    @Override
+    public boolean isImplicit() {
+        return entity != null;
     }
 
     @Override

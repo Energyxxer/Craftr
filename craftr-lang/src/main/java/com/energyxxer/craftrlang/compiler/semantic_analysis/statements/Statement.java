@@ -30,6 +30,7 @@ public abstract class Statement {
             case "FOR_STATEMENT": return new ForStatement(pattern, semanticContext, function);
             case "WHILE_STATEMENT": return new WhileStatement(pattern, semanticContext, function);
             case "VARIABLE": return new VariableDeclaration(pattern, semanticContext, function);
+            case "DEBUG_STATEMENT": return new DebugStatement(pattern, semanticContext, function);
             default: return null;
         }
     }

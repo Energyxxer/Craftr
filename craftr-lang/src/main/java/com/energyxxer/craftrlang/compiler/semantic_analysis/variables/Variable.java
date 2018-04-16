@@ -3,6 +3,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.variables;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.commodore.score.Objective;
+import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjective;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
@@ -68,8 +69,8 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         this.name = that.name;
         this.type = that.type;
         this.block = that.block;
-        this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.getEntity()));
-        this.lazyFactory = () -> dataType.create(this.reference, this.semanticContext);
+        //if(ownerInstance.isImplicit()) this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.getEntity()));
+        this.lazyFactory = () -> this.reference != null ? dataType.create(this.reference, this.semanticContext) : null;
         this.ownerInstance = ownerInstance;
         this.objective = that.objective;
     }
@@ -108,24 +109,27 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         //this.validName = !CraftrLang.isPseudoIdentifier(this.name);
         this.block = null;
         this.type = VariableType.PARAMETER;
-        this.reference = paramReference;
         if(value != null) {
-            this.reference = value.getReference().toScore(function, this.getReference().getScore(), semanticContext); //Clone the value into the parameter objective
+            if(value.isImplicit()) {
+                this.reference = value.getReference().toScore(function, paramReference.getScore(), semanticContext); //Clone the value into the parameter objective
+                this.value = dataType.create(this.reference, semanticContext);
+            } else {
+                this.value = value;
+            }
+        } else {
+            this.reference = paramReference;
+            this.value = dataType.create(this.reference, semanticContext); //Make a non-null value that points to the parameter objective. This shouldn't
         }
-        this.value = dataType.create(this.reference, semanticContext); //Make a non-null value that points to the parameter objective. This shouldn't
 
         this.claimObjective();
     }
 
+    @Deprecated
     private void claimObjective() {
         LocalizedObjective locObj = type.getGroup(semanticContext.getLocalizedObjectiveManager()).create();
         locObj.claim();
         //Never dispose
         this.objective = locObj.getObjective();
-    }
-
-    private void updateReference() {
-        this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getScoreHolder()));
     }
 
     public void initializeValue() {
@@ -206,9 +210,15 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         return variables;
     }
 
+    private ScoreHolder requestParentScoreHolder() {
+        if(isStatic()) {
+            return getUnit().getScoreHolder();
+        } else return ownerInstance.requestEntity();
+    }
+
     public void createDataReference() {
         if(reference != null) return;
-        reference = new ScoreReference(new LocalScore(objective, semanticContext.getScoreHolder()));
+        reference = new ScoreReference(new LocalScore(objective, requestParentScoreHolder()));
     }
 
     public Value assign(Value value, Function function, SemanticContext semanticContext, boolean silent) {
@@ -221,9 +231,11 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         if(value.isImplicit()) {
             createDataReference();
         }
-
-        this.value = value.getDataType().create(value.getReference().toScore(function, ((ScoreReference) reference).getScore(), semanticContext), semanticContext);
-        return this.value;
+        if(reference != null) {
+            value = value.getDataType().create(value.getReference().toScore(function, ((ScoreReference) reference).getScore(), semanticContext), semanticContext);
+        }
+        this.value = value;
+        return value;
     }
 
     public Variable createEmpty(ObjectInstance ownerInstance) {
@@ -265,30 +277,12 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
 
     @Override
     public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
-        lazilyInstantiateValue();
         switch(operator) {
             case ASSIGN: {
                 return this.assign(operand, function, semanticContext, silent);
-                /*
-                if(operand.getDataType().instanceOf(this.getDataType())) {
-                    if(operand.isExplicit()) this.value = operand;
-
-                    if(!operand.isNull() && operand.getReference() != null) {
-                        if(this.type == VariableType.FIELD || !(operand.getReference() instanceof ExplicitValue)) {
-                            this.reference = operand.getReference().toScore(function, new LocalScore(objective, (isStatic()) ? (this.semanticContext.getUnit().getScoreHolder()) : ownerInstance.getEntity()), this.semanticContext);
-                            this.value = dataType.create(this.reference, semanticContext);
-                            return this;
-                        }
-                    } else {
-                        this.semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Assigned value may not have been initialized", pattern));
-                    }
-                } else {
-                    if(!silent) this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + operand.getDataType() + " cannot be converted to " + this.getDataType(), pattern));
-                    this.value = new Null(this.semanticContext);
-                }
-                return value;*/
             }
         }
+        lazilyInstantiateValue();
         if(!value.isNull()) {
             Value returnValue = value.runOperation(operator, operand, pattern, function, semanticContext, (operator == ASSIGN) ? this.getReference() : null, silent);
             return returnValue;
