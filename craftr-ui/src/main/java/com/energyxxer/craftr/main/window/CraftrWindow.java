@@ -214,6 +214,7 @@ public class CraftrWindow {
 	private static void terminate() {
 		System.out.println("Terminating...");
 		TabManager.saveOpenTabs();
+		projectExplorer.saveExplorerTree();
 		jframe.dispose();
 		System.exit(0);
 	}

@@ -63,6 +63,7 @@ public class Craftr {
 
 		CraftrWindow.welcomePane.tipScreen.start(1000);
 		TabManager.openSavedTabs();
+		CraftrWindow.projectExplorer.openExplorerTree();
 	}
 
 }

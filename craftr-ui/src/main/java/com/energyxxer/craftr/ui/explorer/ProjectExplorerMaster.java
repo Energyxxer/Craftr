@@ -12,6 +12,9 @@ import com.energyxxer.craftrlang.projects.ProjectManager;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.regex.Matcher;
 
 /**
  * Created by User on 5/16/2017.
@@ -68,9 +71,7 @@ public class ProjectExplorerMaster extends ExplorerMaster {
         updateRoot();
 
         clearSelected();
-        ArrayList<String> copy = new ArrayList<>();
-        copy.addAll(this.getExpandedElements());
-        refresh(copy);
+        refresh(new ArrayList<>(this.getExpandedElements()));
     }
 
     private void refresh(ArrayList<String> toOpen) {
@@ -119,5 +120,22 @@ public class ProjectExplorerMaster extends ExplorerMaster {
     protected void selectionUpdated() {
         super.selectionUpdated();
         Commons.updateActiveProject();
+    }
+
+    public void saveExplorerTree() {
+        StringBuilder sb = new StringBuilder();
+        Collection<String> expandedElements = this.getExpandedElements();
+        for(String elem : expandedElements) {
+            sb.append(elem);
+            sb.append(File.pathSeparator);
+        }
+        System.out.println("Saving: " + sb);
+        Preferences.put("open_tree",sb.toString());
+    }
+
+    public void openExplorerTree() {
+        String openTree = Preferences.get("open_tree",null);
+        System.out.println("Opening: " + openTree);
+        refresh(new ArrayList<>(Arrays.asList(openTree.split(Matcher.quoteReplacement(File.pathSeparator)))));
     }
 }
