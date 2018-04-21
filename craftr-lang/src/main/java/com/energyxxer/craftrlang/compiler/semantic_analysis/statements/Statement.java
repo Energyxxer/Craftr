@@ -3,19 +3,26 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
 public abstract class Statement {
     protected final TokenPattern<?> pattern;
     protected final SemanticContext semanticContext;
     protected final Function function;
+    protected DataHolder dataHolder;
 
     protected boolean silent = false;
 
     public Statement(TokenPattern<?> pattern, SemanticContext semanticContext, Function function) {
+        this(pattern, semanticContext, function, null);
+    }
+
+    public Statement(TokenPattern<?> pattern, SemanticContext semanticContext, Function function, DataHolder dataHolder) {
         this.pattern = pattern;
         this.semanticContext = semanticContext;
         this.function = function;
+        this.dataHolder = dataHolder;
     }
 
     public static Statement read(TokenPattern<?> pattern, SemanticContext semanticContext, Function function) {
@@ -33,6 +40,14 @@ public abstract class Statement {
             case "DEBUG_STATEMENT": return new DebugStatement(pattern, semanticContext, function);
             default: return null;
         }
+    }
+
+    public void setDataHolder(DataHolder dataHolder) {
+        this.dataHolder = dataHolder;
+    }
+
+    public DataHolder getDataHolder() {
+        return dataHolder;
     }
 
     public boolean isSilent() {

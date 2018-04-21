@@ -8,7 +8,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticCont
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 
-public class FieldInitContext implements SemanticContext {
+public class InitContext implements SemanticContext {
     private final Unit unit;
     private final LocalizedObjectiveManager locObjMgr;
 
@@ -16,7 +16,7 @@ public class FieldInitContext implements SemanticContext {
 
     //private final CraftrEntity entity;
 
-    public FieldInitContext(Unit unit) {
+    public InitContext(Unit unit) {
         this.unit = unit;
         this.locObjMgr = unit.getAnalyzer().getCompiler().getModule().createLocalizedObjectiveManager(this);
 
@@ -78,6 +78,6 @@ public class FieldInitContext implements SemanticContext {
 
     @Override
     public String toString() {
-        return "FieldInitContext for " + unit.getFullyQualifiedName();
+        return "InitContext for " + unit.getFullyQualifiedName();
     }
 }

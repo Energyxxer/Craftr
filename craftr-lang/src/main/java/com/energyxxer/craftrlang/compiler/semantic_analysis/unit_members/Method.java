@@ -283,7 +283,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         if(codeBlock != null) {
 
             if(!isStaticInner()) {
-                this.ownerInstance = new ObjectInstance(declaringUnit, this);
+                this.ownerInstance = declaringUnit.getMethodInitContext().getOwnerInstance();
                 function.setExecutionContext(new ExecutionContext(ownerInstance.requestEntity()));
             }
 
@@ -414,6 +414,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
             }
         }
         codeBlock.setSilent(true);
+        codeBlock.setDataHolder(dataHolder);
         Value blockResult = codeBlock.evaluate(function);
         if(returnType == DataType.VOID) return null;
         if(blockResult != null) return blockResult;

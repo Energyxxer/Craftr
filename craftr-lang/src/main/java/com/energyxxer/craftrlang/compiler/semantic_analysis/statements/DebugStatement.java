@@ -26,12 +26,20 @@ public class DebugStatement extends Statement {
                 out = "" + ((CodeBlock) semanticContext).asObjectInstance().isImplicit();
                 break;
             }
-            case "context": {
+            case "semanticContext": {
                 out = "" + semanticContext;
                 break;
             }
             case "instance": {
                 out = "" + ((CodeBlock) semanticContext).asObjectInstance();
+                break;
+            }
+            case "executionContext": {
+                out = "" + function.getExecutionContext();
+                break;
+            }
+            case "finalSender": {
+                out = "" + function.getExecutionContext().getFinalSender();
                 break;
             }
         }

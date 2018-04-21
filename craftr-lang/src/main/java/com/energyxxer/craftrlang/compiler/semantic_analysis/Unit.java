@@ -601,13 +601,22 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         return true;
     }
 
-    private SemanticContext fieldInitContext;
+    private InitContext fieldInitContext;
 
-    public SemanticContext getFieldInitContext() {
+    public InitContext getFieldInitContext() {
         if(fieldInitContext == null) {
-            fieldInitContext = new FieldInitContext(this);
+            fieldInitContext = new InitContext(this);
         }
         return fieldInitContext;
+    }
+
+    private InitContext methodInitContext;
+
+    public InitContext getMethodInitContext() {
+        if(methodInitContext == null) {
+            methodInitContext = new InitContext(this);
+        }
+        return methodInitContext;
     }
 
     public List<Unit> getInheritanceMap() {

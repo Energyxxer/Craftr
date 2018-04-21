@@ -15,7 +15,7 @@ public class ExpressionStatement extends Statement {
 
     @Override
     public Value evaluate(Function function) {
-        Value value = ExprResolver.analyzeValue(pattern.find("EXPRESSION"), semanticContext, null, function);
+        Value value = ExprResolver.analyzeValue(pattern.find("EXPRESSION"), semanticContext, this.dataHolder, function);
         if(value instanceof Expression) value = ((Expression) value).unwrap(function, null);
         return value;
     }

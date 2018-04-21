@@ -11,7 +11,7 @@ import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.To
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.FieldInitContext;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.InitContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.abstract_package.Package;
@@ -141,7 +141,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
             Function initializerFunction;
             if(semanticContext instanceof Unit) {
                 initializerFunction = ((Unit) semanticContext).getStaticInitializer();
-            } else if(semanticContext instanceof FieldInitContext) {
+            } else if(semanticContext instanceof InitContext) {
                 initializerFunction = semanticContext.getUnit().getInstanceInitializer();
             } else if(semanticContext instanceof CodeBlock) {
                 initializerFunction = ((CodeBlock) semanticContext).getFunction();

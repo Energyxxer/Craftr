@@ -1,9 +1,5 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
-import com.energyxxer.commodore.commands.execute.ExecuteAsEntity;
-import com.energyxxer.commodore.commands.execute.ExecuteAtEntity;
-import com.energyxxer.commodore.commands.execute.ExecuteCommand;
-import com.energyxxer.commodore.commands.function.FunctionCommand;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
@@ -26,6 +22,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,6 +55,8 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
             }
         }
     };
+
+    private ArrayList<Statement> statements;
 
     private boolean initialized = false;
 
@@ -97,6 +96,8 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
 
         closed = false;
 
+        statements = new ArrayList<>();
+
         TokenList list = (TokenList) inner.find("STATEMENT_LIST");
         if(list != null) {
             TokenPattern<?>[] rawStatements = list.getContents();
@@ -110,6 +111,7 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
                 Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this, function);
 
                 if(statement != null) {
+                    statements.add(statement);
                     statement.setSilent(silent);
                     Value value = statement.evaluate(function);
                     if(statement instanceof ReturnStatement) {
@@ -137,10 +139,11 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
 
     @Override
     public Value evaluate(Function function) {
-        ExecuteCommand exec = new ExecuteCommand(new FunctionCommand(this.function));
-        exec.addModifier(new ExecuteAsEntity(ownerInstance.getEntity()));
-        exec.addModifier(new ExecuteAtEntity(ownerInstance.getEntity()));
-        function.append(exec);
+        System.out.println("EVALUATING CODE BLOCK IN FUNCTION " + function);
+        statements.forEach(st -> {
+            st.setDataHolder(this.dataHolder);
+            st.evaluate(function);
+        });
         return null;
     }
 
