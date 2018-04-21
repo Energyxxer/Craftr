@@ -60,7 +60,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
 
     private Factory<Value> lazyFactory;
 
-    private Variable(Variable that, ObjectInstance ownerInstance) {
+    private Variable(Variable that, ObjectInstance ownerInstance, boolean empty) {
         super(that.semanticContext);
         this.pattern = that.pattern;
         this.visibility = that.visibility;
@@ -70,7 +70,12 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         this.type = that.type;
         this.block = that.block;
         //if(ownerInstance.isImplicit()) this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.getEntity()));
-        this.lazyFactory = () -> this.reference != null ? dataType.create(this.reference, this.semanticContext) : null;
+        if(empty) {
+            this.lazyFactory = () -> this.reference != null ? dataType.create(this.reference, this.semanticContext) : null;
+        } else {
+            this.lazyFactory = that.lazyFactory;
+            this.value = that.value;
+        }
         this.ownerInstance = ownerInstance;
         this.objective = that.objective;
     }
@@ -232,14 +237,19 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
             createDataReference();
         }
         if(reference != null) {
-            value = value.getDataType().create(value.getReference().toScore(function, ((ScoreReference) reference).getScore(), semanticContext), semanticContext);
+            Value relocatedValue = value.getDataType().create(value.getReference().toScore(function, ((ScoreReference) reference).getScore(), semanticContext), semanticContext);
+            if(value.isImplicit()) value = relocatedValue;
         }
         this.value = value;
         return value;
     }
 
+    public Variable createNew(ObjectInstance ownerInstance) {
+        return new Variable(this, ownerInstance, false);
+    }
+
     public Variable createEmpty(ObjectInstance ownerInstance) {
-        return new Variable(this, ownerInstance);
+        return new Variable(this, ownerInstance, true);
     }
 
     public Objective getObjective() {

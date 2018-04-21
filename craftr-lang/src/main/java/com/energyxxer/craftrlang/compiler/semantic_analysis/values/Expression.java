@@ -15,7 +15,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Op
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
-public class Expression extends Value {
+public class Expression extends ValueWrapper {
     protected boolean silent = false;
 
     private Value a;
@@ -40,6 +40,10 @@ public class Expression extends Value {
 
     private boolean usesVariable(Variable variable) {
         return a == variable || b == variable || a instanceof Expression && ((Expression) a).usesVariable(variable) || b instanceof Expression && ((Expression) b).usesVariable(variable) || a instanceof MethodCall || b instanceof MethodCall;
+    }
+
+    public Value unwrap(Function function) {
+        return unwrap(function, null);
     }
 
     public Value unwrap(Function function, ScoreReference resultReference) {

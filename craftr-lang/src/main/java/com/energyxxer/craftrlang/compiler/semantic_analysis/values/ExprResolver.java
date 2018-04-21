@@ -116,7 +116,7 @@ public final class ExprResolver {
                     for(int i = 0; i < contents.length; i++) {
                         if((i & 1) == 0) {
                             //Operand
-                            Value value = analyzeValueOrReference(contents[i], semanticContext, null, function, silent);
+                            Value value = analyzeValueOrReference(contents[i], semanticContext, dataHolder, function, silent);
                             if(value == null) {
                                 return null;
                             }

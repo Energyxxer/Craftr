@@ -30,6 +30,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataRefer
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.NBTReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitBoolean;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitInt;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitString;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitValue;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.ActualParameter;
@@ -92,7 +93,20 @@ public class NativeMethods {
                         TextComponent text = new StringTextComponent(((ExplicitString) reference).getValue());
                         function.append(new TellrawCommand(new GenericEntity(new Selector(Selector.BaseSelector.ALL_PLAYERS)), text));
                     } else {
-                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Implicit string parameter not supported"));
+                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Implicit string parameter not supported", pattern));
+                    }
+                    return null;
+                });
+        methods.put("craftr.lang.World.print(int)",
+                (function, positionalParams, unused, pattern, semanticContext, thisIsKindaStatic) -> {
+
+                    ActualParameter message = positionalParams.get(0);
+                    DataReference reference = message.getValue().getReference();
+                    if(reference instanceof ExplicitInt) {
+                        TextComponent text = new StringTextComponent("" + ((ExplicitInt) reference).getValue());
+                        function.append(new TellrawCommand(new GenericEntity(new Selector(Selector.BaseSelector.ALL_PLAYERS)), text));
+                    } else {
+                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Implicit integer parameter not supported", pattern));
                     }
                     return null;
                 });
