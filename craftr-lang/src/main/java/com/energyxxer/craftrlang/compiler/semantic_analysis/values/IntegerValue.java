@@ -101,7 +101,7 @@ public class IntegerValue extends NumericValue {
                 case GREATER_THAN: return new BooleanValue(a > b, semanticContext);
                 case GREATER_THAN_OR_EQUAL: return new BooleanValue(a >= b, semanticContext);
                 default: {
-                    semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + operator.getSymbol() + " is not defined for data type " + getDataType()));
+                    semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + operator.getSymbol() + " is not defined for data type " + getDataType(), pattern));
                     return null;
                 }
             }
@@ -117,7 +117,7 @@ public class IntegerValue extends NumericValue {
             else if(!(b instanceof ExplicitInt)) {
                 tempB = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
                 tempB.claim();
-                bScore = b.toScore(function, new LocalScore(tempB.getObjective(), semanticContext.getScoreHolder()), semanticContext);
+                bScore = b.toScore(function, new LocalScore(tempB.getObjective(), semanticContext.getScoreHolder(function)), semanticContext);
             }
 
             LocalizedObjective op = null;
@@ -125,7 +125,7 @@ public class IntegerValue extends NumericValue {
             if(resultReference == null) {
                 op = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
                 op.claim();
-                resultReference = new ScoreReference(new LocalScore(op.getObjective(), semanticContext.getScoreHolder()));
+                resultReference = new ScoreReference(new LocalScore(op.getObjective(), semanticContext.getScoreHolder(function)));
             }
 
             LocalScore score = resultReference.getScore();

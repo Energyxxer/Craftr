@@ -3,7 +3,7 @@ package craftr.lang.entities;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public scoreHolder dragon_fireball extends projectile_base {
+public entity dragon_fireball extends projectile_base {
     
     //Getters for NBT Data
     public native Vector3D getDirection();

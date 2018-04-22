@@ -5,7 +5,7 @@ import craftr.lang.entities.features.*;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public scoreHolder parrot extends living_base implements tameable {
+public entity parrot extends living_base implements tameable {
     
     //Getters for NBT Data
     public native int getVariant();

@@ -39,7 +39,7 @@ public class FieldLog extends SymbolTable {
 
         for(Symbol symbol : parentUnit.getInstanceFieldLog().getMap().values()) {
             if(symbol instanceof Variable) {
-                this.put(((Variable) symbol).createNew(instance));
+                this.put((instance.getEntity() != null) ? ((Variable) symbol).createNew(instance) : ((Variable) symbol).createEmpty(instance));
             }
         }
     }

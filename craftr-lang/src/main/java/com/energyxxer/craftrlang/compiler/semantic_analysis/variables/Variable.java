@@ -71,6 +71,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         this.block = that.block;
         //if(ownerInstance.isImplicit()) this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.getEntity()));
         if(empty) {
+            this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.requestEntity(null)));
             this.lazyFactory = () -> this.reference != null ? dataType.create(this.reference, this.semanticContext) : null;
         } else {
             this.lazyFactory = that.lazyFactory;
@@ -158,7 +159,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
                 return;
             }
 
-            this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getScoreHolder()));
+            this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getScoreHolder(initializerFunction)));
             this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext, null, initializerFunction);
             if(this.value instanceof Expression) {
                 this.value = ((Expression) this.value).unwrap(initializerFunction, getReference());
@@ -215,15 +216,15 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         return variables;
     }
 
-    private ScoreHolder requestParentScoreHolder() {
+    private ScoreHolder requestParentScoreHolder(Function function) {
         if(isStatic()) {
-            return getUnit().getScoreHolder();
-        } else return ownerInstance.requestEntity();
+            return getUnit().getScoreHolder(function);
+        } else return ownerInstance.requestEntity(function);
     }
 
-    public void createDataReference() {
+    public void createDataReference(Function function) {
         if(reference != null) return;
-        reference = new ScoreReference(new LocalScore(objective, requestParentScoreHolder()));
+        reference = new ScoreReference(new LocalScore(objective, requestParentScoreHolder(function)));
     }
 
     public Value assign(Value value, Function function, SemanticContext semanticContext, boolean silent) {
@@ -234,7 +235,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         }
 
         if(value.isImplicit()) {
-            createDataReference();
+            createDataReference(function);
         }
         if(reference != null) {
             Value relocatedValue = value.getDataType().create(value.getReference().toScore(function, ((ScoreReference) reference).getScore(), semanticContext), semanticContext);
@@ -290,6 +291,13 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         switch(operator) {
             case ASSIGN: {
                 return this.assign(operand, function, semanticContext, silent);
+            }
+            case ADD_THEN_ASSIGN:
+            case SUBTRACT_THEN_ASSIGN:
+            case MULTIPLY_THEN_ASSIGN:
+            case DIVIDE_THEN_ASSIGN: {
+                Value result = unwrap().runOperation(Operator.getNoAssign(operator), operand, pattern, function, semanticContext, null, silent);
+                return (result != null) ? this.assign(result, function, semanticContext, silent) : null;
             }
         }
         lazilyInstantiateValue();

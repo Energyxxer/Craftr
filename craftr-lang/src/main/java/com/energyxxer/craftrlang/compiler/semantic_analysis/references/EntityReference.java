@@ -11,6 +11,7 @@ import com.energyxxer.commodore.nbt.NBTPath;
 import com.energyxxer.commodore.nbt.NumericNBTType;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.codegen.entities.CraftrEntity;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.booleans.BooleanResolution;
 
@@ -20,6 +21,10 @@ public class EntityReference implements DataReference {
 
     public EntityReference(CraftrEntity entity) {
         this.entity = entity;
+    }
+
+    public EntityReference(Unit unit, ScoreReference score) {
+        this.entity = new CraftrEntity(unit, score);
     }
 
     private LocalScore getId(SemanticContext semanticContext) {
@@ -42,5 +47,9 @@ public class EntityReference implements DataReference {
     @Override
     public BooleanResolution compare(Function function, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
         return null;
+    }
+
+    public CraftrEntity getEntity() {
+        return entity;
     }
 }

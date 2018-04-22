@@ -4,6 +4,7 @@ import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.FakePlayer;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.CraftrLang;
+import com.energyxxer.craftrlang.compiler.codegen.entities.CraftrEntity;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
@@ -18,6 +19,8 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolde
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.FieldLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.EntityReference;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.MethodSignature;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
@@ -260,7 +263,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         staticPlayer = new FakePlayer(name.toUpperCase());
 
         dataType = new DataType(this);
-        dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, r == null, c));
+        dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, (r != null && r instanceof EntityReference) ? ((EntityReference) r).getEntity() : ((r instanceof ScoreReference) ? new CraftrEntity(this, (ScoreReference) r) : null), c));
 
         staticInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/init-static");
         instanceInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/init-instance");
@@ -633,7 +636,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
     }
 
     @Override
-    public ScoreHolder getScoreHolder() {
+    public ScoreHolder getScoreHolder(Function function) {
         return staticPlayer;
     }
 

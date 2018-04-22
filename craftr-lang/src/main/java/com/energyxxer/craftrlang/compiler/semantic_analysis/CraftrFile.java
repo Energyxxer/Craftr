@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
+import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
@@ -223,7 +224,7 @@ public class CraftrFile extends AbstractFileComponent implements SemanticContext
     }
 
     @Override
-    public ScoreHolder getScoreHolder() {
+    public ScoreHolder getScoreHolder(Function function) {
         return null;
     }
 }

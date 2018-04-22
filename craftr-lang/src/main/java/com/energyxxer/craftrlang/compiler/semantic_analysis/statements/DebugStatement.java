@@ -42,6 +42,10 @@ public class DebugStatement extends Statement {
                 out = "" + function.getExecutionContext().getFinalSender();
                 break;
             }
+            case "breakpoint": {
+                boolean a = true;
+                break;
+            }
         }
 
         function.append(new FunctionComment("debug " + label + ": " + out));

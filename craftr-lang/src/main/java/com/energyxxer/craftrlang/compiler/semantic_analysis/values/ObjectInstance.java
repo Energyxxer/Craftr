@@ -1,6 +1,12 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
+import com.energyxxer.commodore.commands.summon.SummonCommand;
+import com.energyxxer.commodore.coordinates.Coordinate;
+import com.energyxxer.commodore.coordinates.CoordinateSet;
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.nbt.TagCompound;
+import com.energyxxer.commodore.nbt.TagList;
+import com.energyxxer.commodore.nbt.TagString;
 import com.energyxxer.commodore.selector.Selector;
 import com.energyxxer.commodore.selector.TagArgument;
 import com.energyxxer.craftrlang.compiler.codegen.entities.CraftrEntity;
@@ -42,16 +48,18 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     }
 
     public ObjectInstance(Unit unit, SemanticContext semanticContext) {
-        this(unit, true, semanticContext);
+        this(unit, null, semanticContext);
     }
 
-    public ObjectInstance(Unit unit, boolean explicit, SemanticContext semanticContext) {
+    public ObjectInstance(Unit unit, CraftrEntity entity, SemanticContext semanticContext) {
         super(semanticContext);
         this.unit = unit;
 
-        if(!explicit) {
+        if(entity == null) {
             //TODO: Actual entity constructor...
-            setEntity(new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName()))));
+            //setEntity(new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName()))));
+        } else {
+            setEntity(entity);
         }
 
         this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
@@ -118,8 +126,11 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         this.reference = new EntityReference(entity);
     }
 
-    public CraftrEntity requestEntity() {
+    public CraftrEntity requestEntity(Function function) {
         if(entity == null) {
+            if(function != null) {
+                function.append(new SummonCommand(semanticContext.getModule().minecraft.getTypeManager().entity.get("area_effect_cloud"), new CoordinateSet(0,0,0, Coordinate.Type.RELATIVE), new TagCompound(new TagList("Tag",new TagString(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName())))));
+            }
             setEntity(new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName()))));
         }
         return entity;

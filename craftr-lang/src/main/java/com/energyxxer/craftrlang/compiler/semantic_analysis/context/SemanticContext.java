@@ -1,5 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.context;
 
+import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.module.Namespace;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.Compiler;
@@ -30,7 +31,7 @@ public interface SemanticContext {
     default ObjectInstance getInstance() {
         return null;
     }
-    ScoreHolder getScoreHolder();
+    ScoreHolder getScoreHolder(Function function);
 
     default Compiler getCompiler() {
         return getAnalyzer().getCompiler();

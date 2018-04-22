@@ -3,7 +3,7 @@ package craftr.lang.entities;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public scoreHolder boat extends entity_base {
+public entity boat extends entity_base {
     
     //Getters for NBT Data
     public native int getType(); //May require special native implementation to turn tag from String to int

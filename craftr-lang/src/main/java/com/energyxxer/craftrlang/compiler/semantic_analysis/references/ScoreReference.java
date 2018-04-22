@@ -53,7 +53,7 @@ public class ScoreReference implements DataReference {
             locObj = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
             locObj.claim();
 
-            otherScoreReference = other.toScore(function, new LocalScore(locObj.getObjective(), semanticContext.getScoreHolder()), semanticContext);
+            otherScoreReference = other.toScore(function, new LocalScore(locObj.getObjective(), semanticContext.getScoreHolder(function)), semanticContext);
         }
 
         if(locObj != null) locObj.dispose();

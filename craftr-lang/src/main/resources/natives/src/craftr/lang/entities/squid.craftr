@@ -3,6 +3,6 @@ package craftr.lang.entities;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public scoreHolder squid extends living_base {
+public entity squid extends living_base {
     
 }

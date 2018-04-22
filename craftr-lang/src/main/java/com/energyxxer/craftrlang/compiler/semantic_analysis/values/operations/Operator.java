@@ -85,6 +85,10 @@ public enum Operator {
         return null;
     }
 
+    public static Operator getNoAssign(Operator op) {
+        return (op.name().endsWith("_THEN_ASSIGN")) ? valueOf(op.name().substring(0, op.name().indexOf("_THEN_ASSIGN"))) : null;
+    }
+
     @Override
     public String toString() {
         return "Operator{" +

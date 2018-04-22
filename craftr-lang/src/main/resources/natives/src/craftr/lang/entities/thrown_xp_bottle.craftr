@@ -3,7 +3,7 @@ package craftr.lang.entities;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public scoreHolder thrown_xp_bottle extends projectile_base {
+public entity thrown_xp_bottle extends projectile_base {
     
     //Getters for NBT Data
     public native int getShake();

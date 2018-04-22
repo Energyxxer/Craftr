@@ -284,7 +284,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
 
             if(!isStaticInner()) {
                 this.ownerInstance = declaringUnit.getMethodInitContext().getOwnerInstance();
-                function.setExecutionContext(new ExecutionContext(ownerInstance.requestEntity()));
+                function.setExecutionContext(new ExecutionContext(ownerInstance.requestEntity(null)));
             }
 
             codeBlock.clearSymbols();
@@ -445,14 +445,14 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
     }
 
     @Override
-    public ScoreHolder getScoreHolder() {
+    public ScoreHolder getScoreHolder(Function function) {
         if(this.isStaticAccess()) {
-            return declaringUnit.getScoreHolder();
+            return declaringUnit.getScoreHolder(function);
         } else {
             if(ownerInstance == null) {
                 throw new IllegalStateException("bOOO");
             }
-            return ownerInstance.requestEntity();
+            return ownerInstance.requestEntity(function);
         }
     }
 }

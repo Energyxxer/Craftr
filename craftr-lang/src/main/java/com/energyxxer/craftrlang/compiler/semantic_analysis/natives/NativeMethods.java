@@ -18,6 +18,7 @@ import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.nbt.*;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.commodore.selector.Selector;
+import com.energyxxer.commodore.textcomponents.ScoreTextComponent;
 import com.energyxxer.commodore.textcomponents.StringTextComponent;
 import com.energyxxer.commodore.textcomponents.TextComponent;
 import com.energyxxer.commodore.types.EffectType;
@@ -105,8 +106,9 @@ public class NativeMethods {
                     if(reference instanceof ExplicitInt) {
                         TextComponent text = new StringTextComponent("" + ((ExplicitInt) reference).getValue());
                         function.append(new TellrawCommand(new GenericEntity(new Selector(Selector.BaseSelector.ALL_PLAYERS)), text));
-                    } else {
-                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Implicit integer parameter not supported", pattern));
+                    } else if(reference instanceof ScoreReference) {
+                        TextComponent text = new ScoreTextComponent(((ScoreReference) reference).getScore());
+                        function.append(new TellrawCommand(new GenericEntity(new Selector(Selector.BaseSelector.ALL_PLAYERS)), text));
                     }
                     return null;
                 });

@@ -5,7 +5,7 @@ import craftr.lang.entities.features.*;
 /**
 * Created by Energyxxer on 15/7/2017.
 */
-public scoreHolder armor_stand extends entity_base implements equippable {
+public entity armor_stand extends entity_base implements equippable {
     
     //Getters for NBT Data
     public native int getDisabledSlots();

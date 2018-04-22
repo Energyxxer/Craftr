@@ -53,7 +53,7 @@ public class GameruleReference implements DataReference {
         {
             locObj = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
             locObj.claim();
-            thisScoreReference = this.toScore(function, new LocalScore(locObj.getObjective(), semanticContext.getScoreHolder()), semanticContext);
+            thisScoreReference = this.toScore(function, new LocalScore(locObj.getObjective(), semanticContext.getScoreHolder(function)), semanticContext);
         }
         locObj.dispose();
 

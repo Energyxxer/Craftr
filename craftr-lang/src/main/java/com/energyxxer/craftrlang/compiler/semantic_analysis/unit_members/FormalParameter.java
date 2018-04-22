@@ -47,7 +47,7 @@ public class FormalParameter {
     }
 
     ScoreReference getScore(Method method) {
-        return new ScoreReference(new LocalScore(this.getAssignedObjective().getObjective(), method.getScoreHolder()));
+        return new ScoreReference(new LocalScore(this.getAssignedObjective().getObjective(), method.getScoreHolder(method.getFunction())));
     }
 
     public boolean matches(FormalParameter formalParam) {

@@ -140,10 +140,11 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     @Override
     public Value evaluate(Function function) {
         System.out.println("EVALUATING CODE BLOCK IN FUNCTION " + function);
-        statements.forEach(st -> {
+        for(Statement st : statements) {
             st.setDataHolder(this.dataHolder);
-            st.evaluate(function);
-        });
+            Value value = st.evaluate(function);
+            if(st instanceof ReturnStatement) return value;
+        }
         return null;
     }
 
@@ -208,8 +209,8 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     }
 
     @Override
-    public ScoreHolder getScoreHolder() {
-        return (isStatic() ? semanticContext.getUnit().getScoreHolder() : ownerInstance.getEntity());
+    public ScoreHolder getScoreHolder(Function function) {
+        return (isStatic() ? semanticContext.getUnit().getScoreHolder(function) : ownerInstance.getEntity());
     }
 
     @Override
