@@ -56,6 +56,7 @@ public class CraftrProductions {
 
     public static final TokenGroupMatch IF_STATEMENT;
     public static final TokenGroupMatch FOR_STATEMENT;
+    public static final TokenGroupMatch FOREACH_STATEMENT;
     public static final TokenGroupMatch WHILE_STATEMENT;
     public static final TokenGroupMatch SWITCH_STATEMENT;
     public static final TokenGroupMatch RETURN_STATEMENT;
@@ -569,6 +570,16 @@ public class CraftrProductions {
 
                 VALUE.add(g);
             }
+            {
+                //Casted value
+                TokenGroupMatch g = new TokenGroupMatch().setName("CASTED_VALUE");
+                g.append(new TokenItemMatch(CraftrLang.BRACE, "("));
+                g.append(DATA_TYPE);
+                g.append(new TokenItemMatch(CraftrLang.BRACE, ")"));
+                g.append(VALUE);
+
+                VALUE.add(g);
+            }
             // [-EXPRESSION-]
             VALUE.add(EXPRESSION);
             VALUE.add(POINTER);
@@ -735,7 +746,7 @@ public class CraftrProductions {
 
             STATEMENT.add(RETURN_STATEMENT);
         }
-        
+
         FOR_STATEMENT = new TokenGroupMatch().setName("FOR_STATEMENT");
         {
             //for
@@ -755,6 +766,27 @@ public class CraftrProductions {
             //{...}
             FOR_STATEMENT.append(CODE_BLOCK);
             STATEMENT.add(FOR_STATEMENT);
+        }
+
+        FOREACH_STATEMENT = new TokenGroupMatch().setName("FOREACH_STATEMENT");
+        {
+            //for
+            FOREACH_STATEMENT.append(new TokenItemMatch(CraftrLang.KEYWORD,"for"));
+            //(
+            FOREACH_STATEMENT.append(new TokenItemMatch(CraftrLang.BRACE,"("));
+            //Block
+            FOREACH_STATEMENT.append(DATA_TYPE);
+            //block
+            FOREACH_STATEMENT.append(new TokenItemMatch(CraftrLang.IDENTIFIER));
+            //:
+            FOREACH_STATEMENT.append(new TokenItemMatch(CraftrLang.COLON));
+            //Block.values()
+            FOREACH_STATEMENT.append(VALUE);
+            //)
+            FOREACH_STATEMENT.append(new TokenItemMatch(CraftrLang.BRACE,")"));
+            //{...}
+            FOREACH_STATEMENT.append(CODE_BLOCK);
+            STATEMENT.add(FOREACH_STATEMENT);
         }
         
         WHILE_STATEMENT = new TokenGroupMatch().setName("WHILE_STATEMENT");
