@@ -17,6 +17,7 @@ import com.energyxxer.commodore.score.Objective;
 import com.energyxxer.commodore.score.access.ScoreboardAccess;
 import com.energyxxer.commodore.selector.LimitArgument;
 import com.energyxxer.commodore.selector.Selector;
+import com.energyxxer.commodore.selector.TagArgument;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 
@@ -74,7 +75,8 @@ public class CraftrEntity implements Entity {
             ExecuteCommand exec = new ExecuteCommand(new TagCommand(TagCommand.Action.ADD, allEntities, "it"));
             exec.addModifier(new ExecuteAsEntity(allEntities));
             exec.addModifier(new ExecuteConditionScoreComparison(ExecuteCondition.ConditionType.IF, new LocalScore(unit.getModule().glObjMgr.id, allEntities), ScoreComparison.EQUAL, this.scoreReference.getScore()));
-            return new EntityResolution(this, null);
+
+            return new EntityResolution(this, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument("it")));
         }
     }
 
@@ -109,16 +111,18 @@ public class CraftrEntity implements Entity {
     }
 
     private void createScoreboardAccesses() {
-        ArrayList<MacroScore> scores = new ArrayList<>();
-        for(MacroScoreHolder holder : getMacroHolders()) {
-            for(Objective objective : selector.getObjectivesRead()) {
-                scores.add(new MacroScore(holder, objective));
+        if(selector != null) {
+            ArrayList<MacroScore> scores = new ArrayList<>();
+            for(MacroScoreHolder holder : getMacroHolders()) {
+                for(Objective objective : selector.getObjectivesRead()) {
+                    scores.add(new MacroScore(holder, objective));
+                }
             }
-        }
-        if(scores.size() == 0)
-            scoreboardAccesses = Collections.emptyList();
-        else
-            scoreboardAccesses = Collections.singletonList(new ScoreboardAccess(scores, ScoreboardAccess.AccessType.READ));
+            if(scores.size() == 0)
+                scoreboardAccesses = Collections.emptyList();
+            else
+                scoreboardAccesses = Collections.singletonList(new ScoreboardAccess(scores, ScoreboardAccess.AccessType.READ));
+        } else scoreboardAccesses = Collections.emptyList();
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 import com.energyxxer.commodore.commands.scoreboard.ScoreAdd;
 import com.energyxxer.commodore.commands.scoreboard.ScoreComparison;
 import com.energyxxer.commodore.commands.scoreboard.ScorePlayersOperation;
+import com.energyxxer.commodore.commands.scoreboard.ScoreSet;
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjective;
@@ -178,6 +179,65 @@ public class IntegerValue extends NumericValue {
         }
 
         return null;
+    }
+
+    @Override
+    public Value runShorthandOperation(DataReference reference, Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, boolean silent) {
+
+        if(!(reference instanceof ScoreReference)) {
+            throw new IllegalArgumentException("WTF, A NON-SCORE REFERENCE? THE FUTURE IS NOW; FIX IT PLEASE.");
+        }
+
+        LocalizedObjective op = null;
+        DataReference otherReference = operand.reference;
+
+        if(otherReference instanceof ExplicitInt) {
+
+            int value = ((ExplicitInt) otherReference).getValue();
+
+            switch(operator) {
+                case ADD_THEN_ASSIGN: {
+                    function.append(new ScoreAdd(((ScoreReference) reference).getScore(), value));
+                    break;
+                }
+                case SUBTRACT_THEN_ASSIGN: {
+                    function.append(new ScoreAdd(((ScoreReference) reference).getScore(), -value));
+                    break;
+                }
+                case MULTIPLY_THEN_ASSIGN:
+                case DIVIDE_THEN_ASSIGN:
+                case MODULO_THEN_ASSIGN: {
+                    op = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
+                    op.claim();
+
+                    LocalScore newScore = new LocalScore(op.getObjective(), semanticContext.getScoreHolder(function));
+                    function.append(new ScoreSet(newScore, value));
+                    otherReference = new ScoreReference(newScore);
+                    break;
+                }
+            }
+            if(op == null) return new IntegerValue(reference, semanticContext);
+        }
+
+        if(otherReference instanceof ScoreReference) {
+            switch(operator) {
+                case ADD_THEN_ASSIGN:
+                case SUBTRACT_THEN_ASSIGN:
+                case MULTIPLY_THEN_ASSIGN:
+                case DIVIDE_THEN_ASSIGN:
+                case MODULO_THEN_ASSIGN: {
+                    ScorePlayersOperation.Operation operation = ScorePlayersOperation.Operation.valueOf(operator.name().substring(0, operator.name().indexOf("_")));
+                    function.append(new ScorePlayersOperation(((ScoreReference) reference).getScore(), operation, ((ScoreReference) otherReference).getScore()));
+                    if(op != null) op.dispose();
+                    return new IntegerValue(reference, semanticContext);
+                }
+                default: {
+                    throw new IllegalArgumentException("Couldn't perform operation for operator of name '" + operator + "'");
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("WTF, A NON-SCORE REFERENCE? THE FUTURE IS NOW; FIX IT PLEASE.");
+        }
     }
 
     @Override

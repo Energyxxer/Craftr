@@ -296,7 +296,12 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
             case SUBTRACT_THEN_ASSIGN:
             case MULTIPLY_THEN_ASSIGN:
             case DIVIDE_THEN_ASSIGN: {
-                Value result = unwrap().runOperation(Operator.getNoAssign(operator), operand, pattern, function, semanticContext, null, silent);
+                Value result;
+                if(reference instanceof ScoreReference) {
+                    result = unwrap().runShorthandOperation(reference, operator, operand, pattern, function, semanticContext, silent);
+                } else {
+                    result = unwrap().runOperation(Operator.getNoAssign(operator), operand, pattern, function, semanticContext, null, silent);
+                }
                 return (result != null) ? this.assign(result, function, semanticContext, silent) : null;
             }
         }
