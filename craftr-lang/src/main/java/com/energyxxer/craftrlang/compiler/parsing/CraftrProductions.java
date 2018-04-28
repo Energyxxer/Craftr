@@ -731,9 +731,9 @@ public class CraftrProductions {
         {
             IF_STATEMENT.append(new TokenItemMatch(CraftrLang.KEYWORD,"if"));
             IF_STATEMENT.append(new TokenItemMatch(CraftrLang.BRACE,"("));
-            IF_STATEMENT.append(EXPRESSION);
+            IF_STATEMENT.append(VALUE);
             IF_STATEMENT.append(new TokenItemMatch(CraftrLang.BRACE,")"));
-            IF_STATEMENT.append(CODE_BLOCK);
+            IF_STATEMENT.append(STATEMENT);
             IF_STATEMENT.append(ELSE_STATEMENT);
         }
         STATEMENT.add(IF_STATEMENT);

@@ -60,14 +60,23 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
 
     private boolean initialized = false;
 
+    private static Function createConstructorFunction(SemanticContext semanticContext) {
+        if(semanticContext instanceof Method) {
+            return ((Method) semanticContext).getFunction();
+        } else {
+            String name;
+            if(semanticContext instanceof CodeBlock) {
+                name = ((CodeBlock) semanticContext).function.getFullName();
+                name = name.substring(name.indexOf(":")+1);
+            } else {
+                name = semanticContext.getUnit().getFunctionPath() + "/cbk-" + semanticContext.getDeclaringFile().getIOFile().getName();
+            }
+            return semanticContext.getModuleNamespace().getFunctionManager().create(name, true);
+        }
+    }
+
     public CodeBlock(TokenPattern<?> pattern, SemanticContext semanticContext) {
-        super(pattern, semanticContext, (semanticContext instanceof Method) ? ((Method) semanticContext).getFunction() : semanticContext.getModuleNamespace().getFunctionManager().create(
-                ((semanticContext instanceof CodeBlock) ?
-                        ((CodeBlock) semanticContext).function.getFullName()
-                        :
-                        semanticContext.getUnit().getFunctionPath() + "/cbk@" + semanticContext.getDeclaringFile().getIOFile().getName()
-                ), true
-        ));
+        super(pattern, semanticContext, createConstructorFunction(semanticContext));
 
         if(semanticContext instanceof CodeBlock) {
             this.parentBlock = (CodeBlock) semanticContext;
