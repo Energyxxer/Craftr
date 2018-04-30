@@ -1,5 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
+import com.energyxxer.commodore.commands.CommandGroup;
+import com.energyxxer.commodore.commands.execute.ExecuteCommand;
 import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenStructure;
@@ -19,20 +21,28 @@ public class IfStatement extends Statement {
     @Override
     public Value evaluate(FunctionSection section) {
         Value value = ExprResolver.analyzeValue(pattern.find("VALUE"), semanticContext, dataHolder, section);
-        Statement statement = Statement.read(((TokenStructure) pattern.find("STATEMENT")).getContents(), semanticContext, section);
-        if(statement != null && statement instanceof CodeBlock) ((CodeBlock) statement).initialize(semanticContext.getInstance());
+
+        CommandGroup inner = new CommandGroup(section);
+        Statement statement = Statement.read(((TokenStructure) pattern.find("STATEMENT")).getContents(), semanticContext, inner);
+        if(statement == null) return null;
+        if(statement instanceof CodeBlock) ((CodeBlock) statement).initialize(semanticContext.getInstance());
 
         DataReference reference = value.getReference();
         if(reference instanceof BooleanReference) {
             if(reference instanceof ExplicitBoolean) {
                 if(((ExplicitBoolean) reference).getValue()) {
-                    if(statement != null) return statement.evaluate(section);
-                    else return null;
+                    Value returnValue = statement.evaluate(inner);
+                    section.append(inner);
+                    return returnValue;
                 }
                 //explicit false, break
             } else {
                 BooleanResolution resolution = ((BooleanReference) reference).resolveBoolean(section, semanticContext, false);
-                return null;
+                ExecuteCommand exec = new ExecuteCommand(inner);
+                resolution.getModifiers().forEach(exec::addModifier);
+                Value returnValue = statement.evaluate(inner);
+                section.append(exec);
+                return returnValue;
             }
         }
 
