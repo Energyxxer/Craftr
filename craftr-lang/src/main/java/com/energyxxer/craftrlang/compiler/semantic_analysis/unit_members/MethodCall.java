@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
@@ -46,7 +46,7 @@ public class MethodCall extends ValueWrapper implements TraversableStructure {
         }
     }
 
-    private void initialize(Function function) {
+    private void initialize(FunctionSection section) {
         if(initialized) {
             throw new IllegalStateException("A MethodCall's initialize method shouldn't be called more than once what the schnitzel");
         }
@@ -69,7 +69,7 @@ public class MethodCall extends ValueWrapper implements TraversableStructure {
                         }
                     }
                     TokenPattern<?> rawValue = rawParam.find("VALUE");
-                    Value value = ExprResolver.analyzeValue(rawValue, semanticContext, null, function);
+                    Value value = ExprResolver.analyzeValue(rawValue, semanticContext, null, section);
 
                     if(label == null) {
                         positionalParams.add(new ActualParameter(rawParam, value));
@@ -109,10 +109,10 @@ public class MethodCall extends ValueWrapper implements TraversableStructure {
     }
 
     @Override
-    public Value unwrap(Function function) {
-        initialize(function);
+    public Value unwrap(FunctionSection section) {
+        initialize(section);
         if(method != null) {
-            return method.writeCall(function, positionalParams, keywordParams, pattern, semanticContext, dataHolder);
+            return method.writeCall(section, positionalParams, keywordParams, pattern, semanticContext, dataHolder);
         } else return null;
     }
 

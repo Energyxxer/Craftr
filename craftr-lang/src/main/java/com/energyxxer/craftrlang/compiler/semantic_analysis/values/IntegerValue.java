@@ -5,6 +5,7 @@ import com.energyxxer.commodore.commands.scoreboard.ScoreComparison;
 import com.energyxxer.commodore.commands.scoreboard.ScorePlayersOperation;
 import com.energyxxer.commodore.commands.scoreboard.ScoreSet;
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjective;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
@@ -59,7 +60,7 @@ public class IntegerValue extends NumericValue {
     }
 
     @Override
-    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, FunctionSection section, boolean silent) {
         /* Note to future self:
          *     for incrementing, make sure to change this.value, then return clones of this value.
          */
@@ -67,7 +68,7 @@ public class IntegerValue extends NumericValue {
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, FunctionSection section, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
 
         if(this.reference instanceof ExplicitInt
                 &&
@@ -118,7 +119,7 @@ public class IntegerValue extends NumericValue {
             else if(!(b instanceof ExplicitInt)) {
                 tempB = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
                 tempB.claim();
-                bScore = b.toScore(function, new LocalScore(tempB.getObjective(), semanticContext.getScoreHolder(function)), semanticContext);
+                bScore = b.toScore(section, new LocalScore(tempB.getObjective(), semanticContext.getScoreHolder(section)), semanticContext);
             }
 
             LocalizedObjective op = null;
@@ -126,29 +127,29 @@ public class IntegerValue extends NumericValue {
             if(resultReference == null) {
                 op = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
                 op.claim();
-                resultReference = new ScoreReference(new LocalScore(op.getObjective(), semanticContext.getScoreHolder(function)));
+                resultReference = new ScoreReference(new LocalScore(op.getObjective(), semanticContext.getScoreHolder(section)));
             }
 
             LocalScore score = resultReference.getScore();
 
             switch(operator) {
                 case ADD: {
-                    a.toScore(function, score, semanticContext);
+                    a.toScore(section, score, semanticContext);
                     if(b instanceof ExplicitInt) {
-                        function.append(new ScoreAdd(score, ((ExplicitInt) b).getValue()));
+                        section.append(new ScoreAdd(score, ((ExplicitInt) b).getValue()));
                     } else {
-                        function.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.ADD, bScore.getScore()));
+                        section.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.ADD, bScore.getScore()));
                     }
                     if(tempB != null) tempB.dispose();
                     if(op != null) op.dispose();
                     return new IntegerValue(new ScoreReference(score), semanticContext);
                 }
                 case SUBTRACT: {
-                    a.toScore(function, score, semanticContext);
+                    a.toScore(section, score, semanticContext);
                     if(b instanceof ExplicitInt) {
-                        function.append(new ScoreAdd(score, -((ExplicitInt) b).getValue()));
+                        section.append(new ScoreAdd(score, -((ExplicitInt) b).getValue()));
                     } else {
-                        function.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.SUBTRACT, bScore.getScore()));
+                        section.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.SUBTRACT, bScore.getScore()));
                     }
                     if(tempB != null) tempB.dispose();
                     if(op != null) op.dispose();
@@ -182,7 +183,7 @@ public class IntegerValue extends NumericValue {
     }
 
     @Override
-    public Value runShorthandOperation(DataReference reference, Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, boolean silent) {
+    public Value runShorthandOperation(DataReference reference, Operator operator, Value operand, TokenPattern<?> pattern, FunctionSection section, SemanticContext semanticContext, boolean silent) {
 
         if(!(reference instanceof ScoreReference)) {
             throw new IllegalArgumentException("WTF, A NON-SCORE REFERENCE? THE FUTURE IS NOW; FIX IT PLEASE.");
@@ -197,11 +198,11 @@ public class IntegerValue extends NumericValue {
 
             switch(operator) {
                 case ADD_THEN_ASSIGN: {
-                    function.append(new ScoreAdd(((ScoreReference) reference).getScore(), value));
+                    section.append(new ScoreAdd(((ScoreReference) reference).getScore(), value));
                     break;
                 }
                 case SUBTRACT_THEN_ASSIGN: {
-                    function.append(new ScoreAdd(((ScoreReference) reference).getScore(), -value));
+                    section.append(new ScoreAdd(((ScoreReference) reference).getScore(), -value));
                     break;
                 }
                 case MULTIPLY_THEN_ASSIGN:
@@ -210,8 +211,8 @@ public class IntegerValue extends NumericValue {
                     op = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
                     op.claim();
 
-                    LocalScore newScore = new LocalScore(op.getObjective(), semanticContext.getScoreHolder(function));
-                    function.append(new ScoreSet(newScore, value));
+                    LocalScore newScore = new LocalScore(op.getObjective(), semanticContext.getScoreHolder(section));
+                    section.append(new ScoreSet(newScore, value));
                     otherReference = new ScoreReference(newScore);
                     break;
                 }
@@ -227,7 +228,7 @@ public class IntegerValue extends NumericValue {
                 case DIVIDE_THEN_ASSIGN:
                 case MODULO_THEN_ASSIGN: {
                     ScorePlayersOperation.Operation operation = ScorePlayersOperation.Operation.valueOf(operator.name().substring(0, operator.name().indexOf("_")));
-                    function.append(new ScorePlayersOperation(((ScoreReference) reference).getScore(), operation, ((ScoreReference) otherReference).getScore()));
+                    section.append(new ScorePlayersOperation(((ScoreReference) reference).getScore(), operation, ((ScoreReference) otherReference).getScore()));
                     if(op != null) op.dispose();
                     return new IntegerValue(reference, semanticContext);
                 }

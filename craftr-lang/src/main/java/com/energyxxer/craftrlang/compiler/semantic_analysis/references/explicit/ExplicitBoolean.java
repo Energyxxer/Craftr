@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit;
 
 import com.energyxxer.commodore.commands.scoreboard.ScoreComparison;
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.booleans.BooleanReference;
@@ -15,7 +15,7 @@ public class ExplicitBoolean implements ExplicitValue, BooleanReference {
     }
 
     @Override
-    public BooleanResolution resolveBoolean(Function function, SemanticContext semanticContext, boolean negated) {
+    public BooleanResolution resolveBoolean(FunctionSection section, SemanticContext semanticContext, boolean negated) {
         return new BooleanResolution(value);
     }
 
@@ -29,8 +29,8 @@ public class ExplicitBoolean implements ExplicitValue, BooleanReference {
     }
 
     @Override
-    public BooleanResolution compare(Function function, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
-        return BooleanReference.super.compare(function, op, other, semanticContext);
+    public BooleanResolution compare(FunctionSection section, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
+        return BooleanReference.super.compare(section, op, other, semanticContext);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.*;
 import com.energyxxer.craftrlang.compiler.report.Notice;
@@ -25,26 +25,26 @@ import java.util.Collections;
  */
 public final class ExprResolver {
 
-    public static Value analyzeValue(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, Function function) {
-        return analyzeValue(pattern, semanticContext, dataHolder, function, false);
+    public static Value analyzeValue(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, FunctionSection section) {
+        return analyzeValue(pattern, semanticContext, dataHolder, section, false);
     }
 
-    public static Value analyzeValue(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, Function function, boolean silent) {
-        TraversableStructure s = analyzeStructure(pattern, semanticContext, dataHolder, function, silent);
+    public static Value analyzeValue(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, FunctionSection section, boolean silent) {
+        TraversableStructure s = analyzeStructure(pattern, semanticContext, dataHolder, section, silent);
         if(s != null) {
-            if(s instanceof ValueWrapper) return ((ValueWrapper) s).unwrap(function);
+            if(s instanceof ValueWrapper) return ((ValueWrapper) s).unwrap(section);
             if(s instanceof Value) return (Value) s;
             if(!silent) semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Value expected", pattern));
         }
         return null;
     }
 
-    public static Value analyzeValueOrReference(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, Function function) {
-        return analyzeValueOrReference(pattern, semanticContext, dataHolder, function, false);
+    public static Value analyzeValueOrReference(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, FunctionSection section) {
+        return analyzeValueOrReference(pattern, semanticContext, dataHolder, section, false);
     }
 
-    public static Value analyzeValueOrReference(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, Function function, boolean silent) {
-        TraversableStructure s = analyzeStructure(pattern, semanticContext, dataHolder, function, silent);
+    public static Value analyzeValueOrReference(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, FunctionSection section, boolean silent) {
+        TraversableStructure s = analyzeStructure(pattern, semanticContext, dataHolder, section, silent);
         if(s != null) {
             if(s instanceof ValueWrapper) return (ValueWrapper) s;
             if(s instanceof Value) return (Value) s;
@@ -57,7 +57,7 @@ public final class ExprResolver {
     //    return analyzeStructure(pattern, semanticContext, dataHolder, function, false);
     //}
 
-    private static TraversableStructure analyzeStructure(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, Function function, boolean silent) {
+    private static TraversableStructure analyzeStructure(TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder, FunctionSection section, boolean silent) {
         try{
         switch(pattern.getName()) {
             case "NUMBER": {
@@ -94,18 +94,18 @@ public final class ExprResolver {
                 }
                 return new BooleanValue(value, semanticContext);
             } case "VALUE": {
-                return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, function, silent);
+                return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, section, silent);
             } case "EXPRESSION": {
-                return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, function, silent);
+                return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, section, silent);
             } case "OPERATION": {
-                return analyzeStructure(((TokenGroup) pattern).getContents()[0], semanticContext, dataHolder, function, silent);
+                return analyzeStructure(((TokenGroup) pattern).getContents()[0], semanticContext, dataHolder, section, silent);
             } case "PARENTHESIZED_VALUE": {
-                return analyzeValue(((TokenGroup) pattern).getContents()[1], semanticContext, dataHolder, function, silent);
+                return analyzeValue(((TokenGroup) pattern).getContents()[1], semanticContext, dataHolder, section, silent);
             } case "OPERATION_LIST": {
                 TokenList list = (TokenList) pattern;
 
                 if(list.size() == 1) {
-                    return analyzeStructure(list.getContents()[0], semanticContext, dataHolder, function, silent);
+                    return analyzeStructure(list.getContents()[0], semanticContext, dataHolder, section, silent);
                 } else {
 
                     TokenPattern<?>[] contents = list.getContents();
@@ -116,7 +116,7 @@ public final class ExprResolver {
                     for(int i = 0; i < contents.length; i++) {
                         if((i & 1) == 0) {
                             //Operand
-                            Value value = analyzeValueOrReference(contents[i], semanticContext, dataHolder, function, silent);
+                            Value value = analyzeValueOrReference(contents[i], semanticContext, dataHolder, section, silent);
                             if(value == null) {
                                 return null;
                             }
@@ -210,7 +210,7 @@ public final class ExprResolver {
                 }
                 return new StringValue(sb.toString(), semanticContext);
             } case "METHOD_CALL": {
-                return analyzeValueOrReference(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, function, silent);
+                return analyzeValueOrReference(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, section, silent);
             } case "METHOD_CALL_INNER": {
                 if(dataHolder == null) dataHolder = semanticContext.getInstance();
                 if(dataHolder == null) {
@@ -232,7 +232,7 @@ public final class ExprResolver {
                     return null;
                 } else dataHolder = (Unit) sym;
 
-                return analyzeValue(methodCall, semanticContext, dataHolder, function, silent);
+                return analyzeValue(methodCall, semanticContext, dataHolder, section, silent);
             } case "SINGLE_IDENTIFIER": {
                 if(dataHolder == null) dataHolder = semanticContext.getDataHolder();
                 if(dataHolder == null) {
@@ -302,10 +302,10 @@ public final class ExprResolver {
                 }
 
                 if(dataHolder.getSubSymbolTable() != null) {
-                    TraversableStructure s = analyzeStructure(pattern.find("VALUE"), semanticContext, dataHolder, function, silent);
+                    TraversableStructure s = analyzeStructure(pattern.find("VALUE"), semanticContext, dataHolder, section, silent);
 
                     if(s != null) {
-                        if(s instanceof DataHolder) return analyzeStructure(pattern.find("NESTED_POINTER"), semanticContext, (DataHolder) s, function, silent);
+                        if(s instanceof DataHolder) return analyzeStructure(pattern.find("NESTED_POINTER"), semanticContext, (DataHolder) s, section, silent);
                         if(!silent) {
                             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern));
                         }
@@ -317,30 +317,30 @@ public final class ExprResolver {
                 }
                 return null;
             } case "NESTED_POINTER": {
-                return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, function, silent);
+                return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, section, silent);
             } case "NESTED_POINTER_INNER": {
                 //Promise that dataHolder won't be null in this case;
                 TraversableStructure s;
                 TokenPattern<?> next = pattern.find("POINTER_NEXT");
 
                 if(next == null){
-                    s = analyzeStructure(pattern.find("POINTER_SEGMENT"), semanticContext, dataHolder, function, silent);
+                    s = analyzeStructure(pattern.find("POINTER_SEGMENT"), semanticContext, dataHolder, section, silent);
                 } else {
-                    s = analyzeValue(pattern.find("POINTER_SEGMENT"), semanticContext, dataHolder, function, silent);
+                    s = analyzeValue(pattern.find("POINTER_SEGMENT"), semanticContext, dataHolder, section, silent);
                 }
 
                 if(next == null) return s;
                 else if(s != null) {
-                    if(s instanceof DataHolder) return analyzeStructure(pattern.find("POINTER_NEXT"), semanticContext, (DataHolder) s, function, silent);
+                    if(s instanceof DataHolder) return analyzeStructure(pattern.find("POINTER_NEXT"), semanticContext, (DataHolder) s, section, silent);
                     if(!silent) {
                         semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Cannot resolve symbol from an undefined data holder", pattern));
                     }
                 }
                 return null;
             } case "POINTER_SEGMENT": {
-                return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, function, silent);
+                return analyzeStructure(((TokenStructure) pattern).getContents(), semanticContext, dataHolder, section, silent);
             } case "POINTER_NEXT": {
-                return analyzeStructure(pattern.find("NESTED_POINTER"), semanticContext, dataHolder, function, silent);
+                return analyzeStructure(pattern.find("NESTED_POINTER"), semanticContext, dataHolder, section, silent);
             } case "NULL" : {
                 return new Null(semanticContext);
             }

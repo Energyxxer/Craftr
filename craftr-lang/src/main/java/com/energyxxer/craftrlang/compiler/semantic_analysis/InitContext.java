@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.inspection.ExecutionContext;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
@@ -73,7 +73,7 @@ public class InitContext implements SemanticContext {
     }
 
     @Override
-    public ScoreHolder getScoreHolder(Function function) {
+    public ScoreHolder getScoreHolder(FunctionSection section) {
         return getOwnerInstance().getEntity();
     }
 

@@ -6,7 +6,7 @@ import com.energyxxer.commodore.commands.scoreboard.ScoreComparison;
 import com.energyxxer.commodore.commands.scoreboard.ScoreGet;
 import com.energyxxer.commodore.commands.scoreboard.ScorePlayersOperation;
 import com.energyxxer.commodore.entity.Entity;
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.nbt.NBTPath;
 import com.energyxxer.commodore.nbt.NumericNBTType;
 import com.energyxxer.commodore.score.LocalScore;
@@ -32,20 +32,20 @@ public class EntityReference implements DataReference {
     }
 
     @Override
-    public ScoreReference toScore(Function function, LocalScore score, SemanticContext semanticContext) {
-        function.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.ASSIGN, getId(semanticContext)));
+    public ScoreReference toScore(FunctionSection section, LocalScore score, SemanticContext semanticContext) {
+        section.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.ASSIGN, getId(semanticContext)));
         return new ScoreReference(score);
     }
 
     @Override
-    public NBTReference toNBT(Function function, Entity entity, NBTPath path, SemanticContext semanticContext) {
+    public NBTReference toNBT(FunctionSection section, Entity entity, NBTPath path, SemanticContext semanticContext) {
         ExecuteCommand exec = new ExecuteCommand(new ScoreGet(getId(semanticContext)));
         exec.addModifier(new ExecuteStoreEntity(entity, path, NumericNBTType.INT));
         return new NBTReference(entity, path);
     }
 
     @Override
-    public BooleanResolution compare(Function function, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
+    public BooleanResolution compare(FunctionSection section, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
         return null;
     }
 

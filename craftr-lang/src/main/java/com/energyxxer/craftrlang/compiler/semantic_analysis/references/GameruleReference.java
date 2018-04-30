@@ -5,7 +5,7 @@ import com.energyxxer.commodore.commands.execute.ExecuteStoreScore;
 import com.energyxxer.commodore.commands.gamerule.GameruleQueryCommand;
 import com.energyxxer.commodore.commands.scoreboard.ScoreComparison;
 import com.energyxxer.commodore.entity.Entity;
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.nbt.NBTPath;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjective;
@@ -21,23 +21,23 @@ public class GameruleReference implements DataReference {
     }
 
     @Override
-    public ScoreReference toScore(Function function, LocalScore score, SemanticContext semanticContext) {
+    public ScoreReference toScore(FunctionSection section, LocalScore score, SemanticContext semanticContext) {
         ExecuteCommand exec = new ExecuteCommand(new GameruleQueryCommand(gamerule));
         exec.addModifier(new ExecuteStoreScore(score));
 
-        function.append(exec);
+        section.append(exec);
 
         return new ScoreReference(score);
     }
 
     @Override
-    public NBTReference toNBT(Function function, Entity entity, NBTPath path, SemanticContext semanticContext) {
+    public NBTReference toNBT(FunctionSection section, Entity entity, NBTPath path, SemanticContext semanticContext) {
         LocalizedObjective obj = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
         obj.claim();
         LocalScore locScr = new LocalScore(obj.getObjective(), entity);
-        ScoreReference scoreRef = this.toScore(function, locScr, semanticContext);
+        ScoreReference scoreRef = this.toScore(section, locScr, semanticContext);
         obj.dispose();
-        return scoreRef.toNBT(function, entity, path, semanticContext);
+        return scoreRef.toNBT(section, entity, path, semanticContext);
     }
 
     @Override
@@ -46,17 +46,17 @@ public class GameruleReference implements DataReference {
     }
 
     @Override
-    public BooleanResolution compare(Function function, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
+    public BooleanResolution compare(FunctionSection section, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
 
         LocalizedObjective locObj;
         ScoreReference thisScoreReference;
         {
             locObj = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
             locObj.claim();
-            thisScoreReference = this.toScore(function, new LocalScore(locObj.getObjective(), semanticContext.getScoreHolder(function)), semanticContext);
+            thisScoreReference = this.toScore(section, new LocalScore(locObj.getObjective(), semanticContext.getScoreHolder(section)), semanticContext);
         }
         locObj.dispose();
 
-        return thisScoreReference.compare(function, op, other, semanticContext);
+        return thisScoreReference.compare(section, op, other, semanticContext);
     }
 }

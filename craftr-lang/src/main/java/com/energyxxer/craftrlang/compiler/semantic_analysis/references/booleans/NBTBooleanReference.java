@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.references.booleans;
 
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.nbt.NBTTag;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.NBTReference;
@@ -16,7 +16,7 @@ public class NBTBooleanReference implements BooleanReference {
     }
 
     @Override
-    public BooleanResolution resolveBoolean(Function function, SemanticContext semanticContext, boolean negated) {
+    public BooleanResolution resolveBoolean(FunctionSection section, SemanticContext semanticContext, boolean negated) {
         return null;
     }
 }

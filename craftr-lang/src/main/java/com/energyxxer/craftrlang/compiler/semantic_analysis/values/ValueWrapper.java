@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
@@ -20,15 +21,15 @@ public abstract class ValueWrapper extends Value {
         super(reference, semanticContext);
     }
 
-    public abstract Value unwrap(Function function);
+    public abstract Value unwrap(FunctionSection section);
 
     public abstract DataType getDataType();
 
-    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent) {
-        return unwrap(function).runOperation(operator, pattern, function, silent);
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, FunctionSection section, boolean silent) {
+        return unwrap(section).runOperation(operator, pattern, section, silent);
     }
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
-        return unwrap(function).runOperation(operator, operand, pattern, function, semanticContext, resultReference, silent);
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, FunctionSection section, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
+        return unwrap(section).runOperation(operator, operand, pattern, section, semanticContext, resultReference, silent);
     }
 
     @Override

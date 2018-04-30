@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.references.booleans;
 
 import com.energyxxer.commodore.commands.scoreboard.ScoreComparison;
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 
@@ -21,7 +21,7 @@ public class ScoreComparisonBooleanReference implements BooleanReference {
     }
 
     @Override
-    public BooleanResolution resolveBoolean(Function function, SemanticContext semanticContext, boolean negated) {
-        return a.compare(function, op, b, semanticContext);
+    public BooleanResolution resolveBoolean(FunctionSection section, SemanticContext semanticContext, boolean negated) {
+        return a.compare(section, op, b, semanticContext);
     }
 }

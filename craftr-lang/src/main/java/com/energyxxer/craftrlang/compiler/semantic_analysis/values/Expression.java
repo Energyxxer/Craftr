@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -42,19 +43,19 @@ public class Expression extends ValueWrapper {
         return a == variable || b == variable || a instanceof Expression && ((Expression) a).usesVariable(variable) || b instanceof Expression && ((Expression) b).usesVariable(variable) || a instanceof MethodCall || b instanceof MethodCall;
     }
 
-    public Value unwrap(Function function) {
-        return unwrap(function, null);
+    public Value unwrap(FunctionSection section) {
+        return unwrap(section, null);
     }
 
-    public Value unwrap(Function function, ScoreReference resultReference) {
+    public Value unwrap(FunctionSection section, ScoreReference resultReference) {
 
-        if(a instanceof Expression) a = ((Expression) a).unwrap(function, null);
+        if(a instanceof Expression) a = ((Expression) a).unwrap(section, null);
         if(a == null) return null;
         if(b instanceof Expression) {
             if(op == Operator.ASSIGN && a instanceof Variable && a.getReference() instanceof ScoreReference && !((Expression) b).usesVariable((Variable) a)) {
-                b = ((Expression) b).unwrap(function, (ScoreReference) a.getReference());
+                b = ((Expression) b).unwrap(section, (ScoreReference) a.getReference());
             } else {
-                b = ((Expression) b).unwrap(function, null);
+                b = ((Expression) b).unwrap(section, null);
             }
         }
         if(b == null) return null;
@@ -65,7 +66,7 @@ public class Expression extends ValueWrapper {
             semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid left-hand side in " + op.getSymbol() + " operation", pattern));
             return null;
         } else if(a instanceof ValueWrapper && op.getLeftOperandType() != OperandType.VARIABLE) {
-            a = ((ValueWrapper) a).unwrap(function);
+            a = ((ValueWrapper) a).unwrap(section);
         }
 
         if(op.getRightOperandType() == OperandType.VALUE && b instanceof Variable) {
@@ -74,7 +75,7 @@ public class Expression extends ValueWrapper {
             semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Invalid right-hand side in " + op.getSymbol() + " operation", pattern));
             return null;
         } else if(b instanceof ValueWrapper && op.getRightOperandType() != OperandType.VARIABLE) {
-            b = ((ValueWrapper) b).unwrap(function);
+            b = ((ValueWrapper) b).unwrap(section);
         }
 
         if(a == null) {
@@ -87,7 +88,7 @@ public class Expression extends ValueWrapper {
             return null;
         }
 
-        Value returnValue = a.runOperation(this.op, b, pattern, function, semanticContext, resultReference, this.silent);
+        Value returnValue = a.runOperation(this.op, b, pattern, section, semanticContext, resultReference, this.silent);
         if(returnValue == null) {
             semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Operator " + op.getSymbol() + " is not defined for data types " + a.getDataType() + ", " + b.getDataType(), pattern));
         } else if(resultReference != null) {
@@ -125,12 +126,12 @@ public class Expression extends ValueWrapper {
     }
 
     @Override
-    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, FunctionSection section, boolean silent) {
         return null;
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, FunctionSection section, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
         return null;
     }
 

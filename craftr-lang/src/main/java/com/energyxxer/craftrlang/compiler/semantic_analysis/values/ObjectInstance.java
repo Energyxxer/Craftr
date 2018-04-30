@@ -4,6 +4,7 @@ import com.energyxxer.commodore.commands.summon.SummonCommand;
 import com.energyxxer.commodore.coordinates.Coordinate;
 import com.energyxxer.commodore.coordinates.CoordinateSet;
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.nbt.TagCompound;
 import com.energyxxer.commodore.nbt.TagList;
 import com.energyxxer.commodore.nbt.TagString;
@@ -88,12 +89,12 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     }
 
     @Override
-    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, FunctionSection section, boolean silent) {
         return null;
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, FunctionSection section, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
         return null;
     }
 
@@ -126,7 +127,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
         this.reference = new EntityReference(entity);
     }
 
-    public CraftrEntity requestEntity(Function function) {
+    public CraftrEntity requestEntity(FunctionSection function) {
         if(entity == null) {
             if(function != null) {
                 function.append(new SummonCommand(semanticContext.getModule().minecraft.getTypeManager().entity.get("area_effect_cloud"), new CoordinateSet(0,0,0, Coordinate.Type.RELATIVE), new TagCompound(new TagList("Tag",new TagString(semanticContext.getCompiler().getPrefix() + "_type:" + unit.getName())))));

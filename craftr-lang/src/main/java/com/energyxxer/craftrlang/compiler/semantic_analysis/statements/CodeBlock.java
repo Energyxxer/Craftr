@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.statements;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
@@ -65,8 +66,8 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
             return ((Method) semanticContext).getFunction();
         } else {
             String name;
-            if(semanticContext instanceof CodeBlock) {
-                name = ((CodeBlock) semanticContext).function.getFullName();
+            if(semanticContext instanceof CodeBlock && ((CodeBlock) semanticContext).section instanceof Function) {
+                name = ((Function) ((CodeBlock) semanticContext).section).getFullName();
                 name = name.substring(name.indexOf(":")+1);
             } else {
                 name = semanticContext.getUnit().getFunctionPath() + "/cbk-" + semanticContext.getDeclaringFile().getIOFile().getName();
@@ -117,12 +118,12 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
                 }
                 if(!(rawStatement instanceof TokenStructure)) continue;
 
-                Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this, function);
+                Statement statement = Statement.read(((TokenStructure) rawStatement).getContents(), this, section);
 
                 if(statement != null) {
                     statements.add(statement);
                     statement.setSilent(silent);
-                    Value value = statement.evaluate(function);
+                    Value value = statement.evaluate(section);
                     if(statement instanceof ReturnStatement) {
                         //returnValue = value;
                         closed = true;
@@ -138,8 +139,8 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
         return symbolTable;
     }
 
-    public Function getFunction() {
-        return function;
+    public FunctionSection getFunctionSection() {
+        return section;
     }
 
     public int getLevel() {
@@ -147,11 +148,11 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     }
 
     @Override
-    public Value evaluate(Function function) {
-        System.out.println("EVALUATING CODE BLOCK IN FUNCTION " + function);
+    public Value evaluate(FunctionSection section) {
+        System.out.println("EVALUATING CODE BLOCK IN FUNCTION " + section);
         for(Statement st : statements) {
             st.setDataHolder(this.dataHolder);
-            Value value = st.evaluate(function);
+            Value value = st.evaluate(section);
             if(st instanceof ReturnStatement) return value;
         }
         return null;
@@ -218,8 +219,8 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     }
 
     @Override
-    public ScoreHolder getScoreHolder(Function function) {
-        return (isStatic() ? semanticContext.getUnit().getScoreHolder(function) : ownerInstance.getEntity());
+    public ScoreHolder getScoreHolder(FunctionSection section) {
+        return (isStatic() ? semanticContext.getUnit().getScoreHolder(section) : ownerInstance.getEntity());
     }
 
     @Override

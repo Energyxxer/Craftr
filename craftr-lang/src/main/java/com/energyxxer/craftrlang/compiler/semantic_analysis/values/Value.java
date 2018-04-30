@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
@@ -48,10 +49,10 @@ public abstract class Value implements TraversableStructure {
     public abstract SymbolTable getSubSymbolTable();
     public abstract MethodLog getMethodLog();
 
-    public abstract Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent);
-    public abstract Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent);
+    public abstract Value runOperation(Operator operator, TokenPattern<?> pattern, FunctionSection section, boolean silent);
+    public abstract Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, FunctionSection section, SemanticContext semanticContext, ScoreReference resultReference, boolean silent);
 
-    public Value runShorthandOperation(DataReference reference, Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, boolean silent) {
+    public Value runShorthandOperation(DataReference reference, Operator operator, Value operand, TokenPattern<?> pattern, FunctionSection section, SemanticContext semanticContext, boolean silent) {
         return null;
     }
 

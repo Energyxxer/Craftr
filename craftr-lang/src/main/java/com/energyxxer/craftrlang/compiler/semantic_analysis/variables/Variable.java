@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.variables;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.commodore.score.Objective;
 import com.energyxxer.commodore.score.ScoreHolder;
@@ -105,7 +106,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
     }
 
     //FOR PARAMETER
-    public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext, Value value, Function function, ScoreReference paramReference) {
+    public Variable(String name, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext, Value value, FunctionSection section, ScoreReference paramReference) {
         super(semanticContext);
         this.pattern = null;
         this.visibility = SymbolVisibility.METHOD;
@@ -117,7 +118,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         this.type = VariableType.PARAMETER;
         if(value != null) {
             if(value.isImplicit()) {
-                this.reference = value.getReference().toScore(function, paramReference.getScore(), semanticContext); //Clone the value into the parameter objective
+                this.reference = value.getReference().toScore(section, paramReference.getScore(), semanticContext); //Clone the value into the parameter objective
                 this.value = dataType.create(this.reference, semanticContext);
             } else {
                 this.value = value;
@@ -144,13 +145,13 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
 
         if(initialization != null) {
 
-            Function initializerFunction;
+            FunctionSection initializerFunction;
             if(semanticContext instanceof Unit) {
                 initializerFunction = ((Unit) semanticContext).getStaticInitializer();
             } else if(semanticContext instanceof InitContext) {
                 initializerFunction = semanticContext.getUnit().getInstanceInitializer();
             } else if(semanticContext instanceof CodeBlock) {
-                initializerFunction = ((CodeBlock) semanticContext).getFunction();
+                initializerFunction = ((CodeBlock) semanticContext).getFunctionSection();
             } else if(semanticContext instanceof Method) {
                 return; //There's no variable initialization in method parameters;
                         // also this class isn't the one that parses method params so no point in having this;
@@ -216,18 +217,18 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         return variables;
     }
 
-    private ScoreHolder requestParentScoreHolder(Function function) {
+    private ScoreHolder requestParentScoreHolder(FunctionSection function) {
         if(isStatic()) {
             return getUnit().getScoreHolder(function);
         } else return ownerInstance.requestEntity(function);
     }
 
-    public void createDataReference(Function function) {
+    public void createDataReference(FunctionSection function) {
         if(reference != null) return;
         reference = new ScoreReference(new LocalScore(objective, requestParentScoreHolder(function)));
     }
 
-    public Value assign(Value value, Function function, SemanticContext semanticContext, boolean silent) {
+    public Value assign(Value value, FunctionSection function, SemanticContext semanticContext, boolean silent) {
         if(!value.getDataType().instanceOf(this.getDataType())) {
             if(!silent) this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + value.getDataType() + " cannot be converted to " + this.getDataType(), pattern));
             this.value = new Null(this.semanticContext);
@@ -268,7 +269,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
     }
 
     @Override
-    public Value unwrap(Function function) {
+    public Value unwrap(FunctionSection section) {
         return unwrap();
     }
 
@@ -282,15 +283,15 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
     }
 
     @Override
-    public Value runOperation(Operator operator, TokenPattern<?> pattern, Function function, boolean silent) {
+    public Value runOperation(Operator operator, TokenPattern<?> pattern, FunctionSection section, boolean silent) {
         return null;
     }
 
     @Override
-    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, Function function, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
+    public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, FunctionSection section, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
         switch(operator) {
             case ASSIGN: {
-                return this.assign(operand, function, semanticContext, silent);
+                return this.assign(operand, section, semanticContext, silent);
             }
             case ADD_THEN_ASSIGN:
             case SUBTRACT_THEN_ASSIGN:
@@ -298,16 +299,16 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
             case DIVIDE_THEN_ASSIGN: {
                 Value result;
                 if(reference instanceof ScoreReference) {
-                    result = unwrap().runShorthandOperation(reference, operator, operand, pattern, function, semanticContext, silent);
+                    result = unwrap().runShorthandOperation(reference, operator, operand, pattern, section, semanticContext, silent);
                 } else {
-                    result = unwrap().runOperation(Operator.getNoAssign(operator), operand, pattern, function, semanticContext, null, silent);
+                    result = unwrap().runOperation(Operator.getNoAssign(operator), operand, pattern, section, semanticContext, null, silent);
                 }
-                return (result != null) ? this.assign(result, function, semanticContext, silent) : null;
+                return (result != null) ? this.assign(result, section, semanticContext, silent) : null;
             }
         }
         lazilyInstantiateValue();
         if(!value.isNull()) {
-            Value returnValue = value.runOperation(operator, operand, pattern, function, semanticContext, (operator == ASSIGN) ? this.getReference() : null, silent);
+            Value returnValue = value.runOperation(operator, operand, pattern, section, semanticContext, (operator == ASSIGN) ? this.getReference() : null, silent);
             return returnValue;
         } else {
             if(!silent) this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Variable might not have been defined", pattern));

@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.inspection.ExecutionContext;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.commodore.types.FunctionReference;
@@ -372,9 +373,9 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         return signature.hashCode();
     }
 
-    public Value writeCall(Function function, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder) {
+    public Value writeCall(FunctionSection section, List<ActualParameter> positionalParams, HashMap<String, ActualParameter> keywordParams, TokenPattern<?> pattern, SemanticContext semanticContext, DataHolder dataHolder) {
         if(this.modifiers.contains(CraftrLang.Modifier.NATIVE)) {
-            return NativeMethods.execute(this, function, positionalParams, keywordParams, pattern, semanticContext, dataHolder);
+            return NativeMethods.execute(this, section, positionalParams, keywordParams, pattern, semanticContext, dataHolder);
         }
 
         if(codeBlock == null) {
@@ -397,7 +398,7 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
             }
             //param = param.unwrap(function);
 
-            codeBlock.getSymbolTable().put(new Variable(this.positionalParams.get(i).getName(), Collections.emptyList(), this.positionalParams.get(i).getType(), this, param, function, this.positionalParams.get(i).getScore(this)));
+            codeBlock.getSymbolTable().put(new Variable(this.positionalParams.get(i).getName(), Collections.emptyList(), this.positionalParams.get(i).getType(), this, param, section, this.positionalParams.get(i).getScore(this)));
         }
 
         //Assign actual keyword params to code block
@@ -408,14 +409,14 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
                 continue;
             }
             if(entry.getValue().getDataType().instanceOf(this.keywordParams.get(entry.getKey()).getType())) {
-                codeBlock.getSymbolTable().put(new Variable(entry.getKey(), Collections.emptyList(), this.keywordParams.get(entry.getKey()).getType(), this, entry.getValue().getValue(), function, this.keywordParams.get(entry.getKey()).getScore(this)));
+                codeBlock.getSymbolTable().put(new Variable(entry.getKey(), Collections.emptyList(), this.keywordParams.get(entry.getKey()).getType(), this, entry.getValue().getValue(), section, this.keywordParams.get(entry.getKey()).getScore(this)));
             } else {
                 semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + entry.getValue().getDataType() + " cannot be converted to " + this.keywordParams.get(entry.getKey()).getType(), entry.getValue().pattern));
             }
         }
         codeBlock.setSilent(true);
         codeBlock.setDataHolder(dataHolder);
-        Value blockResult = codeBlock.evaluate(function);
+        Value blockResult = codeBlock.evaluate(section);
         if(returnType == DataType.VOID) return null;
         if(blockResult != null) return blockResult;
         return returnType.create(new ScoreReference(getGlobalObjectiveManager().RETURN), semanticContext);
@@ -445,14 +446,14 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
     }
 
     @Override
-    public ScoreHolder getScoreHolder(Function function) {
+    public ScoreHolder getScoreHolder(FunctionSection section) {
         if(this.isStaticAccess()) {
-            return declaringUnit.getScoreHolder(function);
+            return declaringUnit.getScoreHolder(section);
         } else {
             if(ownerInstance == null) {
                 throw new IllegalStateException("bOOO");
             }
-            return ownerInstance.requestEntity(function);
+            return ownerInstance.requestEntity(section);
         }
     }
 }

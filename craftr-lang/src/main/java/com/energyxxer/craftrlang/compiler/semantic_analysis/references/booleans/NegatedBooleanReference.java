@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.references.booleans;
 
 import com.energyxxer.commodore.entity.Entity;
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.nbt.NBTPath;
 import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
@@ -21,17 +21,17 @@ public class NegatedBooleanReference implements BooleanReference {
     }
 
     @Override
-    public BooleanResolution resolveBoolean(Function function, SemanticContext semanticContext, boolean negated) {
-        return reference.resolveBoolean(function, semanticContext, !negated);
+    public BooleanResolution resolveBoolean(FunctionSection section, SemanticContext semanticContext, boolean negated) {
+        return reference.resolveBoolean(section, semanticContext, !negated);
     }
 
     @Override
-    public ScoreReference toScore(Function function, LocalScore score, SemanticContext semanticContext) {
+    public ScoreReference toScore(FunctionSection section, LocalScore score, SemanticContext semanticContext) {
         throw new NotImplementedException();
     }
 
     @Override
-    public NBTReference toNBT(Function function, Entity entity, NBTPath path, SemanticContext semanticContext) {
+    public NBTReference toNBT(FunctionSection section, Entity entity, NBTPath path, SemanticContext semanticContext) {
         throw new NotImplementedException();
     }
 }

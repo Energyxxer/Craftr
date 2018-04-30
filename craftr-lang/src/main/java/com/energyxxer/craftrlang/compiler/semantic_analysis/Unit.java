@@ -1,6 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis;
 
 import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.score.FakePlayer;
 import com.energyxxer.commodore.score.ScoreHolder;
 import com.energyxxer.craftrlang.CraftrLang;
@@ -636,7 +637,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
     }
 
     @Override
-    public ScoreHolder getScoreHolder(Function function) {
+    public ScoreHolder getScoreHolder(FunctionSection section) {
         return staticPlayer;
     }
 

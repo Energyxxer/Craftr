@@ -5,7 +5,7 @@ import com.energyxxer.commodore.commands.scoreboard.ScoreComparison;
 import com.energyxxer.commodore.commands.scoreboard.ScoreGet;
 import com.energyxxer.commodore.commands.scoreboard.ScorePlayersOperation;
 import com.energyxxer.commodore.entity.Entity;
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.nbt.NBTPath;
 import com.energyxxer.commodore.nbt.NumericNBTType;
 import com.energyxxer.commodore.score.LocalScore;
@@ -23,23 +23,23 @@ public class ScoreReference implements DataReference {
     }
 
     @Override
-    public ScoreReference toScore(Function function, LocalScore score, SemanticContext semanticContext) {
+    public ScoreReference toScore(FunctionSection section, LocalScore score, SemanticContext semanticContext) {
         if(!score.equals(this.score)) {
-            function.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.ASSIGN, this.score));
+            section.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.ASSIGN, this.score));
             return new ScoreReference(score);
         }
         return this;
     }
 
     @Override
-    public NBTReference toNBT(Function function, Entity entity, NBTPath path, SemanticContext semanticContext) {
+    public NBTReference toNBT(FunctionSection section, Entity entity, NBTPath path, SemanticContext semanticContext) {
         ExecuteCommand exec = new ExecuteCommand(new ScoreGet(this.score));
         exec.addModifier(new ExecuteStoreEntity(entity, path, NumericNBTType.DOUBLE));
         return new NBTReference(entity, path);
     }
 
     @Override
-    public BooleanResolution compare(Function function, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
+    public BooleanResolution compare(FunctionSection section, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
         if(other instanceof ExplicitInt) {
             return new BooleanResolution(new ExecuteConditionScoreMatch(ExecuteCondition.ConditionType.IF, score, new SelectorNumberArgument<>(((ExplicitInt) other).getValue())));
         }
@@ -53,7 +53,7 @@ public class ScoreReference implements DataReference {
             locObj = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
             locObj.claim();
 
-            otherScoreReference = other.toScore(function, new LocalScore(locObj.getObjective(), semanticContext.getScoreHolder(function)), semanticContext);
+            otherScoreReference = other.toScore(section, new LocalScore(locObj.getObjective(), semanticContext.getScoreHolder(section)), semanticContext);
         }
 
         if(locObj != null) locObj.dispose();

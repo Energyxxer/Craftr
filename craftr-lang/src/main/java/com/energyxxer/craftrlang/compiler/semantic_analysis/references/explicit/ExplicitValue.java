@@ -1,7 +1,7 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit;
 
 import com.energyxxer.commodore.commands.scoreboard.ScoreComparison;
-import com.energyxxer.commodore.functions.Function;
+import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.DataReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.booleans.BooleanResolution;
@@ -29,11 +29,11 @@ public interface ExplicitValue extends DataReference {
     }
 
     @Override
-    default BooleanResolution compare(Function function, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
+    default BooleanResolution compare(FunctionSection section, ScoreComparison op, DataReference other, SemanticContext semanticContext) {
         if(other instanceof ExplicitValue) {
             return new BooleanResolution(compare(asNumber(), op, ((ExplicitValue) other).asNumber()));
         } else {
-            return other.compare(function, op.getReverse(), other, semanticContext); //We don't allow yoda speak here
+            return other.compare(section, op.getReverse(), other, semanticContext); //We don't allow yoda speak here
         }
     }
 }
