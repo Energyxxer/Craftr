@@ -22,6 +22,8 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.references.booleans.
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitInt;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator;
 
+import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operations.Operator.*;
+
 /**
  * Created by Energyxxer on 07/11/2017.
  */
@@ -116,7 +118,7 @@ public class IntegerValue extends NumericValue {
             ScoreReference bScore = null;
             LocalizedObjective tempB = null;
             if(b instanceof ScoreReference) bScore = (ScoreReference) b;
-            else if(!(b instanceof ExplicitInt)) {
+            else if(!(b instanceof ExplicitInt) || (operator == MULTIPLY || operator == DIVIDE || operator == MODULO)) {
                 tempB = semanticContext.getLocalizedObjectiveManager().OPERATION.create();
                 tempB.claim();
                 bScore = b.toScore(section, new LocalScore(tempB.getObjective(), semanticContext.getScoreHolder(section)), semanticContext);
@@ -152,6 +154,15 @@ public class IntegerValue extends NumericValue {
                         section.append(new ScorePlayersOperation(score, ScorePlayersOperation.Operation.SUBTRACT, bScore.getScore()));
                     }
                     if(tempB != null) tempB.dispose();
+                    if(op != null) op.dispose();
+                    return new IntegerValue(new ScoreReference(score), semanticContext);
+                }
+                case MULTIPLY:
+                case DIVIDE:
+                case MODULO: {
+                    a.toScore(section, score, semanticContext);
+                    ScorePlayersOperation.Operation operation = ScorePlayersOperation.Operation.valueOf(operator.name());
+                    section.append(new ScorePlayersOperation(score, operation, bScore.getScore()));
                     if(op != null) op.dispose();
                     return new IntegerValue(new ScoreReference(score), semanticContext);
                 }
