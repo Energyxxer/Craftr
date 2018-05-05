@@ -9,6 +9,8 @@ import craftr.lang.items.*;
 * Created by Energyxxer on 27/7/2017.
 */
 public class Object {
+
+    public native void execute(String command);
     
     public native boolean equals(Object o);
     public native String toString();

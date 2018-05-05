@@ -22,6 +22,7 @@ import com.energyxxer.commodore.textcomponents.ScoreTextComponent;
 import com.energyxxer.commodore.textcomponents.StringTextComponent;
 import com.energyxxer.commodore.textcomponents.TextComponent;
 import com.energyxxer.commodore.types.EffectType;
+import com.energyxxer.craftrlang.compiler.codegen.commands.RawCommand;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;
 import com.energyxxer.craftrlang.compiler.report.NoticeType;
@@ -218,6 +219,18 @@ public class NativeMethods {
                         section.append(new DataMergeCommand(entity, new TagCompound(new TagString("CustomName", ((ExplicitString) customName).getValue()))));
                     } else {
                         semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Implicit parameters not currently supported for this method", pattern));
+                    }
+                    return null;
+                }
+        );
+        methods.put("craftr.lang.Object.execute(craftr.lang.String)",
+                (section, positionalParams, unused, pattern, semanticContext, instance) -> {
+
+                    DataReference command = positionalParams.get(0).getValue().getReference();
+                    if(command instanceof ExplicitString) {
+                        section.append(new RawCommand(((ExplicitString) command).getValue()));
+                    } else {
+                        semanticContext.getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "pfft, we all know /compose is dead", pattern));
                     }
                     return null;
                 }

@@ -19,4 +19,5 @@ public native abstract world World {
 
     //Misc
     public native void print(String message);
+    public native void print(int message);
 }
