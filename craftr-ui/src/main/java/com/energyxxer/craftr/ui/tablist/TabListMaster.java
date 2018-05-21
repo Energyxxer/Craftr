@@ -35,6 +35,7 @@ public class TabListMaster extends JComponent implements MouseListener, MouseMot
     private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public TabListMaster() {
+        System.out.println("-sdnvaskj");
         tlm.addThemeChangeListener(t -> {
             colors.put("background",t.getColor(Color.WHITE, "TabList.background"));
             colors.put("tab.background",t.getColor(new Color(0,0,0,0), "TabList.tab.background"));
@@ -55,10 +56,16 @@ public class TabListMaster extends JComponent implements MouseListener, MouseMot
             children.forEach(e -> e.themeChanged(t));
         });
 
+        System.out.println("-vksdnkfa");
+
         hint.setOutDelay(1);
+
+        System.out.println("-eufasmd");
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
+
+        System.out.println("-udsvamks");
     }
 
     @Override

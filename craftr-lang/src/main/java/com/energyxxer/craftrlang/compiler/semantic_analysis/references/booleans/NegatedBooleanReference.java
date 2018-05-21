@@ -7,7 +7,7 @@ import com.energyxxer.commodore.score.LocalScore;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.NBTReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import com.energyxxer.util.exceptions.NotImplementedException;
 
 public class NegatedBooleanReference implements BooleanReference {
     private BooleanReference reference;

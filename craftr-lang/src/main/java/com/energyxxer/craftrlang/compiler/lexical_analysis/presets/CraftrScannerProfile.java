@@ -97,6 +97,25 @@ public class CraftrScannerProfile extends ScannerProfile {
             }
         };
 
+        //Function Comment
+        ScannerContext functionCommentContext = new ScannerContext() {
+
+            String functionCommentStart = "/#";
+
+            @Override
+            public ScannerContextResponse analyze(String str) {
+                if(str.length() <= 0) return new ScannerContextResponse(false);
+                if(str.startsWith(functionCommentStart)) {
+                    int end = str.indexOf('\n');
+                    String fullComment = str;
+                    if(end >= 0) fullComment = str.substring(0, end);
+
+                    return new ScannerContextResponse(true, fullComment, CraftrLang.FUNCTION_COMMENT);
+                }
+                return new ScannerContextResponse(false);
+            }
+        };
+
         //Comment
         ScannerContext commentContext = new ScannerContext() {
 
@@ -231,6 +250,7 @@ public class CraftrScannerProfile extends ScannerProfile {
 
         ArrayList<ScannerContext> craftrContexts = new ArrayList<>();
         craftrContexts.add(stringContext);
+        craftrContexts.add(functionCommentContext);
         craftrContexts.add(commentContext);
         craftrContexts.add(miscellaneousContext);
         craftrContexts.add(operatorContext);

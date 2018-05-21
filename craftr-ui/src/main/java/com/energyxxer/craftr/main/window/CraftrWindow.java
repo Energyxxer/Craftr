@@ -62,19 +62,28 @@ public class CraftrWindow {
 	private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public CraftrWindow() {
+        System.out.println("isdmanie");
 		jframe = new JFrame();
 		setTitle("");
 		jframe.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		tlm.addThemeChangeListener(t -> jframe.getContentPane().setBackground(t.getColor(new Color(215, 215, 215), "Window.background")));
 
+        System.out.println("ksdniajen");
+
 		jframe.setJMenuBar(menuBar = new MenuBar());
 
 		jframe.setLayout(new BorderLayout());
 
+        System.out.println("qkfnwslkdfksj");
+
 		tabList = new TabListMaster();
 
+        System.out.println("xksdnfkjae");
+
 		welcomePane = new WelcomePane();
+
+        System.out.println("risdknva");
 
 		jframe.getContentPane().add(toolbar = new Toolbar(), BorderLayout.NORTH);
 
@@ -98,12 +107,16 @@ public class CraftrWindow {
             return false;
         });
 
+        System.out.println("vkdshajks");
+
 		toolBoard = new ToolBoardMaster();
 		mainContent.add(toolBoard, BorderLayout.SOUTH);
 
 		noticeBoard = new NoticeBoard(toolBoard);
 		consoleBoard = new ConsoleBoard(toolBoard);
 		toolBoard.setLastOpenedBoard(noticeBoard);
+
+        System.out.println("dknnfsjgnask");
 
 		jframe.getContentPane().add(statusBar = new StatusBar(), BorderLayout.SOUTH);
 
@@ -139,6 +152,8 @@ public class CraftrWindow {
 		jframe.setSize(defaultSize);
 		jframe.setPreferredSize(defaultSize);
 
+        System.out.println("kdsngjaefajs");
+
 		List<Image> icons = new ArrayList<>();
 		icons.add(
 				ImageManager.load("/assets/logo/logo_icon.png").getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH));
@@ -151,12 +166,16 @@ public class CraftrWindow {
 		center.y -= jframe.getHeight() / 2;
 		jframe.setLocation(center);
 
+        System.out.println("pskdfgnakjdsf");
+
 		tlm.addThemeChangeListener(t -> {
 			UIManager.put("ToolTip.background",t.getColor(Color.WHITE, "Tooltip.background"));
 			UIManager.put("ToolTip.foreground",t.getColor(Color.BLACK, "Tooltip.foreground"));
 			int borderThickness = Math.max(t.getInteger(1,"Tooltip.border.thickness"),0);
 			UIManager.put("ToolTip.border",BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(borderThickness, borderThickness, borderThickness, borderThickness, t.getColor(Color.BLACK, "Tooltip.border.color")),BorderFactory.createEmptyBorder(3,5,3,5)));
 		});
+
+        System.out.println("mskdnggja");
 	}
 
 	public static void setVisible(boolean b) {

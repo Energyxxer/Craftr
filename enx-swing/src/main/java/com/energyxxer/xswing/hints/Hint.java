@@ -119,7 +119,8 @@ public class Hint extends JDialog implements MouseListener, Disposable {
 
     public void update() {
         this.revalidate();
-        this.pack();
+        if(this.getOwner().isShowing())
+            this.pack();
         this.updateLocation();
         this.repaint();
     }

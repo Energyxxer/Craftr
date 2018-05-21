@@ -832,6 +832,7 @@ public class CraftrProductions {
         }
         STATEMENT.add(SWITCH_STATEMENT);
 
+        STATEMENT.add(new TokenStructureMatch("FUNCTION_COMMENT").add(new TokenItemMatch(CraftrLang.FUNCTION_COMMENT).setName("FUNCTION_COMMENT_TOKEN")));
 
         //JSON Structures
         TokenStructureMatch JSON_VALUE = new TokenStructureMatch("JSON_VALUE");
