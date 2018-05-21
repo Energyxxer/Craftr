@@ -264,7 +264,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         staticPlayer = new FakePlayer(name.toUpperCase());
 
         dataType = new DataType(this);
-        dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, (r != null && r instanceof EntityReference) ? ((EntityReference) r).getEntity() : ((r instanceof ScoreReference) ? new CraftrEntity(this, (ScoreReference) r) : null), c));
+        dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, (r != null && r instanceof EntityReference) ? ((EntityReference) r).getEntity() : ((r instanceof ScoreReference) ? new CraftrEntity(this, (ScoreReference) r) : null), c, false));
 
         staticInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/init-static");
         instanceInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/init-instance");
@@ -489,7 +489,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         if(!isSingleton()) throw new IllegalStateException("Unit is not singleton, cannot get singleton instance");
         if(singletonInstance == null) {
             //create singleton instance
-            singletonInstance = new ObjectInstance(this, this);
+            singletonInstance = new ObjectInstance(this, this, false);
         }
         return singletonInstance;
     }

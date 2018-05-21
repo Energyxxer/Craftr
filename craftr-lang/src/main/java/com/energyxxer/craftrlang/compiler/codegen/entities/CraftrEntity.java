@@ -82,7 +82,7 @@ public class CraftrEntity implements Entity {
 
     @Override
     public String toString() {
-        return selector.toString();
+        return selector != null ? selector.toString() : scoreReference.toString();
     }
 
     @Override

@@ -41,18 +41,18 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
     public ObjectInstance(ObjectInstance other) {
         super(other.reference, other.semanticContext);
         this.unit = other.unit;
-        this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
+        this.fieldLog = unit.getInstanceFieldLog().createForInstance(this, false); //TODO: debate whether this should be initialized or not
         this.methodLog = unit.getInstanceMethodLog().createForInstance(this);
         this.entity = other.entity;
 
         this.fieldLog.put("this", this);
     }
 
-    public ObjectInstance(Unit unit, SemanticContext semanticContext) {
-        this(unit, null, semanticContext);
+    public ObjectInstance(Unit unit, SemanticContext semanticContext, boolean initialized) {
+        this(unit, null, semanticContext, initialized);
     }
 
-    public ObjectInstance(Unit unit, CraftrEntity entity, SemanticContext semanticContext) {
+    public ObjectInstance(Unit unit, CraftrEntity entity, SemanticContext semanticContext, boolean initialized) {
         super(semanticContext);
         this.unit = unit;
 
@@ -63,7 +63,7 @@ public class ObjectInstance extends Value implements Symbol, DataHolder {
             setEntity(entity);
         }
 
-        this.fieldLog = unit.getInstanceFieldLog().createForInstance(this);
+        this.fieldLog = unit.getInstanceFieldLog().createForInstance(this, initialized);
         this.methodLog = unit.getInstanceMethodLog().createForInstance(this);
 
         this.fieldLog.put("this", this);

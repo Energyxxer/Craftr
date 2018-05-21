@@ -100,7 +100,8 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     public void initialize(ObjectInstance ownerInstance) {
         if(initialized) return;
 
-        this.ownerInstance = (ownerInstance != null) ? ownerInstance : new ObjectInstance(semanticContext.getUnit(), this);
+        this.ownerInstance = (ownerInstance != null) ? ownerInstance : new ObjectInstance(semanticContext.getUnit(), this, false);
+        //semanticContext.getUnit().getDataType().create(null, this);
 
         TokenPattern<?> inner = (TokenPattern<?>) pattern.getContents();
 
@@ -151,7 +152,7 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
     public Value evaluate(FunctionSection section) {
         System.out.println("EVALUATING CODE BLOCK IN FUNCTION " + section);
         for(Statement st : statements) {
-            st.setDataHolder(this.dataHolder);
+            st.setDataHolder(this);
             Value value = st.evaluate(section);
             if(st instanceof ReturnStatement) return value;
         }

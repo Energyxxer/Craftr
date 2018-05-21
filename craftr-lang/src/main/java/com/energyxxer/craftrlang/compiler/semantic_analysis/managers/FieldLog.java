@@ -31,7 +31,7 @@ public class FieldLog extends SymbolTable {
         this.isStatic = true;
     }
 
-    public FieldLog(ObjectInstance instance) {
+    public FieldLog(ObjectInstance instance, boolean initialized) {
         super(instance.getUnit().getVisibility(), instance.getUnit().getDeclaringFile().getPackage().getSubSymbolTable());
         this.parentUnit = instance.getUnit();
         this.parentInstance = instance;
@@ -39,7 +39,7 @@ public class FieldLog extends SymbolTable {
 
         for(Symbol symbol : parentUnit.getInstanceFieldLog().getMap().values()) {
             if(symbol instanceof Variable) {
-                this.put((instance.getEntity() != null) ? ((Variable) symbol).createNew(instance) : ((Variable) symbol).createEmpty(instance));
+                this.put((initialized) ? ((Variable) symbol).createNew(instance) : ((Variable) symbol).createEmpty(instance));
             }
         }
     }
@@ -90,8 +90,8 @@ public class FieldLog extends SymbolTable {
         this.orderedSymbols.add(symbol);
     }
 
-    public FieldLog createForInstance(ObjectInstance instance) {
-        return new FieldLog(instance);
+    public FieldLog createForInstance(ObjectInstance instance, boolean initialized) {
+        return new FieldLog(instance, initialized);
     }
 
     public Unit getParentUnit() {

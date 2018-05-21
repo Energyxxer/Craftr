@@ -57,7 +57,6 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
     private Value value;
 
     private ObjectInstance ownerInstance;
-    //TODO: Add a flag that says whether this variable has had an implicit value
 
     private Factory<Value> lazyFactory;
 
@@ -178,6 +177,8 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
             if(!(this.value.getReference() instanceof ExplicitValue)) {
                 this.value = dataType.create(this.value.getReference().toScore(initializerFunction, getReference().getScore(), semanticContext), semanticContext);
             }
+
+            //TODO: Debate whether explicit values should be assigned explicitly anyway after instantiation
 
             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern));
         } else {
