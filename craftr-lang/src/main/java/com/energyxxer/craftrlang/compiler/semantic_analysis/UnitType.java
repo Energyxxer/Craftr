@@ -58,4 +58,8 @@ public enum UnitType {
     public boolean isSingleton() {
         return singleton;
     }
+
+    public ImplicityState getImplicity() {
+        return implicity;
+    }
 }

@@ -609,7 +609,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
 
     public InitContext getFieldInitContext() {
         if(fieldInitContext == null) {
-            fieldInitContext = new InitContext(this);
+            fieldInitContext = new InitContext(this, true);
         }
         return fieldInitContext;
     }

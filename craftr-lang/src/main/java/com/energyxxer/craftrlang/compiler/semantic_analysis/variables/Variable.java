@@ -20,6 +20,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.constants.SemanticUt
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.*;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.implicity.ImplicityState;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.managers.MethodLog;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.ScoreReference;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.references.explicit.ExplicitValue;
@@ -41,6 +42,7 @@ import static com.energyxxer.craftrlang.compiler.semantic_analysis.values.operat
  * Created by Energyxxer on 07/10/2017.
  */
 public class Variable extends ValueWrapper implements Symbol, DataHolder, TraversableStructure {
+    private String constructorStuff = "";
     public final TokenPattern<?> pattern;
 
     private SymbolVisibility visibility;
@@ -70,6 +72,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         this.type = that.type;
         this.block = that.block;
         //if(ownerInstance.isImplicit()) this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.getEntity()));
+        boolean a = false;
         if(empty) {
             this.reference = new ScoreReference(new LocalScore(that.objective, ownerInstance.requestEntity(null)));
             this.lazyFactory = () -> this.reference != null ? dataType.create(this.reference, this.semanticContext) : null;
@@ -79,6 +82,8 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         }
         this.ownerInstance = ownerInstance;
         this.objective = that.objective;
+
+        constructorStuff = "con0, " + that + ", " + ownerInstance + ", " + empty;
     }
 
     private Variable(TokenPattern<?> pattern, List<CraftrLang.Modifier> modifiers, DataType dataType, SemanticContext semanticContext) {
@@ -98,10 +103,12 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         if(CraftrLang.isPseudoIdentifier(this.name)) {
             this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Illegal variable name", pattern.find("VARIABLE_NAME")));
         }
-        this.value = null;
         this.type = (this.semanticContext.getContextType() == ContextType.UNIT) ? VariableType.FIELD : VariableType.VARIABLE;
+        this.value = null;
 
         this.claimObjective();
+
+        constructorStuff = "con1";
     }
 
     //FOR PARAMETER
@@ -128,6 +135,8 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         }
 
         this.claimObjective();
+
+        constructorStuff = "con2";
     }
 
     @Deprecated
@@ -159,6 +168,8 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
                 return;
             }
 
+            System.out.println(initialization);
+
             this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getScoreHolder(initializerFunction)));
             this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext, null, initializerFunction);
             if(this.value instanceof Expression) {
@@ -174,11 +185,12 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
                 this.value = ((ValueWrapper) this.value).unwrap(initializerFunction);
             }
 
-            if(!(this.value.getReference() instanceof ExplicitValue)) {
+            if(!(this.value.getReference() instanceof ExplicitValue) || semanticContext.getUnit().getType().getImplicity() == ImplicityState.IMPLICIT) {
                 this.value = dataType.create(this.value.getReference().toScore(initializerFunction, getReference().getScore(), semanticContext), semanticContext);
             }
 
             //TODO: Debate whether explicit values should be assigned explicitly anyway after instantiation
+            // Well depends on the unit type
 
             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern));
         } else {

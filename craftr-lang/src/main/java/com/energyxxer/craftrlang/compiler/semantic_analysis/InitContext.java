@@ -12,6 +12,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstanc
 
 public class InitContext implements SemanticContext {
     private final Unit unit;
+    private final boolean objectInitialized;
     private final LocalizedObjectiveManager locObjMgr;
 
     private ObjectInstance ownerInstance;
@@ -19,7 +20,12 @@ public class InitContext implements SemanticContext {
     //private final CraftrEntity entity;
 
     public InitContext(Unit unit) {
+        this(unit, false);
+    }
+
+    public InitContext(Unit unit, boolean objectInitialized) {
         this.unit = unit;
+        this.objectInitialized = objectInitialized;
         this.locObjMgr = unit.getAnalyzer().getCompiler().getModule().createLocalizedObjectiveManager(this);
 
         //this.entity = new CraftrEntity(unit, new Selector(Selector.BaseSelector.ALL_ENTITIES, new TagArgument(getCompiler().getPrefix() + "_init"))); //TODO Make this a getter in the Unit class so it can be made the sender of the initialization function
@@ -62,7 +68,7 @@ public class InitContext implements SemanticContext {
 
     public ObjectInstance getOwnerInstance() {
         if(ownerInstance == null) {
-            ownerInstance = new ObjectInstance(unit, this, false);
+            ownerInstance = new ObjectInstance(unit, this, objectInitialized);
             CraftrEntity entity = ownerInstance.requestEntity(null);
             if(unit.getInstanceInitializer().getEntryCount() == 0)
                 unit.getInstanceInitializer().setExecutionContext(new ExecutionContext(entity));
