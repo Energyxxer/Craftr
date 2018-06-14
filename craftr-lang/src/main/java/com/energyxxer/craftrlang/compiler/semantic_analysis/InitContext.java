@@ -9,6 +9,7 @@ import com.energyxxer.craftrlang.compiler.semantic_analysis.context.ContextType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.ObjectInstance;
+import com.energyxxer.craftrlang.compiler.semantic_analysis.variables.Variable;
 
 public class InitContext implements SemanticContext {
     private final Unit unit;
@@ -74,6 +75,13 @@ public class InitContext implements SemanticContext {
                 unit.getInstanceInitializer().setExecutionContext(new ExecutionContext(entity));
         }
         return ownerInstance;
+    }
+
+    public void updateVariable(Variable variable) {
+        if(ownerInstance != null) {
+            ownerInstance.getSubSymbolTable().getMap().remove(variable.getName());
+            ownerInstance.getSubSymbolTable().put(variable.createNew(ownerInstance));
+        }
     }
 
     @Override

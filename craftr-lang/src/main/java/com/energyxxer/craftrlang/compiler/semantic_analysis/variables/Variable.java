@@ -172,6 +172,9 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
 
             this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getScoreHolder(initializerFunction)));
             this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext, null, initializerFunction);
+
+            boolean a = false;
+
             if(this.value instanceof Expression) {
                 this.value = ((Expression) this.value).unwrap(initializerFunction, getReference());
             }
@@ -186,13 +189,21 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
             }
 
             if(!(this.value.getReference() instanceof ExplicitValue) || semanticContext.getUnit().getType().getImplicity() == ImplicityState.IMPLICIT) {
-                this.value = dataType.create(this.value.getReference().toScore(initializerFunction, getReference().getScore(), semanticContext), semanticContext);
+                ScoreReference asScoreReference = this.value.getReference().toScore(initializerFunction, getReference().getScore(), semanticContext);
+                if(!(this.value.getReference() instanceof ExplicitValue)) this.value = dataType.create(asScoreReference, semanticContext);
             }
 
             //TODO: Debate whether explicit values should be assigned explicitly anyway after instantiation
             // Well depends on the unit type
 
             semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice("Value Report", NoticeType.INFO, name + ": " + this.value, pattern));
+
+            System.out.println(semanticContext);
+
+            if(!isStatic() && semanticContext instanceof InitContext) {
+                ((InitContext) semanticContext).updateVariable(this);
+                System.out.println("UPDATED VARIABLE " + this);
+            }
         } else {
             this.value = new Null(this.semanticContext);
         }
