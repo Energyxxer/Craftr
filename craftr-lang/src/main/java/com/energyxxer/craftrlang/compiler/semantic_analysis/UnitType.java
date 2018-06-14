@@ -10,7 +10,12 @@ import java.util.List;
  * Created by Energyxxer on 07/14/2017.
  */
 public enum UnitType {
-    ENTITY("name:Entity,plural:Entities",ImplicityState.IMPLICIT), ITEM("name:Item,plural:Items",ImplicityState.EXPLICIT), FEATURE("name:Feature,plural:Features",ImplicityState.EXPLICIT), CLASS("name:Class,plural:Classes",ImplicityState.EXPLICIT), ENUM("name:Enum,plural:Enums",ImplicityState.EXPLICIT), WORLD("name:World,plural:Worlds,singleton:true",ImplicityState.EXPLICIT);
+    ENTITY  ("name: Entity, plural: Entities, implicity: implicit"),
+    ITEM    ("name: Item, plural: Items, implicity: explicit"),
+    FEATURE ("name: Feature, plural: Features, implicity: explicit"),
+    CLASS   ("name: Class, plural: Classes, implicity: explicit"),
+    ENUM    ("name: Enum, plural: Enums, implicity: explicit"),
+    WORLD   ("name: World, plural: Worlds, singleton: true, implicity: explicit");
 
     private String name;
     private String plural;
@@ -18,9 +23,8 @@ public enum UnitType {
     private ImplicityState implicity;
     private boolean singleton = false;
 
-    UnitType(String raw, ImplicityState implicity) {
+    UnitType(String raw) {
         this.inferredModifiers = new ArrayList<>();
-        this.implicity = implicity;
 
         String[] params = raw.split(",");
         for(String param : params) {
@@ -36,8 +40,13 @@ public enum UnitType {
                         CraftrLang.Modifier value = CraftrLang.Modifier.valueOf(modifier.toUpperCase());
                         inferredModifiers.add(value);
                     }
+                    break;
                 } case "singleton": {
                     this.singleton = pair[1].trim().equals("true");
+                    break;
+                } case "implicity": {
+                    this.implicity = ImplicityState.valueOf(pair[1].trim().toUpperCase());
+                    break;
                 }
             }
         }
