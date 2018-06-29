@@ -3,12 +3,7 @@ package com.energyxxer.craftr.ui.explorer.base;
 import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerElement;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -62,7 +57,10 @@ public class ExplorerMaster extends JComponent implements MouseListener, MouseMo
         flatList.clear();
         g.setColor(colors.get("background"));
         g.fillRect(0,0,this.getWidth(), this.getHeight());
-        for(ExplorerElement i : children) {
+
+        ArrayList<ExplorerElement> toRender = new ArrayList<>(children);
+
+        for(ExplorerElement i : toRender) {
             i.render(g);
         }
 

@@ -79,7 +79,9 @@ public class TabListMaster extends JComponent implements MouseListener, MouseMot
 
         int draggedX = -1;
 
-        for(TabListElement element : children) {
+        ArrayList<TabListElement> toRender = new ArrayList<>(children);
+
+        for(TabListElement element : toRender) {
             if(element != draggedElement) {
                 element.render(g.create());
             } else draggedX = x;

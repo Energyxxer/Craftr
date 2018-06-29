@@ -12,6 +12,7 @@ import com.energyxxer.util.StringUtil;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -39,7 +40,16 @@ public class TabItem extends TabListElement {
     void updateIcon() {
         if(associatedTab.path.endsWith(".png")) {
             try {
-                this.icon = ImageIO.read(new File(associatedTab.path)).getScaledInstance(16,16, Image.SCALE_SMOOTH);
+                BufferedImage img = ImageIO.read(new File(associatedTab.path));
+                Dimension size = new Dimension(img.getWidth(), img.getHeight());
+                if(img.getWidth() < img.getHeight()) {
+                    size.height = 16;
+                    size.width = Math.max(1,(int) Math.round(16 * (double) img.getWidth() / img.getHeight()));
+                } else {
+                    size.width = 16;
+                    size.height = Math.max(1,(int) Math.round(16 * (double) img.getHeight() / img.getWidth()));
+                }
+                this.icon = img.getScaledInstance(size.width,size.height, Image.SCALE_SMOOTH);
             } catch(IOException x) {
                 this.icon = Commons.getIcon("file").getScaledInstance(16,16, Image.SCALE_SMOOTH);
             }
@@ -100,7 +110,7 @@ public class TabItem extends TabListElement {
             }
         }
 
-        if(icon != null) g.drawImage(icon, offsetX + 8, (h-16)/2, 16, 16, null);
+        if(icon != null) g.drawImage(icon, offsetX + 16 - icon.getWidth(null)/2, (h-16)/2 + 8 - icon.getHeight(null)/2, null);
         offsetX += 26;
 
         if(this.selected) {

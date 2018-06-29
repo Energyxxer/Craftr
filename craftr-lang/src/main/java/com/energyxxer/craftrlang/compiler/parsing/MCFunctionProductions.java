@@ -414,23 +414,23 @@ public class MCFunctionProductions {
 
             DefinitionPack defpack = StandardDefinitionPacks.MINECRAFT_J_1_13;
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.STRUCTURE)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("structure")) {
                 STRUCTURE.add(new TokenItemMatch(null, def.getName()));
             }
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.DIFFICULTY)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("difficulty")) {
                 DIFFICULTY.add(new TokenItemMatch(null, def.getName()));
             }
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.GAMEMODE)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("gamemode")) {
                 GAMEMODE.add(new TokenItemMatch(null, def.getName()));
             }
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.DIMENSION)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("dimension")) {
                 DIMENSION_ID.add(new TokenItemMatch(null, def.getName()));
             }
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.SLOT)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("slot")) {
                 String[] parts = def.getName().split("\\.");
 
                 TokenGroupMatch g = new TokenGroupMatch();
@@ -445,7 +445,7 @@ public class MCFunctionProductions {
 
             HashMap<String, TokenStructureMatch> namespaceGroups = new HashMap<>();
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.BLOCK)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("block")) {
 
                 TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
 
@@ -471,7 +471,7 @@ public class MCFunctionProductions {
 
             namespaceGroups.clear();
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.ITEM)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("item")) {
 
                 TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
 
@@ -497,7 +497,7 @@ public class MCFunctionProductions {
 
             namespaceGroups.clear();
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.ENTITY)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("entity")) {
 
                 TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
 
@@ -523,7 +523,7 @@ public class MCFunctionProductions {
 
             namespaceGroups.clear();
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.EFFECT)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("effect")) {
 
                 TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
 
@@ -549,7 +549,7 @@ public class MCFunctionProductions {
 
             namespaceGroups.clear();
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.ENCHANTMENT)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("enchantment")) {
 
                 TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
 
@@ -575,7 +575,7 @@ public class MCFunctionProductions {
 
             namespaceGroups.clear();
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.PARTICLE)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("particle")) {
                 TokenGroupMatch g = new TokenGroupMatch().setName("PARTICLE_ID");
 
                 TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
@@ -633,7 +633,7 @@ public class MCFunctionProductions {
 
             namespaceGroups.clear();
 
-            for(DefinitionBlueprint def : defpack.getBlueprints(DefinitionPack.DefinitionCategory.GAMERULE)) {
+            for(DefinitionBlueprint def : defpack.getBlueprints("gamerule")) {
                 TokenGroupMatch g = new TokenGroupMatch().setName("GAMERULE_ID");
 
                 g.append(new TokenItemMatch(null, def.getName()).setName("GAMERULE_NAME"));

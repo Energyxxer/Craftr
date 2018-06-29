@@ -27,8 +27,8 @@ public class CraftrCommandModule extends CommandModule {
         this.objMgr.setPrefixEnabled(true);
         this.glObjMgr = new GlobalObjectiveManager(this);
 
-        this.tickTag = minecraft.getTagManager().getFunctionGroup().createNew("tick");
-        this.loadTag = minecraft.getTagManager().getFunctionGroup().createNew("load");
+        this.tickTag = minecraft.getTagManager().getFunctionGroup().create("tick");
+        this.loadTag = minecraft.getTagManager().getFunctionGroup().create("load");
 
         this.optMgr.UNUSED_COMMAND_POLICY.setValue(UnusedCommandPolicy.COMMENT_OUT);
         this.optMgr.EXPORT_ACCESS_LOGS.setValue(true);

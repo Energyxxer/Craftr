@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -104,8 +105,16 @@ public class ProjectExplorerItem extends ExplorerElement {
             if(path.endsWith(".png")) {
                 try {
                     useFileIcon = true;
-                    File pathToFile = new File(path);
-                    this.icon = ImageIO.read(pathToFile).getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH);
+                    BufferedImage img = ImageIO.read(new File(path));
+                    Dimension size = new Dimension(img.getWidth(), img.getHeight());
+                    if(img.getWidth() < img.getHeight()) {
+                        size.height = 16;
+                        size.width = Math.max(1,(int) Math.round(16 * (double) img.getWidth() / img.getHeight()));
+                    } else {
+                        size.width = 16;
+                        size.height = Math.max(1,(int) Math.round(16 * (double) img.getHeight() / img.getWidth()));
+                    }
+                    this.icon = img.getScaledInstance(size.width,size.height, Image.SCALE_SMOOTH);
                 } catch (IOException ex) {
                     useFileIcon = false;
                 }
@@ -218,7 +227,7 @@ public class ProjectExplorerItem extends ExplorerElement {
         //File Icon
         {
             int margin = ((master.getRowHeight() - 16) / 2);
-            g.drawImage(this.icon,x,y + margin,16, 16,new Color(0,0,0,0),null);
+            g.drawImage(this.icon,x + 8 - icon.getWidth(null)/2,y + margin + 8 - icon.getHeight(null)/2, null);
         }
         x += 25;
 

@@ -24,11 +24,12 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
 
     private static final double MIN_SCALE = 0.25;
     private static final double MAX_SCALE = 50;
+    private static final int CHECK_PATTERN_SIZE = 5;
+
+    private final Tab associatedTab;
 
     private BufferedImage img;
     private double scale = 1;
-
-    private static final int CHECK_PATTERN_SIZE = 5;
 
     private int offsetX = 0;
     private int offsetY = 0;
@@ -45,6 +46,7 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
     private ThemeListenerManager tlm = new ThemeListenerManager();
 
     public ImageViewer(Tab tab) {
+        this.associatedTab = tab;
         try {
             this.img = ImageIO.read(new File(tab.path));
         } catch(IOException x) {
@@ -80,8 +82,8 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
         g.fillRect(rect.x, rect.y, rect.width, rect.height);
         g.setColor(Color.GRAY);
 
-        for(int x = rect.x; x < rect.x + rect.width; x += CHECK_PATTERN_SIZE * 2) {
-            for(int y = rect.y; y < rect.y + rect.height; y += CHECK_PATTERN_SIZE * 2) {
+        for(int x = rect.x > 0 ? rect.x : (rect.x-CHECK_PATTERN_SIZE) % (CHECK_PATTERN_SIZE*2); x < rect.x + rect.width; x += CHECK_PATTERN_SIZE * 2) {
+            for(int y = rect.y > 0 ? rect.y : (rect.y-CHECK_PATTERN_SIZE) % (CHECK_PATTERN_SIZE*2); y < rect.y + rect.height && y < this.getHeight(); y += CHECK_PATTERN_SIZE * 2) {
                 g.fillRect(x + CHECK_PATTERN_SIZE, y, CHECK_PATTERN_SIZE, CHECK_PATTERN_SIZE);
                 g.fillRect(x, y + CHECK_PATTERN_SIZE, CHECK_PATTERN_SIZE, CHECK_PATTERN_SIZE);
             }
@@ -163,13 +165,17 @@ public class ImageViewer extends JPanel implements DisplayModule, MouseWheelList
     @Override
     public void displayCaretInfo() {
         CraftrWindow.statusBar.setSelectionInfo("Pixel pos: " + posOnImage.x + ", " + posOnImage.y);
+
+        boolean animated = new File(associatedTab.path + ".mcmeta").exists();
+
         if(imgSize.width == imgSize.height) {
             CraftrWindow.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x * 16) / imgSize.width, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y  * 16) / imgSize.height),4)));
         } else if(imgSize.width % imgSize.height == 0 || imgSize.height % imgSize.width == 0) {
+            String animationText = animated ? "Animated" : "Missing animation";
             if(imgSize.width > imgSize.height) {
-                CraftrWindow.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x % imgSize.height * 16) / imgSize.height, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y * 16) / imgSize.height),4)) + "    Animated");
+                CraftrWindow.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x % imgSize.height * 16) / imgSize.height, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y * 16) / imgSize.height),4)) + "    " + animationText);
             } else {
-                CraftrWindow.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x * 16) / imgSize.width, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y % imgSize.width * 16) / imgSize.width),4)) + "    Animated");
+                CraftrWindow.statusBar.setCaretInfo("UV pos: " + StringUtil.stripDecimals(MathUtil.truncateDecimals((double) (posOnImage.x * 16) / imgSize.width, 4)) + ", " + StringUtil.stripDecimals(MathUtil.truncateDecimals(((double) (posOnImage.y % imgSize.width * 16) / imgSize.width),4)) + "    " + animationText);
             }
         } else {
             CraftrWindow.statusBar.setCaretInfo("Invalid aspect ratio");

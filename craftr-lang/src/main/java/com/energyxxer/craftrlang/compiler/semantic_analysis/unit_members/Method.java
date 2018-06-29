@@ -4,7 +4,7 @@ import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.commodore.inspection.ExecutionContext;
 import com.energyxxer.commodore.score.ScoreHolder;
-import com.energyxxer.commodore.types.FunctionReference;
+import com.energyxxer.commodore.types.defaults.FunctionReference;
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjective;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
