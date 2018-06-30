@@ -17,7 +17,7 @@ import java.util.List;
  * Created by User on 2/9/2017.
  */
 public enum Lang {
-    CRAFTR(CraftrScannerProfile::new, CraftrProductions.FILE, "craftr"), JSON(JSONScannerProfile::new, "json", "lang", "mcmeta"), PROPERTIES(PropertiesScannerProfile::new, "properties", "project"), MCFUNCTION(MCFunctionScannerProfile::new, MCFunctionProductions.FILE, "mcfunction");
+    CRAFTR(CraftrScannerProfile::new, CraftrProductions.FILE, "craftr"), JSON(JSONScannerProfile::new, "json", "mcmeta"), PROPERTIES(PropertiesScannerProfile::new, "properties", "lang", "project"), MCFUNCTION(MCFunctionScannerProfile::new, MCFunctionProductions.FILE, "mcfunction");
 
     Factory<ScannerProfile> factory;
     TokenPatternMatch parserProduction;

@@ -1,6 +1,7 @@
 package com.energyxxer.craftr.ui;
 
 import com.energyxxer.craftr.main.window.CraftrWindow;
+import com.energyxxer.craftr.ui.audio.AudioPlayer;
 import com.energyxxer.craftr.ui.display.DisplayModule;
 import com.energyxxer.craftr.ui.editor.CraftrEditorModule;
 import com.energyxxer.craftr.ui.imageviewer.ImageViewer;
@@ -8,7 +9,7 @@ import com.energyxxer.craftr.ui.tablist.TabItem;
 import com.energyxxer.craftrlang.projects.Project;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import java.io.File;
 import java.util.Date;
 
@@ -38,6 +39,8 @@ public class Tab {
 		this.linkedProject = ProjectManager.getAssociatedProject(new File(path));
 		if(path.endsWith(".png")) {
 			module = new ImageViewer(this);
+		} else if(path.endsWith(".ogg") || path.endsWith(".mp3") || path.endsWith(".mid")) {
+			module = new AudioPlayer(this);
 		} else {
 			module = new CraftrEditorModule(this);
 		}
