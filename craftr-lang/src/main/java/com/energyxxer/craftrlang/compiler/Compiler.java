@@ -16,6 +16,7 @@ import com.energyxxer.util.ThreadLock;
 import com.energyxxer.util.out.Console;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -114,7 +115,13 @@ public class Compiler {
         analyzer = new SemanticAnalyzer(this, allPatterns, source);
         module = new CraftrCommandModule(projectName, projectPrefix);
         this.setProgress("Importing data definitions... [" + projectName + "]");
-        StandardDefinitionPacks.MINECRAFT_J_1_13.initialize(module);
+
+        try {
+            module.importDefinitions(StandardDefinitionPacks.MINECRAFT_J_1_13);
+        } catch(IOException x) {
+            x.printStackTrace();
+        }
+
         if(library != null) {
             LibraryLoad callback = (c,r) -> {
                 module.join(c.module);
@@ -143,7 +150,11 @@ public class Compiler {
             return;
         }
         module.getObjectiveManager().setCreationFunction(module.projectNS.getFunctionManager().create("init"));
-        if(projectOutput != null && !report.hasErrors()) module.compile(projectOutput, ModulePackGenerator.OutputType.FOLDER);
+        if(projectOutput != null && !report.hasErrors()) try {
+            module.compile(projectOutput, ModulePackGenerator.OutputType.FOLDER);
+        } catch(IOException x) {
+            x.printStackTrace();
+        }
         this.setProgress("Compilation completed with " + report.getTotalsString());
         finalizeCompilation();
     }

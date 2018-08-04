@@ -264,7 +264,7 @@ public class Unit extends AbstractFileComponent implements Symbol, DataHolder, S
         staticPlayer = new FakePlayer(name.toUpperCase());
 
         dataType = new DataType(this);
-        dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, (r != null && r instanceof EntityReference) ? ((EntityReference) r).getEntity() : ((r instanceof ScoreReference) ? new CraftrEntity(this, (ScoreReference) r) : null), c, false));
+        dataType.setReferenceConstructor((r,c) -> new ObjectInstance(this, (r instanceof EntityReference) ? ((EntityReference) r).getEntity() : ((r instanceof ScoreReference) ? new CraftrEntity(this, (ScoreReference) r) : null), c, false));
 
         staticInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/init-static");
         instanceInitializer = this.getModuleNamespace().getFunctionManager().create(this.getFunctionPath() + "/init-instance");

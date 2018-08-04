@@ -21,7 +21,7 @@ import com.energyxxer.commodore.selector.Selector;
 import com.energyxxer.commodore.textcomponents.ScoreTextComponent;
 import com.energyxxer.commodore.textcomponents.StringTextComponent;
 import com.energyxxer.commodore.textcomponents.TextComponent;
-import com.energyxxer.commodore.types.EffectType;
+import com.energyxxer.commodore.types.defaults.EffectType;
 import com.energyxxer.craftrlang.compiler.codegen.commands.RawCommand;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.report.Notice;

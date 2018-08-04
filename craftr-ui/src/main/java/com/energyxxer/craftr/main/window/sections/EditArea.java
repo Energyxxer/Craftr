@@ -8,23 +8,13 @@ import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
 import com.energyxxer.xswing.Padding;
 import com.energyxxer.xswing.hints.Hint;
 
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagLayout;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Created by User on 12/15/2016.
  */
 public class EditArea extends JPanel {
-
-    private static final boolean USE_CONSOLE = false;
 
     private JPanel tabList;
     
@@ -75,9 +65,6 @@ public class EditArea extends JPanel {
         tabSP.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
         tabListHolder.add(tabSP, BorderLayout.CENTER);
-
-        //if (USE_CONSOLE) this.add(new ConsoleBoard(), BorderLayout.SOUTH);
-        //else this.add(CraftrWindow.noticeBoard = new NoticeBoard(), BorderLayout.SOUTH);
 
         this.setContent(CraftrWindow.welcomePane);
     }

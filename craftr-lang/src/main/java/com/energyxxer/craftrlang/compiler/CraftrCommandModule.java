@@ -23,12 +23,12 @@ public class CraftrCommandModule extends CommandModule {
 
     public CraftrCommandModule(String name, String description, String prefix) {
         super(name, description, prefix);
-        this.projectNS = this.getNamespace(prefix);
+        this.projectNS = this.createNamespace(prefix);
         this.objMgr.setPrefixEnabled(true);
         this.glObjMgr = new GlobalObjectiveManager(this);
 
-        this.tickTag = minecraft.getTagManager().getFunctionGroup().create("tick");
-        this.loadTag = minecraft.getTagManager().getFunctionGroup().create("load");
+        this.tickTag = minecraft.getTagManager().functionTags.create("tick");
+        this.loadTag = minecraft.getTagManager().functionTags.create("load");
 
         this.optMgr.UNUSED_COMMAND_POLICY.setValue(UnusedCommandPolicy.COMMENT_OUT);
         this.optMgr.EXPORT_ACCESS_LOGS.setValue(true);

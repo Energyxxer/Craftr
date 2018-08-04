@@ -7,6 +7,7 @@ import com.energyxxer.craftrlang.compiler.lexical_analysis.presets.mcfunction.MC
 import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 public class MCFunctionProductions {
@@ -412,45 +413,173 @@ public class MCFunctionProductions {
             ANCHOR.add(new TokenItemMatch(null, "feet"));
             ANCHOR.add(new TokenItemMatch(null, "eyes"));
 
-            DefinitionPack defpack = StandardDefinitionPacks.MINECRAFT_J_1_13;
+            try {
+                DefinitionPack defpack = StandardDefinitionPacks.MINECRAFT_J_1_13;
+                defpack.load();
 
-            for(DefinitionBlueprint def : defpack.getBlueprints("structure")) {
-                STRUCTURE.add(new TokenItemMatch(null, def.getName()));
-            }
-
-            for(DefinitionBlueprint def : defpack.getBlueprints("difficulty")) {
-                DIFFICULTY.add(new TokenItemMatch(null, def.getName()));
-            }
-
-            for(DefinitionBlueprint def : defpack.getBlueprints("gamemode")) {
-                GAMEMODE.add(new TokenItemMatch(null, def.getName()));
-            }
-
-            for(DefinitionBlueprint def : defpack.getBlueprints("dimension")) {
-                DIMENSION_ID.add(new TokenItemMatch(null, def.getName()));
-            }
-
-            for(DefinitionBlueprint def : defpack.getBlueprints("slot")) {
-                String[] parts = def.getName().split("\\.");
-
-                TokenGroupMatch g = new TokenGroupMatch();
-
-                for(int i = 0; i < parts.length; i++) {
-                    g.append(new TokenItemMatch(null, parts[i]));
-                    if(i < parts.length-1) g.append(new TokenItemMatch(MCFunction.DOT));
+                for (DefinitionBlueprint def : defpack.getBlueprints("structure")) {
+                    STRUCTURE.add(new TokenItemMatch(null, def.getName()));
                 }
 
-                SLOT_ID.add(g);
-            }
+                for (DefinitionBlueprint def : defpack.getBlueprints("difficulty")) {
+                    DIFFICULTY.add(new TokenItemMatch(null, def.getName()));
+                }
 
-            HashMap<String, TokenStructureMatch> namespaceGroups = new HashMap<>();
+                for (DefinitionBlueprint def : defpack.getBlueprints("gamemode")) {
+                    GAMEMODE.add(new TokenItemMatch(null, def.getName()));
+                }
 
-            for(DefinitionBlueprint def : defpack.getBlueprints("block")) {
+                for (DefinitionBlueprint def : defpack.getBlueprints("dimension")) {
+                    DIMENSION_ID.add(new TokenItemMatch(null, def.getName()));
+                }
 
-                TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
+                for (DefinitionBlueprint def : defpack.getBlueprints("slot")) {
+                    String[] parts = def.getName().split("\\.");
 
-                if(s == null) {
-                    TokenGroupMatch g = new TokenGroupMatch().setName("BLOCK_ID");
+                    TokenGroupMatch g = new TokenGroupMatch();
+
+                    for (int i = 0; i < parts.length; i++) {
+                        g.append(new TokenItemMatch(null, parts[i]));
+                        if (i < parts.length - 1) g.append(new TokenItemMatch(MCFunction.DOT));
+                    }
+
+                    SLOT_ID.add(g);
+                }
+
+                HashMap<String, TokenStructureMatch> namespaceGroups = new HashMap<>();
+
+                for (DefinitionBlueprint def : defpack.getBlueprints("block")) {
+
+                    TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
+
+                    if (s == null) {
+                        TokenGroupMatch g = new TokenGroupMatch().setName("BLOCK_ID");
+
+                        TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
+                        ns.append(new TokenItemMatch(null, def.getNamespace()));
+                        ns.append(new TokenItemMatch(MCFunction.COLON));
+
+                        g.append(ns);
+
+                        s = new TokenStructureMatch("BLOCK_NAME");
+                        g.append(s);
+
+                        namespaceGroups.put(def.getNamespace(), s);
+
+                        BLOCK_ID.add(g);
+                    }
+
+                    s.add(new TokenItemMatch(null, def.getName()));
+                }
+
+                namespaceGroups.clear();
+
+                for (DefinitionBlueprint def : defpack.getBlueprints("item")) {
+
+                    TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
+
+                    if (s == null) {
+                        TokenGroupMatch g = new TokenGroupMatch().setName("ITEM_ID");
+
+                        TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
+                        ns.append(new TokenItemMatch(null, def.getNamespace()));
+                        ns.append(new TokenItemMatch(MCFunction.COLON));
+
+                        g.append(ns);
+
+                        s = new TokenStructureMatch("ITEM_NAME");
+                        g.append(s);
+
+                        namespaceGroups.put(def.getNamespace(), s);
+
+                        ITEM_ID.add(g);
+                    }
+
+                    s.add(new TokenItemMatch(null, def.getName()));
+                }
+
+                namespaceGroups.clear();
+
+                for (DefinitionBlueprint def : defpack.getBlueprints("entity")) {
+
+                    TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
+
+                    if (s == null) {
+                        TokenGroupMatch g = new TokenGroupMatch().setName("ENTITY_ID");
+
+                        TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
+                        ns.append(new TokenItemMatch(null, def.getNamespace()));
+                        ns.append(new TokenItemMatch(MCFunction.COLON));
+
+                        g.append(ns);
+
+                        s = new TokenStructureMatch("ENTITY_NAME");
+                        g.append(s);
+
+                        namespaceGroups.put(def.getNamespace(), s);
+
+                        ENTITY_ID.add(g);
+                    }
+
+                    s.add(new TokenItemMatch(null, def.getName()));
+                }
+
+                namespaceGroups.clear();
+
+                for (DefinitionBlueprint def : defpack.getBlueprints("effect")) {
+
+                    TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
+
+                    if (s == null) {
+                        TokenGroupMatch g = new TokenGroupMatch().setName("EFFECT_ID");
+
+                        TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
+                        ns.append(new TokenItemMatch(null, def.getNamespace()));
+                        ns.append(new TokenItemMatch(MCFunction.COLON));
+
+                        g.append(ns);
+
+                        s = new TokenStructureMatch("EFFECT_NAME");
+                        g.append(s);
+
+                        namespaceGroups.put(def.getNamespace(), s);
+
+                        EFFECT_ID.add(g);
+                    }
+
+                    s.add(new TokenItemMatch(null, def.getName()));
+                }
+
+                namespaceGroups.clear();
+
+                for (DefinitionBlueprint def : defpack.getBlueprints("enchantment")) {
+
+                    TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
+
+                    if (s == null) {
+                        TokenGroupMatch g = new TokenGroupMatch().setName("ENCHANTMENT_ID");
+
+                        TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
+                        ns.append(new TokenItemMatch(null, def.getNamespace()));
+                        ns.append(new TokenItemMatch(MCFunction.COLON));
+
+                        g.append(ns);
+
+                        s = new TokenStructureMatch("ENCHANTMENT_NAME");
+                        g.append(s);
+
+                        namespaceGroups.put(def.getNamespace(), s);
+
+                        ENCHANTMENT_ID.add(g);
+                    }
+
+                    s.add(new TokenItemMatch(null, def.getName()));
+                }
+
+                namespaceGroups.clear();
+
+                for (DefinitionBlueprint def : defpack.getBlueprints("particle")) {
+                    TokenGroupMatch g = new TokenGroupMatch().setName("PARTICLE_ID");
 
                     TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
                     ns.append(new TokenItemMatch(null, def.getNamespace()));
@@ -458,232 +587,110 @@ public class MCFunctionProductions {
 
                     g.append(ns);
 
-                    s = new TokenStructureMatch("BLOCK_NAME");
-                    g.append(s);
+                    g.append(new TokenItemMatch(null, def.getName()).setName("PARTICLE_NAME"));
 
-                    namespaceGroups.put(def.getNamespace(), s);
+                    PARTICLE_ID.add(g);
 
-                    BLOCK_ID.add(g);
-                }
+                    TokenGroupMatch g2 = new TokenGroupMatch();
 
-                s.add(new TokenItemMatch(null, def.getName()));
-            }
+                    g2.append(g);
 
-            namespaceGroups.clear();
+                    TokenGroupMatch argsGroup = new TokenGroupMatch().setName("PARTICLE_ARGUMENTS");
 
-            for(DefinitionBlueprint def : defpack.getBlueprints("item")) {
-
-                TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
-
-                if(s == null) {
-                    TokenGroupMatch g = new TokenGroupMatch().setName("ITEM_ID");
-
-                    TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                    ns.append(new TokenItemMatch(null, def.getNamespace()));
-                    ns.append(new TokenItemMatch(MCFunction.COLON));
-
-                    g.append(ns);
-
-                    s = new TokenStructureMatch("ITEM_NAME");
-                    g.append(s);
-
-                    namespaceGroups.put(def.getNamespace(), s);
-
-                    ITEM_ID.add(g);
-                }
-
-                s.add(new TokenItemMatch(null, def.getName()));
-            }
-
-            namespaceGroups.clear();
-
-            for(DefinitionBlueprint def : defpack.getBlueprints("entity")) {
-
-                TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
-
-                if(s == null) {
-                    TokenGroupMatch g = new TokenGroupMatch().setName("ENTITY_ID");
-
-                    TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                    ns.append(new TokenItemMatch(null, def.getNamespace()));
-                    ns.append(new TokenItemMatch(MCFunction.COLON));
-
-                    g.append(ns);
-
-                    s = new TokenStructureMatch("ENTITY_NAME");
-                    g.append(s);
-
-                    namespaceGroups.put(def.getNamespace(), s);
-
-                    ENTITY_ID.add(g);
-                }
-
-                s.add(new TokenItemMatch(null, def.getName()));
-            }
-
-            namespaceGroups.clear();
-
-            for(DefinitionBlueprint def : defpack.getBlueprints("effect")) {
-
-                TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
-
-                if(s == null) {
-                    TokenGroupMatch g = new TokenGroupMatch().setName("EFFECT_ID");
-
-                    TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                    ns.append(new TokenItemMatch(null, def.getNamespace()));
-                    ns.append(new TokenItemMatch(MCFunction.COLON));
-
-                    g.append(ns);
-
-                    s = new TokenStructureMatch("EFFECT_NAME");
-                    g.append(s);
-
-                    namespaceGroups.put(def.getNamespace(), s);
-
-                    EFFECT_ID.add(g);
-                }
-
-                s.add(new TokenItemMatch(null, def.getName()));
-            }
-
-            namespaceGroups.clear();
-
-            for(DefinitionBlueprint def : defpack.getBlueprints("enchantment")) {
-
-                TokenStructureMatch s = namespaceGroups.get(def.getNamespace());
-
-                if(s == null) {
-                    TokenGroupMatch g = new TokenGroupMatch().setName("ENCHANTMENT_ID");
-
-                    TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                    ns.append(new TokenItemMatch(null, def.getNamespace()));
-                    ns.append(new TokenItemMatch(MCFunction.COLON));
-
-                    g.append(ns);
-
-                    s = new TokenStructureMatch("ENCHANTMENT_NAME");
-                    g.append(s);
-
-                    namespaceGroups.put(def.getNamespace(), s);
-
-                    ENCHANTMENT_ID.add(g);
-                }
-
-                s.add(new TokenItemMatch(null, def.getName()));
-            }
-
-            namespaceGroups.clear();
-
-            for(DefinitionBlueprint def : defpack.getBlueprints("particle")) {
-                TokenGroupMatch g = new TokenGroupMatch().setName("PARTICLE_ID");
-
-                TokenGroupMatch ns = new TokenGroupMatch(def.getNamespace().equals("minecraft")).setName("NAMESPACE");
-                ns.append(new TokenItemMatch(null, def.getNamespace()));
-                ns.append(new TokenItemMatch(MCFunction.COLON));
-
-                g.append(ns);
-
-                g.append(new TokenItemMatch(null, def.getName()).setName("PARTICLE_NAME"));
-
-                PARTICLE_ID.add(g);
-
-                TokenGroupMatch g2 = new TokenGroupMatch();
-
-                g2.append(g);
-
-                TokenGroupMatch argsGroup = new TokenGroupMatch().setName("PARTICLE_ARGUMENTS");
-
-                String allArgs = def.getProperties().get("argument");
-                if(!allArgs.equals("none")) {
-                    String[] args = allArgs.split("-");
-                    for(String arg : args) {
-                        switch(arg) {
-                            case "int": {
-                                argsGroup.append(INTEGER_NUMBER);
-                                break;
-                            }
-                            case "double": {
-                                argsGroup.append(REAL_NUMBER);
-                                break;
-                            }
-                            case "color": {
-                                argsGroup.append(COLOR);
-                                break;
-                            }
-                            case "block": {
-                                argsGroup.append(BLOCK);
-                                break;
-                            }
-                            case "item": {
-                                argsGroup.append(ITEM);
-                                break;
-                            }
-                            default: {
-                                System.err.println("Invalid particle argument type '" + arg + "', could not be added to .mcfunction particle production");
+                    String allArgs = def.getProperties().get("argument");
+                    if (!allArgs.equals("none")) {
+                        String[] args = allArgs.split("-");
+                        for (String arg : args) {
+                            switch (arg) {
+                                case "int": {
+                                    argsGroup.append(INTEGER_NUMBER);
+                                    break;
+                                }
+                                case "double": {
+                                    argsGroup.append(REAL_NUMBER);
+                                    break;
+                                }
+                                case "color": {
+                                    argsGroup.append(COLOR);
+                                    break;
+                                }
+                                case "block": {
+                                    argsGroup.append(BLOCK);
+                                    break;
+                                }
+                                case "item": {
+                                    argsGroup.append(ITEM);
+                                    break;
+                                }
+                                default: {
+                                    System.err.println("Invalid particle argument type '" + arg + "', could not be added to .mcfunction particle production");
+                                }
                             }
                         }
                     }
+
+                    g2.append(argsGroup);
+
+                    PARTICLE.add(g2);
                 }
 
-                g2.append(argsGroup);
+                namespaceGroups.clear();
 
-                PARTICLE.add(g2);
-            }
+                for (DefinitionBlueprint def : defpack.getBlueprints("gamerule")) {
+                    TokenGroupMatch g = new TokenGroupMatch().setName("GAMERULE_ID");
 
-            namespaceGroups.clear();
+                    g.append(new TokenItemMatch(null, def.getName()).setName("GAMERULE_NAME"));
 
-            for(DefinitionBlueprint def : defpack.getBlueprints("gamerule")) {
-                TokenGroupMatch g = new TokenGroupMatch().setName("GAMERULE_ID");
+                    GAMERULE.add(g);
 
-                g.append(new TokenItemMatch(null, def.getName()).setName("GAMERULE_NAME"));
+                    TokenGroupMatch g2 = new TokenGroupMatch();
 
-                GAMERULE.add(g);
+                    g2.append(g);
 
-                TokenGroupMatch g2 = new TokenGroupMatch();
+                    TokenGroupMatch argsGroup = new TokenGroupMatch().setName("GAMERULE_ARGUMENT");
 
-                g2.append(g);
+                    String arg = def.getProperties().get("argument");
 
-                TokenGroupMatch argsGroup = new TokenGroupMatch().setName("GAMERULE_ARGUMENT");
-
-                String arg = def.getProperties().get("argument");
-
-                switch(arg) {
-                    case "boolean": {
-                        argsGroup.append(BOOLEAN);
-                        break;
+                    switch (arg) {
+                        case "boolean": {
+                            argsGroup.append(BOOLEAN);
+                            break;
+                        }
+                        case "int": {
+                            argsGroup.append(INTEGER_NUMBER);
+                            break;
+                        }
+                        case "double": {
+                            argsGroup.append(REAL_NUMBER);
+                            break;
+                        }
+                        case "color": {
+                            argsGroup.append(COLOR);
+                            break;
+                        }
+                        case "block": {
+                            argsGroup.append(BLOCK);
+                            break;
+                        }
+                        case "item": {
+                            argsGroup.append(ITEM);
+                            break;
+                        }
+                        default: {
+                            System.err.println("Invalid gamerule argument type '" + arg + "', could not be added to .mcfunction gamerule setter production");
+                        }
                     }
-                    case "int": {
-                        argsGroup.append(INTEGER_NUMBER);
-                        break;
-                    }
-                    case "double": {
-                        argsGroup.append(REAL_NUMBER);
-                        break;
-                    }
-                    case "color": {
-                        argsGroup.append(COLOR);
-                        break;
-                    }
-                    case "block": {
-                        argsGroup.append(BLOCK);
-                        break;
-                    }
-                    case "item": {
-                        argsGroup.append(ITEM);
-                        break;
-                    }
-                    default: {
-                        System.err.println("Invalid gamerule argument type '" + arg + "', could not be added to .mcfunction gamerule setter production");
-                    }
+
+                    g2.append(argsGroup);
+
+                    GAMERULE_SETTER.add(g2);
                 }
 
-                g2.append(argsGroup);
+                namespaceGroups.clear();
 
-                GAMERULE_SETTER.add(g2);
+            } catch (IOException x) {
+                System.err.println("Error in loading standard definition pack for Minecraft Java Edition 1.13: " + x.getMessage());
             }
-
-            namespaceGroups.clear();
         }
 
         {
