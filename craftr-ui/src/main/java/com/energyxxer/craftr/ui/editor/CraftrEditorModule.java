@@ -8,7 +8,7 @@ import com.energyxxer.craftr.ui.theme.Theme;
 import com.energyxxer.craftr.ui.theme.ThemeManager;
 import com.energyxxer.craftr.ui.theme.change.ThemeChangeListener;
 import com.energyxxer.craftr.util.linenumber.TextLineNumber;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.Lang;
+import com.energyxxer.craftrlang.compiler.Lang;
 import com.energyxxer.util.out.Console;
 
 import javax.swing.*;

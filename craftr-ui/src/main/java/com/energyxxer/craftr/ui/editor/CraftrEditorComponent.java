@@ -4,14 +4,15 @@ import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.editor.behavior.AdvancedEditor;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.CharacterDriftHandler;
 import com.energyxxer.craftr.ui.editor.inspector.Inspector;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.Lang;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenSection;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse;
-import com.energyxxer.craftrlang.compiler.report.Notice;
-import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.craftrlang.compiler.Lang;
+import com.energyxxer.enxlex.lexical_analysis.Scanner;
+import com.energyxxer.enxlex.lexical_analysis.profiles.ScannerProfile;
+import com.energyxxer.enxlex.lexical_analysis.token.Token;
+import com.energyxxer.enxlex.lexical_analysis.token.TokenSection;
+import com.energyxxer.enxlex.lexical_analysis.token.TokenStream;
+import com.energyxxer.enxlex.pattern_matching.TokenMatchResponse;
+import com.energyxxer.enxlex.report.Notice;
+import com.energyxxer.enxlex.report.NoticeType;
 
 import javax.swing.*;
 import javax.swing.event.CaretEvent;
@@ -69,11 +70,10 @@ public class CraftrEditorComponent extends AdvancedEditor implements KeyListener
 
         String text = getText();
 
-        Scanner sc = new Scanner(new File(parent.associatedTab.path), text, new TokenStream(true));
-        ArrayList<Notice> newNotices = new ArrayList<>();
-        newNotices.addAll(sc.getNotices());
-
         Lang lang = Lang.getLangForFile(parent.associatedTab.path);
+        ScannerProfile fileProfile = lang != null ? lang.createProfile() : null;
+        Scanner sc = new Scanner(new File(parent.associatedTab.path), text, new TokenStream(true), fileProfile);
+        ArrayList<Notice> newNotices = new ArrayList<>(sc.getNotices());
 
         boolean doParsing = lang != null && lang.getParserProduction() != null;
 

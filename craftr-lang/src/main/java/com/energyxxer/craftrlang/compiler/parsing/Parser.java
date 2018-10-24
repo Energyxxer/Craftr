@@ -1,13 +1,13 @@
 package com.energyxxer.craftrlang.compiler.parsing;
 
 import com.energyxxer.craftrlang.compiler.Compiler;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.TokenMatchResponse;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.report.Notice;
-import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.enxlex.lexical_analysis.token.Token;
+import com.energyxxer.enxlex.lexical_analysis.token.TokenStream;
+import com.energyxxer.enxlex.lexical_analysis.token.TokenType;
+import com.energyxxer.enxlex.pattern_matching.TokenMatchResponse;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenPattern;
+import com.energyxxer.enxlex.report.Notice;
+import com.energyxxer.enxlex.report.NoticeType;
 
 import java.io.File;
 import java.util.ArrayList;

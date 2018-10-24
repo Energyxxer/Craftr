@@ -5,9 +5,9 @@ import com.energyxxer.xswing.hints.TextHint;
 import com.energyxxer.craftr.main.window.CraftrWindow;
 import com.energyxxer.craftr.ui.editor.CraftrEditorComponent;
 import com.energyxxer.craftr.ui.editor.behavior.editmanager.CharacterDriftHandler;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.enxlex.lexical_analysis.token.TokenStream;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenPattern;
+import com.energyxxer.enxlex.report.Notice;
 import com.energyxxer.util.StringBounds;
 
 import javax.swing.text.BadLocationException;

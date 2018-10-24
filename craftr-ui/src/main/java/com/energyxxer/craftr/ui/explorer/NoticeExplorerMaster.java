@@ -3,7 +3,7 @@ package com.energyxxer.craftr.ui.explorer;
 import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
 import com.energyxxer.craftr.ui.theme.change.ThemeListenerManager;
-import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.enxlex.report.Notice;
 
 import java.awt.Color;
 import java.awt.Image;

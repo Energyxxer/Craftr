@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.context;
 
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
+import com.energyxxer.enxlex.lexical_analysis.token.Token;
 
 import java.util.ArrayList;
 import java.util.Arrays;

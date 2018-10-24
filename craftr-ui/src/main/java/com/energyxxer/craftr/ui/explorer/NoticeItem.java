@@ -4,7 +4,7 @@ import com.energyxxer.craftr.global.TabManager;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
 import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerElement;
-import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.enxlex.report.Notice;
 
 import java.awt.Color;
 import java.awt.FontMetrics;

@@ -1,8 +1,8 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.managers;
 
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.report.Notice;
-import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenPattern;
+import com.energyxxer.enxlex.report.Notice;
+import com.energyxxer.enxlex.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members.Method;

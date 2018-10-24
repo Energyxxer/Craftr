@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.AbstractFileComponent;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;

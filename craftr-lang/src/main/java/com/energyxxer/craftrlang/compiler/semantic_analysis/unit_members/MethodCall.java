@@ -2,12 +2,12 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.unit_members;
 
 import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.CraftrLang;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenGroup;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenList;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.report.Notice;
-import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenGroup;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenItem;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenList;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenPattern;
+import com.energyxxer.enxlex.report.Notice;
+import com.energyxxer.enxlex.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;

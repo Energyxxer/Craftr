@@ -2,9 +2,9 @@ package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.Function;
 import com.energyxxer.commodore.functions.FunctionSection;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.report.Notice;
-import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenPattern;
+import com.energyxxer.enxlex.report.Notice;
+import com.energyxxer.enxlex.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SymbolTable;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataType;

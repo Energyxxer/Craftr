@@ -4,7 +4,7 @@ import com.energyxxer.craftr.global.Commons;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerFlag;
 import com.energyxxer.craftr.ui.explorer.base.ExplorerMaster;
 import com.energyxxer.craftr.ui.explorer.base.elements.ExplorerElement;
-import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.enxlex.report.Notice;
 import com.energyxxer.craftrlang.projects.ProjectManager;
 
 import java.awt.Color;

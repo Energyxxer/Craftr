@@ -1,11 +1,11 @@
 package com.energyxxer.craftrlang.compiler.parsing;
 
 import com.energyxxer.craftrlang.CraftrLang;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenGroupMatch;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenItemMatch;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenListMatch;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenStructureMatch;
+import com.energyxxer.enxlex.lexical_analysis.token.TokenType;
+import com.energyxxer.enxlex.pattern_matching.matching.TokenGroupMatch;
+import com.energyxxer.enxlex.pattern_matching.matching.TokenItemMatch;
+import com.energyxxer.enxlex.pattern_matching.matching.TokenListMatch;
+import com.energyxxer.enxlex.pattern_matching.matching.TokenStructureMatch;
 
 /**
  * Class containing the definitions of each production of the Craftr language.

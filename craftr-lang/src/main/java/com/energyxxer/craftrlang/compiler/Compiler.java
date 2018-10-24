@@ -2,21 +2,24 @@ package com.energyxxer.craftrlang.compiler;
 
 import com.energyxxer.commodore.module.ModulePackGenerator;
 import com.energyxxer.commodore.standard.StandardDefinitionPacks;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.Scanner;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenStream;
 import com.energyxxer.craftrlang.compiler.parsing.Parser;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
-import com.energyxxer.craftrlang.compiler.report.Notice;
-import com.energyxxer.craftrlang.compiler.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.SemanticAnalyzer;
 import com.energyxxer.craftrlang.interfaces.ProgressListener;
 import com.energyxxer.craftrlang.projects.Project;
+import com.energyxxer.craftrlang.projects.ProjectManager;
+import com.energyxxer.enxlex.lexical_analysis.Scanner;
+import com.energyxxer.enxlex.lexical_analysis.token.TokenStream;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenPattern;
+import com.energyxxer.enxlex.report.Notice;
+import com.energyxxer.enxlex.report.NoticeType;
 import com.energyxxer.util.StringUtil;
 import com.energyxxer.util.ThreadLock;
 import com.energyxxer.util.out.Console;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -89,7 +92,8 @@ public class Compiler {
         }
         this.setProgress("Scanning files... [" + projectName + "]");
         ts = new TokenStream();
-        sc = new Scanner(source,ts);
+        sc = new Scanner(ts);
+        recursivelyParse(sc, source);
 
         this.getReport().addNotices(sc.getNotices());
         if(sc.getNotices().size() > 0) {
@@ -157,6 +161,30 @@ public class Compiler {
         }
         this.setProgress("Compilation completed with " + report.getTotalsString());
         finalizeCompilation();
+    }
+
+    private void recursivelyParse(Scanner sc, File dir) {
+        File[] files = dir.listFiles();
+        if(files == null) return;
+        for (File file : files) {
+            String name = file.getName();
+            if (file.isDirectory()) {
+                if(!file.getName().equals("resources") || !file.getParentFile().getParent().equals(ProjectManager.getWorkspaceDir())) {
+                    //This is not the resource pack directory.
+                    recursivelyParse(sc, file);
+                }
+            } else {
+                Lang fileLang = Lang.getLangForFile(name);
+                if(fileLang == null) continue;
+
+                try {
+                    String str = new String(Files.readAllBytes(Paths.get(file.getPath())));
+                    sc.tokenize(file, str, fileLang.createProfile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public Project getProject() {

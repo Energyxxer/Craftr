@@ -3,9 +3,9 @@ package com.energyxxer.craftrlang.compiler.parsing;
 import com.energyxxer.commodore.defpacks.DefinitionBlueprint;
 import com.energyxxer.commodore.defpacks.DefinitionPack;
 import com.energyxxer.commodore.standard.StandardDefinitionPacks;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.presets.mcfunction.MCFunction;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.*;
+import com.energyxxer.craftrlang.compiler.presets.mcfunction.MCFunction;
+import com.energyxxer.enxlex.lexical_analysis.token.TokenType;
+import com.energyxxer.enxlex.pattern_matching.matching.*;
 
 import java.io.IOException;
 import java.util.HashMap;

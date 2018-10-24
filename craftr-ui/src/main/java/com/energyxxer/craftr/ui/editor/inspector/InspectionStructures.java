@@ -2,9 +2,9 @@ package com.energyxxer.craftr.ui.editor.inspector;
 
 import com.energyxxer.craftrlang.CraftrLang;
 import com.energyxxer.craftrlang.compiler.parsing.CraftrProductions;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenGroupMatch;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenItemMatch;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.matching.TokenListMatch;
+import com.energyxxer.enxlex.pattern_matching.matching.TokenGroupMatch;
+import com.energyxxer.enxlex.pattern_matching.matching.TokenItemMatch;
+import com.energyxxer.enxlex.pattern_matching.matching.TokenListMatch;
 
 import java.util.ArrayList;
 

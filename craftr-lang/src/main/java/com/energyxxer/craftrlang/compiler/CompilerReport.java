@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang.compiler;
 
-import com.energyxxer.craftrlang.compiler.report.Notice;
+import com.energyxxer.enxlex.report.Notice;
 
 import java.util.ArrayList;
 import java.util.Collection;

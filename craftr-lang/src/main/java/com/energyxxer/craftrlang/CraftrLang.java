@@ -1,6 +1,6 @@
 package com.energyxxer.craftrlang;
 
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.TokenType;
+import com.energyxxer.enxlex.lexical_analysis.token.TokenType;
 
 import java.util.Arrays;
 import java.util.Collections;

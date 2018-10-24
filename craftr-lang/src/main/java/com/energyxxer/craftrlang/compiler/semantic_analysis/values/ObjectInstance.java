@@ -11,7 +11,7 @@ import com.energyxxer.commodore.nbt.TagString;
 import com.energyxxer.commodore.selector.Selector;
 import com.energyxxer.commodore.selector.TagArgument;
 import com.energyxxer.craftrlang.compiler.codegen.entities.CraftrEntity;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
+import com.energyxxer.enxlex.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.Symbol;

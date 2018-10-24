@@ -1,10 +1,10 @@
 package com.energyxxer.craftrlang.compiler.semantic_analysis.values;
 
 import com.energyxxer.commodore.functions.FunctionSection;
-import com.energyxxer.craftrlang.compiler.lexical_analysis.token.Token;
-import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.*;
-import com.energyxxer.craftrlang.compiler.report.Notice;
-import com.energyxxer.craftrlang.compiler.report.NoticeType;
+import com.energyxxer.enxlex.lexical_analysis.token.Token;
+import com.energyxxer.enxlex.pattern_matching.structures.*;
+import com.energyxxer.enxlex.report.Notice;
+import com.energyxxer.enxlex.report.NoticeType;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.TraversableStructure;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.Unit;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.CompoundSymbolTable;
