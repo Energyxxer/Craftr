@@ -18,4 +18,10 @@ public class ReturnStatement extends Statement {
         if(rawValue != null) return ExprResolver.analyzeValue(rawValue, semanticContext, dataHolder, section);
         return null;
     }
+
+    @Override
+    public boolean isExplicit() {
+        TokenPattern<?> value = pattern.find("VALUE");
+        return ExprResolver.analyzeValue(value, semanticContext, dataHolder, section).isExplicit();
+    }
 }

@@ -17,4 +17,9 @@ public class SwitchStatement extends Statement {
         section.append(new FunctionComment("Switch statement"));
         return null;
     }
+
+    @Override
+    public boolean isExplicit() {
+        return true;
+    }
 }

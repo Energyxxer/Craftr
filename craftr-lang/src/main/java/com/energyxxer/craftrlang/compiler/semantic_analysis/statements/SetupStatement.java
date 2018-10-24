@@ -16,4 +16,9 @@ public class SetupStatement extends Statement {
         section.append(new FunctionComment("Setup statement"));
         return null;
     }
+
+    @Override
+    public boolean isExplicit() {
+        return true;
+    }
 }

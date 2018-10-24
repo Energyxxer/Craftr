@@ -239,10 +239,6 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         return modifiers.contains(CraftrLang.Modifier.STATIC);
     }
 
-    public String getPlayerName() {
-        return declaringUnit.getName().toUpperCase();
-    }
-
     public DataType getReturnType() {
         return returnType;
     }
@@ -416,7 +412,12 @@ public class Method extends AbstractFileComponent implements Symbol, SemanticCon
         }
         codeBlock.setSilent(true);
         codeBlock.setDataHolder(dataHolder);
-        Value blockResult = codeBlock.evaluate(section);
+        Value blockResult;
+        if(codeBlock.isExplicit()) {
+            blockResult = codeBlock.evaluate(section);
+        } else {
+            blockResult = codeBlock.evaluate(section);
+        }
         if(returnType == DataType.VOID) return null;
         if(blockResult != null) return blockResult;
         return returnType.create(new ScoreReference(getGlobalObjectiveManager().RETURN), semanticContext);

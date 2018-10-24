@@ -19,4 +19,10 @@ public class ExpressionStatement extends Statement {
         if(value instanceof Expression) value = ((Expression) value).unwrap(section, null);
         return value;
     }
+
+    @Override
+    public boolean isExplicit() {
+        Value value = ExprResolver.analyzeValue(pattern.find("EXPRESSION"), semanticContext, this.dataHolder, section);
+        return value.isExplicit();
+    }
 }

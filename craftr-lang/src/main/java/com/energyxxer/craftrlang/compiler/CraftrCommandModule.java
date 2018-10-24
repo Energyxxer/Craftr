@@ -4,6 +4,7 @@ import com.energyxxer.commodore.module.CommandModule;
 import com.energyxxer.commodore.module.Namespace;
 import com.energyxxer.commodore.module.options.UnusedCommandPolicy;
 import com.energyxxer.commodore.tags.FunctionTag;
+import com.energyxxer.craftrlang.compiler.codegen.functions.HelperFunctionManager;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.GlobalObjectiveManager;
 import com.energyxxer.craftrlang.compiler.codegen.objectives.LocalizedObjectiveManager;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
@@ -13,6 +14,7 @@ public class CraftrCommandModule extends CommandModule {
     public final Namespace projectNS;
 
     public final GlobalObjectiveManager glObjMgr;
+    public final HelperFunctionManager helperFuncMgr;
 
     public final FunctionTag tickTag;
     public final FunctionTag loadTag;
@@ -26,6 +28,7 @@ public class CraftrCommandModule extends CommandModule {
         this.projectNS = this.createNamespace(prefix);
         this.objMgr.setPrefixEnabled(true);
         this.glObjMgr = new GlobalObjectiveManager(this);
+        this.helperFuncMgr = new HelperFunctionManager(this);
 
         this.tickTag = minecraft.getTagManager().functionTags.create("tick");
         this.loadTag = minecraft.getTagManager().functionTags.create("load");

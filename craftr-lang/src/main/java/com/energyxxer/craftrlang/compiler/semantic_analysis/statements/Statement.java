@@ -60,4 +60,6 @@ public abstract class Statement {
     }
 
     public abstract Value evaluate(FunctionSection section);
+
+    public abstract boolean isExplicit();
 }

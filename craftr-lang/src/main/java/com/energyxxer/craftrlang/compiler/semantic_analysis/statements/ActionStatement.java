@@ -16,4 +16,9 @@ public class ActionStatement extends Statement {
         section.append(new FunctionComment("Action statement"));
         return null;
     }
+
+    @Override
+    public boolean isExplicit() {
+        return true;
+    }
 }

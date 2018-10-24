@@ -17,4 +17,9 @@ public class WhileStatement extends Statement {
         section.append(new FunctionComment("While statement"));
         return null;
     }
+
+    @Override
+    public boolean isExplicit() {
+        return true;
+    }
 }

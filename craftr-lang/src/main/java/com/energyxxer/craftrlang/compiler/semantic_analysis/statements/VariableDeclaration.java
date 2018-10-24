@@ -16,4 +16,9 @@ public class VariableDeclaration extends Statement {
         section.append(new FunctionComment("Variable declaration"));
         return null;
     }
+
+    @Override
+    public boolean isExplicit() {
+        return true;
+    }
 }

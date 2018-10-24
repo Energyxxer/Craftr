@@ -5,7 +5,6 @@ import com.energyxxer.commodore.functions.FunctionSection;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenItem;
 import com.energyxxer.craftrlang.compiler.parsing.pattern_matching.structures.TokenPattern;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.context.SemanticContext;
-import com.energyxxer.craftrlang.compiler.semantic_analysis.data_types.DataHolder;
 import com.energyxxer.craftrlang.compiler.semantic_analysis.values.Value;
 
 public class CommentStatement extends Statement {
@@ -21,5 +20,10 @@ public class CommentStatement extends Statement {
     public Value evaluate(FunctionSection section) {
         section.append(new FunctionComment(comment));
         return null;
+    }
+
+    @Override
+    public boolean isExplicit() {
+        return true;
     }
 }

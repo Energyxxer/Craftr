@@ -136,6 +136,14 @@ public class CodeBlock extends Statement implements SemanticContext, DataHolder 
         initialized = true;
     }
 
+    @Override
+    public boolean isExplicit() {
+        for(Statement statement : statements) {
+            if(!statement.isExplicit()) return false;
+        }
+        return true;
+    }
+
     public SymbolTable getSymbolTable() {
         return symbolTable;
     }

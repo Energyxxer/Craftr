@@ -168,8 +168,6 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
                 return;
             }
 
-            System.out.println(initialization);
-
             this.reference = new ScoreReference(new LocalScore(objective, semanticContext.getScoreHolder(initializerFunction)));
             this.value = ExprResolver.analyzeValue(initialization.find("VALUE"), (semanticContext instanceof Unit && !isStatic()) ? ((Unit) semanticContext).getFieldInitContext() : semanticContext, null, initializerFunction);
 
@@ -252,7 +250,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
         reference = new ScoreReference(new LocalScore(objective, requestParentScoreHolder(function)));
     }
 
-    public Value assign(Value value, FunctionSection function, SemanticContext semanticContext, boolean silent) {
+    public Value assign(Value value, FunctionSection function, SemanticContext semanticContext, TokenPattern<?> pattern, boolean silent) {
         if(!value.getDataType().instanceOf(this.getDataType())) {
             if(!silent) this.semanticContext.getAnalyzer().getCompiler().getReport().addNotice(new Notice(NoticeType.ERROR, "Incompatible types: " + value.getDataType() + " cannot be converted to " + this.getDataType(), pattern));
             this.value = new Null(this.semanticContext);
@@ -315,7 +313,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
     public Value runOperation(Operator operator, Value operand, TokenPattern<?> pattern, FunctionSection section, SemanticContext semanticContext, ScoreReference resultReference, boolean silent) {
         switch(operator) {
             case ASSIGN: {
-                return this.assign(operand, section, semanticContext, silent);
+                return this.assign(operand, section, semanticContext, pattern, silent);
             }
             case ADD_THEN_ASSIGN:
             case SUBTRACT_THEN_ASSIGN:
@@ -327,7 +325,7 @@ public class Variable extends ValueWrapper implements Symbol, DataHolder, Traver
                 } else {
                     result = unwrap().runOperation(Operator.getNoAssign(operator), operand, pattern, section, semanticContext, null, silent);
                 }
-                return (result != null) ? this.assign(result, section, semanticContext, silent) : null;
+                return (result != null) ? this.assign(result, section, semanticContext, pattern, silent) : null;
             }
         }
         lazilyInstantiateValue();

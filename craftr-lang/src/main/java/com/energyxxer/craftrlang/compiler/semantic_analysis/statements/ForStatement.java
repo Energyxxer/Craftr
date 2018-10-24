@@ -16,4 +16,9 @@ public class ForStatement extends Statement {
         section.append(new FunctionComment("For statement"));
         return null;
     }
+
+    @Override
+    public boolean isExplicit() {
+        return true;
+    }
 }

@@ -48,4 +48,13 @@ public class IfStatement extends Statement {
 
         return null;
     }
+
+    @Override
+    public boolean isExplicit() {
+        Value value = ExprResolver.analyzeValue(pattern.find("VALUE"), semanticContext, dataHolder, section);
+        if(!value.isExplicit()) return false;
+        CommandGroup inner = new CommandGroup(section);
+        Statement statement = Statement.read(((TokenStructure) pattern.find("STATEMENT")).getContents(), semanticContext, inner);
+        return statement == null || statement.isExplicit();
+    }
 }

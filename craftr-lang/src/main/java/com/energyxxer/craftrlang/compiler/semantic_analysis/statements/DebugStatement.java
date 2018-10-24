@@ -51,4 +51,9 @@ public class DebugStatement extends Statement {
         section.append(new FunctionComment("debug " + label + ": " + out));
         return null;
     }
+
+    @Override
+    public boolean isExplicit() {
+        return true;
+    }
 }
